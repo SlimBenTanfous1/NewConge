@@ -70,8 +70,18 @@ public class User {
         this.idDepartement = idDepartement;
         this.idManager = idManager;
         this.creationDate = creationDate != null ? creationDate : LocalDate.now();
+    }
 
+    public User(int i, String sansManager, String s, String s1, String s2, String s3, int i1, int i2, int i3, int i4, int i5, int i6) {
+    }
 
+    public User(int idUser, String nom, String prenom, String email, String mdp, String image) { //Const modif
+        this.idUser = idUser;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.email = email;
+        this.mdp = mdp;
+        this.image = image;
     }
 
     public int getID_UserSolde() {

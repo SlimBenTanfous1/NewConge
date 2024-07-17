@@ -151,7 +151,6 @@ public class ServiceUtilisateur implements IUtilisateur {
         return new UserConge(users, conges);
     }
 
-
     @Override
     public UserConge TriDateFin() {
         return null;
@@ -195,7 +194,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 user.setIdDepartement(rs.getInt("ID_Departement"));
 
                 TypeConge typeConge = new TypeConge();
-               // typeConge.setIdTypeConge(rs.getInt("ID_TypeConge"), totalSolde);
+                // typeConge.setIdTypeConge(rs.getInt("ID_TypeConge"), totalSolde);
                 typeConge.setDesignation(rs.getString("Designation"));
                 typeConge.setPas(rs.getDouble("Pas"));
                 typeConge.setPeriodeJ(rs.getInt("PeriodeJ"));
@@ -214,7 +213,6 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
         return users;
     }
-
 
     public User getChef() {
         User chef = null;
@@ -292,6 +290,7 @@ public class ServiceUtilisateur implements IUtilisateur {
 
         return typeConges;
     }
+
     public int getManagerIdByUserId2(int userId) {
         String query = "SELECT ID_Manager FROM user WHERE ID_User = ?";
         int managerId = 0;
@@ -311,7 +310,6 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
         return managerId;
     }
-
 
     public List<User> getUsersByDepartment(String departement) {
         List<User> users = new ArrayList<>();
@@ -347,9 +345,6 @@ public class ServiceUtilisateur implements IUtilisateur {
 
         return users;
     }
-
-
-
 
     @Override
     public List<User> getAllUsers() {
@@ -421,7 +416,6 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
     }
 
-
     @Override
     public void deleteUser(int idUser) {
         String query = "DELETE FROM user WHERE ID_User=?";
@@ -433,8 +427,6 @@ public class ServiceUtilisateur implements IUtilisateur {
             ex.printStackTrace();
         }
     }
-
-
 
     public void assignRoleToUser(int userId, int roleId) {
         String sqlUserRole = "INSERT INTO user_role (ID_User, ID_Role) VALUES (?, ?)";
@@ -470,7 +462,6 @@ public class ServiceUtilisateur implements IUtilisateur {
             }
         }
     }
-
 
     @Override
     public void updateUserRoleAndDepartment(int userId, int roleId, int departmentId) throws SQLException {
@@ -648,5 +639,22 @@ public class ServiceUtilisateur implements IUtilisateur {
     @Override
     public List<User> ShowUnder() {
         return null;
+    }
+    public int getLastInsertedUserId() throws SQLException {
+        String query = "SELECT LAST_INSERT_ID()";
+        try (Connection cnx = MyDataBase.getInstance().getCnx();
+             Statement stmt = cnx.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+        throw new SQLException("Failed to retrieve last inserted user ID");
+    }
+    public void checkRoleDepartmentUniqueness(int idUser, int idRole, int idDepartement) {
+
+    }
+
+    public void setUserManager(int idUser) {
     }
 }

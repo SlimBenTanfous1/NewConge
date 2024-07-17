@@ -6,6 +6,7 @@ public class UserSolde {
     private int ID_User;
     private int ID_TypeConge;
     private double TotalSolde;
+    private String Designation;
 
 
     public UserSolde() {
@@ -16,6 +17,21 @@ public class UserSolde {
         this.ID_User = ID_User;
         this.ID_TypeConge = ID_TypeConge;
         this.TotalSolde = totalSolde;
+    }
+    public UserSolde(int UD_UserSolde, int ID_User, int ID_TypeConge, double totalSolde,String Designation) {
+        this.UD_UserSolde = UD_UserSolde;
+        this.ID_User = ID_User;
+        this.ID_TypeConge = ID_TypeConge;
+        this.TotalSolde = totalSolde;
+        this.Designation = Designation;
+    }
+
+    public String getDesignation() {
+        return Designation;
+    }
+
+    public void setDesignation(String designation) {
+        Designation = designation;
     }
 
     public int getUD_UserSolde() {

@@ -45,6 +45,17 @@ public class ServiceUserSolde {
             e.printStackTrace();
         }
     }
-
+    public void addUserSolde(int userId, int typeCongeId, double totalSolde) {
+        String query = "INSERT INTO user_solde(ID_User, ID_TypeConge, TotalSolde) VALUES (?,?,?)";
+        try (Connection cnx = MyDataBase.getInstance().getCnx();
+             PreparedStatement pstmt = cnx.prepareStatement(query)) {
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, typeCongeId);
+            pstmt.setDouble(3, totalSolde);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
