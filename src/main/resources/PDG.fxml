@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="830.0" prefWidth="1340.0" styleClass="grad-bg" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.DemandeDepListeController">
+   <children>
+      <Pane layoutX="9.0" layoutY="131.0" prefHeight="677.0" prefWidth="1320.0" styleClass="pane1">
+         <children>
+            <ScrollPane layoutX="9.0" layoutY="65.0" prefHeight="601.0" prefWidth="1302.0">
+               <content>
+                  <GridPane fx:id="DemandesContainer" prefHeight="0.0" prefWidth="0.0">
+                  </GridPane>
+               </content>
+            </ScrollPane>
+            <TextField fx:id="Recherche_demande" layoutX="989.0" layoutY="19.0" onKeyPressed="#Recherche" prefHeight="28.0" prefWidth="304.0" promptText="Recherche">
+               <styleClass>
+                  <String fx:value="RobotoRegular" />
+                  <String fx:value="FontSize-13" />
+               </styleClass></TextField>
+            <HBox alignment="CENTER" layoutX="22.0" layoutY="11.0" prefHeight="51.0" prefWidth="261.0">
+               <children>
+                  <Label prefHeight="23.0" prefWidth="95.0" text="Trier par :">
+                     <font>
+                        <Font name="Roboto Regular" size="18.0" />
+                     </font>
+                     <styleClass>
+                        <String fx:value="FontSize-17" />
+                        <String fx:value="RobotoBoldItalic" />
+                     </styleClass>
+                  </Label>
+                  <ComboBox fx:id="comboTri" onAction="#TriPar" prefHeight="0.0" prefWidth="151.0" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" layoutX="370.0" layoutY="13.0" prefHeight="41.0" prefWidth="581.0" spacing="28.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#LesApprouves" prefHeight="25.0" prefWidth="141.0" text="Approuvée">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                     <styleClass>
+                        <String fx:value="btn-primary" />
+                        <String fx:value="RobotoMedium" />
+                        <String fx:value="FontSize-13" />
+                     </styleClass>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#LesRejetes" prefHeight="25.0" prefWidth="141.0" text="Rejetée">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                     <styleClass>
+                        <String fx:value="btn-primary" />
+                        <String fx:value="RobotoMedium" />
+                        <String fx:value="FontSize-13" />
+                     </styleClass>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#LesEnAttente" prefHeight="25.0" prefWidth="141.0" text="En attente">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                     <styleClass>
+                        <String fx:value="btn-primary" />
+                        <String fx:value="RobotoMedium" />
+                        <String fx:value="FontSize-13" />
+                     </styleClass>
+                  </Button>
+               </children>
+            </HBox>
+         </children></Pane>
+      <Pane prefHeight="104.0" prefWidth="1340.0" styleClass="pane-clr" stylesheets="@assets/css/style.css">
+         <children>
+            <Button layoutX="6.0" layoutY="8.0" mnemonicParsing="false" onAction="#goto_profil" styleClass="settingsButton">
+               <graphic>
+                  <ImageView fitHeight="81.0" fitWidth="93.0" pickOnBounds="true" preserveRatio="true" styleClass="LogoBfpme">
+                     <image>
+                        <Image url="@assets/imgs/logo_bfpme.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Label layoutX="117.0" layoutY="26.0" text="Les demandes des congés" textFill="WHITE">
+               <font>
+                  <Font name="Roboto Bold" size="22.0" />
+               </font>
+               <styleClass>
+                  <String fx:value="FontSize-20" />
+                  <String fx:value="RobotoBoldItalic" />
+               </styleClass>
+            </Label>
+            <HBox alignment="CENTER" layoutX="596.0" layoutY="21.0" prefHeight="63.0" prefWidth="730.0" spacing="33.0">
+               <children>
+                  <Button fx:id="btnListe" mnemonicParsing="false" onAction="#ListeDesDemandes" prefHeight="38.0" prefWidth="211.0" text="Liste des demandes">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                     <styleClass>
+                        <String fx:value="btn-secondary" />
+                        <String fx:value="FontSize-15" />
+                        <String fx:value="RobotoBold" />
+                     </styleClass>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#Demander" prefHeight="38.0" prefWidth="166.0" text="Demande congé">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                     <styleClass>
+                        <String fx:value="btn-secondary" />
+                        <String fx:value="FontSize-15" />
+                        <String fx:value="RobotoBold" />
+                     </styleClass>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#Historique" prefHeight="38.0" prefWidth="237.0" text="Historique des demandes">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                     <styleClass>
+                        <String fx:value="btn-secondary" />
+                        <String fx:value="FontSize-15" />
+                        <String fx:value="RobotoBold" />
+                     </styleClass>
+                  </Button>
+                  <HBox alignment="CENTER" prefHeight="63.0" prefWidth="81.0" spacing="11.0">
+                     <children>
+                        <Button fx:id="NotifBtn" mnemonicParsing="false" onAction="#OpenNotifPane" prefHeight="25.0" prefWidth="48.0" styleClass="settingsButton">
+                           <graphic>
+                              <ImageView fitHeight="32.0" fitWidth="31.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@assets/imgs/notification.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="settingsButton" mnemonicParsing="false" onAction="#settings_button" prefHeight="25.0" prefWidth="48.0" styleClass="settingsButton">
+                           <graphic>
+                              <ImageView fx:id="pdp2" fitHeight="32.0" fitWidth="31.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@assets/imgs/Settings.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                     </children>
+                  </HBox>
+               </children>
+            </HBox>
+         </children>
+      </Pane>
+   </children>
+</AnchorPane>

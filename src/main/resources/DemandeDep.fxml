@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="524.0" prefWidth="426.0" styleClass="grad-bg" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.DemandeDepController">
+    <children>
+        <Pane prefHeight="93.0" prefWidth="426.0" styleClass="pane-clr">
+            <children>
+                <ImageView fitHeight="81.0" fitWidth="99.0" layoutX="14.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@assets/imgs/logo_bfpme.png" />
+                    </image>
+                </ImageView>
+            <HBox fx:id="HBoxAppRef" layoutX="197.0" layoutY="27.0" prefHeight="40.0" prefWidth="186.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#ApproverConge" prefHeight="43.0" prefWidth="91.0" text="Approver">
+                     <styleClass>
+                        <String fx:value="btn-approver" />
+                        <String fx:value="FontSize-14" />
+                        <String fx:value="RobotoBold" />
+                     </styleClass></Button>
+                  <Separator maxHeight="42.0" minHeight="1.0" orientation="VERTICAL" prefHeight="42.0" prefWidth="29.0" styleClass="seperator" HBox.hgrow="NEVER" />
+                  <Button mnemonicParsing="false" onAction="#RefuserConge" prefHeight="43.0" prefWidth="91.0" text="Refuser">
+                     <styleClass>
+                        <String fx:value="btn-refuser" />
+                        <String fx:value="FontSize-14" />
+                        <String fx:value="RobotoBold" />
+                     </styleClass></Button>
+               </children>
+            </HBox>
+            </children>
+        </Pane>
+        <Pane layoutX="21.0" layoutY="168.0" prefHeight="309.0" prefWidth="385.0" styleClass="pane1">
+         <children>
+            <VBox layoutX="34.0" layoutY="14.0" prefHeight="276.0" prefWidth="317.0">
+               <children>
+                  <HBox prefHeight="27.0" prefWidth="250.0">
+                     <children>
+                        <Label contentDisplay="CENTER" prefHeight="27.0" prefWidth="79.0" text="Type :">
+                           <font>
+                              <Font name="Roboto Bold" size="12.0" />
+                           </font>
+                           <styleClass>
+                              <String fx:value="FontSize-12" />
+                              <String fx:value="RobotoBold" />
+                           </styleClass>
+                        </Label>
+                        <Label fx:id="labelType" contentDisplay="CENTER" prefHeight="27.0" prefWidth="154.0" text="Typehere">
+                           <styleClass>
+                              <String fx:value="FontSize-12" />
+                              <String fx:value="RobotoRegular" />
+                           </styleClass></Label>
+                     </children>
+                  </HBox>
+                  <Separator prefWidth="200.0">
+                     <padding>
+                        <Insets bottom="5.0" top="6.0" />
+                     </padding>
+                  </Separator>
+                  <HBox alignment="CENTER" prefHeight="30.0" prefWidth="317.0">
+                     <children>
+                        <Label contentDisplay="CENTER" prefHeight="27.0" prefWidth="88.0" text="Periode : ">
+                           <font>
+                              <Font name="Roboto Bold" size="12.0" />
+                           </font>
+                           <styleClass>
+                              <String fx:value="FontSize-12" />
+                              <String fx:value="RobotoBold" />
+                           </styleClass>
+                        </Label>
+                        <Label fx:id="labelDD" alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" prefWidth="120.0" text="Date debut">
+                           <styleClass>
+                              <String fx:value="FontSize-12" />
+                              <String fx:value="RobotoRegular" />
+                           </styleClass></Label>
+                        <ImageView fitHeight="16.0" fitWidth="128.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@assets/imgs/right-arrow.png" />
+                           </image>
+                        </ImageView>
+                        <Label fx:id="labelDF" alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" prefWidth="120.0" text="Date fin">
+                           <styleClass>
+                              <String fx:value="FontSize-12" />
+                              <String fx:value="RobotoRegular" />
+                           </styleClass></Label>
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="5.0" />
+                     </VBox.margin>
+                  </HBox>
+                  <Label fx:id="labelJours" contentDisplay="CENTER" prefHeight="7.0" prefWidth="313.0" text="jours in between">
+                     <styleClass>
+                        <String fx:value="FontSize-12" />
+                        <String fx:value="RobotoRegular" />
+                     </styleClass></Label>
+                  <Separator prefWidth="200.0">
+                     <padding>
+                        <Insets bottom="16.0" top="3.0" />
+                     </padding>
+                  </Separator>
+                  <HBox prefHeight="100.0" prefWidth="317.0">
+                     <children>
+                        <Label contentDisplay="CENTER" prefHeight="16.0" prefWidth="79.0" text="Description : ">
+                           <font>
+                              <Font name="Roboto Bold" size="12.0" />
+                           </font>
+                           <styleClass>
+                              <String fx:value="FontSize-12" />
+                              <String fx:value="RobotoBold" />
+                           </styleClass>
+                        </Label>
+                        <Label fx:id="labelDesc" alignment="TOP_LEFT" contentDisplay="CENTER" prefHeight="78.0" prefWidth="230.0" text="La description de cette congé" wrapText="true">
+                           <styleClass>
+                              <String fx:value="FontSize-12" />
+                              <String fx:value="RobotoRegular" />
+                           </styleClass></Label>
+                     </children>
+                  </HBox>
+                  <Separator prefWidth="200.0">
+                     <padding>
+                        <Insets bottom="16.0" top="6.0" />
+                     </padding>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </Separator>
+                  <HBox fx:id="DocFichHBOX" prefHeight="27.0" prefWidth="250.0">
+                     <children>
+                        <Label contentDisplay="CENTER" prefHeight="27.0" prefWidth="110.0" text="Fichier : ">
+                           <font>
+                              <Font name="Roboto Bold" size="12.0" />
+                           </font>
+                           <styleClass>
+                              <String fx:value="FontSize-12" />
+                              <String fx:value="RobotoBold" />
+                           </styleClass>
+                        </Label>
+                        <Button mnemonicParsing="false" onAction="#AfficherCongFichier" prefHeight="25.0" prefWidth="137.0" text="Afficher le document">
+                           <styleClass>
+                              <String fx:value="btn-primary" />
+                              <String fx:value="RobotoRegular" />
+                              <String fx:value="FontSize-12" />
+                           </styleClass></Button>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </children></Pane>
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="125.0" layoutY="102.0" prefHeight="27.0" prefWidth="177.0" text="Demande de congé : " textAlignment="CENTER">
+         <font>
+            <Font name="Roboto Bold" size="18.0" />
+         </font>
+         <styleClass>
+            <String fx:value="FontSize-18" />
+            <String fx:value="RobotoBlack" />
+         </styleClass>
+      </Label>
+      <Label fx:id="CongePerson" alignment="CENTER" contentDisplay="CENTER" layoutX="140.0" layoutY="131.0" prefHeight="27.0" prefWidth="147.0" text="Nom Prenom">
+         <font>
+            <Font name="Roboto Bold Italic" size="15.0" />
+         </font>
+         <styleClass>
+            <String fx:value="FontSize-15" />
+            <String fx:value="RobotoBoldItalic" />
+         </styleClass>
+      </Label>
+      <Button layoutX="168.0" layoutY="487.0" mnemonicParsing="false" onAction="#retour" prefHeight="6.0" prefWidth="91.0" text="Retour">
+         <styleClass>
+            <String fx:value="btn-primary" />
+            <String fx:value="RobotoBold" />
+            <String fx:value="FontSize-14" />
+         </styleClass></Button>
+    </children>
+</AnchorPane>

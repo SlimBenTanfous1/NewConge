@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<Pane fx:id="HierarchyPane" prefHeight="650.0" prefWidth="1000.0" styleClass="pane1" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.RHC.paneHieController">
+   <children>
+      <VBox layoutX="733.0" layoutY="407.0" spacing="10" />
+      <ListView fx:id="roleHListView" layoutX="103.0" layoutY="109.0" prefHeight="400" prefWidth="250.0" />
+      <HBox alignment="CENTER" layoutX="497.0" layoutY="307.0" prefHeight="41.0" prefWidth="281.0" spacing="10">
+         <children>
+            <Button onAction="#handleAddRoleToH" styleClass="btn-primary" text="Ajouter" />
+            <Button onAction="#handleEditRoleH" styleClass="btn-primary" text="Modifier" />
+            <Button onAction="#handleDeleteRoleH" styleClass="btn-primary" text="Supprimer" />
+         </children>
+      </HBox>
+      <ComboBox fx:id="parentRoleComboBox" layoutX="525.0" layoutY="260.0" prefHeight="31.0" prefWidth="226.0" promptText="Selectionner role parent" />
+      <ComboBox fx:id="RoleHComboBox" layoutX="525.0" layoutY="215.0" prefHeight="31.0" prefWidth="226.0" promptText="Selectionner role" />
+      <ComboBox fx:id="DepHComboBox" layoutX="525.0" layoutY="171.0" prefHeight="31.0" prefWidth="226.0" promptText="Selectionner departement" />
+      <ComboBox fx:id="ComboFilderDepHie" layoutX="384.0" layoutY="32.0" prefHeight="31.0" prefWidth="226.0" promptText="Selectionner departement" />
+   </children>
+</Pane>

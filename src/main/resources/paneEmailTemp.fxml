@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="726.0" prefWidth="1119.0" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.RHC.paneEmailTempController">
+   <children>
+      <HBox alignment="CENTER" layoutX="560.0" layoutY="598.0" prefHeight="37.0" prefWidth="342.0" spacing="25.0">
+         <children>
+            <Button mnemonicParsing="false" onAction="#AjouterTemp" styleClass="btn-primary" text="Ajouter" />
+            <Button mnemonicParsing="false" onAction="#ModifierTemp" styleClass="btn-primary" text="Modifier" />
+            <Button mnemonicParsing="false" onAction="#SupprimerTemp" styleClass="btn-primary" text="Supprimer" />
+         </children>
+      </HBox>
+      <TextArea fx:id="MessageTF" layoutX="364.0" layoutY="178.0" prefHeight="396.0" prefWidth="714.0" wrapText="true" />
+      <Label layoutX="364.0" layoutY="148.0" text="Message :">
+         <styleClass>
+            <String fx:value="FontSize-15" />
+            <String fx:value="RobotoRegular" />
+         </styleClass>
+      </Label>
+      <HBox alignment="CENTER_LEFT" layoutX="364.0" layoutY="99.0" prefHeight="43.0" prefWidth="714.0">
+         <children>
+            <Label prefHeight="19.0" prefWidth="91.0" text="Object :">
+               <styleClass>
+                  <String fx:value="FontSize-15" />
+                  <String fx:value="RobotoRegular" />
+               </styleClass>
+            </Label>
+            <TextField fx:id="objectTF" prefHeight="29.0" prefWidth="659.0" />
+         </children>
+      </HBox>
+      <VBox alignment="TOP_CENTER" layoutX="33.0" layoutY="83.0" prefHeight="560.0" prefWidth="283.0" spacing="11.0">
+         <children>
+            <Label text="Listes des templates:">
+               <styleClass>
+                  <String fx:value="FontSize-15" />
+                  <String fx:value="RobotoItalic" />
+               </styleClass>
+            </Label>
+            <TextField fx:id="RechercheTemp" onAction="#EmailTempRecherche" prefHeight="29.0" prefWidth="286.0" promptText="Recherche" />
+            <ListView fx:id="ObjListView" prefHeight="470.0" prefWidth="257.0" />
+         </children>
+      </VBox>
+   </children>
+</Pane>

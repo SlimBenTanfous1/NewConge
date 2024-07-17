@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<Pane fx:id="UserCard" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="70.0" prefWidth="1056.0" style="-fx-border-radius: 5px; -fx-border-color: #808080; -fx-background-size: 1200 900; -fx-background-radius: 5 5 5 5; -fx-background: linear-gradient(to right, rgba(17, 35, 73, 0.2), rgba(233, 169, 31, 0.06));" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.RHC.CardUserRHController">
+   <children>
+      <ImageView fx:id="cardimage" fitHeight="50.0" fitWidth="50.0" layoutX="22.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true" />
+      <VBox layoutX="119.0" layoutY="9.0" maxHeight="53.0" prefHeight="53.0" prefWidth="237.0">
+         <children>
+            <Label fx:id="cardnameprename" contentDisplay="CENTER" prefHeight="28.0" prefWidth="228.0" text="Ala Moussa">
+               <font>
+                  <Font name="Roboto Bold" size="17.0" />
+               </font>
+               <styleClass>
+                  <String fx:value="FontSize-17" />
+                  <String fx:value="RobotoBold" />
+               </styleClass>
+            </Label>
+            <Label fx:id="cardemail" contentDisplay="CENTER" prefHeight="28.0" prefWidth="228.0" text="Email">
+               <font>
+                  <Font name="Roboto Italic" size="13.0" />
+               </font>
+               <styleClass>
+                  <String fx:value="FontSize-12" />
+                  <String fx:value="RobotoItalic" />
+               </styleClass>
+            </Label>
+         </children>
+      </VBox>
+      <Label fx:id="cardrole" alignment="CENTER" layoutX="380.0" layoutY="22.0" prefHeight="28.0" prefWidth="159.0" text="Role">
+         <styleClass>
+            <String fx:value="FontSize-12" />
+            <String fx:value="RobotoRegular" />
+         </styleClass>
+      </Label>
+      <Label fx:id="carddepart" alignment="CENTER" layoutX="660.0" layoutY="22.0" prefHeight="28.0" prefWidth="186.0" text="Departement">
+         <styleClass>
+            <String fx:value="FontSize-12" />
+            <String fx:value="RobotoRegular" />
+         </styleClass>
+      </Label>
+      <HBox fx:id="HBoxBtns" layoutX="942.0" layoutY="20.0" prefHeight="32.0" prefWidth="100.0">
+         <children>
+            <Button mnemonicParsing="false" onAction="#ModifierUser" styleClass="settingsButton">
+               <graphic>
+                  <ImageView fitHeight="22.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@assets/imgs/edit.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Separator orientation="VERTICAL" prefHeight="32.0" prefWidth="19.0" styleClass="seperator" />
+            <Button alignment="CENTER" mnemonicParsing="false" onAction="#SupprimerUser" styleClass="settingsButton">
+               <graphic>
+                  <ImageView fitHeight="22.0" fitWidth="22.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@assets/imgs/trash.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+         </children>
+      </HBox>
+   </children>
+</Pane>

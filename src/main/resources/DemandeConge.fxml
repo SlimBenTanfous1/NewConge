@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="MainAnchorPane" prefHeight="830.0" prefWidth="1340.0" styleClass="grad-bg" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.DemandeCongeController">
+   <children>
+      <Pane layoutX="32.0" layoutY="139.0" prefHeight="677.0" prefWidth="1277.0" styleClass="pane1">
+         <children>
+            <HBox alignment="CENTER" layoutX="388.0" layoutY="31.0" prefHeight="34.0" prefWidth="503.0">
+               <children>
+                  <Label text="Type de congé : ">
+                     <font>
+                        <Font name="Roboto Regular" size="12.0" />
+                     </font>
+                     <styleClass>
+                        <String fx:value="FontSize-16" />
+                        <String fx:value="RobotoItalic" />
+                     </styleClass>
+                  </Label>
+                  <ComboBox fx:id="cb_typeconge" onAction="#TypeSelec" prefHeight="25.0" prefWidth="188.0">
+                     <styleClass>
+                        <String fx:value="FontSize-13" />
+                        <String fx:value="RobotoRegular" />
+                     </styleClass></ComboBox>
+               </children>
+            </HBox>
+            <Pane fx:id="paneExeptionnel" layoutX="102.0" layoutY="91.0" prefHeight="541.0" prefWidth="1076.0" styleClass="pane2" visible="false">
+               <children>
+                  <DatePicker fx:id="EXP_DD" layoutX="483.0" layoutY="118.0" prefHeight="34.0" prefWidth="250.0" />
+                  <DatePicker fx:id="EXP_DF" layoutX="483.0" layoutY="188.0" prefHeight="34.0" prefWidth="250.0" />
+                  <TextArea fx:id="EXP_Desc" layoutX="483.0" layoutY="252.0" prefHeight="81.0" prefWidth="312.0" />
+                  <Label layoutX="301.0" layoutY="118.0" prefHeight="40.0" prefWidth="125.0" text="Date debut : ">
+                     <font>
+                        <Font name="Roboto Regular" size="15.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="301.0" layoutY="188.0" prefHeight="40.0" prefWidth="125.0" text="Date fin : ">
+                     <font>
+                        <Font name="Roboto Regular" size="15.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="301.0" layoutY="252.0" prefHeight="40.0" prefWidth="125.0" text="Description : ">
+                     <font>
+                        <Font name="Roboto Regular" size="15.0" />
+                     </font>
+                  </Label>
+                  <Label alignment="CENTER" layoutX="388.0" layoutY="14.0" prefHeight="41.0" prefWidth="301.0" text="Congé exeptionnel">
+                     <font>
+                        <Font name="Roboto Regular" size="17.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="301.0" layoutY="344.0" prefHeight="40.0" prefWidth="159.0" text="Document Justicatif : ">
+                     <font>
+                        <Font name="Roboto Regular" size="15.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="EXP_Doc_Link" disable="true" layoutX="483.0" layoutY="350.0" prefHeight="28.0" prefWidth="312.0" />
+                  <Button layoutX="440.0" layoutY="457.0" mnemonicParsing="false" onAction="#EXP_Demander" prefHeight="41.0" prefWidth="196.0" styleClass="btn-primary" text="Demander" textAlignment="CENTER">
+                     <font>
+                        <Font name="Roboto Regular" size="14.0" />
+                     </font>
+                  </Button>
+                  <Button layoutX="806.0" layoutY="350.0" mnemonicParsing="false" onAction="#EXP_Doc_Imp" prefHeight="28.0" prefWidth="117.0" styleClass="btn-primary" text="Importer" textAlignment="CENTER">
+                     <font>
+                        <Font name="Roboto Regular" size="13.0" />
+                     </font>
+                  </Button>
+               </children>
+            </Pane>
+            <Pane fx:id="paneAnnuel" layoutX="102.0" layoutY="91.0" prefHeight="541.0" prefWidth="1076.0" styleClass="pane2" visible="false">
+               <children>
+                  <Label alignment="CENTER" layoutX="388.0" layoutY="14.0" prefHeight="41.0" prefWidth="301.0" text="Congé annuel">
+                     <font>
+                        <Font name="Roboto Regular" size="17.0" />
+                     </font>
+                  </Label>
+                  <DatePicker fx:id="ANL_DD" layoutX="483.0" layoutY="118.0" prefHeight="34.0" prefWidth="250.0" />
+                  <DatePicker fx:id="ANL_DF" layoutX="483.0" layoutY="188.0" prefHeight="34.0" prefWidth="250.0" />
+                  <TextArea fx:id="ANL_Desc" layoutX="483.0" layoutY="252.0" prefHeight="104.0" prefWidth="312.0" />
+                  <Label layoutX="301.0" layoutY="118.0" prefHeight="40.0" prefWidth="125.0" text="Date debut : ">
+                     <font>
+                        <Font name="Roboto Regular" size="15.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="301.0" layoutY="188.0" prefHeight="40.0" prefWidth="125.0" text="Date fin : ">
+                     <font>
+                        <Font name="Roboto Regular" size="15.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="301.0" layoutY="252.0" prefHeight="40.0" prefWidth="125.0" text="Description : ">
+                     <font>
+                        <Font name="Roboto Regular" size="15.0" />
+                     </font>
+                  </Label>
+                  <Button layoutX="441.0" layoutY="456.0" mnemonicParsing="false" onAction="#ANL_Demander" prefHeight="41.0" prefWidth="196.0" styleClass="btn-primary" text="Demander" textAlignment="CENTER">
+                     <font>
+                        <Font name="Roboto Regular" size="14.0" />
+                     </font>
+                  </Button>
+               </children>
+            </Pane>
+            <Pane fx:id="paneMaladie" layoutX="102.0" layoutY="91.0" prefHeight="541.0" prefWidth="1076.0" styleClass="pane2" visible="false">
+               <children>
+                  <DatePicker fx:id="MAL_DD" layoutX="483.0" layoutY="118.0" prefHeight="34.0" prefWidth="250.0" />
+                  <DatePicker fx:id="MAL_DF" layoutX="483.0" layoutY="188.0" prefHeight="34.0" prefWidth="250.0" />
+                  <TextArea fx:id="MAL_Desc" layoutX="483.0" layoutY="252.0" prefHeight="81.0" prefWidth="312.0" />
+                  <Label layoutX="301.0" layoutY="118.0" prefHeight="40.0" prefWidth="125.0" text="Date debut : ">
+                     <font>
+                        <Font name="Roboto Regular" size="15.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="301.0" layoutY="188.0" prefHeight="40.0" prefWidth="125.0" text="Date fin : ">
+                     <font>
+                        <Font name="Roboto Regular" size="15.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="301.0" layoutY="252.0" prefHeight="40.0" prefWidth="125.0" text="Description : ">
+                     <font>
+                        <Font name="Roboto Regular" size="15.0" />
+                     </font>
+                  </Label>
+                  <Button layoutX="440.0" layoutY="458.0" mnemonicParsing="false" onAction="#MAL_Demander" prefHeight="41.0" prefWidth="196.0" styleClass="btn-primary" text="Demander" textAlignment="CENTER">
+                     <font>
+                        <Font name="Roboto Regular" size="14.0" />
+                     </font>
+                  </Button>
+                  <Label alignment="CENTER" layoutX="388.0" layoutY="14.0" prefHeight="41.0" prefWidth="301.0" text="Congé Maladie">
+                     <font>
+                        <Font name="Roboto Regular" size="17.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="301.0" layoutY="344.0" prefHeight="40.0" prefWidth="159.0" text="Certificat medicale :">
+                     <font>
+                        <Font name="Roboto Regular" size="15.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="MAL_Doc_Link" disable="true" layoutX="483.0" layoutY="350.0" prefHeight="28.0" prefWidth="312.0" />
+                  <Button layoutX="805.0" layoutY="350.0" mnemonicParsing="false" onAction="#MAL_Doc_Imp" prefHeight="28.0" prefWidth="117.0" styleClass="btn-primary" text="Importer" textAlignment="CENTER">
+                     <font>
+                        <Font name="Roboto Regular" size="13.0" />
+                     </font>
+                  </Button>
+               </children>
+            </Pane>
+            <Pane fx:id="paneSousSolde" layoutX="102.0" layoutY="91.0" prefHeight="541.0" prefWidth="1076.0" styleClass="pane1" visible="false">
+               <children>
+                  <DatePicker fx:id="SS_DD" layoutX="483.0" layoutY="118.0" prefHeight="34.0" prefWidth="250.0" />
+                  <DatePicker fx:id="SS_DF" layoutX="483.0" layoutY="188.0" prefHeight="34.0" prefWidth="250.0" />
+                  <TextArea fx:id="SS_Desc" layoutX="483.0" layoutY="252.0" prefHeight="81.0" prefWidth="312.0" />
+                  <Label layoutX="301.0" layoutY="118.0" prefHeight="40.0" prefWidth="125.0" text="Date debut : ">
+                     <font>
+                        <Font name="Roboto Regular" size="15.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="301.0" layoutY="188.0" prefHeight="40.0" prefWidth="125.0" text="Date fin : ">
+                     <font>
+                        <Font name="Roboto Regular" size="15.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="301.0" layoutY="252.0" prefHeight="40.0" prefWidth="125.0" text="Description : ">
+                     <font>
+                        <Font name="Roboto Regular" size="15.0" />
+                     </font>
+                  </Label>
+                  <Button layoutX="440.0" layoutY="458.0" mnemonicParsing="false" onAction="#SS_Demander" prefHeight="41.0" prefWidth="196.0" styleClass="btn-primary" text="Demander" textAlignment="CENTER">
+                     <font>
+                        <Font name="Roboto Regular" size="14.0" />
+                     </font>
+                  </Button>
+                  <Label alignment="CENTER" layoutX="388.0" layoutY="14.0" prefHeight="41.0" prefWidth="301.0" text="Congé Sous-Solde">
+                     <font>
+                        <Font name="Roboto Regular" size="17.0" />
+                     </font>
+                  </Label>
+               </children>
+            </Pane>
+            <Pane fx:id="paneMaternite" layoutX="102.0" layoutY="91.0" prefHeight="541.0" prefWidth="1076.0" styleClass="pane2" visible="false">
+               <children>
+                  <Label alignment="CENTER" layoutX="388.0" layoutY="14.0" prefHeight="41.0" prefWidth="301.0" text="Congé maternité">
+                     <font>
+                        <Font name="Roboto Regular" size="17.0" />
+                     </font>
+                  </Label>
+                  <HBox alignment="CENTER" layoutX="374.0" layoutY="55.0" prefHeight="41.0" prefWidth="329.0" spacing="20.0">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#switchGrossesse" prefHeight="15.0" prefWidth="117.0" styleClass="btn-primary" text="Grossesse" textAlignment="CENTER">
+                           <font>
+                              <Font name="Roboto Regular" size="14.0" />
+                           </font>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#switchNaissance" prefHeight="15.0" prefWidth="117.0" styleClass="btn-primary" text="Naissance" textAlignment="CENTER">
+                           <font>
+                              <Font name="Roboto Regular" size="14.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </HBox>
+                  <Pane fx:id="paneGrossesse" layoutX="269.0" layoutY="132.0" prefHeight="405.0" prefWidth="539.0" visible="false">
+                     <children>
+                        <DatePicker fx:id="GRO_DD" layoutX="236.0" layoutY="57.0" prefHeight="34.0" prefWidth="250.0" />
+                        <DatePicker fx:id="GRO_DF" layoutX="236.0" layoutY="107.0" prefHeight="34.0" prefWidth="250.0" />
+                        <TextArea fx:id="GRO_Desc" layoutX="236.0" layoutY="161.0" prefHeight="81.0" prefWidth="250.0" />
+                        <Label layoutX="54.0" layoutY="57.0" prefHeight="40.0" prefWidth="125.0" text="Date debut : ">
+                           <font>
+                              <Font name="Roboto Regular" size="15.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="54.0" layoutY="108.0" prefHeight="40.0" prefWidth="125.0" text="Date fin : ">
+                           <font>
+                              <Font name="Roboto Regular" size="15.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="54.0" layoutY="161.0" prefHeight="40.0" prefWidth="125.0" text="Description : ">
+                           <font>
+                              <Font name="Roboto Regular" size="15.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="54.0" layoutY="252.0" prefHeight="40.0" prefWidth="179.0" text="Certificat de grossesse :">
+                           <font>
+                              <Font name="Roboto Regular" size="15.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="GRO_Doc_Link" disable="true" layoutX="236.0" layoutY="258.0" prefHeight="28.0" prefWidth="250.0" />
+                        <Button layoutX="369.0" layoutY="302.0" mnemonicParsing="false" onAction="#GRO_Doc_Imp" prefHeight="28.0" prefWidth="117.0" styleClass="btn-primary" text="Importer" textAlignment="CENTER">
+                           <font>
+                              <Font name="Roboto Regular" size="13.0" />
+                           </font>
+                        </Button>
+                        <Label alignment="CENTER" layoutX="118.0" layoutY="6.0" prefHeight="41.0" prefWidth="301.0" text="Grossesse">
+                           <font>
+                              <Font name="Roboto Regular" size="17.0" />
+                           </font>
+                        </Label>
+                        <Button layoutX="170.0" layoutY="354.0" mnemonicParsing="false" onAction="#GRO_Demander" prefHeight="41.0" prefWidth="196.0" styleClass="btn-primary" text="Demander" textAlignment="CENTER">
+                           <font>
+                              <Font name="Roboto Regular" size="14.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </Pane>
+                  <Pane fx:id="paneNaissance" layoutX="269.0" layoutY="132.0" prefHeight="405.0" prefWidth="539.0" visible="false">
+                     <children>
+                        <DatePicker fx:id="NAI_DD" layoutX="236.0" layoutY="57.0" prefHeight="34.0" prefWidth="250.0" />
+                        <DatePicker fx:id="NAI_DF" layoutX="236.0" layoutY="107.0" prefHeight="34.0" prefWidth="250.0" />
+                        <TextArea fx:id="NAI_Desc" layoutX="236.0" layoutY="161.0" prefHeight="81.0" prefWidth="250.0" />
+                        <Label layoutX="54.0" layoutY="57.0" prefHeight="40.0" prefWidth="125.0" text="Date debut : ">
+                           <font>
+                              <Font name="Roboto Regular" size="15.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="54.0" layoutY="108.0" prefHeight="40.0" prefWidth="125.0" text="Date fin : ">
+                           <font>
+                              <Font name="Roboto Regular" size="15.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="54.0" layoutY="161.0" prefHeight="40.0" prefWidth="125.0" text="Description : ">
+                           <font>
+                              <Font name="Roboto Regular" size="15.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="54.0" layoutY="252.0" prefHeight="40.0" prefWidth="179.0" text="Certificat de naissance :">
+                           <font>
+                              <Font name="Roboto Regular" size="15.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="NAI_Doc_Link" disable="true" layoutX="236.0" layoutY="258.0" prefHeight="28.0" prefWidth="250.0" />
+                        <Button layoutX="369.0" layoutY="302.0" mnemonicParsing="false" onAction="#NAI_Doc_Imp" prefHeight="28.0" prefWidth="117.0" styleClass="btn-primary" text="Importer" textAlignment="CENTER">
+                           <font>
+                              <Font name="Roboto Regular" size="13.0" />
+                           </font>
+                        </Button>
+                        <Label alignment="CENTER" layoutX="118.0" layoutY="6.0" prefHeight="41.0" prefWidth="301.0" text="Naissance">
+                           <font>
+                              <Font name="Roboto Regular" size="17.0" />
+                           </font>
+                        </Label>
+                        <Button layoutX="170.0" layoutY="354.0" mnemonicParsing="false" onAction="#NAI_Demander" prefHeight="41.0" prefWidth="196.0" styleClass="btn-primary" text="Demander" textAlignment="CENTER">
+                           <font>
+                              <Font name="Roboto Regular" size="14.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </Pane>
+               </children>
+            </Pane>
+         </children>
+      </Pane>
+   </children>
+</AnchorPane>
