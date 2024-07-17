@@ -1,14 +1,17 @@
 package tn.bfpme.services;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
 import tn.bfpme.utils.MyDataBase;
 import tn.bfpme.models.*;
 
 public class ServiceUserSolde {
     private static Connection cnx;
-    public ServiceUserSolde(Connection cnx) {
+    /*public ServiceUserSolde(Connection cnx) {
         this.cnx = cnx;
-    }
+    }*/
     public ServiceUserSolde() {
         this.cnx = MyDataBase.getInstance().getCnx();
     }
@@ -58,4 +61,29 @@ public class ServiceUserSolde {
         }
     }
 
+    public List<UserSolde> getUserSoldes(int userId) {
+        List<UserSolde> userSoldes = new ArrayList<>();
+        String query = "SELECT * FROM user_solde WHERE ID_User = ?";
+
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+            PreparedStatement ps = cnx.prepareStatement(query);
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                UserSolde userSolde = new UserSolde();
+                userSolde.setUD_UserSolde(rs.getInt("UD_UserSolde"));
+                userSolde.setID_User(rs.getInt("ID_User"));
+                userSolde.setID_TypeConge(rs.getInt("ID_TypeConge"));
+                userSolde.setTotalSolde(rs.getDouble("TotalSolde"));
+                userSoldes.add(userSolde);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return userSoldes;
+    }
 }
