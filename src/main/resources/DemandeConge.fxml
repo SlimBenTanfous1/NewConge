@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.lang.String?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
@@ -59,22 +60,29 @@
                         <Font name="Roboto Regular" size="17.0" />
                      </font>
                   </Label>
-                  <Label layoutX="301.0" layoutY="344.0" prefHeight="40.0" prefWidth="159.0" text="Document Justicatif : ">
-                     <font>
-                        <Font name="Roboto Regular" size="15.0" />
-                     </font>
-                  </Label>
-                  <TextField fx:id="Doc_Link" disable="true" layoutX="483.0" layoutY="350.0" prefHeight="28.0" prefWidth="312.0" />
                   <Button layoutX="440.0" layoutY="457.0" mnemonicParsing="false" onAction="#Demander" prefHeight="41.0" prefWidth="196.0" styleClass="btn-primary" text="Demander" textAlignment="CENTER">
                      <font>
                         <Font name="Roboto Regular" size="14.0" />
                      </font>
                   </Button>
-                  <Button layoutX="806.0" layoutY="350.0" mnemonicParsing="false" onAction="#Doc_Imp" prefHeight="28.0" prefWidth="117.0" styleClass="btn-primary" text="Importer" textAlignment="CENTER">
-                     <font>
-                        <Font name="Roboto Regular" size="13.0" />
-                     </font>
-                  </Button>
+                  <HBox fx:id="FichierVBOX" alignment="CENTER_LEFT" layoutX="298.0" layoutY="354.0" prefHeight="54.0" prefWidth="662.0" visible="false">
+                     <children>
+                        <Label prefHeight="40.0" prefWidth="184.0" text="Document Justicatif : ">
+                           <font>
+                              <Font name="Roboto Regular" size="15.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="Doc_Link" disable="true" prefHeight="29.0" prefWidth="311.0" />
+                        <Button mnemonicParsing="false" onAction="#Doc_Imp" prefHeight="28.0" prefWidth="117.0" styleClass="btn-primary" text="Importer" textAlignment="CENTER">
+                           <font>
+                              <Font name="Roboto Regular" size="13.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets left="33.0" />
+                           </HBox.margin>
+                        </Button>
+                     </children>
+                  </HBox>
                </children>
             </Pane>
          </children>

@@ -11,6 +11,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -60,6 +61,8 @@ public class DemandeCongeController implements Initializable {
     private ComboBox<TypeConge> cb_typeconge;
     @FXML
     private Pane paneConge;
+    @FXML
+    private HBox FichierVBOX;
 
     private final ServiceTypeConge serviceTypeConge = new ServiceTypeConge();
     private final ServiceConge serviceConge = new ServiceConge();
@@ -198,8 +201,10 @@ public class DemandeCongeController implements Initializable {
             if (selectedTypeConge != null) {
                 paneConge.setVisible(true);
                 TypeTitle.setText("Conge " + selectedTypeConge.getDesignation());
+                FichierVBOX.setVisible(selectedTypeConge.isFile());
             }
         });
+        FichierVBOX.setVisible(false);
     }
 
     /*@FXML
