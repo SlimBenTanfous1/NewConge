@@ -50,6 +50,7 @@ public class UserSolde {
         TotalSolde = totalSolde;
     }
 
+
     @Override
     public String toString() {
         return "UserSolde{" +

@@ -59,8 +59,6 @@ public class DemandeDepController implements Initializable {
     String to, Subject, MessageText;
     private final ServiceConge serviceConge = new ServiceConge();
     private final ServiceUtilisateur serviceUser = new ServiceUtilisateur();
-
-
     public void setData(Conge conge, User user) {
         this.conge = conge;
         this.user = user;
@@ -100,8 +98,6 @@ public class DemandeDepController implements Initializable {
             managerRole = String.valueOf(role);
         }
     }
-
-
     @FXML
     void AfficherCongFichier(ActionEvent event) {
         String filePath = "src/main/resources/assets/files/" + conge.getFile();
@@ -162,7 +158,6 @@ public class DemandeDepController implements Initializable {
         }
     }
 
-
     @FXML
     void RefuserConge(ActionEvent event) throws IOException {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -201,7 +196,6 @@ public class DemandeDepController implements Initializable {
         this.conge.setStatut(Statut.Rejeté);
         serviceConge.updateStatutConge(this.conge.getIdConge(), Statut.Rejeté);
     }
-
     @FXML
     void retour(ActionEvent event) {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
