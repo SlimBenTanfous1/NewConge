@@ -73,8 +73,6 @@ public class LoginController {
                 int typeCongeId = soldeRs.getInt("ID_TypeConge");
                 double totalSolde = soldeRs.getDouble("TotalSolde");
                 String typeConge = soldeRs.getString("Designation");
-
-                // Assuming you have methods in User to set solde by type
                 user.setSoldeByType(typeCongeId, totalSolde, typeConge);
             }
         } catch (SQLException e) {
