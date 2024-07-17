@@ -8,8 +8,10 @@ import java.util.List;
 
 public interface IUtilisateur {
 
-    UserConge afficherusers();
-    // UserConge Rechercher(String search);
+   // UserConge afficherusers();
+    List<User> afficherusers();
+
+        // UserConge Rechercher(String search);
     UserConge TriType();
     UserConge TriNom();
     UserConge TriPrenom();
