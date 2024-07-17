@@ -21,7 +21,7 @@
       </Button>
       <HBox alignment="CENTER" layoutX="207.0" layoutY="21.0" prefHeight="63.0" prefWidth="1090.0" spacing="22.0">
          <children>
-            <Button fx:id="test_interfaceID" mnemonicParsing="false" onAction="#test_interface" prefHeight="38.0" prefWidth="66.0" text="test">
+            <Button fx:id="test_interfaceID" mnemonicParsing="false" onAction="#test_interface" prefHeight="38.0" prefWidth="66.0" text="test" visible="false">
                <font>
                   <Font size="14.0" />
                </font>

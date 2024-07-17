@@ -22,32 +22,37 @@ public class ServiceUtilisateur implements IUtilisateur {
     }
 
     @Override
-    public UserConge afficherusers() {
-        List<User> users = new ArrayList<>();
-        List<Conge> conges = new ArrayList<>();
-        String query = "SELECT * FROM user";
+    public List<User> afficherusers() {
+        List<User> userList = new ArrayList<>();
+        String sql = "SELECT * FROM user";
+
         try {
-            Statement st = cnx.createStatement();
-            ResultSet rs = st.executeQuery(query);
+            PreparedStatement ps = cnx.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
             while (rs.next()) {
-                User user = new User(
-                        rs.getInt("ID_User"),
-                        rs.getString("Nom"),
-                        rs.getString("Prenom"),
-                        rs.getString("Email"),
-                        rs.getString("MDP"),
-                        rs.getString("Image"),
-                        rs.getInt("ID_Departement"),
-                        rs.getInt("ID_Manager"),
-                        rs.getDate("Creation_Date").toLocalDate()
-                );
-                users.add(user);
+                User user = new User();
+                user.setIdUser(rs.getInt("ID_User"));
+                user.setNom(rs.getString("Nom"));
+                user.setPrenom(rs.getString("Prenom"));
+                user.setEmail(rs.getString("Email"));
+                user.setMdp(rs.getString("MDP"));
+                user.setImage(rs.getString("Image"));
+
+                Date creationDate = rs.getDate("Creation_Date");
+                if (creationDate != null) {
+                    user.setCreationDate(creationDate.toLocalDate());
+                }
+
+                userList.add(user);
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        return new UserConge(users, conges);
+
+        return userList;
     }
+
 
     @Override
     public UserConge TriType() {
