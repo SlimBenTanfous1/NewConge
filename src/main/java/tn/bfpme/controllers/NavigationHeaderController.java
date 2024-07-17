@@ -43,7 +43,6 @@ public class NavigationHeaderController implements Initializable {
     @FXML
     private Button admin_interface;
 
-
     @FXML
     private Button settingsButton;
     private Popup settingsPopup;
@@ -51,16 +50,20 @@ public class NavigationHeaderController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        String userRole = SessionManager.getInstance().getUserRoleName();
-        String userDep = SessionManager.getInstance().getUserDepartmentName();
+        String userRoleName = SessionManager.getInstance().getUserRoleName();
+        String userDepartmentName = SessionManager.getInstance().getUserDepartmentName();
 
+        btnListe.setVisible(!"Employe".equals(userRoleName) || "AdminIT".equals(userRoleName));
 
-        btnListe.setVisible(!userRole.equals("Employe")||userRole.equals("AdminIT"));
-        btnRH.setVisible((userDep.equals("RH") && userRole.equals("Directeur"))||userRole.equals("AdminIT"));
+        if ((userDepartmentName != null && userDepartmentName.equals("RH") && "Directeur".equals(userRoleName)) || "AdminIT".equals(userRoleName)) {
+            btnRH.setVisible(true);
+        } else {
+            btnRH.setVisible(false);
+        }
 
-        admin_interface.setVisible(userRole.equals("AdminIT"));
+        admin_interface.setVisible("AdminIT".equals(userRoleName));
 
-        //test_interfaceID.setVisible(userRole.equals("RH")||userRole.equals("AdminIT"));
+        // test_interfaceID.setVisible(userRole.equals("RH") || userRole.equals("AdminIT"));
 
         settingsPopup = new Popup();
         settingsPopup.setAutoHide(true);
@@ -95,10 +98,12 @@ public class NavigationHeaderController implements Initializable {
     @FXML
     void ListeDesDemandes(ActionEvent event) {
         navigateToScene(event, "/DemandeDepListe.fxml", "Liste des demandes - " + SessionManager.getInstance().getUserDepartmentName());
-
     }
+
     @FXML
-    void ListeEmployés(ActionEvent event) {navigateToScene(event, "/ListeEmployés.fxml", "Liste des employés");}
+    void ListeEmployés(ActionEvent event) {
+        navigateToScene(event, "/ListeEmployés.fxml", "Liste des employés");
+    }
 
     @FXML
     void OpenNotifPane(ActionEvent event) {
@@ -125,8 +130,8 @@ public class NavigationHeaderController implements Initializable {
     @FXML
     void test_interface(ActionEvent event) {
         navigateToScene(event, "/ResponsableStructure.fxml", "TEST");
-
     }
+
     @FXML
     void admin_interfacebtn(ActionEvent event) {
         navigateToScene(event, "/AdminIT.fxml", "AdminIT");
@@ -158,5 +163,4 @@ public class NavigationHeaderController implements Initializable {
             e.printStackTrace();
         }
     }
-
 }
