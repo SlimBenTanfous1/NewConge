@@ -18,7 +18,10 @@ public class TypeConge {
 
     public TypeConge() {
     }
-
+    public TypeConge(int idTypeConge, String designation) {
+        this.idTypeConge = idTypeConge;
+        this.Designation = designation;
+    }
     public TypeConge(int idTypeConge, String Designation, double pas, int periodeJ, int periodeM, int periodeA, boolean file) {
         this.idTypeConge = idTypeConge;
         this.Designation = Designation;
@@ -30,14 +33,18 @@ public class TypeConge {
     }
 
     public static int valueOf(String typeConge) {
+        Connection cnx = MyDataBase.getInstance().getCnx();
         TypeConge type = new TypeConge();
         String query = "SELECT * FROM typeconge WHERE Type = ?";
-        try (Connection cnx = MyDataBase.getInstance().getCnx();
-             PreparedStatement ps = cnx.prepareStatement(query)) {
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+            PreparedStatement ps = cnx.prepareStatement(query);
             ps.setString(1, typeConge);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-               // type.setIdTypeConge(rs.getInt("ID_TypeConge"), totalsolde);
+                // type.setIdTypeConge(rs.getInt("ID_TypeConge"), totalsolde);
                 type.setDesignation(rs.getString("Type"));
                 type.setPas(rs.getDouble("Pas"));
                 type.setPeriodeJ(rs.getInt("PeriodeJ"));
@@ -50,8 +57,6 @@ public class TypeConge {
         }
         return 1;
     }
-
-
 
 
     public int getIdTypeConge() {
@@ -122,9 +127,6 @@ public class TypeConge {
                 ", File=" + File +
                 '}';
     }
-
-
-
 
 
 }

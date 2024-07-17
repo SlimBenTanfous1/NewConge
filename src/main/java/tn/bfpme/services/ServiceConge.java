@@ -63,7 +63,10 @@ public class ServiceConge implements IConge<Conge> {
     @Override
     public List<Conge> afficher() {
         List<Conge> conges = new ArrayList<>();
-        String sql = "SELECT * FROM conge WHERE `ID_User` = ?";
+        String sql = "SELECT c.*, t.Designation AS TypeDesignation, t.ID_TypeConge AS TypeCongeID " +
+                "FROM conge c " +
+                "LEFT JOIN typeconge t ON c.TypeConge = t.ID_TypeConge " +
+                "WHERE c.ID_User = ?";
         cnx = MyDataBase.getInstance().getCnx();
         try {
             if (cnx == null || cnx.isClosed()) {
@@ -77,18 +80,10 @@ public class ServiceConge implements IConge<Conge> {
                 conge.setIdConge(rs.getInt("ID_Conge"));
                 conge.setDateDebut(rs.getDate("DateDebut").toLocalDate());
                 conge.setDateFin(rs.getDate("DateFin").toLocalDate());
-                try {
-                    conge.setTypeConge(TypeConge.valueOf(rs.getString("TypeConge")));
-                } catch (IllegalArgumentException e) {
-                    System.out.println("Unknown TypeConge value: " + rs.getString("TypeConge"));
-                    continue;
-                }
-                try {
-                    conge.setStatut(Statut.valueOf(rs.getString("Statut")));
-                } catch (IllegalArgumentException e) {
-                    System.out.println("Unknown Statut value: " + rs.getString("Statut"));
-                    continue;
-                }
+                conge.setDesignation(rs.getString("TypeDesignation"));
+                TypeConge typeConge = new TypeConge(rs.getInt("TypeCongeID"), rs.getString("TypeDesignation"));
+                conge.setTypeConge(typeConge.getIdTypeConge());
+                conge.setStatut(Statut.valueOf(rs.getString("Statut")));
                 conge.setIdUser(rs.getInt("ID_User"));
                 conge.setFile(rs.getString("file"));
                 conge.setDescription(rs.getString("description"));

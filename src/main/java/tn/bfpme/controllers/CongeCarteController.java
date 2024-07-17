@@ -48,13 +48,15 @@ public class CongeCarteController {
     private TypeConge ctype;
     private Conge conge;
     private final ServiceConge CongeS = new ServiceConge();
+
     public void setData(Conge conge) {
         this.conge = conge;
-        cardType.setText(conge.getTypeConge().getDesignation());
+        cardType.setText(conge.getDesignation());
         cardDatedeb.setText(String.valueOf(conge.getDateDebut()));
         cardDatefin.setText(String.valueOf(conge.getDateFin()));
         cardDescription.setText(conge.getDescription());
-        cardStatus.setText(conge.getStatut().toString());
+        cardStatus.setText(conge.getStatut() != null ? conge.getStatut().toString() : "Unknown Status");
+
         Connection cnx = MyDataBase.getInstance().getCnx();
         btnViewMsg.setDisable(true);
         String qry = "SELECT TypeConge, Statut FROM conge WHERE ID_User = ? AND ID_Conge = ?";
@@ -165,4 +167,3 @@ public class CongeCarteController {
         }
     }
 }
-

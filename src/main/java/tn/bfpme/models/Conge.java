@@ -20,6 +20,7 @@ public class Conge {
     private String file;
     private String description;
     private String message;
+    private String designation;
 
     public Conge() {}
 
@@ -44,6 +45,17 @@ public class Conge {
         this.file = file;
         this.description = description;
     }
+    public Conge(int idConge, LocalDate dateDebut, LocalDate dateFin, String designation, Statut statut, int idUser, String file, String description) {
+        this.idConge = idConge;
+        this.dateDebut = dateDebut;
+        this.dateFin = dateFin;
+        this.idTypeConge = idTypeConge;
+        this.statut = statut;
+        this.idUser = idUser;
+        this.file = file;
+        this.description = description;
+        this.designation = designation;
+    }
     public Conge(LocalDate dateDebut, LocalDate dateFin, int idTypeConge) {
         this.dateDebut = dateDebut;
         this.dateFin = dateFin;
@@ -53,6 +65,14 @@ public class Conge {
         this.dateDebut = dateDebut;
         this.dateFin = dateFin;
         this.TypeName = TypeName;
+    }
+
+    public String getDesignation() {
+        return designation;
+    }
+
+    public void setDesignation(String designation) {
+        this.designation = designation;
     }
 
     public int getIdConge() {
@@ -145,7 +165,7 @@ public class Conge {
 
     public TypeConge getTypeConge() {
         TypeConge typeConge = null;
-        String query = "SELECT tc.* FROM typeconge tc JOIN conge c ON tc.ID_TypeConge = c.ID_TypeConge WHERE c.ID_Conge = ?";
+        String query = "SELECT tc.* FROM typeconge tc JOIN conge c ON tc.ID_TypeConge = c.TypeConge WHERE c.ID_Conge = ?";
         try (Connection cnx = MyDataBase.getInstance().getCnx();
              PreparedStatement ps = cnx.prepareStatement(query)) {
             ps.setInt(1, this.idConge);
