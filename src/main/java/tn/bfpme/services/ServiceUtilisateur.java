@@ -316,8 +316,8 @@ public class ServiceUtilisateur implements IUtilisateur {
         return managerId;
     }
 
-    public Integer getManagerIdByUserId(int userId) {
-        Integer managerId = null;
+    public int getManagerIdByUserId(int userId) {
+        int managerId = Integer.parseInt(null);
         String query = "SELECT ID_Manager FROM user WHERE ID_User = ?";
 
         try {
@@ -337,6 +337,7 @@ public class ServiceUtilisateur implements IUtilisateur {
 
         return managerId;
     }
+
 
     public List<User> getUsersByDepartment(String departement) {
         List<User> users = new ArrayList<>();
@@ -378,6 +379,9 @@ public class ServiceUtilisateur implements IUtilisateur {
         List<User> users = new ArrayList<>();
         String query = "SELECT * FROM user";
         try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
             Statement st = cnx.createStatement();
             ResultSet rs = st.executeQuery(query);
             while (rs.next()) {
@@ -528,6 +532,9 @@ public class ServiceUtilisateur implements IUtilisateur {
     public void updateUserRole(int userId, int roleId) {
         String query = "UPDATE user_role SET ID_Role=? WHERE ID_User=?";
         try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
             PreparedStatement pst = cnx.prepareStatement(query);
             pst.setInt(1, roleId);
             pst.setInt(2, userId);
@@ -541,6 +548,9 @@ public class ServiceUtilisateur implements IUtilisateur {
     public void updateUserDepartment(int userId, int departmentId) {
         String query = "UPDATE user SET ID_Departement=? WHERE ID_User=?";
         try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
             PreparedStatement pst = cnx.prepareStatement(query);
             pst.setInt(1, departmentId);
             pst.setInt(2, userId);
@@ -554,6 +564,9 @@ public class ServiceUtilisateur implements IUtilisateur {
     public User getUserById(int userId) {
         String query = "SELECT * FROM user WHERE ID_User=?";
         try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
             PreparedStatement pst = cnx.prepareStatement(query);
             pst.setInt(1, userId);
             ResultSet rs = pst.executeQuery();
@@ -730,6 +743,21 @@ public class ServiceUtilisateur implements IUtilisateur {
     }
 
     public void setUserManager(int idUser) {
+    }
+
+    public void setManagerForUser(int userId, int managerId) {
+        String query = "UPDATE user SET ID_Manager = ? WHERE ID_User = ?";
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx(); // Re-establish the connection if necessary
+            }
+            PreparedStatement pstmt = cnx.prepareStatement(query);
+            pstmt.setInt(1, managerId);
+            pstmt.setInt(2, userId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public List<User> RechercheUnder(String input) {

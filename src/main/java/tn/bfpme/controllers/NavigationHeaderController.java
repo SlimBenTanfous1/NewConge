@@ -55,6 +55,8 @@ public class NavigationHeaderController implements Initializable {
 
         btnListe.setVisible(!"Employe".equals(userRoleName) || "AdminIT".equals(userRoleName));
 
+        btnListe.setVisible(!userRole.equals("Employe")||userRole.equals("AdminIT"));
+        //btnRH.setVisible((userDep.equals("RH") && userRole.equals("Directeur"))||userRole.equals("AdminIT"));
         if ((userDepartmentName != null && userDepartmentName.equals("RH") && "Directeur".equals(userRoleName)) || "AdminIT".equals(userRoleName)) {
             btnRH.setVisible(true);
         } else {

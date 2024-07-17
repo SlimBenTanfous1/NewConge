@@ -84,6 +84,9 @@ public class User {
         this.image = image;
     }
 
+    public User(int idUser, String root, String prenom, String email, String mdp, String image, int i, int idManager, int idDepartement, int idRole, int idUserSolde, int i1, int i2, int i3) {
+    }
+
     public int getID_UserSolde() {
         return ID_UserSolde;
     }
