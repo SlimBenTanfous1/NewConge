@@ -292,6 +292,25 @@ public class ServiceUtilisateur implements IUtilisateur {
 
         return typeConges;
     }
+    public int getManagerIdByUserId2(int userId) {
+        String query = "SELECT ID_Manager FROM user WHERE ID_User = ?";
+        int managerId = 0;
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+            PreparedStatement ps = cnx.prepareStatement(query);
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                managerId = rs.getInt("ID_Manager");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return managerId;
+    }
 
 
     public List<User> getUsersByDepartment(String departement) {
