@@ -3,7 +3,6 @@ package tn.bfpme.services;
 import tn.bfpme.interfaces.IUtilisateur;
 
 import tn.bfpme.models.*;
-import tn.bfpme.services.*;
 
 import tn.bfpme.utils.MyDataBase;
 import tn.bfpme.utils.SessionManager;
@@ -139,7 +138,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 conge.setIdConge(rs.getInt("ID_Conge"));
                 conge.setDateDebut(rs.getDate("DateDebut").toLocalDate());
                 conge.setDateFin(rs.getDate("DateFin").toLocalDate());
-                conge.setTypeConge(TypeConge.valueOf(rs.getString("TypeConge")));
+                //conge.setTypeConge(TypeConge.valueOf(rs.getString("TypeConge")));
                 conge.setStatut(Statut.valueOf(rs.getString("Statut")));
                 conge.setDescription(rs.getString("description"));
                 conge.setFile(rs.getString("file"));
@@ -196,7 +195,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 user.setIdDepartement(rs.getInt("ID_Departement"));
 
                 TypeConge typeConge = new TypeConge();
-                typeConge.setIdTypeConge(rs.getInt("ID_TypeConge"));
+               // typeConge.setIdTypeConge(rs.getInt("ID_TypeConge"), totalSolde);
                 typeConge.setDesignation(rs.getString("Designation"));
                 typeConge.setPas(rs.getDouble("Pas"));
                 typeConge.setPeriodeJ(rs.getInt("PeriodeJ"));
@@ -278,7 +277,7 @@ public class ServiceUtilisateur implements IUtilisateur {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 TypeConge typeConge = new TypeConge();
-                typeConge.setIdTypeConge(rs.getInt("ID_TypeConge"));
+                //typeConge.setIdTypeConge(rs.getInt("ID_TypeConge"), totalSolde);
                 typeConge.setDesignation(rs.getString("Type"));
                 typeConge.setPas(rs.getDouble("Pas"));
                 typeConge.setPeriodeJ(rs.getInt("PeriodeJ"));
@@ -416,10 +415,7 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
     }
 
-    @Override
-    public void assignUserToDepartmentAndRole(int idUser, int idDepartement, int idRole) throws SQLException {
-        updateUserRoleAndDepartment(idUser, idRole, idDepartement);
-    }
+
 
     public void assignRoleToUser(int userId, int roleId) {
         String sqlUserRole = "INSERT INTO user_role (ID_User, ID_Role) VALUES (?, ?)";

@@ -1,16 +1,17 @@
 package tn.bfpme.services;
 
 import tn.bfpme.interfaces.IConge;
-import tn.bfpme.models.Conge;
+import tn.bfpme.models.*;
 import tn.bfpme.models.Statut;
 import tn.bfpme.utils.MyDataBase;
 import tn.bfpme.utils.SessionManager;
+
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ServiceConge /*implements IConge<Conge>*/ {
+public class ServiceConge implements IConge<Conge> {
     private Connection cnx;
 
     public ServiceConge(Connection cnx) {
@@ -59,7 +60,7 @@ public class ServiceConge /*implements IConge<Conge>*/ {
     }
 
 
-    /*@Override
+    @Override
     public List<Conge> afficher() {
         List<Conge> conges = new ArrayList<>();
         String sql = "SELECT * FROM conge WHERE `ID_User` = ?";
@@ -491,5 +492,5 @@ public class ServiceConge /*implements IConge<Conge>*/ {
         int supervisorId = getSupervisor(conge.getIdUser());
         ServiceNotification notificationService = new ServiceNotification();
         notificationService.NewNotification(supervisorId, "New leave request", 0, "You have a new leave request to review.");
-    }*/
+    }
 }

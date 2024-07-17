@@ -1,5 +1,11 @@
 package tn.bfpme.models;
 
+import tn.bfpme.utils.MyDataBase;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
@@ -134,5 +140,30 @@ public class Conge {
             return ChronoUnit.DAYS.between(dateDebut, dateFin) + 1;
         }
         return 0;
+    }
+
+
+    public TypeConge getTypeConge() {
+        TypeConge typeConge = null;
+        String query = "SELECT tc.* FROM typeconge tc JOIN conge c ON tc.ID_TypeConge = c.ID_TypeConge WHERE c.ID_Conge = ?";
+        try (Connection cnx = MyDataBase.getInstance().getCnx();
+             PreparedStatement ps = cnx.prepareStatement(query)) {
+            ps.setInt(1, this.idConge);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    typeConge = new TypeConge();
+                    typeConge.setIdTypeConge(rs.getInt("ID_TypeConge"));
+                    typeConge.setDesignation(rs.getString("Designation"));
+                    typeConge.setPas(rs.getDouble("Pas"));
+                    typeConge.setPeriodeJ(rs.getInt("PeriodeJ"));
+                    typeConge.setPeriodeM(rs.getInt("PeriodeM"));
+                    typeConge.setPeriodeA(rs.getInt("PeriodeA"));
+                    typeConge.setFile(rs.getBoolean("File"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return typeConge;
     }
 }
