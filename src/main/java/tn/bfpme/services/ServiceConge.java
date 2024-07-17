@@ -38,6 +38,25 @@ public class ServiceConge /*implements IConge<Conge>*/ {
         }
         return typeName;
     }
+    public void AddConge(Conge conge) {
+        String qry = "INSERT INTO `conge`(`DateDebut`, `DateFin`, `TypeConge`, `Statut`, `file`, `description`, `ID_User`) VALUES (?,?,?,?,?,?,?)";
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+            PreparedStatement stm = cnx.prepareStatement(qry);
+            stm.setDate(1, Date.valueOf(conge.getDateDebut()));
+            stm.setDate(2, Date.valueOf(conge.getDateFin()));
+            stm.setInt(3, conge.getIdTypeConge());
+            stm.setString(4, String.valueOf(conge.getStatut()));
+            stm.setString(5, conge.getFile());
+            stm.setString(6, conge.getDescription());
+            stm.setInt(7, conge.getIdUser());
+            stm.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
 
     /*@Override
