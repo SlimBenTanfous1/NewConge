@@ -70,10 +70,10 @@ public class CardUserRHController {
         urole = roleName;
         udepart = departmentName;
         updp = user.getImage();
-        SAnn = user.getSoldeAnnuel();
+        /*SAnn = user.getSoldeAnnuel();
         SMala = user.getSoldeMaladie();
         SMater = user.getSoldeMaternite();
-        SExp = user.getSoldeExceptionnel();
+        SExp = user.getSoldeExceptionnel();*/
     }
 
     @FXML
