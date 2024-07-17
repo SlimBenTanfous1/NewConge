@@ -376,32 +376,37 @@ public class ServiceUtilisateur implements IUtilisateur {
 
     @Override
     public List<User> getAllUsers() {
-        List<User> users = new ArrayList<>();
+        List<User> userList = new ArrayList<>();
         String query = "SELECT * FROM user";
         try {
             if (cnx == null || cnx.isClosed()) {
                 cnx = MyDataBase.getInstance().getCnx();
             }
-            Statement st = cnx.createStatement();
-            ResultSet rs = st.executeQuery(query);
+            PreparedStatement stm = cnx.prepareStatement(query);
+            ResultSet rs = stm.executeQuery();
             while (rs.next()) {
-                User user = new User(
-                        rs.getInt("ID_User"),
-                        rs.getString("Nom"),
-                        rs.getString("Prenom"),
-                        rs.getString("Email"),
-                        rs.getString("MDP"),
-                        rs.getString("Image"),
-                        rs.getInt("ID_Departement"),
-                        rs.getInt("ID_Manager"),
-                        rs.getDate("Creation_Date").toLocalDate()
-                );
-                users.add(user);
+                int idUser = rs.getInt("ID_User");
+                String nom = rs.getString("Nom");
+                String prenom = rs.getString("Prenom");
+                String email = rs.getString("Email");
+                String mdp = rs.getString("MDP");
+                String image = rs.getString("Image");
+                LocalDate creationDate = null;
+                Date date = rs.getDate("Creation_Date");
+                if (date != null) {
+                    creationDate = date.toLocalDate();
+                }
+                int idDepartement = rs.getInt("ID_Departement");
+                int idManager = rs.getInt("ID_Manager");
+                int idSolde = rs.getInt("idSolde");
+
+                User user = new User(idUser, nom, prenom, email, mdp, image, creationDate, idDepartement, idManager, idSolde);
+                userList.add(user);
             }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        return users;
+        return userList;
     }
 
     @Override
