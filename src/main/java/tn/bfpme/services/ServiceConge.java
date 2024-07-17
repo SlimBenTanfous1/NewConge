@@ -159,73 +159,7 @@ public class ServiceConge implements IConge<Conge> {
         }
     }
 
-    @Override
-    public void updateSoldeAnnuel(int id, int solde) {
-        return;
-    }
 
-    @Override
-    public void updateSoldeAnnuel(int id, double solde) {
-        String query = "UPDATE user SET Solde_Annuel = ? WHERE ID_User = ?";
-        try (PreparedStatement stm = cnx.prepareStatement(query)) {
-            stm.setDouble(1, solde);
-            stm.setInt(2, id);
-            stm.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void updateSoldeMaladie(int id, int solde) {
-
-    }
-
-    @Override
-    public void updateSoldeMaladie(int id, double solde) {
-        try {
-            String qry = "UPDATE `user` SET `Solde_Maladie`=? WHERE `ID_User`=?";
-            PreparedStatement stm = cnx.prepareStatement(qry);
-            stm.setDouble(1, solde);
-            stm.setInt(2, id);
-            stm.executeUpdate();
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
-    }
-
-    public void updateSoldeExceptionnel(int id, int solde) {
-
-    }
-
-    @Override
-    public void updateSoldeExceptionnel(int id, double solde) {
-        try {
-            String qry = "UPDATE `user` SET `Solde_Exceptionnel`=? WHERE `ID_User`=?";
-            PreparedStatement stm = cnx.prepareStatement(qry);
-            stm.setDouble(1, solde);
-            stm.setInt(2, id);
-            stm.executeUpdate();
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
-    }
-
-    public void updateSoldeMaternité(int id, int solde) {
-
-    }
-
-    @Override
-    public void updateSoldeMaternité(int id, double solde) {
-        try {
-            String qry = "UPDATE `user` SET `Solde_Maternité`=? WHERE `ID_User`=?";
-            PreparedStatement stm = cnx.prepareStatement(qry);
-            stm.setDouble(1, solde);
-            stm.setInt(2, id);
-            stm.executeUpdate();
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
-    }
 
     @Override
     public void deleteConge(Conge conge) {
@@ -439,6 +373,23 @@ public class ServiceConge implements IConge<Conge> {
         return conges;
     }
 
+    @Override
+    public void updateUserSolde(int userId, int typeCongeId, int congeDays) {
+        String query = "UPDATE user_Solde " +
+                "SET Solde = Solde - ? " +
+                "WHERE ID_User = ? AND idSolde = ?";
+        try (Connection cnx = MyDataBase.getInstance().getCnx();
+             PreparedStatement ps = cnx.prepareStatement(query)) {
+            ps.setInt(1, congeDays);
+            ps.setInt(2, userId);
+            ps.setInt(3, typeCongeId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     public void NewMessage(String message, int idUser, int idConge) {
         cnx = MyDataBase.getInstance().getCnx();
 
@@ -493,4 +444,6 @@ public class ServiceConge implements IConge<Conge> {
         ServiceNotification notificationService = new ServiceNotification();
         notificationService.NewNotification(supervisorId, "New leave request", 0, "You have a new leave request to review.");
     }
+
+
 }
