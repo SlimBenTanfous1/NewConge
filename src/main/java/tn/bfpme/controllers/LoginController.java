@@ -69,14 +69,14 @@ public class LoginController {
     }
 
     private void populateUserSolde(User user) {
-        String soldeQuery = "SELECT us.*, tc.Type FROM user_solde us JOIN typeconge tc ON us.ID_TypeConge = tc.ID_TypeConge WHERE us.ID_User = ?";
+        String soldeQuery = "SELECT us.*, tc.Designation FROM user_solde us JOIN typeconge tc ON us.ID_TypeConge = tc.ID_TypeConge WHERE us.ID_User = ?";
         try (PreparedStatement soldeStm = cnx.prepareStatement(soldeQuery)) {
             soldeStm.setInt(1, user.getIdUser());
             ResultSet soldeRs = soldeStm.executeQuery();
             while (soldeRs.next()) {
                 int typeCongeId = soldeRs.getInt("ID_TypeConge");
                 double totalSolde = soldeRs.getDouble("TotalSolde");
-                String typeConge = soldeRs.getString("Type");
+                String typeConge = soldeRs.getString("Designation");
 
                 // Assuming you have methods in User to set solde by type
                 user.setSoldeByType(typeCongeId, totalSolde, typeConge);
