@@ -69,8 +69,8 @@ public class DemandeCongeController implements Initializable {
     private final ServiceNotification notifService = new ServiceNotification();
     private final ServiceUtilisateur userService = new ServiceUtilisateur();
     LocalDate currentDate = LocalDate.now();
-    String NotifSubject ="";
-    String messageText ="";
+    String NotifSubject = "";
+    String messageText = "";
 
     @FXML
     void Demander(ActionEvent event) {
@@ -80,39 +80,23 @@ public class DemandeCongeController implements Initializable {
         String DESC = Desc.getText();
         TypeConge selectedTypeConge = cb_typeconge.getSelectionModel().getSelectedItem();
         if (selectedTypeConge == null) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Erreur");
-            alert.setHeaderText("Type de congé non sélectionné");
-            alert.setContentText("Veuillez sélectionner un type de congé.");
-            alert.showAndWait();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Type de congé non sélectionné", "Veuillez sélectionner un type de congé.");
             return;
         }
         int IDTYPE = selectedTypeConge.getIdTypeConge();
         boolean requiresFile = selectedTypeConge.isFile();
         String docLinkToUse = requiresFile ? DOCLINK : null;
         if (datedebut.getValue() == null || datefin.getValue() == null || Desc.getText().isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Erreur");
-            alert.setHeaderText("Champs requis non remplis");
-            alert.setContentText("Veuillez remplir toutes les informations nécessaires.");
-            alert.showAndWait();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Champs requis non remplis", "Veuillez remplir toutes les informations nécessaires.");
             return;
         }
         LocalDate currentDate = LocalDate.now();
         if (DD.isBefore(currentDate) || DF.isBefore(currentDate) || DD.isAfter(DF)) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Erreur");
-            alert.setHeaderText("Dates invalides");
-            alert.setContentText("La date de début et la date de fin doivent être postérieures ou égales à la date actuelle, et la date de début doit être antérieure ou égale à la date de fin.");
-            alert.showAndWait();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Dates invalides", "La date de début et la date de fin doivent être postérieures ou égales à la date actuelle, et la date de début doit être antérieure ou égale à la date de fin.");
             return;
         }
         if (DD == null || DF == null || DF == DD || DD.isAfter(DF)) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Erreur");
-            alert.setHeaderText("Dates invalides");
-            alert.setContentText("La date de début doit être antérieure et différente de la date de fin.");
-            alert.showAndWait();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Dates invalides", "La date de début doit être antérieure et différente de la date de fin.");
             return;
         }
 
@@ -148,7 +132,7 @@ public class DemandeCongeController implements Initializable {
     void Doc_Imp(ActionEvent event) {
         String documentPath = null;
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Choisir votre document justicatif");
+        fileChooser.setTitle("Choisir votre document justificatif");
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fichier", "*.pdf", "*.docx"));
         Stage stage = (Stage) datedebut.getScene().getWindow();
         File selectedFile = fileChooser.showOpenDialog(stage);
@@ -172,11 +156,16 @@ public class DemandeCongeController implements Initializable {
 
     @FXML
     void TypeSelec(ActionEvent event) {
-
+        TypeConge selectedTypeConge = cb_typeconge.getSelectionModel().getSelectedItem();
+        if (selectedTypeConge != null) {
+            paneConge.setVisible(true);
+            TypeTitle.setText("Conge " + selectedTypeConge.getDesignation());
+            FichierVBOX.setVisible(selectedTypeConge.isFile());
+        }
     }
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle){
+    public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/NavigationHeader.fxml"));
             Pane departementPane = loader.load();
@@ -184,31 +173,41 @@ public class DemandeCongeController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         List<TypeConge> typeConges = serviceTypeConge.getAllTypeConge();
-        ObservableList<TypeConge> observableTypeConges = FXCollections.observableArrayList(typeConges);
-        cb_typeconge.setItems(observableTypeConges);
+        if (typeConges != null && !typeConges.isEmpty()) {
+            ObservableList<TypeConge> observableTypeConges = FXCollections.observableArrayList(typeConges);
+            cb_typeconge.setItems(observableTypeConges);
+        } else {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Type de congé non disponible", "Aucun type de congé n'a été trouvé dans la base de données.");
+        }
+
         cb_typeconge.setConverter(new StringConverter<TypeConge>() {
             @Override
             public String toString(TypeConge typeConge) {
-                return typeConge.getDesignation();
+                return typeConge != null ? typeConge.getDesignation() : "";
             }
+
             @Override
             public TypeConge fromString(String string) {
-                return cb_typeconge.getItems().stream().filter(typeConge ->
-                        typeConge.getDesignation().equals(string)).findFirst().orElse(null);
+                return cb_typeconge.getItems().stream().filter(TypeConge ->
+                        TypeConge.getDesignation().equals(string)).findFirst().orElse(null);
             }
         });
-        cb_typeconge.setOnAction(event -> {
-            TypeConge selectedTypeConge = cb_typeconge.getSelectionModel().getSelectedItem();
-            if (selectedTypeConge != null) {
-                paneConge.setVisible(true);
-                TypeTitle.setText("Conge " + selectedTypeConge.getDesignation());
-                FichierVBOX.setVisible(selectedTypeConge.isFile());
-            }
-        });
+
+        cb_typeconge.setOnAction(this::TypeSelec);
         FichierVBOX.setVisible(false);
+        paneConge.setVisible(false);
     }
 
+    private void showAlert(Alert.AlertType alertType, String title, String header, String content) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+}
     /*@FXML
     private ResourceBundle resources;
     @FXML
@@ -801,4 +800,3 @@ public class DemandeCongeController implements Initializable {
             }
         }
     }*/
-}
