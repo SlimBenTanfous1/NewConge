@@ -20,6 +20,7 @@ public class User {
     private String departementNom; // New field for department name
     private String roleNom; // New field for role name
     private String managerName; // New field for manager name
+    private int TotalSolde;
     private List<TypeConge> typeConges; // New field for TypeConge objects
 
     public User() {

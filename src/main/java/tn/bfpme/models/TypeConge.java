@@ -37,7 +37,7 @@ public class TypeConge {
             ps.setString(1, typeConge);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                type.setIdTypeConge(rs.getInt("ID_TypeConge"));
+               // type.setIdTypeConge(rs.getInt("ID_TypeConge"), totalsolde);
                 type.setDesignation(rs.getString("Type"));
                 type.setPas(rs.getDouble("Pas"));
                 type.setPeriodeJ(rs.getInt("PeriodeJ"));
@@ -48,7 +48,7 @@ public class TypeConge {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return type;
+        return 1;
     }
 
 

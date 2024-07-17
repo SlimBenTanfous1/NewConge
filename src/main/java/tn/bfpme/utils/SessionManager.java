@@ -4,7 +4,6 @@ import tn.bfpme.models.Departement;
 import tn.bfpme.models.Role;
 import tn.bfpme.models.TypeConge;
 import tn.bfpme.models.User;
-import tn.bfpme.models.TypeConge;
 import tn.bfpme.services.ServiceDepartement;
 import tn.bfpme.services.ServiceRole;
 
@@ -174,9 +173,9 @@ public class SessionManager {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 int typeCongeId = rs.getInt("ID_TypeConge");
-                double totalSolde = rs.getDouble("TotalSolde");
+                int totalSolde = rs.getInt("TotalSolde");
                 // Assuming SoldeConge has a method to set solde based on type
-                typeconge.setSoldeByType(typeCongeId, totalSolde);
+                typeconge.setIdTypeConge(typeCongeId);
             }
         } catch (SQLException e) {
             e.printStackTrace();
