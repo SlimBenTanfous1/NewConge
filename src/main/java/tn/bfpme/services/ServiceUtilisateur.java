@@ -311,6 +311,28 @@ public class ServiceUtilisateur implements IUtilisateur {
         return managerId;
     }
 
+    public Integer getManagerIdByUserId(int userId) {
+        Integer managerId = null;
+        String query = "SELECT ID_Manager FROM user WHERE ID_User = ?";
+
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+            PreparedStatement ps = cnx.prepareStatement(query);
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                managerId = rs.getInt("ID_Manager");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return managerId;
+    }
+
     public List<User> getUsersByDepartment(String departement) {
         List<User> users = new ArrayList<>();
         String sql = "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement " +
@@ -640,6 +662,7 @@ public class ServiceUtilisateur implements IUtilisateur {
     public List<User> ShowUnder() {
         return null;
     }
+
     public int getLastInsertedUserId() throws SQLException {
         String query = "SELECT LAST_INSERT_ID()";
         try (Connection cnx = MyDataBase.getInstance().getCnx();
@@ -651,6 +674,7 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
         throw new SQLException("Failed to retrieve last inserted user ID");
     }
+
     public void checkRoleDepartmentUniqueness(int idUser, int idRole, int idDepartement) {
 
     }

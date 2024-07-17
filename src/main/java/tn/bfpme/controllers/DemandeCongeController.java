@@ -66,6 +66,8 @@ public class DemandeCongeController implements Initializable {
 
     private final ServiceTypeConge serviceTypeConge = new ServiceTypeConge();
     private final ServiceConge serviceConge = new ServiceConge();
+    private final ServiceNotification notifService = new ServiceNotification();
+    private final ServiceUtilisateur userService = new ServiceUtilisateur();
     LocalDate currentDate = LocalDate.now();
     String NotifSubject ="";
     String messageText ="";
@@ -121,7 +123,7 @@ public class DemandeCongeController implements Initializable {
         serviceConge.AddConge(new Conge(0, DD, DF, IDTYPE, Statut.En_Attente, SessionManager.getInstance().getUser().getIdUser(), docLinkToUse, DESC));
         String NotifSubject = "Vous avez reçu une nouvelle demande de congé " + selectedTypeConge.getDesignation();
         String messageText = "Vous avez reçu une nouvelle demande de congé " + selectedTypeConge.getDesignation() + " de la part de " + SessionManager.getInstance().getUser().getNom() + " " + SessionManager.getInstance().getUser().getPrenom() + " du " + DD + " au " + DF;
-        //notifService.NewNotification(userService.getManagerIdByUserId(SessionManager.getInstance().getUser().getIdUser()), NotifSubject, 2, messageText);
+        notifService.NewNotification(userService.getManagerIdByUserId(SessionManager.getInstance().getUser().getIdUser()), NotifSubject, 2, messageText);
         successAlert.getButtonTypes().setAll(buttonHistorique);
         Optional<ButtonType> result = successAlert.showAndWait();
         if (result.isPresent() && result.get() == buttonHistorique) {
