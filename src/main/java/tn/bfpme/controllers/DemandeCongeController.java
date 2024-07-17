@@ -73,7 +73,7 @@ public class DemandeCongeController implements Initializable {
     String messageText = "";
 
     @FXML
-    void Demander(ActionEvent event) {
+    /*void Demander(ActionEvent event) {
         LocalDate DD = datedebut.getValue();
         LocalDate DF = datefin.getValue();
         String DOCLINK = Doc_Link.getText();
@@ -127,8 +127,8 @@ public class DemandeCongeController implements Initializable {
             System.out.println("Closing current scene...");
         }
     }
+*/
 
-    @FXML
     void Doc_Imp(ActionEvent event) {
         String documentPath = null;
         FileChooser fileChooser = new FileChooser();
