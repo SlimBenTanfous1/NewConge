@@ -63,18 +63,15 @@ public class ServiceUserSolde {
 
     public List<UserSolde> getUserSoldes(int userId) {
         List<UserSolde> userSoldes = new ArrayList<>();
-        String query = "SELECT * FROM user_solde WHERE ID_User = ?";
+        String sql = "SELECT ID_UserSolde, ID_User, ID_TypeConge, TotalSolde FROM user_solde WHERE ID_User = ?";
 
-        try {
-            if (cnx == null || cnx.isClosed()) {
-                cnx = MyDataBase.getInstance().getCnx();
-            }
-            PreparedStatement ps = cnx.prepareStatement(query);
-            ps.setInt(1, userId);
-            ResultSet rs = ps.executeQuery();
+        try (Connection cnx = MyDataBase.getInstance().getCnx();
+             PreparedStatement stm = cnx.prepareStatement(sql)) {
+            stm.setInt(1, userId);
+            ResultSet rs = stm.executeQuery();
             while (rs.next()) {
                 UserSolde userSolde = new UserSolde();
-                userSolde.setUD_UserSolde(rs.getInt("UD_UserSolde"));
+                userSolde.setUD_UserSolde(rs.getInt("ID_UserSolde"));
                 userSolde.setID_User(rs.getInt("ID_User"));
                 userSolde.setID_TypeConge(rs.getInt("ID_TypeConge"));
                 userSolde.setTotalSolde(rs.getDouble("TotalSolde"));
