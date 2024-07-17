@@ -48,16 +48,12 @@ public class LoginController {
                         rs.getString("MDP"),
                         rs.getString("Image"),
                         null, // Pass null for creationDate, as it's not being fetched
-                        rs.getInt("ID_Departement"),
                         rs.getInt("ID_Manager"),
+                        rs.getInt("ID_Departement"),
                         rs.getInt("ID_Role")
                 );
-
                 connectedUser.setIdRole(rs.getInt("ID_Role"));
-
-                // Retrieve solde information from user_solde
                 populateUserSolde(connectedUser);
-
                 SessionManager.getInstance(connectedUser);
                 navigateToProfile(event);
             } else {
