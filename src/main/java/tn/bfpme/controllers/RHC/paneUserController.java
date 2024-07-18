@@ -5,6 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -1069,5 +1070,8 @@ public class paneUserController implements Initializable {
             roleNames.add(role.getNom());
         }
         RoleComboFilter.setItems(roleNames);
+    }
+
+    public void TabGestion(Event event) {
     }
 }
