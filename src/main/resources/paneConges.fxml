@@ -142,11 +142,10 @@
             </Button>
          </children>
       </HBox>
-      <Label layoutX="470.0" layoutY="33.0" text="Gestion des Congés">
-         <styleClass>
-            <String fx:value="FontSize-20" />
-            <String fx:value="RobotoBoldItalic" />
-         </styleClass>
+      <Label layoutX="439.0" layoutY="28.0" styleClass="RobotoBoldItalic" text="Gestion des Congés">
+         <font>
+            <Font size="24.0" />
+         </font>
       </Label>
    </children>
 </Pane>
