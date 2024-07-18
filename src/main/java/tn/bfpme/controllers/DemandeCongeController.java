@@ -39,6 +39,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -73,7 +74,7 @@ public class DemandeCongeController implements Initializable {
     String messageText = "";
 
     @FXML
-    /*void Demander(ActionEvent event) {
+    void Demander(ActionEvent event) {
         LocalDate DD = datedebut.getValue();
         LocalDate DF = datefin.getValue();
         String DOCLINK = Doc_Link.getText();
@@ -90,24 +91,30 @@ public class DemandeCongeController implements Initializable {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Champs requis non remplis", "Veuillez remplir toutes les informations nécessaires.");
             return;
         }
-        LocalDate currentDate = LocalDate.now();
         if (DD.isBefore(currentDate) || DF.isBefore(currentDate) || DD.isAfter(DF)) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Dates invalides", "La date de début et la date de fin doivent être postérieures ou égales à la date actuelle, et la date de début doit être antérieure ou égale à la date de fin.");
             return;
         }
-        if (DD == null || DF == null || DF == DD || DD.isAfter(DF)) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Dates invalides", "La date de début doit être antérieure et différente de la date de fin.");
+
+        long daysBetween = ChronoUnit.DAYS.between(DD, DF) + 1;
+        int userId = SessionManager.getInstance().getUser().getIdUser();
+        double currentBalance = getCurrentBalance(userId, IDTYPE);
+
+        if (currentBalance < daysBetween) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Solde insuffisant", "Votre solde est insuffisant pour la période demandée.");
             return;
         }
+
+        serviceConge.AddConge(new Conge(0, DD, DF, IDTYPE, Statut.En_Attente, userId, docLinkToUse, DESC));
+        updateBalance(userId, IDTYPE, currentBalance - daysBetween);
+        String NotifSubject = "Vous avez reçu une nouvelle demande de congé " + selectedTypeConge.getDesignation();
+        String messageText = "Vous avez reçu une nouvelle demande de congé " + selectedTypeConge.getDesignation() + " de la part de " + SessionManager.getInstance().getUser().getNom() + " " + SessionManager.getInstance().getUser().getPrenom() + " du " + DD + " au " + DF;
+        notifService.NewNotification(userService.getManagerIdByUserId(SessionManager.getInstance().getUser().getIdUser()), NotifSubject, 2, messageText);
 
         Alert successAlert = new Alert(Alert.AlertType.CONFIRMATION);
         successAlert.setTitle("Succès");
         successAlert.setHeaderText("Demande de congé créée avec succès !");
         ButtonType buttonHistorique = new ButtonType("Aller à l'historique");
-        serviceConge.AddConge(new Conge(0, DD, DF, IDTYPE, Statut.En_Attente, SessionManager.getInstance().getUser().getIdUser(), docLinkToUse, DESC));
-        String NotifSubject = "Vous avez reçu une nouvelle demande de congé " + selectedTypeConge.getDesignation();
-        String messageText = "Vous avez reçu une nouvelle demande de congé " + selectedTypeConge.getDesignation() + " de la part de " + SessionManager.getInstance().getUser().getNom() + " " + SessionManager.getInstance().getUser().getPrenom() + " du " + DD + " au " + DF;
-        notifService.NewNotification(userService.getManagerIdByUserId(SessionManager.getInstance().getUser().getIdUser()), NotifSubject, 2, messageText);
         successAlert.getButtonTypes().setAll(buttonHistorique);
         Optional<ButtonType> result = successAlert.showAndWait();
         if (result.isPresent() && result.get() == buttonHistorique) {
@@ -127,7 +134,35 @@ public class DemandeCongeController implements Initializable {
             System.out.println("Closing current scene...");
         }
     }
-*/
+
+    private void updateBalance(int userId, int typeCongeId, double newBalance) {
+        String query = "UPDATE user_Solde SET TotalSolde = ? WHERE ID_User = ? AND ID_TypeConge = ?";
+        try (Connection conn = MyDataBase.getInstance().getCnx();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setDouble(1, newBalance);
+            pstmt.setInt(2, userId);
+            pstmt.setInt(3, typeCongeId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    private double getCurrentBalance(int userId, int typeCongeId) {
+        String query = "SELECT TotalSolde FROM user_Solde WHERE ID_User = ? AND ID_TypeConge = ?";
+        try (Connection conn = MyDataBase.getInstance().getCnx();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, typeCongeId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getDouble("TotalSolde");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
 
     void Doc_Imp(ActionEvent event) {
         String documentPath = null;
