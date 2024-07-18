@@ -8,8 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
-import javafx.util.Callback;
-import tn.bfpme.models.*;
+import tn.bfpme.models.TypeConge;
 import tn.bfpme.services.ServiceTypeConge;
 import tn.bfpme.services.ServiceUtilisateur;
 import tn.bfpme.utils.MyDataBase;
@@ -22,7 +21,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class AttributionSoldeController implements Initializable {
-
 
     @FXML
     private TableView<TypeConge> Table_TypeConge;
@@ -79,6 +77,7 @@ public class AttributionSoldeController implements Initializable {
         this.serviceTypeConge = new ServiceTypeConge();
         this.serviceUtilisateur = new ServiceUtilisateur();
     }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         colDesignation.setCellValueFactory(new PropertyValueFactory<>("designation"));
@@ -92,18 +91,39 @@ public class AttributionSoldeController implements Initializable {
 
         RechercheSol.addEventHandler(KeyEvent.KEY_RELEASED, event -> Recherche_Solde());
 
-        btnRemoveFilter.setOnAction(event -> removeFilter());
+        btnRemoveFilter.setOnAction(event -> {
+            removeFilter();
+            clearTextFields();
+        });
 
+        Table_TypeConge.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> populateFields(newValue));
     }
 
     private void populateFields(TypeConge typeConge) {
-        //ID.setText(String.valueOf(typeConge.getIdTypeConge()));
-        Designation_Solde.setText(typeConge.getDesignation());
-        Pas_Solde.setText(String.valueOf(typeConge.getPas()));
-        PeriodeJourTF.setText(String.valueOf(typeConge.getPeriodeJ()));
-        PeriodeMoisTF.setText(String.valueOf(typeConge.getPeriodeM()));
-        PeriodeAnTF.setText(String.valueOf(typeConge.getPeriodeA()));
-        fileOuiRadioButton.setSelected(typeConge.isFile());
+        if (typeConge != null) {
+            ID_Solde.setText(String.valueOf(typeConge.getIdTypeConge()));
+            Designation_Solde.setText(typeConge.getDesignation());
+            Pas_Solde.setText(String.valueOf(typeConge.getPas()));
+            PeriodeJourTF.setText(String.valueOf(typeConge.getPeriodeJ()));
+            PeriodeMoisTF.setText(String.valueOf(typeConge.getPeriodeM()));
+            PeriodeAnTF.setText(String.valueOf(typeConge.getPeriodeA()));
+            if (typeConge.isFile()) {
+                fileOuiRadioButton.setSelected(true);
+            } else {
+                fileNonRadioButton.setSelected(true);
+            }
+        }
+    }
+
+    private void clearTextFields() {
+        ID_Solde.clear();
+        Designation_Solde.clear();
+        Pas_Solde.clear();
+        PeriodeJourTF.clear();
+        PeriodeMoisTF.clear();
+        PeriodeAnTF.clear();
+        fileToggleGroup.selectToggle(null); // Clear radio button selection
     }
 
     @FXML
@@ -117,6 +137,7 @@ public class AttributionSoldeController implements Initializable {
     public void Recherche_Solde() {
         String searchText = RechercheSol.getText().trim().toLowerCase();
         if (searchText.isEmpty()) {
+            removeFilter();
         } else {
             filteredList.setPredicate(typeConge -> typeConge.getDesignation().toLowerCase().contains(searchText));
         }
@@ -141,6 +162,7 @@ public class AttributionSoldeController implements Initializable {
         loadSoldeConge();
         labelSolde.setText("Type de congé ajouté.");
     }
+
     @FXML
     public void ModifierTypeButton() {
         int idSolde = Integer.parseInt(ID_Solde.getText().trim());
@@ -163,6 +185,7 @@ public class AttributionSoldeController implements Initializable {
         serviceTypeConge.deleteTypeConge(idSolde);
         loadSoldeConge();
         labelSolde.setText("Solde supprimé.");
+        clearTextFields(); // Clear text fields after deletion
     }
 
     private void distributeNewLeaveTypeToUsers(String designation) {
@@ -187,13 +210,9 @@ public class AttributionSoldeController implements Initializable {
         }
     }
 
-
     @FXML
     public void removeFilter() {
         RechercheSol.clear();
         filteredList.setPredicate(p -> true);
     }
-
-
-
 }
