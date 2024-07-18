@@ -53,9 +53,11 @@ public class AttributionSoldeController implements Initializable {
     @FXML
     private TextField PeriodeAnTF;
     @FXML
-    private RadioButton OuiFichier;
+    private RadioButton fileOuiRadioButton;
     @FXML
-    private RadioButton NonFichier;
+    private RadioButton fileNonRadioButton;
+    @FXML
+    private ToggleGroup fileToggleGroup;
     @FXML
     private Button Ajout_Solde;
     @FXML
@@ -101,10 +103,8 @@ public class AttributionSoldeController implements Initializable {
         PeriodeJourTF.setText(String.valueOf(typeConge.getPeriodeJ()));
         PeriodeMoisTF.setText(String.valueOf(typeConge.getPeriodeM()));
         PeriodeAnTF.setText(String.valueOf(typeConge.getPeriodeA()));
-        OuiFichier.setSelected(typeConge.isFile());
+        fileOuiRadioButton.setSelected(typeConge.isFile());
     }
-
-
 
     @FXML
     private void loadSoldeConge() {
@@ -129,12 +129,17 @@ public class AttributionSoldeController implements Initializable {
         int periodeJ = Integer.parseInt(PeriodeJourTF.getText().trim());
         int periodeM = Integer.parseInt(PeriodeMoisTF.getText().trim());
         int periodeA = Integer.parseInt(PeriodeAnTF.getText().trim());
-        boolean file = OuiFichier.isSelected();
+        boolean file = fileOuiRadioButton.isSelected();
+
+        // Check if a TypeConge with the same designation already exists
+        if (serviceTypeConge.existsByDesignation(designation)) {
+            labelSolde.setText("Type de congé avec cette désignation existe déjà.");
+            return;
+        }
 
         serviceTypeConge.AddTypeConge(designation, pas, periodeJ, periodeM, periodeA, file);
         loadSoldeConge();
-        distributeNewLeaveTypeToUsers(designation);
-        labelSolde.setText("Solde ajouté et distribué aux utilisateurs.");
+        labelSolde.setText("Type de congé ajouté.");
     }
     @FXML
     public void ModifierTypeButton() {
@@ -144,7 +149,7 @@ public class AttributionSoldeController implements Initializable {
         int periodeJ = Integer.parseInt(PeriodeJourTF.getText().trim());
         int periodeM = Integer.parseInt(PeriodeMoisTF.getText().trim());
         int periodeA = Integer.parseInt(PeriodeAnTF.getText().trim());
-        boolean file = OuiFichier.isSelected();
+        boolean file = fileOuiRadioButton.isSelected();
 
         serviceTypeConge.updateTypeConge(idSolde, designation, pas, periodeJ, periodeM, periodeA, file);
         loadSoldeConge();

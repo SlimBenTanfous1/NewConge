@@ -6,6 +6,7 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
@@ -29,12 +30,16 @@
       <TextField fx:id="PeriodeMoisTF" layoutX="676.0" layoutY="406.0" prefHeight="17.0" prefWidth="147.0" />
       <TextField fx:id="PeriodeAnTF" layoutX="676.0" layoutY="458.0" prefHeight="17.0" prefWidth="147.0" />
       <TextField fx:id="PeriodeJourTF" layoutX="676.0" layoutY="351.0" prefHeight="17.0" prefWidth="147.0" />
-      <RadioButton fx:id="OuiFichier" layoutX="339.0" layoutY="471.0" mnemonicParsing="false" text="Oui" />
-      <Button fx:id="Modifier_Solde" layoutX="415.0" layoutY="556.0" mnemonicParsing="false" onAction="#ModifierTypeButton" prefHeight="25.0" prefWidth="172.0" styleClass="btn-primary" text="Modifier" />
+       <RadioButton fx:id="fileOuiRadioButton" layoutX="296.0" layoutY="470.0" mnemonicParsing="false" text="Oui">
+         <toggleGroup>
+            <ToggleGroup fx:id="fileToggleGroup" />
+         </toggleGroup></RadioButton>
+       <RadioButton fx:id="fileNonRadioButton" layoutX="375.0" layoutY="470.0" mnemonicParsing="false" text="Non" toggleGroup="$fileToggleGroup" />
+       <Button fx:id="Modifier_Solde" layoutX="415.0" layoutY="556.0" mnemonicParsing="false" onAction="#ModifierTypeButton" prefHeight="25.0" prefWidth="172.0" styleClass="btn-primary" text="Modifier" />
       <Button fx:id="Supprimer_Solde" layoutX="605.0" layoutY="556.0" mnemonicParsing="false" onAction="#SupprimerTypeButton" prefHeight="25.0" prefWidth="172.0" styleClass="btn-primary" text="Supprimer" />
-      <TextField fx:id="RechercheSol" layoutX="35.0" layoutY="196.0" onAction="#Recherche_Solde"/>
+      <TextField fx:id="RechercheSol" layoutX="35.0" layoutY="196.0" onAction="#Recherche_Solde" />
       <Label layoutX="35.0" layoutY="171.0" text="Recherche:" />
-      <TableView fx:id="Table_TypeConge" layoutX="221.0" layoutY="125.0" prefHeight="200.0" prefWidth="560.0">
+      <TableView fx:id="Table_TypeConge" layoutX="221.0" layoutY="125.0" prefHeight="200.0" prefWidth="609.0">
         <columns>
           <TableColumn fx:id="colDesignation" prefWidth="94.0" text="Designation" />
           <TableColumn fx:id="colPas" prefWidth="47.0" text="Pas" />

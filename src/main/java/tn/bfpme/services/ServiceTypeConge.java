@@ -46,9 +46,6 @@ public class ServiceTypeConge {
         return typeconges;
     }
 
-
-
-
     public void UpdateTypeConge(TypeConge typeConge) {
         try {
             String qry = "UPDATE `typeconge` SET `Designation`=?,`Pas`=?,`PeriodeJ`=?,`PeriodeM`=?,`PeriodeA`=?,`File`=? WHERE `ID_TypeConge`=?";
@@ -77,7 +74,7 @@ public class ServiceTypeConge {
         }
     }
 
-        public List<TypeConge> searchTypeConge(String searchText) {
+    public List<TypeConge> searchTypeConge(String searchText) {
             List<TypeConge> typeConges = new ArrayList<>();
             String query = "SELECT ID_TypeConge, Designation, Pas, PeriodeJ, PeriodeM, PeriodeA, File FROM typeconge WHERE LOWER(Designation) LIKE ?";
             try (Connection connection = MyDataBase.getInstance().getCnx();
@@ -102,7 +99,6 @@ public class ServiceTypeConge {
             }
             return typeConges;
         }
-
 
     public void AddTypeConge(String designation, double pas, int periodeJ, int periodeM, int periodeA, boolean file) {
         String query = "INSERT INTO typeconge (Designation, Pas, PeriodeJ, PeriodeM, PeriodeA, File) VALUES (?, ?, ?, ?, ?, ?)";
@@ -177,6 +173,21 @@ public class ServiceTypeConge {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean existsByDesignation(String designation) {
+        String query = "SELECT COUNT(*) FROM typeconge WHERE Designation = ?";
+        try (Connection connection = MyDataBase.getInstance().getCnx();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, designation);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 
