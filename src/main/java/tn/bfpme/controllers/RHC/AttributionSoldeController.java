@@ -1,24 +1,41 @@
 package tn.bfpme.controllers.RHC;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Label;
-import tn.bfpme.services.ServiceConge;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyEvent;
+import tn.bfpme.models.TypeConge;
+import tn.bfpme.services.ServiceTypeConge;
 import tn.bfpme.services.ServiceUtilisateur;
 import tn.bfpme.utils.MyDataBase;
 
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.ResourceBundle;
 
-/*public class AttributionSoldeController {
+public class AttributionSoldeController implements Initializable {
 
     @FXML
-    private ListView<SoldeConge> Liste_Solde;
+    private TableView<TypeConge> Table_TypeConge;
+    @FXML
+    private TableColumn<TypeConge, String> colDesignation;
+    @FXML
+    private TableColumn<TypeConge, Double> colPas;
+    @FXML
+    private TableColumn<TypeConge, Integer> colPeriodeJ;
+    @FXML
+    private TableColumn<TypeConge, Integer> colPeriodeM;
+    @FXML
+    private TableColumn<TypeConge, Integer> colPeriodeA;
+    @FXML
+    private TableColumn<TypeConge, Boolean> colFile;
     @FXML
     private TextField RechercheSol;
     @FXML
@@ -26,11 +43,19 @@ import java.util.List;
     @FXML
     private TextField Designation_Solde;
     @FXML
-    private TextField Type_Solde;
-    @FXML
     private TextField Pas_Solde;
     @FXML
-    private TextField Periode_Solde;
+    private TextField PeriodeJourTF;
+    @FXML
+    private TextField PeriodeMoisTF;
+    @FXML
+    private TextField PeriodeAnTF;
+    @FXML
+    private RadioButton fileOuiRadioButton;
+    @FXML
+    private RadioButton fileNonRadioButton;
+    @FXML
+    private ToggleGroup fileToggleGroup;
     @FXML
     private Button Ajout_Solde;
     @FXML
@@ -38,81 +63,143 @@ import java.util.List;
     @FXML
     private Button Supprimer_Solde;
     @FXML
+    private Button btnRemoveFilter;
+    @FXML
     private Label labelSolde;
 
-    private ServiceSoldeConge serviceSoldeConge;
+    private ServiceTypeConge serviceTypeConge;
+    private ObservableList<TypeConge> originalList;
+    private FilteredList<TypeConge> filteredList;
+
     private ServiceUtilisateur serviceUtilisateur;
 
     public AttributionSoldeController() {
-        this.serviceSoldeConge = new ServiceSoldeConge();
+        this.serviceTypeConge = new ServiceTypeConge();
         this.serviceUtilisateur = new ServiceUtilisateur();
     }
 
-    @FXML
-    public void initialize() {
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        colDesignation.setCellValueFactory(new PropertyValueFactory<>("designation"));
+        colPas.setCellValueFactory(new PropertyValueFactory<>("pas"));
+        colPeriodeJ.setCellValueFactory(new PropertyValueFactory<>("periodeJ"));
+        colPeriodeM.setCellValueFactory(new PropertyValueFactory<>("periodeM"));
+        colPeriodeA.setCellValueFactory(new PropertyValueFactory<>("periodeA"));
+        colFile.setCellValueFactory(new PropertyValueFactory<>("file"));
+
         loadSoldeConge();
+
+        RechercheSol.addEventHandler(KeyEvent.KEY_RELEASED, event -> Recherche_Solde());
+
+        btnRemoveFilter.setOnAction(event -> {
+            removeFilter();
+            clearTextFields();
+        });
+
+        Table_TypeConge.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> populateFields(newValue));
+    }
+
+    private void populateFields(TypeConge typeConge) {
+        if (typeConge != null) {
+            ID_Solde.setText(String.valueOf(typeConge.getIdTypeConge()));
+            Designation_Solde.setText(typeConge.getDesignation());
+            Pas_Solde.setText(String.valueOf(typeConge.getPas()));
+            PeriodeJourTF.setText(String.valueOf(typeConge.getPeriodeJ()));
+            PeriodeMoisTF.setText(String.valueOf(typeConge.getPeriodeM()));
+            PeriodeAnTF.setText(String.valueOf(typeConge.getPeriodeA()));
+            if (typeConge.isFile()) {
+                fileOuiRadioButton.setSelected(true);
+            } else {
+                fileNonRadioButton.setSelected(true);
+            }
+        }
+    }
+
+    private void clearTextFields() {
+        ID_Solde.clear();
+        Designation_Solde.clear();
+        Pas_Solde.clear();
+        PeriodeJourTF.clear();
+        PeriodeMoisTF.clear();
+        PeriodeAnTF.clear();
+        fileToggleGroup.selectToggle(null); // Clear radio button selection
     }
 
     @FXML
     private void loadSoldeConge() {
-        List<SoldeConge> soldeCongeList = serviceSoldeConge.getAllSoldeConges();
-        Liste_Solde.getItems().setAll(soldeCongeList);
+        List<TypeConge> soldeCongeList = serviceTypeConge.getAllTypeConge();
+        filteredList = new FilteredList<>(FXCollections.observableArrayList(soldeCongeList), p -> true);
+        Table_TypeConge.setItems(filteredList);
     }
 
     @FXML
     public void Recherche_Solde() {
         String searchText = RechercheSol.getText().trim().toLowerCase();
-        List<SoldeConge> filteredList = serviceSoldeConge.searchSoldeConges(searchText);
-        Liste_Solde.getItems().setAll(filteredList);
+        if (searchText.isEmpty()) {
+            removeFilter();
+        } else {
+            filteredList.setPredicate(typeConge -> typeConge.getDesignation().toLowerCase().contains(searchText));
+        }
     }
 
     @FXML
-    public void ajouterSolde() {
+    public void AjouterTypeButton() {
         String designation = Designation_Solde.getText().trim();
-        String type = Type_Solde.getText().trim();
         double pas = Double.parseDouble(Pas_Solde.getText().trim());
-        int periode = Integer.parseInt(Periode_Solde.getText().trim());
+        int periodeJ = Integer.parseInt(PeriodeJourTF.getText().trim());
+        int periodeM = Integer.parseInt(PeriodeMoisTF.getText().trim());
+        int periodeA = Integer.parseInt(PeriodeAnTF.getText().trim());
+        boolean file = fileOuiRadioButton.isSelected();
 
-        serviceSoldeConge.addSoldeConge(designation, type, pas, periode);
+        // Check if a TypeConge with the same designation already exists
+        if (serviceTypeConge.existsByDesignation(designation)) {
+            labelSolde.setText("Type de congé avec cette désignation existe déjà.");
+            return;
+        }
+
+        serviceTypeConge.AddTypeConge(designation, pas, periodeJ, periodeM, periodeA, file);
         loadSoldeConge();
-        distributeNewLeaveTypeToUsers(designation);
-        labelSolde.setText("Solde ajouté et distribué aux utilisateurs.");
+        labelSolde.setText("Type de congé ajouté.");
     }
 
     @FXML
-    public void modifierSolde() {
+    public void ModifierTypeButton() {
         int idSolde = Integer.parseInt(ID_Solde.getText().trim());
         String designation = Designation_Solde.getText().trim();
-        String type = Type_Solde.getText().trim();
         double pas = Double.parseDouble(Pas_Solde.getText().trim());
-        int periode = Integer.parseInt(Periode_Solde.getText().trim());
+        int periodeJ = Integer.parseInt(PeriodeJourTF.getText().trim());
+        int periodeM = Integer.parseInt(PeriodeMoisTF.getText().trim());
+        int periodeA = Integer.parseInt(PeriodeAnTF.getText().trim());
+        boolean file = fileOuiRadioButton.isSelected();
 
-        serviceSoldeConge.updateSoldeConge(idSolde, designation, type, pas, periode);
+        serviceTypeConge.updateTypeConge(idSolde, designation, pas, periodeJ, periodeM, periodeA, file);
         loadSoldeConge();
         labelSolde.setText("Solde modifié.");
     }
 
     @FXML
-    public void supprimerSolde() {
+    public void SupprimerTypeButton() {
         int idSolde = Integer.parseInt(ID_Solde.getText().trim());
 
-        serviceSoldeConge.deleteSoldeConge(idSolde);
+        serviceTypeConge.deleteTypeConge(idSolde);
         loadSoldeConge();
         labelSolde.setText("Solde supprimé.");
+        clearTextFields(); // Clear text fields after deletion
     }
 
     private void distributeNewLeaveTypeToUsers(String designation) {
-        int idSolde = serviceSoldeConge.getSoldeCongeIdByDesignation(designation);
-        double pas = serviceSoldeConge.getPasBySoldeId(idSolde);
+        int idSolde = serviceTypeConge.getSoldeCongeIdByDesignation(designation);
+        double pas = serviceTypeConge.getPasBySoldeId(idSolde);
 
         try (Connection conn = MyDataBase.getInstance().getCnx()) {
-            String distributeQuery = "INSERT INTO user_Solde (ID_User, idSolde) SELECT ID_User, ? FROM user";
+            String distributeQuery = "INSERT INTO user_Solde (ID_User, ID_TypeConge, TotalSolde) SELECT ID_User, ?, 0 FROM user";
             try (PreparedStatement distributeStmt = conn.prepareStatement(distributeQuery)) {
                 distributeStmt.setInt(1, idSolde);
                 distributeStmt.executeUpdate();
             }
 
-            String updateUserSoldeQuery = "UPDATE user_Solde SET Solde = Solde + ? WHERE idSolde = ?";
+            String updateUserSoldeQuery = "UPDATE user_Solde SET TotalSolde = TotalSolde + ? WHERE ID_TypeConge = ?";
             try (PreparedStatement updateUserSoldeStmt = conn.prepareStatement(updateUserSoldeQuery)) {
                 updateUserSoldeStmt.setDouble(1, pas);
                 updateUserSoldeStmt.setInt(2, idSolde);
@@ -122,5 +209,10 @@ import java.util.List;
             e.printStackTrace();
         }
     }
+
+    @FXML
+    public void removeFilter() {
+        RechercheSol.clear();
+        filteredList.setPredicate(p -> true);
+    }
 }
-*/
