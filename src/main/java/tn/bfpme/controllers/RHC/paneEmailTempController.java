@@ -105,7 +105,6 @@ public class paneEmailTempController implements Initializable {
         }
     }
 
-
     @FXML
     void SupprimerTemp(ActionEvent event) {
         EmailsTemplates selectedEmailTemp = ObjListView.getSelectionModel().getSelectedItem();
