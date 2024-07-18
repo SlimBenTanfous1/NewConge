@@ -51,5 +51,6 @@
       </TableView>
       <Label layoutX="35.0" layoutY="260.0" prefHeight="17.0" prefWidth="83.0" text="Effecer le filtre:" />
       <Button fx:id="btnRemoveFilter" layoutX="125.0" layoutY="255.0" mnemonicParsing="false" onAction="#removeFilter" styleClass="btn-primary" text="X" />
+      <TextField fx:id="ID_Solde" layoutX="34.0" layoutY="571.0" opacity="0.0" prefHeight="29.0" prefWidth="18.0" />
    </children>
 </Pane>
