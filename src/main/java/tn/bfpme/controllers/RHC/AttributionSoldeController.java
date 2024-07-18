@@ -11,12 +11,8 @@ import javafx.scene.input.KeyEvent;
 import tn.bfpme.models.TypeConge;
 import tn.bfpme.services.ServiceTypeConge;
 import tn.bfpme.services.ServiceUtilisateur;
-import tn.bfpme.utils.MyDataBase;
 
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -24,6 +20,8 @@ public class AttributionSoldeController implements Initializable {
 
     @FXML
     private TableView<TypeConge> Table_TypeConge;
+    @FXML
+    private Spinner<Integer> periodespinner;
     @FXML
     private TableColumn<TypeConge, String> colDesignation;
     @FXML
@@ -45,12 +43,6 @@ public class AttributionSoldeController implements Initializable {
     @FXML
     private TextField Pas_Solde;
     @FXML
-    private TextField PeriodeJourTF;
-    @FXML
-    private TextField PeriodeMoisTF;
-    @FXML
-    private TextField PeriodeAnTF;
-    @FXML
     private RadioButton fileOuiRadioButton;
     @FXML
     private RadioButton fileNonRadioButton;
@@ -62,6 +54,8 @@ public class AttributionSoldeController implements Initializable {
     private Button Modifier_Solde;
     @FXML
     private Button Supprimer_Solde;
+    @FXML
+    private Label periodlabel;
     @FXML
     private Button btnRemoveFilter;
     @FXML
@@ -87,6 +81,12 @@ public class AttributionSoldeController implements Initializable {
         colPeriodeA.setCellValueFactory(new PropertyValueFactory<>("periodeA"));
         colFile.setCellValueFactory(new PropertyValueFactory<>("file"));
 
+        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 3650, 0);
+        periodespinner.setValueFactory(valueFactory);
+        periodespinner.setEditable(true);
+
+        periodespinner.valueProperty().addListener((obs, oldValue, newValue) -> updatePeriodLabel(newValue));
+
         loadSoldeConge();
 
         RechercheSol.addEventHandler(KeyEvent.KEY_RELEASED, event -> Recherche_Solde());
@@ -105,9 +105,9 @@ public class AttributionSoldeController implements Initializable {
             ID_Solde.setText(String.valueOf(typeConge.getIdTypeConge()));
             Designation_Solde.setText(typeConge.getDesignation());
             Pas_Solde.setText(String.valueOf(typeConge.getPas()));
-            PeriodeJourTF.setText(String.valueOf(typeConge.getPeriodeJ()));
-            PeriodeMoisTF.setText(String.valueOf(typeConge.getPeriodeM()));
-            PeriodeAnTF.setText(String.valueOf(typeConge.getPeriodeA()));
+            int totalDays = typeConge.getPeriodeJ() + typeConge.getPeriodeM() * 30 + typeConge.getPeriodeA() * 365;
+            periodespinner.getValueFactory().setValue(totalDays);
+            updatePeriodLabel(totalDays);
             if (typeConge.isFile()) {
                 fileOuiRadioButton.setSelected(true);
             } else {
@@ -120,10 +120,26 @@ public class AttributionSoldeController implements Initializable {
         ID_Solde.clear();
         Designation_Solde.clear();
         Pas_Solde.clear();
-        PeriodeJourTF.clear();
-        PeriodeMoisTF.clear();
-        PeriodeAnTF.clear();
+        periodespinner.getValueFactory().setValue(0);
+        periodlabel.setText("");
         fileToggleGroup.selectToggle(null); // Clear radio button selection
+    }
+
+    private void splitPeriod(int totalDays, int[] periods) {
+        periods[0] = totalDays / 365; // years
+        totalDays %= 365;
+        periods[1] = totalDays / 30; // months
+        periods[2] = totalDays % 30; // days
+    }
+
+    private void updatePeriodLabel(int totalDays) {
+        int[] periods = new int[3]; // 0: years, 1: months, 2: days
+        splitPeriod(totalDays, periods);
+        String periodText = String.format("%d année%s, %d mois, %d jour%s",
+                periods[0], periods[0] > 1 ? "s" : "",
+                periods[1],
+                periods[2], periods[2] > 1 ? "s" : "");
+        periodlabel.setText(periodText);
     }
 
     @FXML
@@ -147,9 +163,9 @@ public class AttributionSoldeController implements Initializable {
     public void AjouterTypeButton() {
         String designation = Designation_Solde.getText().trim();
         double pas = Double.parseDouble(Pas_Solde.getText().trim());
-        int periodeJ = Integer.parseInt(PeriodeJourTF.getText().trim());
-        int periodeM = Integer.parseInt(PeriodeMoisTF.getText().trim());
-        int periodeA = Integer.parseInt(PeriodeAnTF.getText().trim());
+        int totalDays = periodespinner.getValue();
+        int[] periods = new int[3]; // 0: years, 1: months, 2: days
+        splitPeriod(totalDays, periods);
         boolean file = fileOuiRadioButton.isSelected();
 
         // Check if a TypeConge with the same designation already exists
@@ -158,7 +174,7 @@ public class AttributionSoldeController implements Initializable {
             return;
         }
 
-        serviceTypeConge.AddTypeConge(designation, pas, periodeJ, periodeM, periodeA, file);
+        serviceTypeConge.AddTypeConge(designation, pas, periods[2], periods[1], periods[0], file);
         loadSoldeConge();
         labelSolde.setText("Type de congé ajouté.");
     }
@@ -168,12 +184,12 @@ public class AttributionSoldeController implements Initializable {
         int idSolde = Integer.parseInt(ID_Solde.getText().trim());
         String designation = Designation_Solde.getText().trim();
         double pas = Double.parseDouble(Pas_Solde.getText().trim());
-        int periodeJ = Integer.parseInt(PeriodeJourTF.getText().trim());
-        int periodeM = Integer.parseInt(PeriodeMoisTF.getText().trim());
-        int periodeA = Integer.parseInt(PeriodeAnTF.getText().trim());
+        int totalDays = periodespinner.getValue();
+        int[] periods = new int[3]; // 0: years, 1: months, 2: days
+        splitPeriod(totalDays, periods);
         boolean file = fileOuiRadioButton.isSelected();
 
-        serviceTypeConge.updateTypeConge(idSolde, designation, pas, periodeJ, periodeM, periodeA, file);
+        serviceTypeConge.updateTypeConge(idSolde, designation, pas, periods[2], periods[1], periods[0], file);
         loadSoldeConge();
         labelSolde.setText("Solde modifié.");
     }
@@ -186,28 +202,6 @@ public class AttributionSoldeController implements Initializable {
         loadSoldeConge();
         labelSolde.setText("Solde supprimé.");
         clearTextFields(); // Clear text fields after deletion
-    }
-
-    private void distributeNewLeaveTypeToUsers(String designation) {
-        int idSolde = serviceTypeConge.getSoldeCongeIdByDesignation(designation);
-        double pas = serviceTypeConge.getPasBySoldeId(idSolde);
-
-        try (Connection conn = MyDataBase.getInstance().getCnx()) {
-            String distributeQuery = "INSERT INTO user_Solde (ID_User, ID_TypeConge, TotalSolde) SELECT ID_User, ?, 0 FROM user";
-            try (PreparedStatement distributeStmt = conn.prepareStatement(distributeQuery)) {
-                distributeStmt.setInt(1, idSolde);
-                distributeStmt.executeUpdate();
-            }
-
-            String updateUserSoldeQuery = "UPDATE user_Solde SET TotalSolde = TotalSolde + ? WHERE ID_TypeConge = ?";
-            try (PreparedStatement updateUserSoldeStmt = conn.prepareStatement(updateUserSoldeQuery)) {
-                updateUserSoldeStmt.setDouble(1, pas);
-                updateUserSoldeStmt.setInt(2, idSolde);
-                updateUserSoldeStmt.executeUpdate();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     @FXML
