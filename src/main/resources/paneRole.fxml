@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
@@ -14,7 +15,7 @@
    <children>
       <ListView fx:id="roleListView" layoutX="225.0" layoutY="111.0" prefHeight="400" prefWidth="200" />
       <TextField fx:id="roleNameField" layoutX="505.0" layoutY="191.0" prefHeight="29.0" prefWidth="281.0" promptText="Nom role" />
-      <TextField fx:id="roleDescriptionField" alignment="TOP_LEFT" layoutX="505.0" layoutY="256.0" prefHeight="104.0" prefWidth="281.0" promptText="Description" />
+      <TextArea fx:id="roleDescriptionField" layoutX="505.0" layoutY="256.0" prefHeight="104.0" prefWidth="281.0" promptText="Description" wrapText="true" />
       <HBox alignment="CENTER" layoutX="505.0" layoutY="111.0" prefHeight="41.0" prefWidth="281.0" spacing="10">
          <children>
             <Button onAction="#handleAddRole" styleClass="btn-primary" text="Ajouter" />

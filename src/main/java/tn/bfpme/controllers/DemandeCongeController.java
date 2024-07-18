@@ -196,6 +196,7 @@ public class DemandeCongeController implements Initializable {
         }
         return 0;
     }
+    @FXML
     void Doc_Imp(ActionEvent event) {
         String documentPath = null;
         FileChooser fileChooser = new FileChooser();

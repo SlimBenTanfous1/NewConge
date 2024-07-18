@@ -20,6 +20,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <Pane fx:id="UtilisateursPane" prefHeight="726.0" prefWidth="1119.0" styleClass="pane1" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.RHC.paneUserController">
@@ -28,14 +29,14 @@
          <tabs>
             <Tab fx:id="TabGestionid" onSelectionChanged="#TabGestion" text="Gestion des utilisateurs">
                <content>
-                  <AnchorPane prefHeight="200.0" prefWidth="200.0" stylesheets="@assets/css/style.css">
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="grad-bg" stylesheets="@assets/css/style.css">
                      <children>
-                        <Pane layoutX="28.0" layoutY="66.0" prefHeight="538.0" prefWidth="412.0" styleClass="paneRoundedCornders" stylesheets="@assets/css/style.css">
+                        <Pane layoutX="28.0" layoutY="66.0" prefHeight="538.0" prefWidth="487.0" styleClass="paneRoundedCornders" stylesheets="@assets/css/style.css">
                            <children>
-                              <GridPane layoutX="20.0" layoutY="9.0" prefHeight="525.0" prefWidth="372.0">
+                              <GridPane layoutX="58.0" layoutY="106.0" prefHeight="400.0" prefWidth="372.0">
                                  <columnConstraints>
-                                    <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                    <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="167.0" minWidth="10.0" prefWidth="117.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="269.0" minWidth="10.0" prefWidth="255.0" />
                                  </columnConstraints>
                                  <rowConstraints>
                                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -61,18 +62,19 @@
                                     <TextField fx:id="MDP_A" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                                  </children>
                               </GridPane>
+                              <Button layoutX="441.0" layoutY="422.0" maxHeight="29.0" minHeight="29.0" mnemonicParsing="false" onAction="#upload_image" prefHeight="29.0" styleClass="btn-primary">
+                                 <graphic>
+                                    <ImageView fitHeight="29.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@assets/imgs/upload.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </Button>
+                              <ImageView fx:id="PDPimageHolder" fitHeight="98.0" fitWidth="98.0" layoutX="201.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" />
                            </children>
                         </Pane>
-                        <Button layoutX="468.0" layoutY="542.0" maxHeight="29.0" minHeight="29.0" mnemonicParsing="false" onAction="#upload_image" prefHeight="29.0" styleClass="btn-primary">
-                           <graphic>
-                              <ImageView fitHeight="29.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@assets/imgs/upload.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                        </Button>
-                        <HBox layoutX="587.0" layoutY="464.0" prefHeight="54.0" prefWidth="361.0">
+                        <HBox layoutX="640.0" layoutY="476.0" prefHeight="54.0" prefWidth="361.0">
                            <children>
                               <Button fx:id="adduserbtn" mnemonicParsing="false" onAction="#ajouter_user" prefHeight="56.0" prefWidth="116.0" styleClass="btn-primary" text="Ajouter">
                                  <font>
@@ -93,8 +95,16 @@
                               </Button>
                            </children>
                         </HBox>
-                        <Label fx:id="infolabel" layoutX="596.0" layoutY="103.0" prefHeight="29.0" prefWidth="342.0" text="zeineb" />
-                        <ImageView fx:id="PDPimageHolder" fitHeight="224.0" fitWidth="254.0" layoutX="640.0" layoutY="179.0" pickOnBounds="true" preserveRatio="true" />
+                        <Label fx:id="infolabel" layoutX="389.0" layoutY="20.0" prefHeight="29.0" prefWidth="342.0" text="zeineb" />
+                        <Pane layoutX="645.0" layoutY="66.0" prefHeight="307.0" prefWidth="351.0" styleClass="paneRoundedCornders">
+                           <children>
+                              <ScrollPane layoutX="9.0" layoutY="9.0" prefHeight="289.0" prefWidth="333.0">
+                                 <content>
+                                    <VBox alignment="TOP_CENTER" prefHeight="281.0" prefWidth="331.0" spacing="5.0" />
+                                 </content>
+                              </ScrollPane>
+                           </children>
+                        </Pane>
                      </children></AnchorPane>
                </content>
             </Tab>

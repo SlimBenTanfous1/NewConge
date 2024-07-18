@@ -55,6 +55,15 @@ public class User {
         this.idDepartement = idDepartement;
         this.idRole = idRole;
     }
+    public User(int idUser, String nom, String prenom, String email, String mdp, String image, LocalDate creationDate) {
+        this.idUser = idUser;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.email = email;
+        this.mdp = mdp;
+        this.image = image;
+        this.creationDate = creationDate != null ? creationDate : LocalDate.now();
+    }
 
     public User(int idUser, String nom, String prenom, String email, String mdp, String image, TypeConge idUser1, int idDepartement, int idRole) {
 

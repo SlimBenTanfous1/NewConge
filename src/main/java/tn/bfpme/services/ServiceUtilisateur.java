@@ -29,7 +29,6 @@ public class ServiceUtilisateur implements IUtilisateur {
         try {
             PreparedStatement ps = cnx.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
-
             while (rs.next()) {
                 User user = new User();
                 user.setIdUser(rs.getInt("ID_User"));
@@ -596,8 +595,11 @@ public class ServiceUtilisateur implements IUtilisateur {
 
     @Override
     public void Add(User user) {
-        String query = "INSERT INTO user (Nom, Prenom, Email, MDP, Image, ID_Departement, ID_Manager, Creation_Date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO user (`Nom`, `Prenom`, `Email`, `MDP`, `Image`, `ID_Departement`, `ID_Manager`, `Creation_Date`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
             PreparedStatement pst = cnx.prepareStatement(query);
             pst.setString(1, user.getNom());
             pst.setString(2, user.getPrenom());
@@ -607,6 +609,25 @@ public class ServiceUtilisateur implements IUtilisateur {
             pst.setInt(6, user.getIdDepartement());
             pst.setInt(7, user.getIdManager());
             pst.setDate(8, Date.valueOf(user.getCreationDate()));
+            pst.executeUpdate();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void AddUser_RH(User user) {
+        String query = "INSERT INTO user (`Nom`, `Prenom`, `Email`, `MDP`, `Image`,`Creation_Date`) VALUES (?, ?, ?, ?, ?, ?)";
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+            PreparedStatement pst = cnx.prepareStatement(query);
+            pst.setString(1, user.getNom());
+            pst.setString(2, user.getPrenom());
+            pst.setString(3, user.getEmail());
+            pst.setString(4, user.getMdp());
+            pst.setString(5, user.getImage());
+            pst.setDate(6, Date.valueOf(user.getCreationDate()));
             pst.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -754,7 +775,7 @@ public class ServiceUtilisateur implements IUtilisateur {
         String query = "UPDATE user SET ID_Manager = ? WHERE ID_User = ?";
         try {
             if (cnx == null || cnx.isClosed()) {
-                cnx = MyDataBase.getInstance().getCnx(); // Re-establish the connection if necessary
+                cnx = MyDataBase.getInstance().getCnx();
             }
             PreparedStatement pstmt = cnx.prepareStatement(query);
             pstmt.setInt(1, managerId);

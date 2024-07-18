@@ -15,9 +15,8 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class paneRoleController implements Initializable {
-
     @FXML
-    private TextField roleDescriptionField;
+    private TextArea roleDescriptionField;
     @FXML
     private ListView<Role> roleListView;
     @FXML
@@ -43,7 +42,6 @@ public class paneRoleController implements Initializable {
         roleParentVBox.getChildren().clear(); // Clear any existing ComboBoxes
         List<Role> parentRoles = roleService.getParentRoles2(roleId);
         ObservableList<Role> allRoles = FXCollections.observableArrayList(roleService.getAllRoles());
-
         for (Role parentRole : parentRoles) {
             ComboBox<Role> comboBox = new ComboBox<>(allRoles);
             comboBox.setValue(parentRole);
@@ -80,6 +78,7 @@ public class paneRoleController implements Initializable {
         String name = roleNameField.getText();
         String description = roleDescriptionField.getText();
         roleService.addRole(name, description);
+        showSuccess("Message de success","Le role à été ajouter avec success");
         loadRoles();
     }
 
@@ -90,6 +89,7 @@ public class paneRoleController implements Initializable {
             String name = roleNameField.getText();
             String description = roleDescriptionField.getText();
             roleService.updateRole(selectedRole.getIdRole(), name, description);
+            showSuccess("Message de success","Le role à été modifier avec success");
             loadRoles();
         }
     }
@@ -100,6 +100,8 @@ public class paneRoleController implements Initializable {
         if (selectedRole != null) {
             roleService.deleteRole(selectedRole.getIdRole());
             loadRoles();
+            showSuccess("Message de success","Le role à été supprimer avec success");
+
         }
     }
 
@@ -142,6 +144,8 @@ public class paneRoleController implements Initializable {
                     Role parentRole = comboBox.getValue();
                     if (parentRole != null) {
                         roleService.addRoleHierarchy(parentRole.getIdRole(), selectedRole.getIdRole());
+                        showSuccess("Ajout d'un hieraechie","L'hierarchie à été ajouter avec success");
+
                     }
                 }
             }
@@ -157,6 +161,7 @@ public class paneRoleController implements Initializable {
                     Role parentRole = comboBox.getValue();
                     if (parentRole != null) {
                         roleService.removeRoleHierarchy(parentRole.getIdRole(), selectedRole.getIdRole());
+                        showSuccess("Suppression de l'hieraechie","L'hierarchie à été supprimer avec success");
                     }
                 }
             }
@@ -195,6 +200,13 @@ public class paneRoleController implements Initializable {
     protected void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+    protected void showSuccess(String message, String titre) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(titre);
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();

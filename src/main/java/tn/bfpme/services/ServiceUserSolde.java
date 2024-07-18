@@ -49,9 +49,13 @@ public class ServiceUserSolde {
         }
     }
     public void addUserSolde(int userId, int typeCongeId, double totalSolde) {
+        Connection cnx = MyDataBase.getInstance().getCnx();
         String query = "INSERT INTO user_solde(ID_User, ID_TypeConge, TotalSolde) VALUES (?,?,?)";
-        try (Connection cnx = MyDataBase.getInstance().getCnx();
-             PreparedStatement pstmt = cnx.prepareStatement(query)) {
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+            PreparedStatement pstmt = cnx.prepareStatement(query);
             pstmt.setInt(1, userId);
             pstmt.setInt(2, typeCongeId);
             pstmt.setDouble(3, totalSolde);
@@ -64,9 +68,12 @@ public class ServiceUserSolde {
     public List<UserSolde> getUserSoldes(int userId) {
         List<UserSolde> userSoldes = new ArrayList<>();
         String sql = "SELECT ID_UserSolde, ID_User, ID_TypeConge, TotalSolde FROM user_solde WHERE ID_User = ?";
-
-        try (Connection cnx = MyDataBase.getInstance().getCnx();
-             PreparedStatement stm = cnx.prepareStatement(sql)) {
+        Connection cnx = MyDataBase.getInstance().getCnx();
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+            PreparedStatement stm = cnx.prepareStatement(sql);
             stm.setInt(1, userId);
             ResultSet rs = stm.executeQuery();
             while (rs.next()) {

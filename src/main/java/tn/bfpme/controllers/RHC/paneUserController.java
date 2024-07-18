@@ -732,11 +732,11 @@ public class paneUserController implements Initializable {
         String mdp = MDP_A.getText();
         String image = image_A.getText();
 
-        if (email.matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@(bfpme\\.tn|gmail\\.com)$")) {
+        /*if (email.matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@(bfpme\\.tn|gmail\\.com)$")) {*/
             try {
                 if (!emailExists(email)) {
-                    User newUser = new User(0, nom, prenom, email, mdp, image, LocalDate.now(), 0, 0, 0);
-                    UserS.Add(newUser);
+                    User newUser = new User(0, nom, prenom, email, mdp, image, LocalDate.now());
+                    UserS.AddUser_RH(newUser);
                     int newUserId = UserS.getLastInsertedUserId();
                     List<TypeConge> typeConges = serviceTypeConge.getAllTypeConge();
                     for (TypeConge typeConge : typeConges) {
@@ -749,9 +749,9 @@ public class paneUserController implements Initializable {
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-        } else {
+       /* } else {
             infolabel.setText("Email est invalide");
-        }
+        }*/
     }
 
     @FXML
