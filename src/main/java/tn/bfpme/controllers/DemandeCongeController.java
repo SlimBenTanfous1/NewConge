@@ -73,6 +73,41 @@ public class DemandeCongeController implements Initializable {
     String NotifSubject = "";
     String messageText = "";
 
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/NavigationHeader.fxml"));
+            Pane departementPane = loader.load();
+            MainAnchorPane.getChildren().add(departementPane);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        List<TypeConge> typeConges = serviceTypeConge.getAllTypeConge();
+        if (typeConges != null && !typeConges.isEmpty()) {
+            ObservableList<TypeConge> observableTypeConges = FXCollections.observableArrayList(typeConges);
+            cb_typeconge.setItems(observableTypeConges);
+        } else {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Type de congé non disponible", "Aucun type de congé n'a été trouvé dans la base de données.");
+        }
+
+        cb_typeconge.setConverter(new StringConverter<TypeConge>() {
+            @Override
+            public String toString(TypeConge typeConge) {
+                return typeConge != null ? typeConge.getDesignation() : "";
+            }
+
+            @Override
+            public TypeConge fromString(String string) {
+                return cb_typeconge.getItems().stream().filter(TypeConge ->
+                        TypeConge.getDesignation().equals(string)).findFirst().orElse(null);
+            }
+        });
+
+        cb_typeconge.setOnAction(this::TypeSelec);
+        FichierVBOX.setVisible(false);
+        paneConge.setVisible(false);
+    }
     @FXML
     void Demander(ActionEvent event) {
         LocalDate DD = datedebut.getValue();
@@ -134,7 +169,6 @@ public class DemandeCongeController implements Initializable {
             System.out.println("Closing current scene...");
         }
     }
-
     private void updateBalance(int userId, int typeCongeId, double newBalance) {
         String query = "UPDATE user_Solde SET TotalSolde = ? WHERE ID_User = ? AND ID_TypeConge = ?";
         try (Connection conn = MyDataBase.getInstance().getCnx();
@@ -162,8 +196,6 @@ public class DemandeCongeController implements Initializable {
         }
         return 0;
     }
-
-
     void Doc_Imp(ActionEvent event) {
         String documentPath = null;
         FileChooser fileChooser = new FileChooser();
@@ -188,7 +220,6 @@ public class DemandeCongeController implements Initializable {
             }
         }
     }
-
     @FXML
     void TypeSelec(ActionEvent event) {
         TypeConge selectedTypeConge = cb_typeconge.getSelectionModel().getSelectedItem();
@@ -198,43 +229,6 @@ public class DemandeCongeController implements Initializable {
             FichierVBOX.setVisible(selectedTypeConge.isFile());
         }
     }
-
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/NavigationHeader.fxml"));
-            Pane departementPane = loader.load();
-            MainAnchorPane.getChildren().add(departementPane);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        List<TypeConge> typeConges = serviceTypeConge.getAllTypeConge();
-        if (typeConges != null && !typeConges.isEmpty()) {
-            ObservableList<TypeConge> observableTypeConges = FXCollections.observableArrayList(typeConges);
-            cb_typeconge.setItems(observableTypeConges);
-        } else {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Type de congé non disponible", "Aucun type de congé n'a été trouvé dans la base de données.");
-        }
-
-        cb_typeconge.setConverter(new StringConverter<TypeConge>() {
-            @Override
-            public String toString(TypeConge typeConge) {
-                return typeConge != null ? typeConge.getDesignation() : "";
-            }
-
-            @Override
-            public TypeConge fromString(String string) {
-                return cb_typeconge.getItems().stream().filter(TypeConge ->
-                        TypeConge.getDesignation().equals(string)).findFirst().orElse(null);
-            }
-        });
-
-        cb_typeconge.setOnAction(this::TypeSelec);
-        FichierVBOX.setVisible(false);
-        paneConge.setVisible(false);
-    }
-
     private void showAlert(Alert.AlertType alertType, String title, String header, String content) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
