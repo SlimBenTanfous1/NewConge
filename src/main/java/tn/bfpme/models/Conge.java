@@ -62,10 +62,10 @@ public class Conge {
         this.dateFin = dateFin;
         this.idTypeConge = idTypeConge;
     }
-    public Conge(LocalDate dateDebut, LocalDate dateFin, String TypeName) {
+    public Conge(LocalDate dateDebut, LocalDate dateFin, String designation) {
         this.dateDebut = dateDebut;
         this.dateFin = dateFin;
-        this.TypeName = TypeName;
+        this.designation = designation;
     }
 
     public String getDesignation() {
