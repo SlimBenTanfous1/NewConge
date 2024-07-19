@@ -350,8 +350,10 @@ public class paneUserController implements Initializable {
 
                 if (managerItem != null && managerItem.getValue() != null) {
                     user.setManagerName(managerItem.getValue().getNom());
+                    System.out.println("Manager of " + user.getNom() + " is " + managerItem.getValue().getNom());
                 } else {
-                    user.setManagerName("sans manager");
+                    user.setManagerName("Il n'y a pas de manager");
+                    System.out.println("Manager of " + user.getNom() + " is Il n'y a pas de manager");
                 }
 
                 Departement department = userService.getDepartmentByUserId(user.getIdUser());
@@ -371,7 +373,9 @@ public class paneUserController implements Initializable {
                 }
             }
 
-            userTable.setRoot(root);
+            // Refresh the TreeView
+            userTable.setRoot(null);  // Clear the TreeView
+            userTable.setRoot(root);  // Set the new root
             userTable.setShowRoot(false);
 
             idUserColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("idUser"));
@@ -384,14 +388,6 @@ public class paneUserController implements Initializable {
             e.printStackTrace();
         }
     }
-
-
-
-
-
-
-
-
     private void loadRoles3() {
         List<Role> roleList = roleService.getAllRoles();
         ObservableList<Role> roles = FXCollections.observableArrayList(roleList);

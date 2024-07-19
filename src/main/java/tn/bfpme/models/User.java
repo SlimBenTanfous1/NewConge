@@ -19,7 +19,7 @@ public class User {
     private Map<Integer, String> typeCongeMap = new HashMap<>();
     private String departementNom; // New field for department name
     private String roleNom; // New field for role name
-    private String managerName; // New field for manager name
+    public String managerName; // New field for manager name
     private double TotalSolde;
 
 
@@ -195,6 +195,8 @@ public class User {
         this.roleNom = roleNom;
     }
 
+
+
     public String getManagerName() {
         return managerName == null || managerName.isEmpty() ? "Il n'y a pas de manager" : managerName;
     }
@@ -202,6 +204,7 @@ public class User {
     public void setManagerName(String managerName) {
         this.managerName = managerName;
     }
+
 
     public LocalDate getCreationDate() {
         return creationDate;
