@@ -21,10 +21,15 @@
 
 <Pane fx:id="CongePane" prefHeight="726.0" prefWidth="1119.0" styleClass="grad-bg" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.RHC.AttributionSoldeController">
    <children>
-      <Label fx:id="labelSolde" alignment="CENTER" layoutX="669.0" layoutY="143.0" prefHeight="32.0" prefWidth="355.0" styleClass="paneRoundedCornders">
+      <Label fx:id="labelSolde" alignment="CENTER" layoutX="629.0" layoutY="144.0" prefHeight="34.0" prefWidth="434.0">
          <font>
             <Font name="Circular Std Medium" size="22.0" />
          </font>
+         <styleClass>
+            <String fx:value="paneRoundedCornders" />
+            <String fx:value="RobotoBoldItalic" />
+            <String fx:value="FontSize-17" />
+         </styleClass>
       </Label>
       <Label layoutX="546.0" layoutY="357.0" text="Période (Jour) :" visible="false" />
       <Label layoutX="545.0" layoutY="411.0" text="Période (Mois) :" visible="false" />

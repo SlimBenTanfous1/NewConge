@@ -100,26 +100,20 @@ public class ServiceTypeConge {
             return typeConges;
         }
 
-    public int AddTypeConge(String designation, double pas, int periodeJ, int periodeM, int periodeA, boolean file) {
+    public void AddTypeConge(String designation, double pas, int periodeJ, int periodeM, int periodeA, boolean file) {
         String query = "INSERT INTO typeconge (Designation, Pas, PeriodeJ, PeriodeM, PeriodeA, File) VALUES (?, ?, ?, ?, ?, ?)";
-        try {
-            Connection connection = MyDataBase.getInstance().getCnx();
-            PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            pstmt.setString(1, designation);
-            pstmt.setDouble(2, pas);
-            pstmt.setInt(3, periodeJ);
-            pstmt.setInt(4, periodeM);
-            pstmt.setInt(5, periodeA);
-            pstmt.setBoolean(6, file);
-            pstmt.executeUpdate();
-            ResultSet rs = pstmt.getGeneratedKeys();
-            if (rs.next()) {
-                return rs.getInt(1); // Return the generated ID
-            }
+        try (Connection connection = MyDataBase.getInstance().getCnx();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)){
+            preparedStatement.setString(1, designation);
+            preparedStatement.setDouble(2, pas);
+            preparedStatement.setInt(3, periodeJ);
+            preparedStatement.setInt(4, periodeM);
+            preparedStatement.setInt(5, periodeA);
+            preparedStatement.setBoolean(6, file);
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return -1;
     }
 
     public double getPasBySoldeId(int idSolde) {

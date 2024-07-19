@@ -168,20 +168,10 @@ public class AttributionSoldeController implements Initializable {
             labelSolde.setText("Type de congé avec cette désignation existe déjà.");
             return;
         }
-        int typeCongeId = serviceTypeConge.AddTypeConge(designation, pas, periods[2], periods[1], periods[0], file);
-        if (typeCongeId == -1) {
-            labelSolde.setText("Erreur lors de l'ajout du type de congé.");
-            return;
-        }
-        List<User> allUsers = serviceUtilisateur.getAllUsers();
-        for (User user : allUsers) {
-            serviceUserSolde.addUserSolde(user.getIdUser(), typeCongeId, 0.0);
-        }
+        serviceTypeConge.AddTypeConge(designation, pas, periods[2], periods[1], periods[0], file);
         loadSoldeConge();
-        labelSolde.setText("Type de congé ajouté et assigné à tous les utilisateurs.");
+        labelSolde.setText("Type de congé ajouté.");
     }
-
-
     @FXML
     public void ModifierTypeButton() {
         int idSolde = Integer.parseInt(ID_Solde.getText().trim());
