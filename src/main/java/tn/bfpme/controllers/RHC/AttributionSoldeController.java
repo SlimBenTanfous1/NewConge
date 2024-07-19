@@ -148,7 +148,7 @@ public class AttributionSoldeController implements Initializable {
         List<TypeConge> soldeCongeList = serviceTypeConge.getAllTypeConge();
         filteredList = new FilteredList<>(FXCollections.observableArrayList(soldeCongeList), p -> true);
         Table_TypeConge.setItems(filteredList);
-        distributeExistingLeaveTypesToUsers();
+       // distributeExistingLeaveTypesToUsers();
 
     }
 
@@ -228,7 +228,7 @@ public class AttributionSoldeController implements Initializable {
             e.printStackTrace();
         }
     }
-    private void distributeExistingLeaveTypesToUsers() {
+    /*private void distributeExistingLeaveTypesToUsers() {
         List<TypeConge> soldeCongeList = serviceTypeConge.getAllTypeConge();
         try (Connection conn = MyDataBase.getInstance().getCnx()) {
             for (TypeConge typeConge : soldeCongeList) {
@@ -252,5 +252,5 @@ public class AttributionSoldeController implements Initializable {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 }
