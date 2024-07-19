@@ -31,7 +31,7 @@
                   <String fx:value="RobotoBold" />
                </styleClass>
             </Button>
-            <Button fx:id="btnRH" mnemonicParsing="false" onAction="#RH_Interface" prefHeight="38.0" prefWidth="75.0" text="RH">
+            <Button fx:id="admin_interface" mnemonicParsing="false" onAction="#admin_interfacebtn" prefHeight="38.0" prefWidth="82.0" text="Admin">
                <font>
                   <Font size="14.0" />
                </font>
@@ -41,7 +41,7 @@
                   <String fx:value="RobotoBold" />
                </styleClass>
             </Button>
-            <Button fx:id="admin_interface" mnemonicParsing="false" onAction="#admin_interfacebtn" prefHeight="38.0" prefWidth="82.0" text="Admin">
+            <Button fx:id="btnRH" mnemonicParsing="false" onAction="#RH_Interface" prefHeight="38.0" prefWidth="75.0" text="RH">
                <font>
                   <Font size="14.0" />
                </font>
@@ -61,7 +61,7 @@
                   <String fx:value="RobotoBold" />
                </styleClass>
             </Button>
-            <Button mnemonicParsing="false" onAction="#ListeEmployés" prefHeight="35.0" prefWidth="164.0" text="Liste des employés">
+            <Button mnemonicParsing="false" onAction="#ListeEmployés" prefHeight="35.0" prefWidth="180.0" text="Liste des employés">
                <font>
                   <Font size="14.0" />
                </font>

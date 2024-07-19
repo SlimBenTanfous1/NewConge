@@ -44,9 +44,8 @@ public class UserCarteController {
         email_card.setText(user.getEmail());
         periode_card.setText("De    " + conge.getDateDebut() + "   →   " + conge.getDateFin());
         statut_card.setText(String.valueOf(conge.getStatut()));
-        type_card.setText(String.valueOf(conge.getTypeConge()));
+        type_card.setText(String.valueOf(conge.getDesignation()));
         UserCard.setStyle("-fx-border-radius: 5px; -fx-border-color: #808080;");
-
     }
 
     @FXML

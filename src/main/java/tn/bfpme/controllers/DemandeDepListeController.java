@@ -138,28 +138,32 @@ public class DemandeDepListeController implements Initializable {
         DemandesContainer.setPadding(new Insets(8));
         int row = 0;
         int column = 0;
-
         try {
-            List<User> users = UserS.afficherusers();
-            for (User user : users) {
-                List<Conge> conges = ServiceConge.getCongesByUserId(user.getIdUser()); // Assuming this method exists
-                for (Conge conge : conges) {
-                    FXMLLoader fxmlLoader = new FXMLLoader();
-                    fxmlLoader.setLocation(getClass().getResource("/UserCarte.fxml"));
-                    try {
-                        Pane cardBox = fxmlLoader.load();
-                        UserCarteController cardu = fxmlLoader.getController();
-                        cardu.setData(conge, user);
-                        DemandesContainer.add(cardBox, column, row);
-                        GridPane.setMargin(cardBox, new Insets(10));
-                        cardBox.setMaxWidth(Double.MAX_VALUE);
-                        column++;
-                        if (column == 3) { // Change this to the number of columns you want
-                            column = 0;
-                            row++;
+            DemandesContainer.getChildren().clear();
+            UserConge userConge = UserS.AfficherEnAttente();
+            List<User> users = userConge.getUsers();
+            List<Conge> conges = userConge.getConges();
+            for (Conge conge : conges) {
+                for (User user : users) {
+                    if (conge.getIdUser() == user.getIdUser()) {
+                        FXMLLoader fxmlLoader = new FXMLLoader();
+                        fxmlLoader.setLocation(getClass().getResource("/UserCarte.fxml"));
+                        try {
+                            Pane cardBox = fxmlLoader.load();
+                            UserCarteController cardu = fxmlLoader.getController();
+                            cardu.setData(conge, user);
+                            DemandesContainer.add(cardBox, column, row);
+                            GridPane.setMargin(cardBox, new Insets(10));
+                            cardBox.setMaxWidth(Double.MAX_VALUE);
+                            column++;
+                            if (column == 1) {
+                                column = 0;
+                                row++;
+                            }
+                        } catch (IOException e) {
+                            System.err.println("Error loading UserCarte.fxml: " + e.getMessage());
                         }
-                    } catch (IOException e) {
-                        System.err.println("Error loading UserCarte.fxml: " + e.getMessage());
+                        break;
                     }
                 }
             }
@@ -168,7 +172,6 @@ public class DemandeDepListeController implements Initializable {
             e.printStackTrace();
         }
     }
-
 
     @FXML
     void LesApprouves(ActionEvent event) {
@@ -214,11 +217,12 @@ public class DemandeDepListeController implements Initializable {
         int column = 0;
         try {
             DemandesContainer.getChildren().clear();
-            List<User> users = UserS.afficherusers();
-            for (User user : users) {
-                List<Conge> conges = ServiceConge.getCongesByUserId(user.getIdUser()); // Using the method here
-                for (Conge conge : conges) {
-                    if (conge.getStatut() == Statut.En_Attente) { // Check if the status is "En_Attente"
+            UserConge userConge = UserS.AfficherEnAttente();
+            List<User> users = userConge.getUsers();
+            List<Conge> conges = userConge.getConges();
+            for (Conge conge : conges) {
+                for (User user : users) {
+                    if (conge.getIdUser() == user.getIdUser()) {
                         FXMLLoader fxmlLoader = new FXMLLoader();
                         fxmlLoader.setLocation(getClass().getResource("/UserCarte.fxml"));
                         try {
@@ -236,6 +240,7 @@ public class DemandeDepListeController implements Initializable {
                         } catch (IOException e) {
                             System.err.println("Error loading UserCarte.fxml: " + e.getMessage());
                         }
+                        break;
                     }
                 }
             }

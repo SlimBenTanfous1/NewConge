@@ -138,13 +138,9 @@
             <Pane layoutX="89.0" layoutY="362.0" prefHeight="199.0" prefWidth="609.0" style="-fx-border-color: white;" styleClass="pane1">
                <children>
                   <ScrollPane prefHeight="192.0" prefWidth="609.0">
-                    <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="196.0" prefWidth="603.0">
-                           <children>
-                              <HBox fx:id="soldeHBox" alignment="CENTER" prefHeight="199.0" prefWidth="603.0" spacing="18.0" />
-                           </children>
-                        </AnchorPane>
-                    </content>
+                     <content>
+                        <HBox fx:id="soldeHBox" alignment="CENTER" prefHeight="190.0" prefWidth="607.0" spacing="18.0" />
+                     </content>
                   </ScrollPane>
                </children>
             </Pane>

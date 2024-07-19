@@ -142,10 +142,8 @@ public class paneUserController implements Initializable {
     private Pane RolePane1;
     @FXML
     private Pane UserPane1;
-
     @FXML
     private Button removeFilterButton, adduserbtn;
-
 
     public User selectedUser;
     public FilteredList<User> filteredData;
@@ -160,7 +158,6 @@ public class paneUserController implements Initializable {
     private final ServiceTypeConge serviceTypeConge = new ServiceTypeConge();
     private final ServiceRole roleService = new ServiceRole();
     private ObservableList<User> users;
-
 
     ObservableList<String> HierarchieList = FXCollections.observableArrayList("Utilisateurs", "Départements", "Roles");
 
@@ -187,7 +184,6 @@ public class paneUserController implements Initializable {
         hierarCombo.setValue("Selectioner type");
         hierarCombo.setItems(HierarchieList);
     }
-
 
     @FXML
     void SelecHierar(ActionEvent event) {
@@ -478,12 +474,10 @@ public class paneUserController implements Initializable {
         DeptparColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("parentDeptName"));
     }
 
-
     private boolean isCurrentUser(int userId, String email) {
         User user = UserS.getUserById(userId);
         return user != null && user.getEmail().equals(email);
     }
-
 
     @FXML
     public void User_Recherche(ActionEvent actionEvent) {
@@ -775,7 +769,6 @@ public class paneUserController implements Initializable {
         String email = email_A.getText();
         String mdp = MDP_A.getText();
         String image = image_A.getText();
-
         /*if (email.matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@(bfpme\\.tn|gmail\\.com)$")) {*/
             try {
                 if (!emailExists(email)) {
@@ -939,8 +932,7 @@ public class paneUserController implements Initializable {
                     user.getEmail().toLowerCase().contains(lowerCaseFilter);
         });
     }
-
-
+    
     @FXML
     public void TriZA(ActionEvent actionEvent) {
     }
@@ -978,7 +970,6 @@ public class paneUserController implements Initializable {
             refreshUserContainers();
         });
     }
-
 
     private void refreshUserContainers() {
         UserContainers.getChildren().clear();

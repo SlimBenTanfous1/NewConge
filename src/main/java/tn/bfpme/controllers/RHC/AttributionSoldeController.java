@@ -9,7 +9,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import tn.bfpme.models.TypeConge;
+import tn.bfpme.models.User;
 import tn.bfpme.services.ServiceTypeConge;
+import tn.bfpme.services.ServiceUserSolde;
 import tn.bfpme.services.ServiceUtilisateur;
 import tn.bfpme.utils.MyDataBase;
 
@@ -65,15 +67,16 @@ public class AttributionSoldeController implements Initializable {
     @FXML
     private Label labelSolde;
 
-    private ServiceTypeConge serviceTypeConge;
     private ObservableList<TypeConge> originalList;
     private FilteredList<TypeConge> filteredList;
-
+    private ServiceTypeConge serviceTypeConge;
     private ServiceUtilisateur serviceUtilisateur;
+    private ServiceUserSolde serviceUserSolde;
 
     public AttributionSoldeController() {
         this.serviceTypeConge = new ServiceTypeConge();
         this.serviceUtilisateur = new ServiceUtilisateur();
+        this.serviceUserSolde = new ServiceUserSolde();
     }
 
     @Override
@@ -84,22 +87,16 @@ public class AttributionSoldeController implements Initializable {
         colPeriodeM.setCellValueFactory(new PropertyValueFactory<>("periodeM"));
         colPeriodeA.setCellValueFactory(new PropertyValueFactory<>("periodeA"));
         colFile.setCellValueFactory(new PropertyValueFactory<>("file"));
-
         SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 3650, 0);
         periodespinner.setValueFactory(valueFactory);
         periodespinner.setEditable(true);
-
         periodespinner.valueProperty().addListener((obs, oldValue, newValue) -> updatePeriodLabel(newValue));
-
         loadSoldeConge();
-
         RechercheSol.addEventHandler(KeyEvent.KEY_RELEASED, event -> Recherche_Solde());
-
         btnRemoveFilter.setOnAction(event -> {
             removeFilter();
             clearTextFields();
         });
-
         Table_TypeConge.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> populateFields(newValue));
     }
@@ -173,19 +170,15 @@ public class AttributionSoldeController implements Initializable {
         int[] periods = new int[3]; // 0: years, 1: months, 2: days
         splitPeriod(totalDays, periods);
         boolean file = fileOuiRadioButton.isSelected();
-
-        // Check if a TypeConge with the same designation already exists
         if (serviceTypeConge.existsByDesignation(designation)) {
             labelSolde.setText("Type de congé avec cette désignation existe déjà.");
             return;
         }
-
         serviceTypeConge.AddTypeConge(designation, pas, periods[2], periods[1], periods[0], file);
         loadSoldeConge();
         distributeNewLeaveTypeToUsers(designation);
         labelSolde.setText("Type de congé ajouté.");
     }
-
     @FXML
     public void ModifierTypeButton() {
         int idSolde = Integer.parseInt(ID_Solde.getText().trim());
@@ -219,14 +212,12 @@ public class AttributionSoldeController implements Initializable {
     private void distributeNewLeaveTypeToUsers(String designation) {
         int idSolde = serviceTypeConge.getSoldeCongeIdByDesignation(designation);
         double pas = serviceTypeConge.getPasBySoldeId(idSolde);
-
         try (Connection conn = MyDataBase.getInstance().getCnx()) {
             String distributeQuery = "INSERT INTO user_Solde (ID_User, ID_TypeConge, TotalSolde) SELECT ID_User, ?, 0 FROM user";
             try (PreparedStatement distributeStmt = conn.prepareStatement(distributeQuery)) {
                 distributeStmt.setInt(1, idSolde);
                 distributeStmt.executeUpdate();
             }
-
             String updateUserSoldeQuery = "UPDATE user_Solde SET TotalSolde = TotalSolde + ? WHERE ID_TypeConge = ?";
             try (PreparedStatement updateUserSoldeStmt = conn.prepareStatement(updateUserSoldeQuery)) {
                 updateUserSoldeStmt.setDouble(1, pas);
