@@ -57,7 +57,6 @@
                                     <TextField fx:id="Prenom_A" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                     <TextField fx:id="nom_A" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                     <TextField fx:id="email_A" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                                    <TextField fx:id="image_A" disable="true" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                                     <TextField fx:id="image_A" disable="true" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                                     <TextField fx:id="MDP_A" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                                  </children>
@@ -95,7 +94,7 @@
                               </Button>
                            </children>
                         </HBox>
-                        <Label fx:id="infolabel" layoutX="389.0" layoutY="20.0" prefHeight="29.0" prefWidth="342.0" text="zeineb" />
+                        <Label fx:id="infolabel" layoutX="389.0" layoutY="20.0" prefHeight="29.0" prefWidth="342.0" />
                         <Pane layoutX="645.0" layoutY="66.0" prefHeight="307.0" prefWidth="351.0" styleClass="paneRoundedCornders">
                            <children>
                               <ScrollPane layoutX="9.0" layoutY="9.0" prefHeight="289.0" prefWidth="333.0">
@@ -139,19 +138,19 @@
                         <ListView fx:id="roleListView" layoutX="790.0" layoutY="131.0" prefHeight="400.0" prefWidth="280.0" />
                         <TextField fx:id="Depart_field" layoutX="420.0" layoutY="83.0" onAction="#Depart_Recherche" prefHeight="29.0" prefWidth="280.0" />
                         <TextField fx:id="Role_field" layoutX="790.0" layoutY="83.0" onAction="#Role_Recherche" prefHeight="29.0" prefWidth="280.0" />
-                        <Label layoutX="144.0" layoutY="35.0" text="Employés">
+                        <Label layoutX="144.0" layoutY="48.0" text="Employés">
                            <styleClass>
                               <String fx:value="FontSize-21" />
                               <String fx:value="RobotoBoldItalic" />
                            </styleClass>
                         </Label>
-                        <Label layoutX="499.0" layoutY="35.0" text="Departements">
+                        <Label layoutX="494.0" layoutY="48.0" text="Departements">
                            <styleClass>
                               <String fx:value="FontSize-21" />
                               <String fx:value="RobotoBoldItalic" />
                            </styleClass>
                         </Label>
-                        <Label layoutX="905.0" layoutY="35.0" text="Roles">
+                        <Label layoutX="904.0" layoutY="48.0" text="Roles">
                            <styleClass>
                               <String fx:value="FontSize-21" />
                               <String fx:value="RobotoBoldItalic" />
@@ -176,6 +175,12 @@
                               </Button>
                            </children>
                         </HBox>
+                        <Label fx:id="affectationlabel" layoutX="396.0" layoutY="14.0" prefHeight="18.0" prefWidth="329.0">
+                           <styleClass>
+                              <String fx:value="FontSize-14" />
+                              <String fx:value="RobotoMediumItalic" />
+                           </styleClass>
+                        </Label>
                      </children></AnchorPane>
                </content>
             </Tab>

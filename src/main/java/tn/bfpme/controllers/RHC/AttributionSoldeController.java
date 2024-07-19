@@ -148,6 +148,8 @@ public class AttributionSoldeController implements Initializable {
         List<TypeConge> soldeCongeList = serviceTypeConge.getAllTypeConge();
         filteredList = new FilteredList<>(FXCollections.observableArrayList(soldeCongeList), p -> true);
         Table_TypeConge.setItems(filteredList);
+       // distributeExistingLeaveTypesToUsers();
+
     }
 
     @FXML
@@ -226,4 +228,29 @@ public class AttributionSoldeController implements Initializable {
             e.printStackTrace();
         }
     }
+    /*private void distributeExistingLeaveTypesToUsers() {
+        List<TypeConge> soldeCongeList = serviceTypeConge.getAllTypeConge();
+        try (Connection conn = MyDataBase.getInstance().getCnx()) {
+            for (TypeConge typeConge : soldeCongeList) {
+                int idSolde = typeConge.getIdTypeConge();
+                double pas = typeConge.getPas();
+
+                String distributeQuery = "INSERT INTO user_Solde (ID_User, ID_TypeConge, TotalSolde) SELECT ID_User, ?, 0 FROM user WHERE NOT EXISTS (SELECT 1 FROM user_Solde WHERE user_Solde.ID_User = user.ID_User AND user_Solde.ID_TypeConge = ?)";
+                try (PreparedStatement distributeStmt = conn.prepareStatement(distributeQuery)) {
+                    distributeStmt.setInt(1, idSolde);
+                    distributeStmt.setInt(2, idSolde);
+                    distributeStmt.executeUpdate();
+                }
+
+                String updateUserSoldeQuery = "UPDATE user_Solde SET TotalSolde = TotalSolde + ? WHERE ID_TypeConge = ?";
+                try (PreparedStatement updateUserSoldeStmt = conn.prepareStatement(updateUserSoldeQuery)) {
+                    updateUserSoldeStmt.setDouble(1, pas);
+                    updateUserSoldeStmt.setInt(2, idSolde);
+                    updateUserSoldeStmt.executeUpdate();
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }*/
 }

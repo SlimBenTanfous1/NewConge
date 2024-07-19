@@ -11,6 +11,28 @@ import java.util.List;
 public class ServiceRole {
 
     private static Connection cnx = MyDataBase.getInstance().getCnx();
+    public static Role getRoleByUserId(int idUser) {
+        Role role = null;
+        String query = "SELECT r.* FROM role r JOIN user_role ur ON r.ID_Role = ur.ID_Role WHERE ur.ID_User = ?";
+        try{
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+            PreparedStatement ps = cnx.prepareStatement(query);
+            ps.setInt(1, idUser);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                role = new Role(
+                        rs.getInt("ID_Role"),
+                        rs.getString("nom"),
+                        rs.getString("description")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return role;
+    }
 
     public Role getRoleById(int roleId) {
         Role role = null;
@@ -34,6 +56,8 @@ public class ServiceRole {
         }
         return role;
     }
+
+
 
     public static List<Role> getChildRoles(int parentRoleId) {
         List<Role> childRoles = new ArrayList<>();
@@ -105,25 +129,7 @@ public class ServiceRole {
         return roles;
     }
 
-    public static Role getRoleByUserId(int idUser) {
-        Role role = null;
-        String query = "SELECT r.* FROM role r JOIN user_role ur ON r.ID_Role = ur.ID_Role WHERE ur.ID_User = ?";
-        try (Connection cnx = MyDataBase.getInstance().getCnx();
-             PreparedStatement ps = cnx.prepareStatement(query)) {
-            ps.setInt(1, idUser);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                role = new Role(
-                        rs.getInt("ID_Role"),
-                        rs.getString("nom"),
-                        rs.getString("description")
-                );
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return role;
-    }
+
 
     public static List<Role> getParentRoles(int idRole) {
         List<Role> parentRoles = new ArrayList<>();
@@ -353,4 +359,5 @@ public class ServiceRole {
         }
 
     }
+
 }

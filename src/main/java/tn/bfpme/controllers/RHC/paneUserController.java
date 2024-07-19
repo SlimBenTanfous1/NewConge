@@ -35,6 +35,7 @@ import java.security.Provider;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class paneUserController implements Initializable {
     @FXML
@@ -121,6 +122,8 @@ public class paneUserController implements Initializable {
     public TextField S_mat;
     @FXML
     public GridPane UserContainers;
+    @FXML
+    private Label affectationlabel;
     @FXML
     private Pane UtilisateursPane;
     @FXML
@@ -311,18 +314,22 @@ public class paneUserController implements Initializable {
         });
     }
 
+
     private void loadUsers3() {
         try {
             List<User> userList = userService.getAllUsers();
             ObservableList<User> users = FXCollections.observableArrayList(userList);
+
             TreeItem<User> root = new TreeItem<>(new User(0, "sans manager", "", "", "", "", 0, 0, 0, 0, 0, 0));
             root.setExpanded(true);
             Map<Integer, TreeItem<User>> userMap = new HashMap<>();
             userMap.put(0, root);
+
             for (User user : users) {
                 TreeItem<User> item = new TreeItem<>(user);
                 userMap.put(user.getIdUser(), item);
             }
+
             for (User user : users) {
                 TreeItem<User> item = userMap.get(user.getIdUser());
                 TreeItem<User> parentItem = userMap.getOrDefault(user.getIdManager(), root);
@@ -331,25 +338,38 @@ public class paneUserController implements Initializable {
                     parentItem.getChildren().add(item);
                 }
             }
+
+            // Update the manager name, department, and role for each user
             for (User user : users) {
                 TreeItem<User> item = userMap.get(user.getIdUser());
                 TreeItem<User> managerItem = userMap.get(user.getIdManager());
+
                 if (managerItem != null && managerItem.getValue() != null) {
                     user.setManagerName(managerItem.getValue().getNom());
                 } else {
                     user.setManagerName("sans manager");
                 }
-                Departement department = ServiceDepartement.getDepartmentById(user.getIdDepartement());
+
+                Departement department = userService.getDepartmentByUserId(user.getIdUser());
                 if (department != null) {
                     user.setDepartementNom(department.getNom());
+                } else {
+                    user.setDepartementNom("sans département");
                 }
-                Role role = roleService.getRoleById(user.getIdRole());
+
+                Role role = roleService.getRoleByUserId(user.getIdUser());
                 if (role != null) {
                     user.setRoleNom(role.getNom());
+                    System.out.println("User: " + user.getNom() + " | Role: " + role.getNom());
+                } else {
+                    user.setRoleNom("sans rôle");
+                    System.out.println("User: " + user.getNom() + " | Role: sans rôle");
                 }
             }
+
             userTable.setRoot(root);
             userTable.setShowRoot(false);
+
             idUserColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("idUser"));
             prenomUserColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("prenom"));
             nomUserColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("nom"));
@@ -360,6 +380,13 @@ public class paneUserController implements Initializable {
             e.printStackTrace();
         }
     }
+
+
+
+
+
+
+
 
     private void loadRoles3() {
         List<Role> roleList = roleService.getAllRoles();
@@ -653,15 +680,19 @@ public class paneUserController implements Initializable {
                 if (isUpdated) {
                     loadUsers();
                     highlightSelectedUser(selectedUser);
+                    affectationlabel.setText("Modification effectuée");
                 } else {
-                    showError("Please select a role and/or department to assign.");
+                    showError("Veuillez sélectionner un rôle et/ou un département à attribuer.");
                 }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                showError("Une erreur s'est produite lors de la mise à jour de l'utilisateur : " + e.getMessage());
             } catch (Exception e) {
                 e.printStackTrace();
-                showError("An error occurred while updating the user: " + e.getMessage());
+                showError("Une erreur s'est produite : " + e.getMessage());
             }
         } else {
-            showError("Please select a user to edit.");
+            showError("Veuillez sélectionner un utilisateur à modifier.");
         }
         loadUsers3();
     }
@@ -684,15 +715,28 @@ public class paneUserController implements Initializable {
                 // Reload users and highlight the selected user
                 loadUsers();
                 highlightSelectedUser(userService.getUserById(userId));
+                affectationlabel.setText("Ajout effectué");
             } catch (SQLException e) {
-                showError("An error occurred while assigning the user: " + e.getMessage());
+                showError("Une erreur s'est produite lors de l'affectation de l'utilisateur : " + e.getMessage());
                 e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+                showError("Une erreur s'est produite : " + e.getMessage());
             }
         } else {
-            showError("Please select a user, role, and department to assign.");
+            showError("Veuillez sélectionner un utilisateur, un rôle et un département à attribuer.");
         }
         loadUsers3();
     }
+
+    private void showErrorToUser(String message) {
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
 
     public Integer getSelectedUserId() {
         return selectedUser != null ? selectedUser.getIdUser() : null;
