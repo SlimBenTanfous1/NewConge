@@ -218,12 +218,12 @@ public class AttributionSoldeController implements Initializable {
                 distributeStmt.setInt(1, idSolde);
                 distributeStmt.executeUpdate();
             }
-            String updateUserSoldeQuery = "UPDATE user_Solde SET TotalSolde = TotalSolde + ? WHERE ID_TypeConge = ?";
+            /*String updateUserSoldeQuery = "UPDATE user_Solde SET TotalSolde = TotalSolde + ? WHERE ID_TypeConge = ?";
             try (PreparedStatement updateUserSoldeStmt = conn.prepareStatement(updateUserSoldeQuery)) {
                 updateUserSoldeStmt.setDouble(1, pas);
                 updateUserSoldeStmt.setInt(2, idSolde);
                 updateUserSoldeStmt.executeUpdate();
-            }
+            }*/
         } catch (SQLException e) {
             e.printStackTrace();
         }
