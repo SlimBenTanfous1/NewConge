@@ -674,6 +674,9 @@ public class ServiceUtilisateur implements IUtilisateur {
     public void DeleteByID(int id) {
         String query = "DELETE FROM user WHERE ID_User=?";
         try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
             PreparedStatement pst = cnx.prepareStatement(query);
             pst.setInt(1, id);
             pst.executeUpdate();

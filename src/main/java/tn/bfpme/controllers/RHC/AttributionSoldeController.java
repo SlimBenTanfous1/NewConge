@@ -9,7 +9,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import tn.bfpme.models.TypeConge;
+import tn.bfpme.models.User;
 import tn.bfpme.services.ServiceTypeConge;
+import tn.bfpme.services.ServiceUserSolde;
 import tn.bfpme.services.ServiceUtilisateur;
 
 import java.net.URL;
@@ -61,15 +63,16 @@ public class AttributionSoldeController implements Initializable {
     @FXML
     private Label labelSolde;
 
-    private ServiceTypeConge serviceTypeConge;
     private ObservableList<TypeConge> originalList;
     private FilteredList<TypeConge> filteredList;
-
+    private ServiceTypeConge serviceTypeConge;
     private ServiceUtilisateur serviceUtilisateur;
+    private ServiceUserSolde serviceUserSolde;
 
     public AttributionSoldeController() {
         this.serviceTypeConge = new ServiceTypeConge();
         this.serviceUtilisateur = new ServiceUtilisateur();
+        this.serviceUserSolde = new ServiceUserSolde();
     }
 
     @Override
@@ -80,22 +83,16 @@ public class AttributionSoldeController implements Initializable {
         colPeriodeM.setCellValueFactory(new PropertyValueFactory<>("periodeM"));
         colPeriodeA.setCellValueFactory(new PropertyValueFactory<>("periodeA"));
         colFile.setCellValueFactory(new PropertyValueFactory<>("file"));
-
         SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 3650, 0);
         periodespinner.setValueFactory(valueFactory);
         periodespinner.setEditable(true);
-
         periodespinner.valueProperty().addListener((obs, oldValue, newValue) -> updatePeriodLabel(newValue));
-
         loadSoldeConge();
-
         RechercheSol.addEventHandler(KeyEvent.KEY_RELEASED, event -> Recherche_Solde());
-
         btnRemoveFilter.setOnAction(event -> {
             removeFilter();
             clearTextFields();
         });
-
         Table_TypeConge.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> populateFields(newValue));
     }
@@ -167,17 +164,23 @@ public class AttributionSoldeController implements Initializable {
         int[] periods = new int[3]; // 0: years, 1: months, 2: days
         splitPeriod(totalDays, periods);
         boolean file = fileOuiRadioButton.isSelected();
-
-        // Check if a TypeConge with the same designation already exists
         if (serviceTypeConge.existsByDesignation(designation)) {
             labelSolde.setText("Type de congé avec cette désignation existe déjà.");
             return;
         }
-
-        serviceTypeConge.AddTypeConge(designation, pas, periods[2], periods[1], periods[0], file);
+        int typeCongeId = serviceTypeConge.AddTypeConge(designation, pas, periods[2], periods[1], periods[0], file);
+        if (typeCongeId == -1) {
+            labelSolde.setText("Erreur lors de l'ajout du type de congé.");
+            return;
+        }
+        List<User> allUsers = serviceUtilisateur.getAllUsers();
+        for (User user : allUsers) {
+            serviceUserSolde.addUserSolde(user.getIdUser(), typeCongeId, 0.0);
+        }
         loadSoldeConge();
-        labelSolde.setText("Type de congé ajouté.");
+        labelSolde.setText("Type de congé ajouté et assigné à tous les utilisateurs.");
     }
+
 
     @FXML
     public void ModifierTypeButton() {
