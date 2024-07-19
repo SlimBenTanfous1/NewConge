@@ -13,8 +13,12 @@ import tn.bfpme.models.User;
 import tn.bfpme.services.ServiceTypeConge;
 import tn.bfpme.services.ServiceUserSolde;
 import tn.bfpme.services.ServiceUtilisateur;
+import tn.bfpme.utils.MyDataBase;
 
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -170,6 +174,7 @@ public class AttributionSoldeController implements Initializable {
         }
         serviceTypeConge.AddTypeConge(designation, pas, periods[2], periods[1], periods[0], file);
         loadSoldeConge();
+        distributeNewLeaveTypeToUsers(designation);
         labelSolde.setText("Type de congé ajouté.");
     }
     @FXML
@@ -201,5 +206,26 @@ public class AttributionSoldeController implements Initializable {
     public void removeFilter() {
         RechercheSol.clear();
         filteredList.setPredicate(p -> true);
+    }
+    private void distributeNewLeaveTypeToUsers(String designation) {
+        int idSolde = serviceTypeConge.getSoldeCongeIdByDesignation(designation);
+        double pas = serviceTypeConge.getPasBySoldeId(idSolde);
+
+        try (Connection conn = MyDataBase.getInstance().getCnx()) {
+            String distributeQuery = "INSERT INTO user_Solde (ID_User, ID_TypeConge, TotalSolde) SELECT ID_User, ?, 0 FROM user";
+            try (PreparedStatement distributeStmt = conn.prepareStatement(distributeQuery)) {
+                distributeStmt.setInt(1, idSolde);
+                distributeStmt.executeUpdate();
+            }
+
+            String updateUserSoldeQuery = "UPDATE user_Solde SET TotalSolde = TotalSolde + ? WHERE ID_TypeConge = ?";
+            try (PreparedStatement updateUserSoldeStmt = conn.prepareStatement(updateUserSoldeQuery)) {
+                updateUserSoldeStmt.setDouble(1, pas);
+                updateUserSoldeStmt.setInt(2, idSolde);
+                updateUserSoldeStmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
