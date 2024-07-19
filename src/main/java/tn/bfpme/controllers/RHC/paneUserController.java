@@ -159,7 +159,7 @@ public class paneUserController implements Initializable {
     private final ServiceRole roleService = new ServiceRole();
     private ObservableList<User> users;
 
-    ObservableList<String> HierarchieList = FXCollections.observableArrayList("Utilisateurs", "Départements", "Roles");
+    ObservableList<String> HierarchieList = FXCollections.observableArrayList("Utilisateurs", "Départements");
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -197,11 +197,11 @@ public class paneUserController implements Initializable {
             DepartPane1.setVisible(true);
             RolePane1.setVisible(false);
         }
-        if (hierarCombo.getValue().equals("Roles")) {
+        /*if (hierarCombo.getValue().equals("Roles")) {
             UserPane1.setVisible(false);
             DepartPane1.setVisible(false);
             RolePane1.setVisible(true);
-        }
+        }*/
     }
 
     private void loadUsers() {
