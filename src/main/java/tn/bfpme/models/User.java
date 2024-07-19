@@ -21,6 +21,8 @@ public class User {
     private String roleNom; // New field for role name
     private String managerName; // New field for manager name
     private double TotalSolde;
+
+
     private List<TypeConge> typeConges; // New field for TypeConge objects
 
     public User() {
