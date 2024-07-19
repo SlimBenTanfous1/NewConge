@@ -35,7 +35,7 @@ public class TypeConge {
     public static int valueOf(String typeConge) {
         Connection cnx = MyDataBase.getInstance().getCnx();
         TypeConge type = new TypeConge();
-        String query = "SELECT * FROM typeconge WHERE Type = ?";
+        String query = "SELECT * FROM typeconge WHERE Designation = ?";
         try {
             if (cnx == null || cnx.isClosed()) {
                 cnx = MyDataBase.getInstance().getCnx();
@@ -119,7 +119,7 @@ public class TypeConge {
     public String toString() {
         return "TypeConge{" +
                 "idTypeConge=" + idTypeConge +
-                ", Designation='" + Designation + '\'' +
+                ", Designation=" + Designation +
                 ", Pas=" + Pas +
                 ", PeriodeJ=" + PeriodeJ +
                 ", PeriodeM=" + PeriodeM +

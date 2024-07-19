@@ -46,11 +46,11 @@
       <TableView fx:id="Table_TypeConge" layoutX="86.0" layoutY="411.0" prefHeight="256.0" prefWidth="948.0">
         <columns>
           <TableColumn fx:id="colDesignation" prefWidth="116.0" text="Designation" />
-          <TableColumn fx:id="colPas" prefWidth="128.0" text="Pas" />
+          <TableColumn fx:id="colPas" prefWidth="85.0" text="Pas" />
             <TableColumn fx:id="colPeriodeJ" prefWidth="203.0" text="Période (Jour)" />
-            <TableColumn fx:id="colPeriodeM" prefWidth="201.0" text="Période (Mois)" />
-            <TableColumn fx:id="colPeriodeA" prefWidth="192.0" text="Période (Année)" />
-            <TableColumn fx:id="colFile" prefWidth="105.0" text="Fichier" />
+            <TableColumn fx:id="colPeriodeM" prefWidth="208.0" text="Période (Mois)" />
+            <TableColumn fx:id="colPeriodeA" prefWidth="198.0" text="Période (Année)" />
+            <TableColumn fx:id="colFile" prefWidth="135.0" text="Fichier" />
         </columns>
       </TableView>
       <Button fx:id="btnRemoveFilter" layoutX="1009.0" layoutY="374.0" mnemonicParsing="false" onAction="#removeFilter" styleClass="btn-primary" text="X" />

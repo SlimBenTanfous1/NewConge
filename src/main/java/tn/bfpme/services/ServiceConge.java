@@ -24,6 +24,9 @@ public class ServiceConge implements IConge<Conge> {
         List<Conge> conges = new ArrayList<>();
         String sql = "SELECT * FROM conge WHERE ID_User = ?";
         try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
             PreparedStatement stm = cnx.prepareStatement(sql);
             stm.setInt(1, idUser);
             ResultSet rs = stm.executeQuery();
@@ -141,7 +144,18 @@ public class ServiceConge implements IConge<Conge> {
             System.out.println(e.getMessage());
         }
     }
-
+    private void updateBalance(int userId, int typeCongeId, double newBalance) {
+        String query = "UPDATE user_Solde SET TotalSolde = ? WHERE ID_User = ? AND ID_TypeConge = ?";
+        try (Connection conn = MyDataBase.getInstance().getCnx();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setDouble(1, newBalance);
+            pstmt.setInt(2, userId);
+            pstmt.setInt(3, typeCongeId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     @Override
     public void updateConge(Conge conge) {
         cnx = MyDataBase.getInstance().getCnx();
@@ -395,20 +409,24 @@ public class ServiceConge implements IConge<Conge> {
 
     @Override
     public void updateUserSolde(int userId, int typeCongeId, int congeDays) {
-        String query = "UPDATE user_Solde " +
-                "SET Solde = Solde - ? " +
-                "WHERE ID_User = ? AND idSolde = ?";
+        String query = "UPDATE user_solde " +
+                "SET TotalSolde = TotalSolde - ? " +
+                "WHERE ID_User = ? AND ID_TypeConge = ?";
         try (Connection cnx = MyDataBase.getInstance().getCnx();
              PreparedStatement ps = cnx.prepareStatement(query)) {
+            System.out.println("Executing query: " + query);
+            System.out.println("Parameters: congeDays = " + congeDays + ", userId = " + userId + ", typeCongeId = " + typeCongeId);
+
             ps.setInt(1, congeDays);
             ps.setInt(2, userId);
             ps.setInt(3, typeCongeId);
-            ps.executeUpdate();
+            int rowsUpdated = ps.executeUpdate();
+
+            System.out.println("Rows updated: " + rowsUpdated);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-
 
     public void NewMessage(String message, int idUser, int idConge) {
         cnx = MyDataBase.getInstance().getCnx();

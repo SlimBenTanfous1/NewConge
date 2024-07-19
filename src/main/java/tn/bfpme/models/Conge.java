@@ -21,6 +21,7 @@ public class Conge {
     private String description;
     private String message;
     private String designation;
+    private TypeConge typeConge; // Changed to store a TypeConge object
 
     public Conge() {}
 
@@ -138,7 +139,13 @@ public class Conge {
     public void setMessage(String notification) {
         this.message = notification;
     }
+    public TypeConge getTypeConge2() {
+        return typeConge;
+    }
 
+    public void setTypeConge2(TypeConge typeConge) {
+        this.typeConge = typeConge;
+    }
 
     @Override
     public String toString() {

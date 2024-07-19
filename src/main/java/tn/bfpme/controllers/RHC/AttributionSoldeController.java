@@ -210,14 +210,12 @@ public class AttributionSoldeController implements Initializable {
     private void distributeNewLeaveTypeToUsers(String designation) {
         int idSolde = serviceTypeConge.getSoldeCongeIdByDesignation(designation);
         double pas = serviceTypeConge.getPasBySoldeId(idSolde);
-
         try (Connection conn = MyDataBase.getInstance().getCnx()) {
             String distributeQuery = "INSERT INTO user_Solde (ID_User, ID_TypeConge, TotalSolde) SELECT ID_User, ?, 0 FROM user";
             try (PreparedStatement distributeStmt = conn.prepareStatement(distributeQuery)) {
                 distributeStmt.setInt(1, idSolde);
                 distributeStmt.executeUpdate();
             }
-
             String updateUserSoldeQuery = "UPDATE user_Solde SET TotalSolde = TotalSolde + ? WHERE ID_TypeConge = ?";
             try (PreparedStatement updateUserSoldeStmt = conn.prepareStatement(updateUserSoldeQuery)) {
                 updateUserSoldeStmt.setDouble(1, pas);
