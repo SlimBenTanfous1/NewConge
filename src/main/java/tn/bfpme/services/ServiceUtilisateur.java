@@ -956,9 +956,6 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
         return user;
     }
-
-
-
     private Integer findManagerInDepartmentHierarchy(int userId, int deptId, List<Integer> parentRoleIds) throws SQLException {
         Set<Integer> visitedDepts = new HashSet<>();
         while (deptId != 0 && !visitedDepts.contains(deptId)) {
@@ -1000,7 +997,7 @@ public class ServiceUtilisateur implements IUtilisateur {
     }
 
     private Integer getPDGId() throws SQLException {
-        String query = "SELECT ID_User FROM user_role WHERE ID_Role = (SELECT ID_Role FROM role WHERE nom = 'DG') LIMIT 1";
+        String query = "SELECT u.ID_User FROM user u JOIN user_role ur ON u.ID_User = ur.ID_User WHERE ur.ID_Role = (SELECT r.ID_Role FROM role r WHERE r.nom = 'PDG') LIMIT 1";
         try (PreparedStatement stmt = cnx.prepareStatement(query)) {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -1023,7 +1020,7 @@ public class ServiceUtilisateur implements IUtilisateur {
         // Find manager within the department hierarchy
         Integer managerId = findManagerInDepartmentHierarchy(userId, departmentId, parentRoleIds);
 
-        // If no manager found, set to default manager (e.g., DG)
+        // If no manager found, set to default manager (e.g., PDG)
         if (managerId == null) {
             managerId = getPDGId();
             System.out.println("No manager found in department hierarchy. Defaulting to PDG: " + managerId);
@@ -1098,6 +1095,11 @@ public class ServiceUtilisateur implements IUtilisateur {
         // Update the manager for the user
         setManagerForUser(userId, departmentId, roleId);
     }
+
+
+
+
+
     public List<User> getAllUsers() {
         List<User> userList = new ArrayList<>();
         String sql = "SELECT * FROM user";
