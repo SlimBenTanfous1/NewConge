@@ -141,7 +141,6 @@ public class DemandeCongeController implements Initializable {
         }
 
         serviceConge.AddConge(new Conge(0, DD, DF, IDTYPE, Statut.En_Attente, userId, docLinkToUse, DESC));
-        updateBalance(userId, IDTYPE, currentBalance - daysBetween);
         String NotifSubject = "Vous avez reçu une nouvelle demande de congé " + selectedTypeConge.getDesignation();
         String messageText = "Vous avez reçu une nouvelle demande de congé " + selectedTypeConge.getDesignation() + " de la part de " + SessionManager.getInstance().getUser().getNom() + " " + SessionManager.getInstance().getUser().getPrenom() + " du " + DD + " au " + DF;
         notifService.NewNotification(userService.getManagerIdByUserId(SessionManager.getInstance().getUser().getIdUser()), NotifSubject, 2, messageText);
@@ -169,18 +168,7 @@ public class DemandeCongeController implements Initializable {
             System.out.println("Closing current scene...");
         }
     }
-    private void updateBalance(int userId, int typeCongeId, double newBalance) {
-        String query = "UPDATE user_Solde SET TotalSolde = ? WHERE ID_User = ? AND ID_TypeConge = ?";
-        try (Connection conn = MyDataBase.getInstance().getCnx();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setDouble(1, newBalance);
-            pstmt.setInt(2, userId);
-            pstmt.setInt(3, typeCongeId);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+
     private double getCurrentBalance(int userId, int typeCongeId) {
         String query = "SELECT TotalSolde FROM user_Solde WHERE ID_User = ? AND ID_TypeConge = ?";
         try (Connection conn = MyDataBase.getInstance().getCnx();

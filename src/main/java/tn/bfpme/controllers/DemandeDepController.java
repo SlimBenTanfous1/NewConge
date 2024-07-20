@@ -66,13 +66,12 @@ public class DemandeDepController implements Initializable {
         labelDD.setText(String.valueOf(conge.getDateDebut()));
         labelDF.setText(String.valueOf(conge.getDateFin()));
         labelDesc.setText(conge.getDescription());
-        labelType.setText(String.valueOf(conge.getTypeConge()));
+        labelType.setText(conge.getDesignation());
         CongeDays = (int) ChronoUnit.DAYS.between(conge.getDateDebut(), conge.getDateFin());
         labelJours.setText(String.valueOf(CongeDays) + " Jours");
         if (this.conge.getFile().isBlank()) {
             DocFichHBOX.setVisible(false);
         }
-
         if (serviceUser.getManagerIdByUserId2(conge.getIdUser()) == SessionManager.getInstance().getUser().getIdUser()) {
             HBoxAppRef.setVisible(true);
             if (this.conge.getStatut() != Statut.En_Attente) {
@@ -81,8 +80,6 @@ public class DemandeDepController implements Initializable {
         } else {
             HBoxAppRef.setVisible(false);
         }
-
-
         employeeName = user.getPrenom() + " " + user.getNom();
         startDate = String.valueOf(conge.getDateDebut());
         endDate = String.valueOf(conge.getDateFin());
@@ -98,6 +95,7 @@ public class DemandeDepController implements Initializable {
             managerRole = String.valueOf(role);
         }
     }
+
     @FXML
     void AfficherCongFichier(ActionEvent event) {
         String filePath = "src/main/resources/assets/files/" + conge.getFile();
@@ -127,7 +125,7 @@ public class DemandeDepController implements Initializable {
             String Subject = "Approbation de Demande de Congé";
             String NotifContent = "";
             String MessageText = Mails.generateApprobationDemande(employeeName, startDate, endDate, managerName, managerRole);
-            Mails.sendEmail(to, Subject, MessageText);
+            //Mails.sendEmail(to, Subject, MessageText); //Mailing
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/DemandeDepListe.fxml"));
                 Parent root = loader.load();
@@ -142,19 +140,17 @@ public class DemandeDepController implements Initializable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            // Update the user's solde
             int congeDays = (int) ChronoUnit.DAYS.between(conge.getDateDebut(), conge.getDateFin());
-            serviceConge.updateUserSolde(this.user.getIdUser(), conge.getTypeConge().getIdTypeConge(), congeDays);
-
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.close();
             Alert cbon = new Alert(Alert.AlertType.INFORMATION);
             cbon.setTitle("Demande approuvée");
-            cbon.setHeaderText("La demande de congé " + this.conge.getTypeConge().getDesignation() + " de " + this.user.getNom() + " " + this.user.getPrenom() + " a été approuvée");
+            cbon.setHeaderText("La demande de congé " + this.conge.getDesignation() + " de " + this.user.getNom() + " " + this.user.getPrenom() + " a été approuvée");
             cbon.showAndWait();
             this.conge.setStatut(Statut.Approuvé);
+            serviceConge.updateUserSolde(this.user.getIdUser(), conge.getTypeConge().getIdTypeConge(), congeDays);
             serviceConge.updateStatutConge(this.conge.getIdConge(), Statut.Approuvé);
+            //serviceConge.updateBalance(userId, IDTYPE, currentBalance - daysBetween);
         }
     }
 
@@ -196,6 +192,7 @@ public class DemandeDepController implements Initializable {
         this.conge.setStatut(Statut.Rejeté);
         serviceConge.updateStatutConge(this.conge.getIdConge(), Statut.Rejeté);
     }
+
     @FXML
     void retour(ActionEvent event) {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

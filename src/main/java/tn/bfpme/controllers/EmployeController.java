@@ -13,6 +13,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 import tn.bfpme.models.*;
 import tn.bfpme.services.ServiceConge;
 import tn.bfpme.services.ServiceUserSolde;
@@ -79,18 +81,26 @@ public class EmployeController implements Initializable {
 
     private void fetchUserConges() {
         ObservableList<Conge> HisUserList = FXCollections.observableArrayList();
-        String sql = "SELECT DateDebut, DateFin, TypeConge FROM conge WHERE ID_User = ? AND Statut = ?";
-        cnx = MyDataBase.getInstance().getCnx();
-        try {
-            PreparedStatement stm = cnx.prepareStatement(sql);
+        String sql = "SELECT c.DateDebut, c.DateFin, t.Designation " +
+                "FROM conge c " +
+                "JOIN typeconge t ON c.TypeConge = t.ID_TypeConge " +
+                "WHERE c.ID_User = ? AND c.Statut = ?";
+        try (Connection cnx = MyDataBase.getInstance().getCnx();
+             PreparedStatement stm = cnx.prepareStatement(sql)) {
             stm.setInt(1, SessionManager.getInstance().getUser().getIdUser());
             stm.setString(2, String.valueOf(Statut.Approuvé));
-            ResultSet rs = stm.executeQuery();
-            while (rs.next()) {
-                HisUserList.add(new Conge(rs.getDate("DateDebut").toLocalDate(), rs.getDate("DateFin").toLocalDate(), serviceConge.getCongeTypeName(rs.getInt("TypeConge"))));
+            try (ResultSet rs = stm.executeQuery()) {
+                while (rs.next()) {
+                    Conge conge = new Conge(
+                            rs.getDate("DateDebut").toLocalDate(),
+                            rs.getDate("DateFin").toLocalDate(),
+                            rs.getString("Designation")
+                    );
+                    HisUserList.add(conge);
+                }
             }
             indexColumn.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(TableHistorique.getItems().indexOf(cellData.getValue()) + 1));
-            TableType.setCellValueFactory(new PropertyValueFactory<>("typeConge"));
+            TableType.setCellValueFactory(new PropertyValueFactory<>("Designation"));
             TableDD.setCellValueFactory(new PropertyValueFactory<>("dateDebut"));
             TableDF.setCellValueFactory(new PropertyValueFactory<>("dateFin"));
             TableHistorique.setItems(HisUserList);
@@ -108,7 +118,6 @@ public class EmployeController implements Initializable {
         CU_nomprenom.setText(currentUser.getNom() + " " + currentUser.getPrenom());
         CU_role.setText(role);
         String imagePath = currentUser.getImage();
-
         if (imagePath != null && !imagePath.isEmpty()) {
             File file = new File(imagePath);
             if (file.exists()) {
@@ -125,7 +134,6 @@ public class EmployeController implements Initializable {
         } else {
             System.err.println("Image path is null or empty for user: " + currentUser);
         }
-
         populateUserSoldes(currentUser.getIdUser());
     }
 
@@ -139,6 +147,39 @@ public class EmployeController implements Initializable {
     }
 
     private Pane createSoldePane(UserSolde solde) {
+        // Create the Pane
+        Pane pane = new Pane();
+        pane.setPrefSize(130, 130);
+        pane.setMinSize(130, 130);
+        pane.setMaxSize(130, 130);
+        pane.getStyleClass().add("paneRoundedCorndersMALADIE");
+
+        // Create the first Label for solde type
+        Label soldeTypeLabel = new Label(serviceConge.getCongeTypeName(solde.getID_TypeConge()));
+        soldeTypeLabel.setPrefSize(130, 36);
+        soldeTypeLabel.setLayoutY(36); // Adjust this value to center within the Pane
+        soldeTypeLabel.setTextAlignment(TextAlignment.CENTER);
+        soldeTypeLabel.getStyleClass().addAll("FontSize-18", "RobotoItalic");
+        soldeTypeLabel.setFont(new Font("Roboto Regular", 18));
+        soldeTypeLabel.setAlignment(javafx.geometry.Pos.CENTER);
+
+        // Create the second Label for solde value
+        Label soldeValueLabel = new Label(String.valueOf(solde.getTotalSolde()));
+        soldeValueLabel.setPrefSize(130, 36);
+        soldeValueLabel.setLayoutY(72); // Adjust this value to move the number upwards
+        soldeValueLabel.setTextAlignment(TextAlignment.CENTER);
+        soldeValueLabel.getStyleClass().addAll("FontSize-14", "RobotoRegular");
+        soldeValueLabel.setFont(new Font("Roboto Regular", 14));
+        soldeValueLabel.setAlignment(javafx.geometry.Pos.CENTER);
+
+        // Add the Labels to the Pane
+        pane.getChildren().addAll(soldeTypeLabel, soldeValueLabel);
+
+        return pane;
+    }
+
+
+    /*private Pane createSoldePane(UserSolde solde) {
         Pane pane = new Pane();
         pane.setPrefSize(130, 130);
         pane.getStyleClass().add("paneRoundedCorners");
@@ -159,5 +200,5 @@ public class EmployeController implements Initializable {
 
         pane.getChildren().addAll(soldeTypeLabel, soldeValueLabel);
         return pane;
-    }
+    }*/
 }
