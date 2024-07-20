@@ -1364,7 +1364,55 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
         return null;
     }
+    public void removeUserRole(int userId) throws SQLException {
+        String query = "DELETE FROM user_role WHERE ID_User = ?";
+        Connection conn = MyDataBase.getInstance().getCnx();
+        if (conn == null || conn.isClosed()) {
+            conn = MyDataBase.getInstance().getCnx();
+        }
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, userId);
+            pstmt.executeUpdate();
+        }
+    }
 
+    public void removeUserDepartment(int userId) throws SQLException {
+        String query = "UPDATE user SET ID_Departement = NULL WHERE ID_User = ?";
+        Connection conn = MyDataBase.getInstance().getCnx();
+        if (conn == null || conn.isClosed()) {
+            conn = MyDataBase.getInstance().getCnx();
+        }
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, userId);
+            pstmt.executeUpdate();
+        }
+    }
 
+    public void removeUserRoleAndDepartment(int userId) throws SQLException {
+        String queryRole = "DELETE FROM user_role WHERE ID_User = ?";
+        String queryDepartmentAndManager = "UPDATE user SET ID_Departement = NULL, ID_Manager = NULL WHERE ID_User = ?";
+        Connection conn = MyDataBase.getInstance().getCnx();
+        if (conn == null || conn.isClosed()) {
+            conn = MyDataBase.getInstance().getCnx();
+        }
+        try (PreparedStatement pstmtRole = conn.prepareStatement(queryRole);
+             PreparedStatement pstmtDepartmentAndManager = conn.prepareStatement(queryDepartmentAndManager)) {
+
+            conn.setAutoCommit(false); // Begin transaction
+
+            pstmtRole.setInt(1, userId);
+            pstmtRole.executeUpdate();
+
+            pstmtDepartmentAndManager.setInt(1, userId);
+            pstmtDepartmentAndManager.executeUpdate();
+
+            conn.commit(); // Commit transaction
+        } catch (SQLException e) {
+            conn.rollback(); // Rollback transaction if an error occurs
+            throw e;
+        } finally {
+            conn.setAutoCommit(true); // Reset auto-commit to true
+        }
+    }
 
 }

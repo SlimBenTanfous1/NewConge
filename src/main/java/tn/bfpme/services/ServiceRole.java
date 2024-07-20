@@ -32,8 +32,6 @@ public class ServiceRole {
                         rs.getString("nom"),
                         rs.getString("description")
                 );
-                // Debug statement
-                System.out.println("Role for User ID " + idUser + ": " + role.getNom());
             }
         } catch (SQLException e) {
             e.printStackTrace();
