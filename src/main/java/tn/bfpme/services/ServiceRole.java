@@ -14,19 +14,26 @@ public class ServiceRole {
     public static Role getRoleByUserId(int idUser) {
         Role role = null;
         String query = "SELECT r.* FROM role r JOIN user_role ur ON r.ID_Role = ur.ID_Role WHERE ur.ID_User = ?";
-        try{
+
+        try {
             if (cnx == null || cnx.isClosed()) {
                 cnx = MyDataBase.getInstance().getCnx();
             }
-            PreparedStatement ps = cnx.prepareStatement(query);
-            ps.setInt(1, idUser);
-            ResultSet rs = ps.executeQuery();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        try (PreparedStatement stmt = cnx.prepareStatement(query)) {
+            stmt.setInt(1,idUser );
+            ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 role = new Role(
                         rs.getInt("ID_Role"),
                         rs.getString("nom"),
                         rs.getString("description")
                 );
+                // Debug statement
+                System.out.println("Role for User ID " + idUser + ": " + role.getNom());
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -358,6 +365,28 @@ public class ServiceRole {
 
         }
 
+    }
+    public Role getRoleById1(int roleId) {
+        Role role = null;
+        String query = "SELECT * FROM role WHERE ID_Role = ?";
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+            PreparedStatement statement = cnx.prepareStatement(query);
+            statement.setInt(1, roleId);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                role = new Role(
+                        rs.getInt("ID_Role"),
+                        rs.getString("nom"),
+                        rs.getString("description")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return role;
     }
 
 }

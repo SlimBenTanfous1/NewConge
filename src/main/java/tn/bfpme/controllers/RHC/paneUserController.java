@@ -17,6 +17,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.apache.commons.lang.ObjectUtils;
 import tn.bfpme.models.*;
 import tn.bfpme.services.*;
 import tn.bfpme.utils.MyDataBase;
@@ -322,38 +323,15 @@ public class paneUserController implements Initializable {
     private void loadUsers3() {
         try {
             List<User> userList = userService.getAllUsers();
-            ObservableList<User> users = FXCollections.observableArrayList(userList);
-
-            TreeItem<User> root = new TreeItem<>(new User(0, "sans manager", "", "", "", "", 0, 0, 0, 0, 0, 0));
-            root.setExpanded(true);
-            Map<Integer, TreeItem<User>> userMap = new HashMap<>();
-            userMap.put(0, root);
-
-            for (User user : users) {
-                TreeItem<User> item = new TreeItem<>(user);
-                userMap.put(user.getIdUser(), item);
-            }
-
-            for (User user : users) {
-                TreeItem<User> item = userMap.get(user.getIdUser());
-                TreeItem<User> parentItem = userMap.getOrDefault(user.getIdManager(), root);
-
-                if (parentItem != null) {
-                    parentItem.getChildren().add(item);
-                }
-            }
+            Map<Integer, User> userMap = userList.stream().collect(Collectors.toMap(User::getIdUser, user -> user));
 
             // Update the manager name, department, and role for each user
-            for (User user : users) {
-                TreeItem<User> item = userMap.get(user.getIdUser());
-                TreeItem<User> managerItem = userMap.get(user.getIdManager());
-
-                if (managerItem != null && managerItem.getValue() != null) {
-                    user.setManagerName(managerItem.getValue().getNom());
-                    System.out.println("Manager of " + user.getNom() + " is " + managerItem.getValue().getNom());
+            for (User user : userList) {
+                User manager = userMap.get(user.getIdManager());
+                if (manager != null) {
+                    user.setManagerName(manager.getNom());
                 } else {
                     user.setManagerName("Il n'y a pas de manager");
-                    System.out.println("Manager of " + user.getNom() + " is Il n'y a pas de manager");
                 }
 
                 Departement department = userService.getDepartmentByUserId(user.getIdUser());
@@ -363,13 +341,38 @@ public class paneUserController implements Initializable {
                     user.setDepartementNom("sans département");
                 }
 
-                Role role = roleService.getRoleByUserId(user.getIdUser());
+                Role role = userService.getRoleByUserId(user.getIdUser());
                 if (role != null) {
                     user.setRoleNom(role.getNom());
-                    System.out.println("User: " + user.getNom() + " | Role: " + role.getNom());
                 } else {
                     user.setRoleNom("sans rôle");
-                    System.out.println("User: " + user.getNom() + " | Role: sans rôle");
+                }
+
+                // Debugging: Print user details to verify
+                System.out.println("User: " + user.getNom() + ", Manager: " + user.getManagerName() + ", Department: " + user.getDepartementNom() + ", Role: " + user.getRoleNom());
+            }
+
+            ObservableList<User> users = FXCollections.observableArrayList(userList);
+
+            TreeItem<User> root = new TreeItem<>(new User(0, "", "", "", "", "", null, 0, 0, 0));
+            root.setExpanded(true);
+
+            Map<Integer, TreeItem<User>> treeItemMap = new HashMap<>();
+            treeItemMap.put(0, root);
+
+            // Create tree items for all users
+            for (User user : users) {
+                TreeItem<User> item = new TreeItem<>(user);
+                treeItemMap.put(user.getIdUser(), item);
+            }
+
+            // Attach children to their respective parents
+            for (User user : users) {
+                TreeItem<User> item = treeItemMap.get(user.getIdUser());
+                TreeItem<User> parentItem = treeItemMap.getOrDefault(user.getIdManager(), root);
+
+                if (parentItem != null) {
+                    parentItem.getChildren().add(item);
                 }
             }
 
@@ -388,6 +391,9 @@ public class paneUserController implements Initializable {
             e.printStackTrace();
         }
     }
+
+
+
     private void loadRoles3() {
         List<Role> roleList = roleService.getAllRoles();
         ObservableList<Role> roles = FXCollections.observableArrayList(roleList);
@@ -664,19 +670,16 @@ public class paneUserController implements Initializable {
                     System.out.println("Updating role and department for user: " + selectedUser);
                     userService.checkRoleDepartmentUniqueness(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedDepartement.getIdDepartement());
                     userService.updateUserRoleAndDepartment(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedDepartement.getIdDepartement());
-                    userService.setUserManager(selectedUser.getIdUser());
                     isUpdated = true;
                 } else if (selectedRole != null) {
                     System.out.println("Updating role for user: " + selectedUser);
                     userService.checkRoleDepartmentUniqueness(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedUser.getIdDepartement());
                     userService.updateUserRoleAndDepartment(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedUser.getIdDepartement());
-                    userService.setUserManager(selectedUser.getIdUser());
                     isUpdated = true;
                 } else if (selectedDepartement != null) {
                     System.out.println("Updating department for user: " + selectedUser);
                     userService.checkRoleDepartmentUniqueness(selectedUser.getIdUser(), selectedUser.getIdRole(), selectedDepartement.getIdDepartement());
                     userService.updateUserRoleAndDepartment(selectedUser.getIdUser(), selectedUser.getIdRole(), selectedDepartement.getIdDepartement());
-                    userService.setUserManager(selectedUser.getIdUser());
                     isUpdated = true;
                 }
                 if (isUpdated) {
@@ -707,14 +710,9 @@ public class paneUserController implements Initializable {
 
         if (userId != null && selectedRole != null && selectedDepartement != null) {
             try {
-                // Check for role department uniqueness and potential manager assignment issues
                 userService.checkRoleDepartmentUniqueness(userId, selectedRole.getIdRole(), selectedDepartement.getIdDepartement());
-
-                // Update the user's role and department
                 userService.updateUserRoleAndDepartment(userId, selectedRole.getIdRole(), selectedDepartement.getIdDepartement());
-                userService.setUserManager(userId);
 
-                // Reload users and highlight the selected user
                 loadUsers();
                 highlightSelectedUser(userService.getUserById(userId));
                 affectationlabel.setText("Ajout effectué");
@@ -730,6 +728,8 @@ public class paneUserController implements Initializable {
         }
         loadUsers3();
     }
+
+
 
     private void showErrorToUser(String message) {
         javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);

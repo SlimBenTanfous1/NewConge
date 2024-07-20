@@ -90,7 +90,7 @@ public class ResponsableStructure implements Initializable {
         });
 
         Map<Integer, TreeItem<User>> userItems = new HashMap<>();
-        TreeItem<User> root = new TreeItem<>(new User(0, "Root", "", "", "", "", 0, 0, 0, 0, 0, 0, 0,0));
+        TreeItem<User> root = new TreeItem<>(new User(0, "Root", "", "", "", "", null, 0, 0, 0, 0, "", "",""));
 
         for (User user : users) {
             TreeItem<User> userItem = new TreeItem<>(user);
