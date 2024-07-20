@@ -72,11 +72,15 @@ public class EmployeController implements Initializable {
         reloadUserData();
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/NavigationHeader.fxml"));
-            Pane departementPane = loader.load();
+            AnchorPane departementPane = loader.load();
+            AnchorPane.setTopAnchor(departementPane, 0.0);
+            AnchorPane.setLeftAnchor(departementPane, 0.0);
+            AnchorPane.setRightAnchor(departementPane, 0.0);
             MainAnchorPane.getChildren().add(departementPane);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     private void fetchUserConges() {
@@ -177,28 +181,4 @@ public class EmployeController implements Initializable {
 
         return pane;
     }
-
-
-    /*private Pane createSoldePane(UserSolde solde) {
-        Pane pane = new Pane();
-        pane.setPrefSize(130, 130);
-        pane.getStyleClass().add("paneRoundedCorners");
-
-        Label soldeTypeLabel = new Label(serviceConge.getCongeTypeName(solde.getID_TypeConge())); // Use a method to get the type name
-        soldeTypeLabel.setLayoutX(28);
-        soldeTypeLabel.setLayoutY(24);
-        soldeTypeLabel.setPrefSize(74, 36);
-        soldeTypeLabel.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
-        soldeTypeLabel.getStyleClass().addAll("FontSize-18", "RobotoItalic");
-
-        Label soldeValueLabel = new Label(String.valueOf(solde.getTotalSolde()));
-        soldeValueLabel.setLayoutX(28);
-        soldeValueLabel.setLayoutY(60);
-        soldeValueLabel.setPrefSize(74, 36);
-        soldeValueLabel.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
-        soldeValueLabel.getStyleClass().addAll("FontSize-14", "RobotoRegular");
-
-        pane.getChildren().addAll(soldeTypeLabel, soldeValueLabel);
-        return pane;
-    }*/
 }

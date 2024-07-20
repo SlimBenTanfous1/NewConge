@@ -57,13 +57,13 @@ public class DemandeCongeController implements Initializable {
     @FXML
     private AnchorPane MainAnchorPane;
     @FXML
-    private Label TypeTitle;
+    private Label TypeTitle,ForDoc1;
     @FXML
     private ComboBox<TypeConge> cb_typeconge;
     @FXML
     private Pane paneConge;
     @FXML
-    private HBox FichierVBOX;
+    private HBox ForDoc2;
 
     private final ServiceTypeConge serviceTypeConge = new ServiceTypeConge();
     private final ServiceConge serviceConge = new ServiceConge();
@@ -77,7 +77,10 @@ public class DemandeCongeController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/NavigationHeader.fxml"));
-            Pane departementPane = loader.load();
+            AnchorPane departementPane = loader.load();
+            AnchorPane.setTopAnchor(departementPane, 0.0);
+            AnchorPane.setLeftAnchor(departementPane, 0.0);
+            AnchorPane.setRightAnchor(departementPane, 0.0);
             MainAnchorPane.getChildren().add(departementPane);
         } catch (IOException e) {
             e.printStackTrace();
@@ -105,7 +108,8 @@ public class DemandeCongeController implements Initializable {
         });
 
         cb_typeconge.setOnAction(this::TypeSelec);
-        FichierVBOX.setVisible(false);
+        ForDoc1.setVisible(false);
+        ForDoc2.setVisible(false);
         paneConge.setVisible(false);
     }
     @FXML
@@ -215,7 +219,10 @@ public class DemandeCongeController implements Initializable {
         if (selectedTypeConge != null) {
             paneConge.setVisible(true);
             TypeTitle.setText("Conge " + selectedTypeConge.getDesignation());
-            FichierVBOX.setVisible(selectedTypeConge.isFile());
+            if (selectedTypeConge.isFile()){
+                ForDoc1.setVisible(true);
+                ForDoc2.setVisible(true);
+            }
         }
     }
     private void showAlert(Alert.AlertType alertType, String title, String header, String content) {
