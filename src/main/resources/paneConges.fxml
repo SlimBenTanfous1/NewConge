@@ -147,7 +147,7 @@
             </Button>
          </children>
       </HBox>
-      <Label layoutX="439.0" layoutY="28.0" styleClass="RobotoBoldItalic" text="Gestion des Congés">
+      <Label layoutX="453.0" layoutY="21.0" styleClass="RobotoBoldItalic" text="Gestion des Congés">
          <font>
             <Font size="24.0" />
          </font>
