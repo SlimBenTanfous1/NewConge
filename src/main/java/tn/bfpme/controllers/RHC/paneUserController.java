@@ -369,9 +369,8 @@ public class paneUserController implements Initializable {
                 }
             }
 
-            // Refresh the TreeView
-            userTable.setRoot(null);  // Clear the TreeView
-            userTable.setRoot(root);  // Set the new root
+            userTable.setRoot(null);
+            userTable.setRoot(root);
             userTable.setShowRoot(false);
 
             idUserColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("idUser"));
