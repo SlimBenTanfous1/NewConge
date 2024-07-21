@@ -14,12 +14,15 @@ public class User {
     private int idManager;
     private int idDepartement;
     private int idRole;
+    private int idSolde;
+
+    private String managerName;
+    private String departementNom;
+    private String roleNom;
     private int ID_UserSolde; // Add this field
     private Map<Integer, Double> soldeMap = new HashMap<>();
     private Map<Integer, String> typeCongeMap = new HashMap<>();
-    private String departementNom; // New field for department name
-    private String roleNom; // New field for role name
-    public String managerName; // New field for manager name
+
     private double TotalSolde;
 
 
@@ -28,6 +31,7 @@ public class User {
     public User() {
         this.typeConges = new ArrayList<>();
     }
+
 
     public User(int idUser, String nom, String prenom, String email, String mdp, String image, LocalDate creationDate, int idManager, int idDepartement, int idRole, int ID_UserSolde, String departementNom, String roleNom, String managerName) {
         this.idUser = idUser;
@@ -44,18 +48,6 @@ public class User {
         this.departementNom = departementNom;
         this.roleNom = roleNom;
         this.managerName = managerName;
-    }
-    public User(int idUser, String nom, String prenom, String email, String mdp, String image, LocalDate creationDate, int idManager, int idDepartement, int idRole) {
-        this.idUser = idUser;
-        this.nom = nom;
-        this.prenom = prenom;
-        this.email = email;
-        this.mdp = mdp;
-        this.image = image;
-        this.creationDate = creationDate != null ? creationDate : LocalDate.now();
-        this.idManager = idManager;
-        this.idDepartement = idDepartement;
-        this.idRole = idRole;
     }
     public User(int idUser, String nom, String prenom, String email, String mdp, String image, LocalDate creationDate) {
         this.idUser = idUser;
@@ -83,7 +75,18 @@ public class User {
         this.creationDate = creationDate != null ? creationDate : LocalDate.now();
     }
 
-    public User(int i, String sansManager, String s, String s1, String s2, String s3, int i1, int i2, int i3, int i4, int i5, int i6) {
+    public User(int idUser, String nom, String prenom, String email, String mdp, String image,int idManager, int idDepartement, int idRole, LocalDate creationDate,int ID_UserSolde) {
+        this.idUser = idUser;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.email = email;
+        this.mdp = mdp;
+        this.image = image;
+        this.idManager = idManager;
+        this.idDepartement = idDepartement;
+        this.idRole = idRole;
+        this.creationDate = creationDate != null ? creationDate : LocalDate.now();
+        this.ID_UserSolde = ID_UserSolde;
     }
 
     public User(int idUser, String nom, String prenom, String email, String mdp, String image) { //Const modif
@@ -95,7 +98,17 @@ public class User {
         this.image = image;
     }
 
-    public User(int idUser, String root, String prenom, String email, String mdp, String image, int i, int idManager, int idDepartement, int idRole, int idUserSolde, int i1, int i2, int i3) {
+    public User(int idUser, String nom, String prenom, String email, String mdp, String image, LocalDate creationDate, int idDepartement, int idManager, int ID_UserSolde) {
+        this.idUser = idUser;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.email = email;
+        this.mdp = mdp;
+        this.image = image;
+        this.creationDate = creationDate != null ? creationDate : LocalDate.now();
+        this.idDepartement = idDepartement;
+        this.idManager = idManager;
+        this.ID_UserSolde = ID_UserSolde;
     }
 
     public int getID_UserSolde() {
@@ -270,4 +283,14 @@ public class User {
     public List<TypeConge> getTypeConges() {
         return typeConges;
     }
+
+    public int getIdSolde() {
+        return idSolde;
+    }
+
+    public void setIdSolde(int idSolde) {
+        this.idSolde = idSolde;
+    }
+
+
 }
