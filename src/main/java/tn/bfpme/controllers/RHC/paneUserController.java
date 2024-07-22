@@ -88,6 +88,8 @@ public class paneUserController implements Initializable {
     @FXML
     private TextField Role_field;
     @FXML
+    private Button ExporterExcelButton;
+    @FXML
     public ListView<User> userListView;
     @FXML
     public TextField User_field;
@@ -1166,5 +1168,8 @@ public class paneUserController implements Initializable {
     }
 
 
+    @FXML
+    public void ExporterExcel(ActionEvent actionEvent) {
 
+    }
 }
