@@ -173,7 +173,7 @@ public class paneUserController implements Initializable {
     };
 
 
-    ObservableList<String> HierarchieList = FXCollections.observableArrayList("Utilisateurs", "Départements", "Roles");
+    ObservableList<String> HierarchieList = FXCollections.observableArrayList("Utilisateurs", "Départements");
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -220,11 +220,11 @@ public class paneUserController implements Initializable {
             DepartPane1.setVisible(true);
             RolePane1.setVisible(false);
         }
-        if (hierarCombo.getValue().equals("Roles")) {
+        /*if (hierarCombo.getValue().equals("Roles")) {
             UserPane1.setVisible(false);
             DepartPane1.setVisible(false);
             RolePane1.setVisible(true);
-        }
+        }*/
     }
 
     private void loadUsers() {
@@ -426,9 +426,8 @@ public class paneUserController implements Initializable {
                 }
             }
 
-            // Refresh the TreeView
-            userTable.setRoot(null);  // Clear the TreeView
-            userTable.setRoot(root);  // Set the new root
+            userTable.setRoot(null);
+            userTable.setRoot(root);
             userTable.setShowRoot(false);
 
             idUserColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("idUser"));
