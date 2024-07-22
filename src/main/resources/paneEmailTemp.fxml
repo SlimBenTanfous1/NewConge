@@ -17,7 +17,7 @@
       <Label alignment="TOP_CENTER" layoutX="406.0" layoutY="21.0" prefHeight="29.0" prefWidth="308.0" styleClass="RobotoBoldItalic" text="Modèles de correspondance" AnchorPane.leftAnchor="406.0" AnchorPane.rightAnchor="405.0" AnchorPane.topAnchor="21.0">
          <font>
             <Font size="24.0" />
-         </font>
+         </font>²
       </Label>
       <AnchorPane layoutX="70.0" layoutY="73.0" prefHeight="597.0" prefWidth="980.0" styleClass="paneRoundedCornders" AnchorPane.bottomAnchor="56.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="69.0" AnchorPane.topAnchor="73.0">
          <children>

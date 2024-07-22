@@ -11,29 +11,27 @@ public class StageManager {
     private static final String ICON_PATH = "/assets/imgs/logo_bfpme.png";
     private static final Image ICON_IMAGE = new Image(StageManager.class.getResourceAsStream(ICON_PATH));
 
-    // Fields to store the width and height of the most recently added stage
-    private static double lastStageWidth = 1340; // Default width
-    private static double lastStageHeight = 830; // Default height
-
     public static void addStage(Stage stage) {
-        setStageSize(stage);
         stages.add(stage);
-        addSizeListeners(stage);
-        updateLastStageSize(stage);
     }
 
     public static void addStage(String name, Stage stage) {
-        setStageSize(stage);
         stage.getIcons().add(ICON_IMAGE);
         stageMap.put(name, stage);
         stages.add(stage);
-        addSizeListeners(stage);
-        updateLastStageSize(stage);
     }
 
     public static void removeStage(Stage stage) {
         stages.remove(stage);
         stageMap.values().remove(stage);
+    }
+
+    public static void removeStage(String name) {
+        Stage stage = stageMap.remove(name);
+        if (stage != null) {
+            stages.remove(stage);
+            stage.close();
+        }
     }
 
     public static Stage getStage(String name) {
@@ -48,25 +46,5 @@ public class StageManager {
         }
         stages.clear();
         stageMap.clear();
-    }
-
-    private static void setStageSize(Stage stage) {
-        stage.setWidth(lastStageWidth);
-        stage.setHeight(lastStageHeight);
-    }
-
-    private static void updateLastStageSize(Stage stage) {
-        lastStageWidth = stage.getWidth();
-        lastStageHeight = stage.getHeight();
-    }
-
-    private static void addSizeListeners(Stage stage) {
-        stage.widthProperty().addListener((obs, oldVal, newVal) -> {
-            lastStageWidth = newVal.doubleValue();
-        });
-
-        stage.heightProperty().addListener((obs, oldVal, newVal) -> {
-            lastStageHeight = newVal.doubleValue();
-        });
     }
 }

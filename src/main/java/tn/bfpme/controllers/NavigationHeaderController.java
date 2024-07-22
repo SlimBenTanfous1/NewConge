@@ -100,6 +100,8 @@ public class NavigationHeaderController implements Initializable {
     @FXML
     void ListeDesDemandes(ActionEvent event) {
         navigateToScene(event, "/DemandeDepListe.fxml", "Liste des demandes - " + SessionManager.getInstance().getUserDepartmentName());
+        Stage demandeDepListeStage = new Stage();
+        StageManager.addStage("DemandeDepListe", demandeDepListeStage);
     }
 
     @FXML
