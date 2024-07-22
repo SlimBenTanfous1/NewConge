@@ -11,6 +11,7 @@ import java.util.List;
 public class ServiceRole {
 
     private static Connection cnx = MyDataBase.getInstance().getCnx();
+
     public static Role getRoleByUserId(int idUser) {
         Role role = null;
         String query = "SELECT r.* FROM role r JOIN user_role ur ON r.ID_Role = ur.ID_Role WHERE ur.ID_User = ?";
@@ -24,7 +25,7 @@ public class ServiceRole {
         }
 
         try (PreparedStatement stmt = cnx.prepareStatement(query)) {
-            stmt.setInt(1,idUser );
+            stmt.setInt(1, idUser);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 role = new Role(
@@ -61,8 +62,6 @@ public class ServiceRole {
         }
         return role;
     }
-
-
 
     public static List<Role> getChildRoles(int parentRoleId) {
         List<Role> childRoles = new ArrayList<>();
@@ -133,8 +132,6 @@ public class ServiceRole {
         }
         return roles;
     }
-
-
 
     public static List<Role> getParentRoles(int idRole) {
         List<Role> parentRoles = new ArrayList<>();
@@ -215,16 +212,42 @@ public class ServiceRole {
         return parentRole;
     }
 
-    public void addRole(String nom, String description) {
+    public void addRole(Role role) {
         String query = "INSERT INTO role (nom, description) VALUES (?, ?)";
         try (Connection cnx = MyDataBase.getInstance().getCnx();
              PreparedStatement pstmt = cnx.prepareStatement(query)) {
-            pstmt.setString(1, nom);
-            pstmt.setString(2, description);
+            pstmt.setString(1, role.getNom());
+            pstmt.setString(2, role.getDescription());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public Role addRole2(String nom, String description) {
+        String insertQuery = "INSERT INTO role (nom, description) VALUES (?, ?)";
+        String selectQuery = "SELECT * FROM role WHERE nom = ? AND description = ? ORDER BY ID_Role  DESC LIMIT 1"; // Assuming idRole is the primary key
+        try (Connection cnx = MyDataBase.getInstance().getCnx();
+             PreparedStatement pstmt = cnx.prepareStatement(insertQuery)) {
+            pstmt.setString(1, nom);
+            pstmt.setString(2, description);
+            pstmt.executeUpdate();
+            try (PreparedStatement selectStmt = cnx.prepareStatement(selectQuery)) {
+                selectStmt.setString(1, nom);
+                selectStmt.setString(2, description);
+                try (ResultSet rs = selectStmt.executeQuery()) {
+                    if (rs.next()) {
+                        int idRole = rs.getInt("ID_Role");
+                        String roleName = rs.getString("nom");
+                        String roleDescription = rs.getString("description");
+                        return new Role(idRole, roleName, roleDescription);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public void updateRole(int idRole, String nom, String description) {
@@ -364,6 +387,7 @@ public class ServiceRole {
         }
 
     }
+
     public Role getRoleById1(int roleId) {
         Role role = null;
         String query = "SELECT * FROM role WHERE ID_Role = ?";
@@ -387,4 +411,26 @@ public class ServiceRole {
         return role;
     }
 
+    public List<Role> getRoleParents2(int childRoleId) {
+        List<Role> parents = new ArrayList<>();
+        String query = "SELECT rp.ID_Role, rp.nom, rp.description FROM rolehierarchie rh " +
+                "JOIN role rp ON rh.ID_RoleP = rp.ID_Role WHERE rh.ID_RoleC = ?";
+
+        try (Connection cnx = MyDataBase.getInstance().getCnx();
+             PreparedStatement pstmt = cnx.prepareStatement(query)) {
+
+            pstmt.setInt(1, childRoleId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    int idRole = rs.getInt("ID_Role");
+                    String roleName = rs.getString("nom");
+                    String roleDescription = rs.getString("description");
+                    parents.add(new Role(idRole, roleName, roleDescription));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return parents;
+    }
 }

@@ -39,14 +39,13 @@ public class ServiceUtilisateur implements IUtilisateur {
                 user.setRoleNom(rs.getString("Role"));
                 user.setDepartementNom(rs.getString("Departement"));
                 user.setManagerName(rs.getString("Manager")); // Fetch and set the contrat_id
-               // user.add(user);
+                // user.add(user);
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         return users;
     }
-
 
     @Override
     public List<User> afficherusers() {
@@ -77,6 +76,7 @@ public class ServiceUtilisateur implements IUtilisateur {
 
         return userList;
     }
+
     public UserConge AfficherEnAttente() {
         List<User> users = new ArrayList<>();
         List<Conge> conges = new ArrayList<>();
@@ -145,7 +145,6 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
         return new UserConge(users, conges);
     }
-
 
     @Override
     public UserConge TriType() {
@@ -560,7 +559,6 @@ public class ServiceUtilisateur implements IUtilisateur {
         return managerId;
     }
 
-
     public List<User> getUsersByDepartment(String departement) {
         List<User> users = new ArrayList<>();
         String sql = "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement " +
@@ -595,8 +593,6 @@ public class ServiceUtilisateur implements IUtilisateur {
 
         return users;
     }
-
-
 
     @Override
     public void updateUser(User user) {
@@ -687,8 +683,6 @@ public class ServiceUtilisateur implements IUtilisateur {
             }
         }
     }
-
-
 
 
     @Override
@@ -947,8 +941,6 @@ public class ServiceUtilisateur implements IUtilisateur {
     }
 
 
-
-
     public void setManagerForUser(int userId, int managerId) {
         String query = "UPDATE user SET ID_Manager = ? WHERE ID_User = ?";
         try {
@@ -1064,6 +1056,7 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
         return DepName;
     }
+
     private void showErrorToUser(String message) {
         // Implementation to show error message to the user
         // For example, in JavaFX you might use:
@@ -1098,6 +1091,7 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
         return roles;
     }
+
     public List<Departement> getAllDepartments() throws SQLException {
         List<Departement> departments = new ArrayList<>();
         String query = "SELECT * FROM departement";
@@ -1146,6 +1140,7 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
         return roles;
     }
+
     public User getUserById1(int userId) {
         User user = null;
         String query = "SELECT u.*, ur.ID_Role FROM user u LEFT JOIN user_role ur ON u.ID_User = ur.ID_User WHERE u.ID_User = ?";
@@ -1180,6 +1175,7 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
         return user;
     }
+
     private Integer findManagerInDepartmentHierarchy(int userId, int deptId, List<Integer> parentRoleIds) throws SQLException {
         Set<Integer> visitedDepts = new HashSet<>();
         while (deptId != 0 && !visitedDepts.contains(deptId)) {
@@ -1321,9 +1317,6 @@ public class ServiceUtilisateur implements IUtilisateur {
     }
 
 
-
-
-
     public List<User> getAllUsers() {
         List<User> userList = new ArrayList<>();
         String sql = "SELECT * FROM user";
@@ -1389,6 +1382,7 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
         return null;
     }
+
     public void removeUserRole(int userId) throws SQLException {
         String query = "DELETE FROM user_role WHERE ID_User = ?";
         Connection conn = MyDataBase.getInstance().getCnx();

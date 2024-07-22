@@ -1,5 +1,7 @@
 package tn.bfpme.models;
 
+import java.util.Objects;
+
 public class Role {
     private int idRole;
     private int RoleParent;
@@ -77,5 +79,18 @@ public class Role {
     @Override
     public String toString() {
         return nom + " - " + description;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Role role = (Role) obj;
+        return idRole == role.idRole;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(idRole);
     }
 }
