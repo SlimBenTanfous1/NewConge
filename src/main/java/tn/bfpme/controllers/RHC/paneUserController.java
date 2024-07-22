@@ -175,6 +175,8 @@ public class paneUserController implements Initializable {
             handleUserSelection(newValue);
         }
     };
+
+
     ObservableList<String> HierarchieList = FXCollections.observableArrayList("Utilisateurs", "Départements");
 
     @Override
@@ -252,6 +254,7 @@ public class paneUserController implements Initializable {
                 CardUserRHController cardController = fxmlLoader.getController();
                 Departement department = depService.getDepartmentById(user.getIdDepartement());
                 Role role = roleService.getRoleByUserId(user.getIdUser());
+                userBox.prefWidthProperty().bind(UserContainers.widthProperty());
                 String departmentName = department != null ? department.getNom() : "N/A";
                 String roleName = role != null ? role.getNom() : "N/A";
                 cardController.setData(user, roleName, departmentName);
@@ -289,6 +292,7 @@ public class paneUserController implements Initializable {
             }
         }
     }
+
     private void loadUsers1() {
         List<User> userList = userService.getAllUsers();
         ObservableList<User> users = FXCollections.observableArrayList(userList);
@@ -316,6 +320,7 @@ public class paneUserController implements Initializable {
             }
         });
     }
+
     private void loadDepartments1() {
         List<Departement> departmentList = depService.getAllDepartments();
         ObservableList<Departement> departments = FXCollections.observableArrayList(departmentList);
@@ -345,6 +350,7 @@ public class paneUserController implements Initializable {
             });
         });
     }
+
     private void loadRole1s() {
         List<Role> roleList = roleService.getAllRoles();
         ObservableList<Role> roles = FXCollections.observableArrayList(roleList);
@@ -372,6 +378,7 @@ public class paneUserController implements Initializable {
             });
         });
     }
+
     private void loadUsers3() {
         try {
             List<User> userList = userService.getAllUsers();
@@ -443,6 +450,8 @@ public class paneUserController implements Initializable {
         }
     }
 
+
+
     private void loadRoles3() {
         List<Role> roleList = roleService.getAllRoles();
         ObservableList<Role> roles = FXCollections.observableArrayList(roleList);
@@ -486,6 +495,7 @@ public class paneUserController implements Initializable {
         RoleParColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("parentRoleName"));
         RoleFilsColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("childRoleName"));
     }
+
     private void loadDeparts3() {
         System.out.println("Loading departments...");
         List<Departement> departmentList = depService.getAllDepartments();
@@ -527,10 +537,14 @@ public class paneUserController implements Initializable {
         DescriptionDeptColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("description"));
         DeptparColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("parentDeptName"));
     }
+
+
     private boolean isCurrentUser(int userId, String email) {
         User user = UserS.getUserById(userId);
         return user != null && user.getEmail().equals(email);
     }
+
+
     @FXML
     public void User_Recherche(KeyEvent event) {
         String searchText = User_field.getText().trim();
@@ -544,6 +558,7 @@ public class paneUserController implements Initializable {
                     user.getEmail().toLowerCase().contains(lowerCaseFilter);
         });
     }
+
     @FXML
     void Depart_Recherche(KeyEvent event) {
         String searchText = Depart_field.getText().trim();
@@ -556,6 +571,7 @@ public class paneUserController implements Initializable {
                     (departement.getDescription() != null && departement.getDescription().toLowerCase().contains(lowerCaseFilter));
         });
     }
+
     @FXML
     void Role_Recherche(KeyEvent event) {
         String searchText = Role_field.getText().trim();
@@ -568,6 +584,8 @@ public class paneUserController implements Initializable {
                     role.getDescription().toLowerCase().contains(lowerCaseFilter);
         });
     }
+
+
     @FXML
     void rechercheUser1(ActionEvent event) {
         String searchText = searchFieldUser.getText().trim();
@@ -1158,48 +1176,7 @@ public class paneUserController implements Initializable {
 
 
     @FXML
-    void ExporterExcel(ActionEvent actionEvent){
-        //List<User> users = ServiceUtilisateur.show(); // Assuming ServiceUtilisateur is your service class to fetch users
-        exportUsersExcel(users);
-    }
+    public void ExporterExcel(ActionEvent actionEvent) {
 
-    private void exportUsersExcel(List<User> users) {
-        Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("Users");
-        Row headerRow = sheet.createRow(0);
-        String[] columnNames = {"ID", "Nom", "Prenom", "Email", "Role", "Departement", "Manager"};
-
-        for (int i = 0; i < columnNames.length; i++) {
-            Cell cell = headerRow.createCell(i);
-            cell.setCellValue(columnNames[i]);
-        }
-
-        int rowNum = 1;
-        for (User user : users) {
-            Row row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(user.getIdUser());
-            row.createCell(1).setCellValue(user.getNom());
-            row.createCell(2).setCellValue(user.getPrenom());
-            row.createCell(3).setCellValue(user.getEmail());
-            row.createCell(4).setCellValue(user.getRoleNom());
-            row.createCell(5).setCellValue(user.getDepartementNom());
-            row.createCell(6).setCellValue(user.getManagerName());
-        }
-
-        for (int i = 0; i < columnNames.length; i++) {
-            sheet.autoSizeColumn(i);
-        }
-
-        try (FileOutputStream fileOut = new FileOutputStream("Users.xlsx")) {
-            workbook.write(fileOut);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                workbook.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 }

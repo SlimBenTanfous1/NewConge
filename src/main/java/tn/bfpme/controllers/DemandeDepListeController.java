@@ -53,7 +53,10 @@ public class DemandeDepListeController implements Initializable {
         comboTri.setItems(TriListe);
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/NavigationHeader.fxml"));
-            Pane departementPane = loader.load();
+            AnchorPane departementPane = loader.load();
+            AnchorPane.setTopAnchor(departementPane, 0.0);
+            AnchorPane.setLeftAnchor(departementPane, 0.0);
+            AnchorPane.setRightAnchor(departementPane, 0.0);
             MainAnchorPane.getChildren().add(departementPane);
         } catch (IOException e) {
             e.printStackTrace();
