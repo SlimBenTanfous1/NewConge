@@ -100,7 +100,6 @@ public class LoginController {
                         rs.getString("Email"),
                         rs.getString("MDP"),
                         rs.getString("Image"),
-                        null, // Pass null for creationDate, as it's not being fetched
                         rs.getInt("ID_Manager"),
                         rs.getInt("ID_Departement"),
                         rs.getInt("ID_Role")

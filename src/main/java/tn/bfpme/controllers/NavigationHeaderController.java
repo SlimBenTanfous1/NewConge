@@ -52,24 +52,32 @@ public class NavigationHeaderController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         String userRoleName = SessionManager.getInstance().getUserRoleName();
         String userDepartmentName = SessionManager.getInstance().getUserDepartmentName();
+
         btnListe.setVisible(!"Employe".equals(userRoleName) || "AdminIT".equals(userRoleName));
-        btnListe.setVisible(!userRoleName.equals("Employe") || userRoleName.equals("AdminIT"));
-        btnRH.setVisible((userDepartmentName.equals("RH") && userDepartmentName.equals("Directeur")) || userDepartmentName.equals("AdminIT"));
+        btnListe.setVisible(!userRoleName.equals("Employe")||userRoleName.equals("AdminIT"));
+
+        //btnRH.setVisible((userDepartmentName.equals("RH") && userDepartmentName.equals("Directeur"))||userDepartmentName.equals("AdminIT"));
         if ((userDepartmentName != null && userDepartmentName.equals("RH") && "Directeur".equals(userRoleName)) || "AdminIT".equals(userRoleName)) {
             btnRH.setVisible(true);
         } else {
             btnRH.setVisible(false);
         }
+        System.out.println(userDepartmentName);
+        System.out.println(userRoleName);
         admin_interface.setVisible("AdminIT".equals(userRoleName));
+
         // test_interfaceID.setVisible(userRole.equals("RH") || userRole.equals("AdminIT"));
+
         settingsPopup = new Popup();
         settingsPopup.setAutoHide(true);
+
         try {
             Parent settingsContent = FXMLLoader.load(getClass().getResource("/Settings.fxml"));
             settingsPopup.getContent().add(settingsContent);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         notifPopup = new Popup();
         notifPopup.setAutoHide(true);
         try {

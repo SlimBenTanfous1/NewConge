@@ -140,10 +140,10 @@ public class MailingDemandeController implements Initializable {
         String messageText = mail_text.getText();
         serviceConge.NewMessage(messageText,user.getIdUser(),conge.getIdConge());
         if (conge.getStatut() == Statut.Approuvé) {
-            String NotifSubject = "Votre Demande de congé " + conge.getTypeConge() + " a été approuvé.";
+            String NotifSubject = "Votre Demande de congé " + conge.getTypeConge().getDesignation() + " a été approuvé.";
             notifService.NewNotification(user.getIdUser(), NotifSubject, 1, messageText);
         } else if (conge.getStatut() == Statut.Rejeté) {
-            String NotifSubject = "Votre Demande de congé " + conge.getTypeConge() + " a été rejeté à cause de " + subject;
+            String NotifSubject = "Votre Demande de congé " + conge.getTypeConge().getDesignation() + " a été rejeté à cause de " + subject;
             notifService.NewNotification(user.getIdUser(), NotifSubject, 0, messageText);
         }
 
