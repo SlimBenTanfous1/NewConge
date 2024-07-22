@@ -11,10 +11,10 @@
 
 <AnchorPane fx:id="MainAnchorPane" prefHeight="830.0" prefWidth="1340.0" styleClass="grad-bg" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.RHC.RHController">
    <children>
-      <Pane fx:id="PaneCont" layoutX="221.0" layoutY="106.0" prefHeight="726.0" prefWidth="1119.0" styleClass="pane1" />
-      <Pane layoutY="105.0" prefHeight="726.0" prefWidth="222.0" style="-fx-background-color: #11234a1a;">
+      <Pane fx:id="PaneCont" layoutX="221.0" layoutY="106.0" prefHeight="726.0" prefWidth="1119.0" styleClass="pane1" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="221.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="106.0" />
+      <AnchorPane layoutX="-1.0" layoutY="105.0" prefHeight="726.0" prefWidth="214.0" style="-fx-background-color: #11234a1a;" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="105.0">
          <children>
-            <VBox alignment="CENTER" layoutX="9.0" layoutY="145.0" prefHeight="436.0" prefWidth="204.0" spacing="10.0">
+            <VBox alignment="CENTER" layoutX="5.0" layoutY="153.0" prefHeight="408.0" prefWidth="204.0" spacing="10.0" AnchorPane.bottomAnchor="165.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="153.0">
                <children>
                   <Button mnemonicParsing="false" onAction="#showUtilisateursPane" prefHeight="55.0" prefWidth="204.0" text="Utilisateurs">
                      <font>
@@ -72,13 +72,13 @@
                   </Button>
                </children>
             </VBox>
-            <Label layoutX="45.0" layoutY="120.0" text="Les gestions :">
+            <Label layoutX="46.0" layoutY="120.0" text="Les gestions :" AnchorPane.leftAnchor="46.0" AnchorPane.rightAnchor="36.0" AnchorPane.topAnchor="120.0">
                <styleClass>
                   <String fx:value="FontSize-21" />
                   <String fx:value="RobotoBoldItalic" />
                </styleClass>
             </Label>
          </children>
-      </Pane>
+      </AnchorPane>
    </children>
 </AnchorPane>
