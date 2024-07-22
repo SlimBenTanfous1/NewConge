@@ -110,6 +110,17 @@ public class User {
         this.idManager = idManager;
         this.ID_UserSolde = ID_UserSolde;
     }
+    public User(int idUser, String nom, String prenom, String email, String mdp, String image,  int idManager,int idDepartement, int idRole) {
+        this.idUser = idUser;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.email = email;
+        this.mdp = mdp;
+        this.image = image;
+        this.idDepartement = idDepartement;
+        this.idManager = idManager;
+        this.idRole = idRole;
+    }
 
     public int getID_UserSolde() {
         return ID_UserSolde;
