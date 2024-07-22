@@ -132,7 +132,7 @@ public class paneUserController implements Initializable {
     @FXML
     private Label affectationlabel;
     @FXML
-    private Pane UtilisateursPane;
+    public Pane UtilisateursPane;
     @FXML
     public ListView<Departement> departListView;
     @FXML
