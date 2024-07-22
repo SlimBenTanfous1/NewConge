@@ -85,7 +85,6 @@ public class DemandeCongeController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         List<TypeConge> typeConges = serviceTypeConge.getAllTypeConge();
         if (typeConges != null && !typeConges.isEmpty()) {
             ObservableList<TypeConge> observableTypeConges = FXCollections.observableArrayList(typeConges);
@@ -93,7 +92,6 @@ public class DemandeCongeController implements Initializable {
         } else {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Type de congé non disponible", "Aucun type de congé n'a été trouvé dans la base de données.");
         }
-
         cb_typeconge.setConverter(new StringConverter<TypeConge>() {
             @Override
             public String toString(TypeConge typeConge) {
@@ -106,7 +104,6 @@ public class DemandeCongeController implements Initializable {
                         TypeConge.getDesignation().equals(string)).findFirst().orElse(null);
             }
         });
-
         cb_typeconge.setOnAction(this::TypeSelec);
         ForDoc1.setVisible(false);
         ForDoc2.setVisible(false);
@@ -215,10 +212,12 @@ public class DemandeCongeController implements Initializable {
     }
     @FXML
     void TypeSelec(ActionEvent event) {
+        ForDoc1.setVisible(false);
+        ForDoc2.setVisible(false);
         TypeConge selectedTypeConge = cb_typeconge.getSelectionModel().getSelectedItem();
         if (selectedTypeConge != null) {
             paneConge.setVisible(true);
-            TypeTitle.setText("Conge " + selectedTypeConge.getDesignation());
+            TypeTitle.setText("Congé " + selectedTypeConge.getDesignation());
             if (selectedTypeConge.isFile()){
                 ForDoc1.setVisible(true);
                 ForDoc2.setVisible(true);

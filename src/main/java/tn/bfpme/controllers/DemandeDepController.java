@@ -170,11 +170,7 @@ public class DemandeDepController implements Initializable {
                 Parent root = loader.load();
                 MailingDemandeController controller = loader.getController();
                 controller.setData(conge, user);
-
-                // Close all other stages
                 StageManager.closeAllStages();
-
-                // Open the new stage
                 Stage newStage = new Stage();
                 StageManager.addStage("MailingDemande", newStage);
                 Scene scene = new Scene(root);
@@ -192,8 +188,6 @@ public class DemandeDepController implements Initializable {
         this.conge.setStatut(Statut.Rejeté);
         serviceConge.updateStatutConge(this.conge.getIdConge(), Statut.Rejeté);
     }
-
-
 
 
     @FXML
