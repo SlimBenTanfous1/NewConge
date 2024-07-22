@@ -10,6 +10,8 @@ public class StageManager {
     private static final Map<String, Stage> stageMap = Collections.synchronizedMap(new HashMap<>());
     private static final String ICON_PATH = "/assets/imgs/logo_bfpme.png";
     private static final Image ICON_IMAGE = new Image(StageManager.class.getResourceAsStream(ICON_PATH));
+    private static double lastStageWidth = 1340; // Default width
+    private static double lastStageHeight = 830; // Default height
 
     public static void addStage(Stage stage) {
         stages.add(stage);
