@@ -62,7 +62,11 @@
                         </Button>
                      </children>
                   </HBox>
-                  <VBox fx:id="comboBoxContainer" layoutX="582.0" layoutY="315.0" prefHeight="167.0" prefWidth="281.0" spacing="12.0" styleClass="paneRoundedCornders" />
+            <HBox layoutX="583.0" layoutY="316.0" minHeight="167.0" minWidth="281.0" prefHeight="167.0" prefWidth="281.0" AnchorPane.leftAnchor="582.0" AnchorPane.rightAnchor="117.0" AnchorPane.topAnchor="315.0">
+               <children>
+                        <VBox fx:id="comboBoxContainer" minHeight="167.0" minWidth="281.0" prefHeight="167.0" prefWidth="443.0" spacing="12.0" styleClass="paneRoundedCornders" />
+               </children>
+            </HBox>
             <HBox layoutX="582.0" layoutY="276.0" minHeight="31.0" minWidth="281.0" prefHeight="31.0" prefWidth="281.0" AnchorPane.leftAnchor="582.0" AnchorPane.rightAnchor="116.0">
                <children>
                         <ComboBox fx:id="parentDeptComboBox" prefHeight="31.0" prefWidth="443.0" promptText="Selectionner departement parent" />

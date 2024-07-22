@@ -54,7 +54,10 @@ public class paneDepController implements Initializable {
     private void handleAddDepartment() {
         String name = deptNameField.getText();
         String description = deptDescriptionField.getText();
-
+        if (deptNameField.getText().isEmpty() || deptDescriptionField.getText().isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Champs requis non remplis", "Veuillez remplir toutes les informations nécessaires.");
+            return;
+        }
         Departement parent = lastSelectedParent != null ? lastSelectedParent : parentDeptComboBox.getSelectionModel().getSelectedItem();
 
         if (parent == null) {
@@ -63,6 +66,13 @@ public class paneDepController implements Initializable {
             depService.addDepartement(name, description, parent.getIdDepartement() != 0 ? parent.getIdDepartement() : 0);
         }
         loadDepartments();
+    }
+    private void showAlert(Alert.AlertType alertType, String title, String header, String content) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 
     @FXML
@@ -142,7 +152,7 @@ public class paneDepController implements Initializable {
         }
         ComboBox<Departement> subDeptComboBox = new ComboBox<>();
         subDeptComboBox.setPrefHeight(31);
-        subDeptComboBox.setPrefWidth(281);
+        subDeptComboBox.setPrefWidth(443);
         subDeptComboBox.setCellFactory(param -> new ListCell<Departement>() {
             @Override
             protected void updateItem(Departement item, boolean empty) {
