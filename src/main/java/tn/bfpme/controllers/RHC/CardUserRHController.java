@@ -40,7 +40,6 @@ public class CardUserRHController {
     private final ServiceUtilisateur UserS = new ServiceUtilisateur();
     int uid;
     String unom, uprenom, uemail, umdp, urole, udepart, updp;
-    double SAnn, SExp, SMala, SMater;
 
     public void setData(User user, String roleName, String departmentName) {
         String imagePath = user.getImage();
@@ -88,10 +87,6 @@ public class CardUserRHController {
             pUC.email_A.setText(uemail);
             pUC.MDP_A.setText(umdp);
             pUC.image_A.setText(updp);
-            pUC.S_Ann.setText(String.valueOf(SAnn));
-            pUC.S_exc.setText(String.valueOf(SExp));
-            pUC.S_mal.setText(String.valueOf(SMala));
-            pUC.S_mat.setText(String.valueOf(SMater));
             String imagePath = updp;
             if (imagePath != null) {
                 try {

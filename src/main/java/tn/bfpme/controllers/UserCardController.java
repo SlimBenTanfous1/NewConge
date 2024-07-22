@@ -130,10 +130,7 @@ public class UserCardController {
             pUC.email_A.setText(uemail);
             pUC.MDP_A.setText(umdp);
             pUC.image_A.setText(updp);
-            pUC.S_Ann.setText(String.valueOf(SAnn));
-            pUC.S_exc.setText(String.valueOf(SExp));
-            pUC.S_mal.setText(String.valueOf(SMala));
-            pUC.S_mat.setText(String.valueOf(SMater));
+
 
             String imagePath = updp;
             if (imagePath != null) {

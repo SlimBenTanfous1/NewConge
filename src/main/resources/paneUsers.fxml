@@ -95,7 +95,7 @@
                            </children>
                         </HBox>
                         <Label fx:id="infolabel" layoutX="389.0" layoutY="20.0" prefHeight="29.0" prefWidth="342.0" />
-                        <Pane layoutX="645.0" layoutY="66.0" prefHeight="307.0" prefWidth="351.0" styleClass="paneRoundedCornders">
+                        <Pane fx:id="PaneSoldesUsers" layoutX="645.0" layoutY="66.0" prefHeight="307.0" prefWidth="351.0" styleClass="paneRoundedCornders">
                            <children>
                               <ScrollPane layoutX="9.0" layoutY="9.0" prefHeight="289.0" prefWidth="333.0">
                                  <content>

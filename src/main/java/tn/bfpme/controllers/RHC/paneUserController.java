@@ -20,15 +20,19 @@ import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.lang.ObjectUtils;
+
+import org.apache.poi.ss.usermodel.Cell;
 import tn.bfpme.models.*;
 import tn.bfpme.services.*;
 import tn.bfpme.utils.MyDataBase;
 import tn.bfpme.utils.SessionManager;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+
+import java.io.FileOutputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -116,15 +120,13 @@ public class paneUserController implements Initializable {
     private ListView<Role> roleListView;
     @FXML
     private TextField RoleSearchBar;
+    @FXML
+    private TextField soldeField1, soldeField2;
+    @FXML
+    private Button modifier_user, saveButton;
+    @FXML
+    private Pane paneSoldeUsers;
 
-    @FXML
-    public TextField S_Ann;
-    @FXML
-    public TextField S_exc;
-    @FXML
-    public TextField S_mal;
-    @FXML
-    public TextField S_mat;
     @FXML
     public GridPane UserContainers;
     @FXML
@@ -173,41 +175,46 @@ public class paneUserController implements Initializable {
             handleUserSelection(newValue);
         }
     };
-
-
     ObservableList<String> HierarchieList = FXCollections.observableArrayList("Utilisateurs", "Départements");
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-            loadUsers();
-            loadUsers1();
-            loadUsers3();
-            loadDepartments1();
-            setupSearch();
-            setupSearch1();
+        loadUsers();
+        loadUsers1();
+        loadUsers3();
+        loadDepartments1();
+        setupSearch();
+        setupSearch1();
         TabAffectationid.setOnSelectionChanged(event -> {
             if (TabAffectationid.isSelected()) {
                 resetAffectationTab();
             }
         });
 
-            loadRolesIntoComboBox();
-            setupRemoveFilterButton();
-            setupRoleSearchBar();
-            if (SessionManager.getInstance().getUserRoleName().equals("AdminIT")) {
-                adduserbtn.setDisable(true);
-            }
+        loadRolesIntoComboBox();
+        setupRemoveFilterButton();
+        setupRoleSearchBar();
+        if (SessionManager.getInstance().getUserRoleName().equals("AdminIT")) {
+            adduserbtn.setDisable(true);
+        }
 
-            setupRoleComboBoxListener();
-            loadDeparts3();
-            loadRole1s();
-            loadRoles3();
-            hierarCombo.setValue("Selectioner type");
-            hierarCombo.setItems(HierarchieList);
+        setupRoleComboBoxListener();
+        loadDeparts3();
+        loadRole1s();
+        loadRoles3();
+        hierarCombo.setValue("Selectioner type");
+        hierarCombo.setItems(HierarchieList);
 
-            // Add the listener to the userListView
-            userListView.getSelectionModel().selectedItemProperty().addListener(userSelectionListener);
+        // Add the listener to the userListView
+        userListView.getSelectionModel().selectedItemProperty().addListener(userSelectionListener);
+
+        // Initially hide solde fields
+        hideSoldeFields();
     }
+
+    private void hideSoldeFields() {
+    }
+
 
 
     @FXML
@@ -282,8 +289,6 @@ public class paneUserController implements Initializable {
             }
         }
     }
-
-
     private void loadUsers1() {
         List<User> userList = userService.getAllUsers();
         ObservableList<User> users = FXCollections.observableArrayList(userList);
@@ -311,7 +316,6 @@ public class paneUserController implements Initializable {
             }
         });
     }
-
     private void loadDepartments1() {
         List<Departement> departmentList = depService.getAllDepartments();
         ObservableList<Departement> departments = FXCollections.observableArrayList(departmentList);
@@ -341,7 +345,6 @@ public class paneUserController implements Initializable {
             });
         });
     }
-
     private void loadRole1s() {
         List<Role> roleList = roleService.getAllRoles();
         ObservableList<Role> roles = FXCollections.observableArrayList(roleList);
@@ -369,9 +372,6 @@ public class paneUserController implements Initializable {
             });
         });
     }
-
-
-
     private void loadUsers3() {
         try {
             List<User> userList = userService.getAllUsers();
@@ -443,8 +443,6 @@ public class paneUserController implements Initializable {
         }
     }
 
-
-
     private void loadRoles3() {
         List<Role> roleList = roleService.getAllRoles();
         ObservableList<Role> roles = FXCollections.observableArrayList(roleList);
@@ -488,7 +486,6 @@ public class paneUserController implements Initializable {
         RoleParColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("parentRoleName"));
         RoleFilsColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("childRoleName"));
     }
-
     private void loadDeparts3() {
         System.out.println("Loading departments...");
         List<Departement> departmentList = depService.getAllDepartments();
@@ -530,14 +527,10 @@ public class paneUserController implements Initializable {
         DescriptionDeptColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("description"));
         DeptparColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("parentDeptName"));
     }
-
-
     private boolean isCurrentUser(int userId, String email) {
         User user = UserS.getUserById(userId);
         return user != null && user.getEmail().equals(email);
     }
-
-
     @FXML
     public void User_Recherche(KeyEvent event) {
         String searchText = User_field.getText().trim();
@@ -551,7 +544,6 @@ public class paneUserController implements Initializable {
                     user.getEmail().toLowerCase().contains(lowerCaseFilter);
         });
     }
-
     @FXML
     void Depart_Recherche(KeyEvent event) {
         String searchText = Depart_field.getText().trim();
@@ -564,7 +556,6 @@ public class paneUserController implements Initializable {
                     (departement.getDescription() != null && departement.getDescription().toLowerCase().contains(lowerCaseFilter));
         });
     }
-
     @FXML
     void Role_Recherche(KeyEvent event) {
         String searchText = Role_field.getText().trim();
@@ -577,8 +568,6 @@ public class paneUserController implements Initializable {
                     role.getDescription().toLowerCase().contains(lowerCaseFilter);
         });
     }
-
-
     @FXML
     void rechercheUser1(ActionEvent event) {
         String searchText = searchFieldUser.getText().trim();
@@ -1169,7 +1158,48 @@ public class paneUserController implements Initializable {
 
 
     @FXML
-    public void ExporterExcel(ActionEvent actionEvent) {
+    void ExporterExcel(ActionEvent actionEvent){
+        //List<User> users = ServiceUtilisateur.show(); // Assuming ServiceUtilisateur is your service class to fetch users
+        exportUsersExcel(users);
+    }
 
+    private void exportUsersExcel(List<User> users) {
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Users");
+        Row headerRow = sheet.createRow(0);
+        String[] columnNames = {"ID", "Nom", "Prenom", "Email", "Role", "Departement", "Manager"};
+
+        for (int i = 0; i < columnNames.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(columnNames[i]);
+        }
+
+        int rowNum = 1;
+        for (User user : users) {
+            Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue(user.getIdUser());
+            row.createCell(1).setCellValue(user.getNom());
+            row.createCell(2).setCellValue(user.getPrenom());
+            row.createCell(3).setCellValue(user.getEmail());
+            row.createCell(4).setCellValue(user.getRoleNom());
+            row.createCell(5).setCellValue(user.getDepartementNom());
+            row.createCell(6).setCellValue(user.getManagerName());
+        }
+
+        for (int i = 0; i < columnNames.length; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        try (FileOutputStream fileOut = new FileOutputStream("Users.xlsx")) {
+            workbook.write(fileOut);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                workbook.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

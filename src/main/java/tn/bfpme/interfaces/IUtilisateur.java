@@ -8,7 +8,9 @@ import java.util.List;
 
 public interface IUtilisateur {
 
-   // UserConge afficherusers();
+    List<User> show() throws SQLException;
+
+    // UserConge afficherusers();
     List<User> afficherusers();
 
         // UserConge Rechercher(String search);

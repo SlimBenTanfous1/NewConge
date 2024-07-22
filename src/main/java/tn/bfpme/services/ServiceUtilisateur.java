@@ -24,6 +24,31 @@ public class ServiceUtilisateur implements IUtilisateur {
     }
 
     @Override
+    public List<User> show() throws SQLException {
+        List<User> users = new ArrayList<>();
+        String qry = "SELECT * FROM user";
+
+        try (PreparedStatement pstm = cnx.prepareStatement(qry);
+             ResultSet rs = pstm.executeQuery()) {
+            while (rs.next()) {
+                User user = new User();
+                user.setIdUser(rs.getInt("ID"));
+                user.setNom(rs.getString("Nom"));
+                user.setPrenom(rs.getString("Prenom"));
+                user.setEmail(rs.getString("Email"));
+                user.setRoleNom(rs.getString("Role"));
+                user.setDepartementNom(rs.getString("Departement"));
+                user.setManagerName(rs.getString("Manager")); // Fetch and set the contrat_id
+               // user.add(user);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return users;
+    }
+
+
+    @Override
     public List<User> afficherusers() {
         List<User> userList = new ArrayList<>();
         String sql = "SELECT * FROM user";
