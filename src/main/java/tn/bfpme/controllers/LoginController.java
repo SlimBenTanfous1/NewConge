@@ -41,10 +41,11 @@ public class LoginController {
     private Image hidePasswordImage;
 
     @FXML
-    void initialize() {
+    void initialize()   {
+
         // Load the images
-        showPasswordImage = new Image(getClass().getResourceAsStream("/assets/imgs/Hide.png"));
-        hidePasswordImage = new Image(getClass().getResourceAsStream("/assets/imgs/Show.png"));
+        showPasswordImage = new Image(getClass().getResourceAsStream("/assets/imgs/hide.png"));
+        hidePasswordImage = new Image(getClass().getResourceAsStream("/assets/imgs/show.png"));
         toggleIcon.setImage(showPasswordImage);
 
         // Toggle visibility of password fields
@@ -78,6 +79,7 @@ public class LoginController {
                 LoginMDP.setText(newValue);
             }
         });
+
     }
 
     @FXML
@@ -135,11 +137,15 @@ public class LoginController {
     private void navigateToProfile(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/profile.fxml"));
         Parent root = loader.load();
+
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Profile");
+        stage.setMaximized(true);
+        System.out.println("Setting stage to maximized in navigateToProfile");
         stage.show();
         StageManager.addStage("Profile", stage);
+
     }
 }

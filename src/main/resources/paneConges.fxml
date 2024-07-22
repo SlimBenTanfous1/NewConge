@@ -66,7 +66,7 @@
         <TextField fx:id="ID_Solde" layoutX="34.0" layoutY="571.0" opacity="0.0" prefHeight="29.0" prefWidth="18.0" />
         <HBox layoutX="84.0" layoutY="87.0" maxWidth="637.0" minHeight="281.0" minWidth="507.0" prefHeight="281.0" prefWidth="507.0" AnchorPane.leftAnchor="84.0" AnchorPane.rightAnchor="528.0" AnchorPane.topAnchor="87.0">
             <children>
-                <GridPane alignment="CENTER" prefHeight="281.0" prefWidth="577.0" scaleShape="false">
+                <GridPane alignment="CENTER" prefHeight="228.0" prefWidth="566.0" scaleShape="false">
                     <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="244.0" minWidth="10.0" prefWidth="191.0" />
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="328.0" minWidth="10.0" prefWidth="306.0" />
@@ -87,7 +87,7 @@
                                 <Insets left="20.0" />
                             </GridPane.margin>
                         </Label>
-                        <TextField fx:id="Designation_Solde" prefHeight="17.0" prefWidth="147.0" GridPane.columnIndex="1" />
+                        <TextField fx:id="Designation_Solde" prefHeight="29.0" prefWidth="382.0" GridPane.columnIndex="1" />
                         <Label text="Pas : " GridPane.rowIndex="1">
                             <styleClass>
                                 <String fx:value="FontSize-15" />
@@ -139,10 +139,10 @@
                             </children>
                         </VBox>
                     </children>
-                    <styleClass>
-                        <String fx:value="paneRoundedCorners" />
-                        <String fx:value="pane" />
-                    </styleClass>
+               <styleClass>
+                  <String fx:value="paneRoundedCornders" />
+                  <String fx:value="pane" />
+               </styleClass>
                 </GridPane>
             </children>
             <padding>

@@ -968,8 +968,6 @@ public class paneUserController implements Initializable {
             refreshUserContainers();
         });
     }
-
-
     private void refreshUserContainers() {
         UserContainers.getChildren().clear();
         int column = 0;

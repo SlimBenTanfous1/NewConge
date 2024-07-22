@@ -4,6 +4,10 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -21,6 +25,7 @@ import tn.bfpme.services.ServiceUserSolde;
 import tn.bfpme.utils.MyDataBase;
 import tn.bfpme.utils.SessionManager;
 
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -58,7 +63,7 @@ public class EmployeController implements Initializable {
     @FXML
     private TableColumn<Conge, Integer> indexColumn;
     @FXML
-    private HBox soldeHBox; // Reference to the HBox for solde
+    private HBox soldeHBox;
 
     private Connection cnx;
     private final ServiceConge serviceConge = new ServiceConge();
@@ -180,4 +185,23 @@ public class EmployeController implements Initializable {
 
         return pane;
     }
+    @FXML
+    private void navigateToScene(ActionEvent actionEvent, String fxmlFile, String title) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
+            Parent root = loader.load();
+            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle(title);
+
+            // Ensure the stage is maximized
+            stage.setMaximized(true);
+
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

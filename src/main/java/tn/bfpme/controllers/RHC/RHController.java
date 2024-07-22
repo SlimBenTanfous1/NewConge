@@ -1,15 +1,9 @@
-
 package tn.bfpme.controllers.RHC;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
-
 import java.io.IOException;
 
 public class RHController {
@@ -68,7 +62,6 @@ public class RHController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     private void centerPane(Pane container, Pane pane) {
@@ -83,8 +76,8 @@ public class RHController {
             pane.setLayoutY(y);
         });
     }
+
     public Pane getPaneCont() {
         return PaneCont;
     }
 }
-
