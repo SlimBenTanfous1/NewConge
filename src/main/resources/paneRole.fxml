@@ -13,7 +13,6 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
 <AnchorPane fx:id="RolesPane" minWidth="87.0" prefHeight="726.0" prefWidth="1119.0" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.RHC.paneRoleController">
    <children>
       <AnchorPane layoutX="70.0" layoutY="73.0" prefHeight="597.0" prefWidth="980.0" styleClass="paneRoundedCornders" AnchorPane.bottomAnchor="55.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="68.0" AnchorPane.topAnchor="73.0">
@@ -23,7 +22,7 @@
                   <ListView fx:id="roleListView" prefHeight="477.0" prefWidth="395.0" />
                </children>
             </HBox>
-            <Label layoutX="514.0" layoutY="61.0" text="Nom du role :" AnchorPane.leftAnchor="514.0" AnchorPane.topAnchor="61.0">
+            <Label layoutX="514.0" layoutY="61.0" text="Désignation de rôle :" AnchorPane.leftAnchor="514.0" AnchorPane.topAnchor="61.0">
                <styleClass>
                   <String fx:value="FontSize-13" />
                   <String fx:value="RobotoItalic" />
@@ -31,10 +30,10 @@
             </Label>
             <HBox layoutX="514.0" layoutY="88.0" prefHeight="29.0" prefWidth="281.0" AnchorPane.leftAnchor="514.0" AnchorPane.rightAnchor="186.0">
                <children>
-                  <TextField fx:id="roleNameField" prefHeight="29.0" prefWidth="333.0" promptText="Nom role" />
+                  <TextField fx:id="roleNameField" prefHeight="29.0" prefWidth="333.0" promptText="Désignation de rôle..." />
                </children>
             </HBox>
-            <Label layoutX="516.0" layoutY="135.0" text="Description :" AnchorPane.leftAnchor="515.0" AnchorPane.topAnchor="135.0">
+            <Label layoutX="516.0" layoutY="135.0" text="Déscription :" AnchorPane.leftAnchor="515.0" AnchorPane.topAnchor="135.0">
                <styleClass>
                   <String fx:value="FontSize-13" />
                   <String fx:value="RobotoItalic" />
@@ -42,10 +41,10 @@
             </Label>
             <HBox layoutX="515.0" layoutY="164.0" minWidth="281.0" prefWidth="281.0" AnchorPane.leftAnchor="514.0" AnchorPane.rightAnchor="186.0" AnchorPane.topAnchor="163.0">
                <children>
-                  <TextArea fx:id="roleDescriptionField" prefHeight="104.0" prefWidth="333.0" promptText="Description" wrapText="true" />
+                  <TextArea fx:id="roleDescriptionField" prefHeight="104.0" prefWidth="333.0" promptText="Déscription..." wrapText="true" />
                </children>
             </HBox>
-            <Label layoutX="516.0" layoutY="296.0" text="Role parent :">
+            <Label layoutX="516.0" layoutY="296.0" text="Rôle parent :">
                <styleClass>
                   <String fx:value="FontSize-13" />
                   <String fx:value="RobotoItalic" />
@@ -119,7 +118,7 @@
                   <String fx:value="RobotoMediumItalic" />
                </styleClass>
             </Label>
-            <Label layoutX="54.0" layoutY="42.0" prefHeight="18.0" prefWidth="174.0" text="Liste des roles" AnchorPane.leftAnchor="54.0" AnchorPane.topAnchor="42.0">
+            <Label layoutX="54.0" layoutY="42.0" prefHeight="18.0" prefWidth="174.0" text="Liste des rôles" AnchorPane.leftAnchor="54.0" AnchorPane.topAnchor="42.0">
                <styleClass>
                   <String fx:value="FontSize-18" />
                   <String fx:value="RobotoBlackItalic" />
@@ -127,7 +126,7 @@
             </Label>
          </children>
       </AnchorPane>
-      <Label alignment="TOP_CENTER" layoutX="466.0" layoutY="21.0" prefHeight="29.0" prefWidth="187.0" styleClass="RobotoBoldItalic" text="Gestion des roles" AnchorPane.leftAnchor="466.0" AnchorPane.rightAnchor="466.0" AnchorPane.topAnchor="21.0">
+      <Label alignment="TOP_CENTER" layoutX="466.0" layoutY="21.0" prefHeight="29.0" prefWidth="187.0" styleClass="RobotoBoldItalic" text="Gestion des rôles" AnchorPane.leftAnchor="466.0" AnchorPane.rightAnchor="466.0" AnchorPane.topAnchor="21.0">
          <font>
             <Font size="24.0" />
          </font>

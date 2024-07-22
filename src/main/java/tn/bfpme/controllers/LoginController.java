@@ -6,7 +6,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import tn.bfpme.models.User;
 import tn.bfpme.utils.MyDataBase;
@@ -23,9 +27,58 @@ public class LoginController {
     @FXML
     private TextField LoginEmail;
     @FXML
-    private TextField LoginMDP;
+    private PasswordField LoginMDP;
+    @FXML
+    private TextField showPasswordField;
+    @FXML
+    private Button toggleButton;
+    @FXML
+    private ImageView toggleIcon;
     @FXML
     private Connection cnx;
+
+    private Image showPasswordImage;
+    private Image hidePasswordImage;
+
+    @FXML
+    void initialize() {
+        // Load the images
+        showPasswordImage = new Image(getClass().getResourceAsStream("/assets/imgs/Hide.png"));
+        hidePasswordImage = new Image(getClass().getResourceAsStream("/assets/imgs/Show.png"));
+        toggleIcon.setImage(showPasswordImage);
+
+        // Toggle visibility of password fields
+        toggleButton.setOnAction(event -> {
+            if (showPasswordField.isVisible()) {
+                LoginMDP.setText(showPasswordField.getText());
+                LoginMDP.setVisible(true);
+                LoginMDP.setManaged(true);
+                showPasswordField.setVisible(false);
+                showPasswordField.setManaged(false);
+                toggleIcon.setImage(showPasswordImage);
+            } else {
+                showPasswordField.setText(LoginMDP.getText());
+                showPasswordField.setVisible(true);
+                showPasswordField.setManaged(true);
+                LoginMDP.setVisible(false);
+                LoginMDP.setManaged(false);
+                toggleIcon.setImage(hidePasswordImage);
+            }
+        });
+
+        // Sync the password fields
+        LoginMDP.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!showPasswordField.isVisible()) {
+                showPasswordField.setText(newValue);
+            }
+        });
+
+        showPasswordField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (showPasswordField.isVisible()) {
+                LoginMDP.setText(newValue);
+            }
+        });
+    }
 
     @FXML
     void Login(ActionEvent event) {
