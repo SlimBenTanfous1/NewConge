@@ -9,6 +9,7 @@ import javafx.scene.layout.*;
 import javafx.stage.*;
 import tn.bfpme.models.Conge;
 import tn.bfpme.models.User;
+import tn.bfpme.utils.StageManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -58,6 +59,8 @@ public class UserCarteController {
             DemDepC.setData(conge, user);
             newStage.setTitle("Demande de congé");
             newStage.setScene(new Scene(root));
+            Stage demandeDepStage = new Stage();
+            StageManager.addStage("DemandeDep", demandeDepStage);
             newStage.initModality(Modality.WINDOW_MODAL);
             newStage.initOwner(((Node) event.getSource()).getScene().getWindow());
             newStage.showAndWait();

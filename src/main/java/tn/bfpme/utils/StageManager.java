@@ -22,9 +22,16 @@ public class StageManager {
     }
 
     public static void removeStage(Stage stage) {
-        stage.getIcons().add(ICON_IMAGE);
         stages.remove(stage);
         stageMap.values().remove(stage);
+    }
+
+    public static void removeStage(String name) {
+        Stage stage = stageMap.remove(name);
+        if (stage != null) {
+            stages.remove(stage);
+            stage.close();
+        }
     }
 
     public static Stage getStage(String name) {
@@ -40,5 +47,4 @@ public class StageManager {
         stages.clear();
         stageMap.clear();
     }
-
 }

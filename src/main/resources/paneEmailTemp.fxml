@@ -16,7 +16,7 @@
       <Label layoutX="406.0" layoutY="21.0" prefHeight="29.0" prefWidth="308.0" styleClass="RobotoBoldItalic" text="Modèles de correspondance">
          <font>
             <Font size="24.0" />
-         </font>
+         </font>²
       </Label>
       <Pane layoutX="70.0" layoutY="73.0" prefHeight="597.0" prefWidth="980.0" styleClass="paneRoundedCornders">
          <children>
