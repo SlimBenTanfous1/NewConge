@@ -43,11 +43,7 @@
                         <PasswordField fx:id="LoginMDP" onAction="#Login" prefHeight="28.0" prefWidth="526.0" style="-fx-background-color: transparent; -fx-border-color: transparent transparent #eab53f transparent; -fx-border-width: 0 0 1 0; -fx-padding: 0 0 3 0;" text="999" />
                      </children>
                   </HBox>
-                  <HBox alignment="CENTER" layoutX="197.0" layoutY="462.0" AnchorPane.leftAnchor="197.0" AnchorPane.rightAnchor="211.0">
-                     <children>
-                              <Button mnemonicParsing="false" onAction="#Login" prefHeight="25.0" prefWidth="194.0" text="Se Connecter" />
-                     </children>
-                  </HBox>
+                  <HBox alignment="CENTER" layoutX="197.0" layoutY="462.0" AnchorPane.leftAnchor="197.0" AnchorPane.rightAnchor="211.0" />
                         <Label layoutX="101.0" layoutY="361.0" text="Email :" />
                         <Label layoutX="101.0" layoutY="413.0" text="Mot de Passe :" />
                         <Label alignment="CENTER" layoutX="196.0" layoutY="80.0" prefHeight="54.0" prefWidth="283.0" text="Page de Connexion" AnchorPane.leftAnchor="196.0" AnchorPane.rightAnchor="196.0" AnchorPane.topAnchor="80.0">
@@ -55,6 +51,7 @@
                               <Font size="24.0" />
                            </font>
                         </Label>
+                        <Button layoutX="197.0" layoutY="511.0" mnemonicParsing="false" onAction="#Login" prefHeight="25.0" prefWidth="194.0" text="Se Connecter" />
                </children>
             </AnchorPane>
          </children>
