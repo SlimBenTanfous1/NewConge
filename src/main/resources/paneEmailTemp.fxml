@@ -11,7 +11,6 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
 <AnchorPane prefHeight="726.0" prefWidth="1119.0" styleClass="grad-bg" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.RHC.paneEmailTempController">
    <children>
       <Label alignment="TOP_CENTER" layoutX="406.0" layoutY="21.0" prefHeight="29.0" prefWidth="308.0" styleClass="RobotoBoldItalic" text="Modèles de correspondance" AnchorPane.leftAnchor="406.0" AnchorPane.rightAnchor="405.0" AnchorPane.topAnchor="21.0">
@@ -21,7 +20,7 @@
       </Label>
       <AnchorPane layoutX="70.0" layoutY="73.0" prefHeight="597.0" prefWidth="980.0" styleClass="paneRoundedCornders" AnchorPane.bottomAnchor="56.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="69.0" AnchorPane.topAnchor="73.0">
          <children>
-            <HBox alignment="CENTER" layoutX="336.0" layoutY="534.0" prefHeight="37.0" prefWidth="308.0" spacing="25.0" AnchorPane.bottomAnchor="26.0" AnchorPane.leftAnchor="336.0" AnchorPane.rightAnchor="335.0">
+            <HBox alignment="CENTER" layoutX="303.0" layoutY="535.0" prefHeight="37.0" prefWidth="376.0" spacing="25.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="303.0" AnchorPane.rightAnchor="303.0">
                <children>
                   <Button mnemonicParsing="false" onAction="#AjouterTemp" prefHeight="41.0" prefWidth="87.0" text="Ajouter">
                      <styleClass>
@@ -73,6 +72,24 @@
                </styleClass>
             </Label>
             <TextArea fx:id="MessageTF" layoutX="380.0" layoutY="110.0" prefHeight="396.0" prefWidth="562.0" wrapText="true" AnchorPane.bottomAnchor="90.0" AnchorPane.leftAnchor="380.0" AnchorPane.rightAnchor="37.0" AnchorPane.topAnchor="110.0" />
+            <Button fx:id="btnSave" layoutX="789.0" layoutY="518.0" mnemonicParsing="false" onAction="#Save" prefHeight="19.0" prefWidth="152.0" text="Enregistrer" AnchorPane.bottomAnchor="47.0" AnchorPane.rightAnchor="40.0">
+               <styleClass>
+                  <String fx:value="FontSize-14" />
+                  <String fx:value="btn-approver" />
+               </styleClass>
+            </Button>
+            <Button fx:id="btnSaveEdit" layoutX="790.0" layoutY="518.0" mnemonicParsing="false" onAction="#SaveEdit" prefHeight="32.0" prefWidth="152.0" text="Enregistrer" AnchorPane.bottomAnchor="47.0" AnchorPane.rightAnchor="40.0">
+               <styleClass>
+                  <String fx:value="FontSize-14" />
+                  <String fx:value="btn-approver" />
+               </styleClass>
+            </Button>
+            <Button fx:id="btnCancel" layoutX="691.0" layoutY="518.0" mnemonicParsing="false" onAction="#Cancel" prefHeight="32.0" prefWidth="87.0" text="Annuler" AnchorPane.bottomAnchor="47.0" AnchorPane.rightAnchor="202.0">
+               <styleClass>
+                  <String fx:value="FontSize-14" />
+                  <String fx:value="btn-refuser" />
+               </styleClass>
+            </Button>
          </children>
       </AnchorPane>
    </children>
