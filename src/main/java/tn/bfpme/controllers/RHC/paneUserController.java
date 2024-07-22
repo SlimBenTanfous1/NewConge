@@ -245,6 +245,7 @@ public class paneUserController implements Initializable {
                 CardUserRHController cardController = fxmlLoader.getController();
                 Departement department = depService.getDepartmentById(user.getIdDepartement());
                 Role role = roleService.getRoleByUserId(user.getIdUser());
+                userBox.prefWidthProperty().bind(UserContainers.widthProperty());
                 String departmentName = department != null ? department.getNom() : "N/A";
                 String roleName = role != null ? role.getNom() : "N/A";
                 cardController.setData(user, roleName, departmentName);
@@ -282,7 +283,6 @@ public class paneUserController implements Initializable {
             }
         }
     }
-
 
     private void loadUsers1() {
         List<User> userList = userService.getAllUsers();
@@ -370,8 +370,6 @@ public class paneUserController implements Initializable {
         });
     }
 
-
-
     private void loadUsers3() {
         try {
             List<User> userList = userService.getAllUsers();
@@ -442,8 +440,6 @@ public class paneUserController implements Initializable {
             e.printStackTrace();
         }
     }
-
-
 
     private void loadRoles3() {
         List<Role> roleList = roleService.getAllRoles();
@@ -531,12 +527,10 @@ public class paneUserController implements Initializable {
         DeptparColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("parentDeptName"));
     }
 
-
     private boolean isCurrentUser(int userId, String email) {
         User user = UserS.getUserById(userId);
         return user != null && user.getEmail().equals(email);
     }
-
 
     @FXML
     public void User_Recherche(KeyEvent event) {
@@ -578,7 +572,6 @@ public class paneUserController implements Initializable {
         });
     }
 
-
     @FXML
     void rechercheUser1(ActionEvent event) {
         String searchText = searchFieldUser.getText().trim();
@@ -618,8 +611,6 @@ public class paneUserController implements Initializable {
                     role.getDescription().toLowerCase().contains(lowerCaseFilter);
         });
     }
-
-
 
     private List<UserSolde> getSoldeCongeByUserId(int userId) {
         List<UserSolde> soldeCongeList = new ArrayList<>();
@@ -692,7 +683,6 @@ public class paneUserController implements Initializable {
         loadUsers3();
     }
 
-
     @FXML
     private void handleRemoveUserAssignment() {
         Integer userId = getSelectedUserId();
@@ -732,9 +722,6 @@ public class paneUserController implements Initializable {
         }
         loadUsers3();
     }
-
-
-
 
     public Integer getSelectedUserId() {
         return selectedUser != null ? selectedUser.getIdUser() : null;

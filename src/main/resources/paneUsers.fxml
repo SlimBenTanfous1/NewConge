@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.lang.String?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
@@ -23,57 +24,68 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<Pane fx:id="UtilisateursPane" prefHeight="726.0" prefWidth="1119.0" styleClass="pane1" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.RHC.paneUserController">
+<AnchorPane fx:id="UtilisateursPane" styleClass="pane1" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.RHC.paneUserController">
    <children>
-      <TabPane prefHeight="726.0" prefWidth="1119.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane prefHeight="726.0" prefWidth="1119.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <tabs>
             <Tab fx:id="TabGestionid" onSelectionChanged="#TabGestion" text="Gestion des utilisateurs">
                <content>
                   <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="grad-bg" stylesheets="@assets/css/style.css">
                      <children>
-                        <Pane layoutX="28.0" layoutY="66.0" prefHeight="538.0" prefWidth="487.0" styleClass="paneRoundedCornders" stylesheets="@assets/css/style.css">
+                        <HBox layoutX="28.0" layoutY="66.0" prefHeight="538.0" prefWidth="644.0" AnchorPane.bottomAnchor="84.0" AnchorPane.leftAnchor="28.0" AnchorPane.rightAnchor="559.0" AnchorPane.topAnchor="66.0">
                            <children>
-                              <GridPane layoutX="58.0" layoutY="106.0" prefHeight="400.0" prefWidth="372.0">
-                                 <columnConstraints>
-                                    <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="167.0" minWidth="10.0" prefWidth="117.0" />
-                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="269.0" minWidth="10.0" prefWidth="255.0" />
-                                 </columnConstraints>
-                                 <rowConstraints>
-                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                 </rowConstraints>
+                              <AnchorPane prefHeight="538.0" prefWidth="580.0" styleClass="paneRoundedCornders">
                                  <children>
-                                    <Label text="Prenom" GridPane.rowIndex="1" />
-                                    <Label text="Nom" GridPane.rowIndex="2" />
-                                    <Label text="Image" GridPane.rowIndex="5" />
-                                    <Label text="Mot de Passe" GridPane.rowIndex="4" />
-                                    <Label text="Email" GridPane.rowIndex="3" />
-                                    <Label prefHeight="17.0" prefWidth="47.0" text="Maricule" />
-                                    <TextField fx:id="ID_A" GridPane.columnIndex="1" />
-                                    <TextField fx:id="Prenom_A" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                    <TextField fx:id="nom_A" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                    <TextField fx:id="email_A" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                                    <TextField fx:id="image_A" disable="true" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                                    <TextField fx:id="MDP_A" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                    <GridPane layoutX="64.0" layoutY="112.0" prefHeight="400.0" prefWidth="372.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="64.0" AnchorPane.rightAnchor="95.0" AnchorPane.topAnchor="112.0">
+                                       <columnConstraints>
+                                          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="167.0" minWidth="10.0" prefWidth="117.0" />
+                                          <ColumnConstraints hgrow="SOMETIMES" maxWidth="269.0" minWidth="10.0" prefWidth="255.0" />
+                                       </columnConstraints>
+                                       <rowConstraints>
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                       </rowConstraints>
+                                       <children>
+                                          <Label text="Prenom" GridPane.rowIndex="1" />
+                                          <Label text="Nom" GridPane.rowIndex="2" />
+                                          <Label text="Image" GridPane.rowIndex="5" />
+                                          <Label text="Mot de Passe" GridPane.rowIndex="4" />
+                                          <Label text="Email" GridPane.rowIndex="3" />
+                                          <Label prefHeight="17.0" prefWidth="47.0" text="Maricule" />
+                                          <TextField fx:id="ID_A" GridPane.columnIndex="1" />
+                                          <TextField fx:id="Prenom_A" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                          <TextField fx:id="nom_A" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                          <TextField fx:id="email_A" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                          <TextField fx:id="MDP_A" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                          <HBox alignment="CENTER" prefHeight="0.0" prefWidth="255.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                                             <children>
+                                                <TextField fx:id="image_A" disable="true" editable="false" prefHeight="29.0" prefWidth="232.0" />
+                                                <Button maxHeight="29.0" minHeight="29.0" mnemonicParsing="false" onAction="#upload_image" prefHeight="29.0" styleClass="btn-primary">
+                                                   <graphic>
+                                                      <ImageView fitHeight="29.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                         <image>
+                                                            <Image url="@assets/imgs/upload.png" />
+                                                         </image>
+                                                      </ImageView>
+                                                   </graphic>
+                                                   <HBox.margin>
+                                                      <Insets left="12.0" />
+                                                   </HBox.margin>
+                                                </Button>
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </GridPane>
+                                    <ImageView fx:id="PDPimageHolder" fitHeight="98.0" fitWidth="98.0" layoutX="201.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="201.0" AnchorPane.rightAnchor="231.0" AnchorPane.topAnchor="14.0" />
                                  </children>
-                              </GridPane>
-                              <Button layoutX="441.0" layoutY="422.0" maxHeight="29.0" minHeight="29.0" mnemonicParsing="false" onAction="#upload_image" prefHeight="29.0" styleClass="btn-primary">
-                                 <graphic>
-                                    <ImageView fitHeight="29.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                       <image>
-                                          <Image url="@assets/imgs/upload.png" />
-                                       </image>
-                                    </ImageView>
-                                 </graphic>
-                              </Button>
-                              <ImageView fx:id="PDPimageHolder" fitHeight="98.0" fitWidth="98.0" layoutX="201.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" />
+                              </AnchorPane>
                            </children>
-                        </Pane>
-                        <HBox layoutX="640.0" layoutY="476.0" prefHeight="54.0" prefWidth="361.0">
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" layoutX="640.0" layoutY="476.0" prefHeight="54.0" prefWidth="361.0" AnchorPane.bottomAnchor="158.0" AnchorPane.leftAnchor="640.0" AnchorPane.rightAnchor="118.0">
                            <children>
                               <Button fx:id="adduserbtn" mnemonicParsing="false" onAction="#ajouter_user" prefHeight="56.0" prefWidth="116.0" styleClass="btn-primary" text="Ajouter">
                                  <font>
@@ -94,71 +106,150 @@
                               </Button>
                            </children>
                         </HBox>
-                        <Label fx:id="infolabel" layoutX="389.0" layoutY="20.0" prefHeight="29.0" prefWidth="342.0" />
-                        <Pane layoutX="645.0" layoutY="66.0" prefHeight="307.0" prefWidth="351.0" styleClass="paneRoundedCornders">
+                        <Label fx:id="infolabel" layoutX="389.0" layoutY="20.0" prefHeight="29.0" prefWidth="342.0" AnchorPane.leftAnchor="389.0" AnchorPane.rightAnchor="388.0" AnchorPane.topAnchor="20.0" />
+                        <HBox layoutX="645.0" layoutY="66.0" prefHeight="289.0" prefWidth="333.0" AnchorPane.bottomAnchor="321.0" AnchorPane.leftAnchor="645.0" AnchorPane.rightAnchor="129.0" AnchorPane.topAnchor="66.0">
                            <children>
-                              <ScrollPane layoutX="9.0" layoutY="9.0" prefHeight="289.0" prefWidth="333.0">
-                                 <content>
-                                    <VBox alignment="TOP_CENTER" prefHeight="281.0" prefWidth="331.0" spacing="5.0" />
-                                 </content>
-                              </ScrollPane>
+                              <AnchorPane prefHeight="301.0" prefWidth="500.0" styleClass="paneRoundedCornders">
+                                 <children>
+                                    <ScrollPane layoutX="9.0" layoutY="9.0" prefHeight="289.0" prefWidth="333.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <content>
+                                          <VBox alignment="TOP_CENTER" prefHeight="297.0" prefWidth="341.0" spacing="5.0" />
+                                       </content>
+                                    </ScrollPane>
+                                 </children>
+                              </AnchorPane>
                            </children>
-                        </Pane>
-                     </children></AnchorPane>
+                        </HBox>
+                     </children>
+                  </AnchorPane>
                </content>
             </Tab>
             <Tab text="Liste des utilisateurs">
                <content>
                   <AnchorPane prefHeight="200.0" prefWidth="200.0">
                      <children>
-                        <ScrollPane layoutY="40.0" prefHeight="639.0" prefWidth="1112.0">
+                        <ScrollPane layoutY="40.0" pannable="true" prefHeight="639.0" prefWidth="1119.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="40.0">
                            <content>
-                              <GridPane fx:id="UserContainers">
+                              <GridPane fx:id="UserContainers" alignment="TOP_CENTER">
                               </GridPane>
                            </content>
                         </ScrollPane>
-                        <TextField fx:id="RechercheBarUser" layoutX="895.0" layoutY="6.0" onAction="#RechercheBarUser" />
-                        <Label layoutX="822.0" layoutY="12.0" text="Recherche:" />
-                        <Label layoutX="596.0" layoutY="12.0" prefHeight="17.0" prefWidth="51.0" text="Trier par:" />
-                        <ComboBox fx:id="RoleComboFilter" layoutX="653.0" layoutY="5.0" onAction="#filterByRoleCB" prefWidth="150.0" promptText="Roles" />
-                        <Button fx:id="removeFilterButton" layoutX="311.0" layoutY="9.0" mnemonicParsing="false" onAction="#removeFilters" styleClass="btn-primary" text="X" />
-                        <Label layoutX="233.0" layoutY="14.0" text="Effacer filtre:" />
-                        <TextField fx:id="RoleSearchBar" layoutX="653.0" layoutY="6.0" prefHeight="29.0" prefWidth="121.0" />
-                        <Label layoutX="486.0" layoutY="13.0" prefHeight="17.0" prefWidth="86.0" text="Recherche role :" />
-                        <Button fx:id="ExporterExcelButton" layoutX="133.0" layoutY="10.0" mnemonicParsing="false" onAction="#ExporterExcel" styleClass="btn-primary" text="Exporter" />
-                        <Label layoutX="27.0" layoutY="14.0" text="Exporter en Excel:" />
-                     </children></AnchorPane>
+                        <HBox alignment="CENTER" layoutX="182.0" layoutY="8.0" spacing="50.0" AnchorPane.leftAnchor="182.0" AnchorPane.rightAnchor="181.0">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" spacing="21.0">
+                                 <children>
+                                    <Label text="Exporter en Excel:" />
+                                    <Button fx:id="ExporterExcelButton" mnemonicParsing="false" onAction="#ExporterExcel" styleClass="btn-primary" text="Exporter" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" spacing="7.0">
+                                 <children>
+                                    <Label prefHeight="17.0" prefWidth="51.0" text="Trier par:" />
+                                    <Pane>
+                                       <children>
+                                          <ComboBox fx:id="RoleComboFilter" onAction="#filterByRoleCB" prefWidth="150.0" promptText="Roles" />
+                                          <TextField fx:id="RoleSearchBar" layoutY="1.0" prefHeight="29.0" prefWidth="121.0" />
+                                       </children>
+                                    </Pane>
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" spacing="20.0">
+                                 <children>
+                                    <Label text="Recherche:" />
+                                    <TextField fx:id="RechercheBarUser" onAction="#RechercheBarUser" />
+                                    <Button fx:id="removeFilterButton" mnemonicParsing="false" onAction="#removeFilters" styleClass="btn-primary" text="X" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </HBox>
+                     </children>
+                  </AnchorPane>
                </content>
             </Tab>
             <Tab fx:id="TabAffectationid" onSelectionChanged="#TabAffectation" text="Affectation">
                <content>
                   <AnchorPane prefHeight="688.0" prefWidth="1120.0" styleClass="grad-bg" stylesheets="@assets/css/style.css">
                      <children>
-                        <ListView fx:id="userListView" layoutX="50.0" layoutY="131.0" prefHeight="400.0" prefWidth="280.0" />
-                        <TextField fx:id="User_field" layoutX="50.0" layoutY="83.0" onKeyReleased="#User_Recherche" prefHeight="29.0" prefWidth="280.0" />
-                        <ListView fx:id="departListView" layoutX="420.0" layoutY="131.0" prefHeight="400.0" prefWidth="280.0" />
-                        <ListView fx:id="roleListView" layoutX="790.0" layoutY="131.0" prefHeight="400.0" prefWidth="280.0" />
-                        <TextField fx:id="Depart_field" layoutX="420.0" layoutY="83.0" onKeyReleased="#Depart_Recherche" prefHeight="29.0" prefWidth="280.0" />
-                        <TextField fx:id="Role_field" layoutX="790.0" layoutY="83.0" onKeyReleased="#Role_Recherche" prefHeight="29.0" prefWidth="280.0" />
-                        <Label layoutX="144.0" layoutY="48.0" text="Employés">
-                           <styleClass>
-                              <String fx:value="FontSize-21" />
-                              <String fx:value="RobotoBoldItalic" />
-                           </styleClass>
-                        </Label>
-                        <Label layoutX="494.0" layoutY="48.0" text="Departements">
-                           <styleClass>
-                              <String fx:value="FontSize-21" />
-                              <String fx:value="RobotoBoldItalic" />
-                           </styleClass>
-                        </Label>
-                        <Label layoutX="904.0" layoutY="48.0" text="Roles">
-                           <styleClass>
-                              <String fx:value="FontSize-21" />
-                              <String fx:value="RobotoBoldItalic" />
-                           </styleClass>
-                        </Label>
-                        <HBox layoutX="420.0" layoutY="591.0" prefHeight="57.0" prefWidth="280.0">
+                        <HBox alignment="TOP_CENTER" layoutX="50.0" layoutY="48.0" prefHeight="486.0" prefWidth="1045.0" spacing="80.0" AnchorPane.bottomAnchor="154.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="24.0" AnchorPane.topAnchor="48.0">
+                           <children>
+                              <VBox alignment="CENTER" prefHeight="486.0" prefWidth="280.0" spacing="10.0">
+                                 <children>
+                                    <Label text="Employés">
+                                       <styleClass>
+                                          <String fx:value="FontSize-21" />
+                                          <String fx:value="RobotoBoldItalic" />
+                                       </styleClass>
+                                    </Label>
+                                    <Pane>
+                                       <children>
+                                          <TextField fx:id="User_field" layoutY="3.0" onKeyReleased="#User_Recherche" prefHeight="29.0" prefWidth="280.0" />
+                                          <Button layoutX="237.0" mnemonicParsing="false" onAction="#clearuserselection" prefHeight="27.0" prefWidth="35.0" styleClass="settingsButton">
+                                             <graphic>
+                                                <ImageView fitHeight="25.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@assets/imgs/icons8-close-24.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                          </Button>
+                                       </children>
+                                    </Pane>
+                                    <ListView fx:id="userListView" prefHeight="400.0" prefWidth="391.0" />
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER" spacing="10.0">
+                                 <children>
+                                    <Label text="Departements">
+                                       <styleClass>
+                                          <String fx:value="FontSize-21" />
+                                          <String fx:value="RobotoBoldItalic" />
+                                       </styleClass>
+                                    </Label>
+                                    <Pane>
+                                       <children>
+                                          <TextField fx:id="Depart_field" layoutY="3.0" onKeyReleased="#Depart_Recherche" prefHeight="29.0" prefWidth="280.0" />
+                                          <Button layoutX="237.0" mnemonicParsing="false" onAction="#cleardepartselection" prefHeight="27.0" prefWidth="35.0" styleClass="settingsButton">
+                                             <graphic>
+                                                <ImageView fitHeight="25.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@assets/imgs/icons8-close-24.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                          </Button>
+                                       </children>
+                                    </Pane>
+                                    <ListView fx:id="departListView" prefHeight="400.0" prefWidth="280.0" />
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER" spacing="10.0">
+                                 <children>
+                                    <Label text="Roles">
+                                       <styleClass>
+                                          <String fx:value="FontSize-21" />
+                                          <String fx:value="RobotoBoldItalic" />
+                                       </styleClass>
+                                    </Label>
+                                    <Pane>
+                                       <children>
+                                          <TextField fx:id="Role_field" layoutY="3.0" onKeyReleased="#Role_Recherche" prefHeight="29.0" prefWidth="280.0" />
+                                          <Button layoutX="237.0" mnemonicParsing="false" onAction="#clearroleselection" prefHeight="27.0" prefWidth="35.0" styleClass="settingsButton">
+                                             <graphic>
+                                                <ImageView fitHeight="25.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@assets/imgs/icons8-close-24.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                          </Button>
+                                       </children>
+                                    </Pane>
+                                    <ListView fx:id="roleListView" prefHeight="400.0" prefWidth="280.0" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER" layoutX="420.0" layoutY="591.0" prefHeight="57.0" prefWidth="280.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="420.0" AnchorPane.rightAnchor="419.0">
                            <children>
                               <Button mnemonicParsing="false" onAction="#handleEditUser" prefHeight="73.0" prefWidth="130.0" text="Affecter">
                                  <styleClass>
@@ -183,44 +274,28 @@
                               <String fx:value="RobotoMediumItalic" />
                            </styleClass>
                         </Label>
-                        <Button layoutX="287.0" layoutY="80.0" mnemonicParsing="false" onAction="#clearuserselection" prefHeight="27.0" prefWidth="35.0" styleClass="settingsButton">
-                           <graphic>
-                              <ImageView fitHeight="25.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@assets/imgs/icons8-close-24.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                        </Button>
-                        <Button layoutX="1027.0" layoutY="80.0" mnemonicParsing="false" onAction="#clearroleselection" prefHeight="27.0" prefWidth="35.0" styleClass="settingsButton">
-                           <graphic>
-                              <ImageView fitHeight="25.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@assets/imgs/icons8-close-24.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                        </Button>
-                        <Button layoutX="657.0" layoutY="80.0" mnemonicParsing="false" onAction="#cleardepartselection" prefHeight="27.0" prefWidth="35.0" styleClass="settingsButton">
-                           <graphic>
-                              <ImageView fitHeight="25.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@assets/imgs/icons8-close-24.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                        </Button>
-                     </children></AnchorPane>
+                     </children>
+                  </AnchorPane>
                </content>
             </Tab>
             <Tab text="Hierarchie">
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" styleClass="grad-bg">
                      <children>
-                        <ComboBox fx:id="hierarCombo" layoutX="452.0" layoutY="36.0" onAction="#SelecHierar" prefHeight="31.0" prefWidth="216.0" />
-                        <Pane fx:id="UserPane1" layoutX="48.0" layoutY="85.0" prefHeight="567.0" prefWidth="1025.0">
+                        <HBox alignment="CENTER" layoutX="373.0" layoutY="37.0" prefWidth="374.0" AnchorPane.leftAnchor="373.0" AnchorPane.rightAnchor="372.0" AnchorPane.topAnchor="37.0">
                            <children>
-                              <TreeTableView fx:id="userTable" layoutX="91.0" layoutY="85.0" prefHeight="447.0" prefWidth="844.0">
+                              <Label minWidth="158.0" prefHeight="25.0" prefWidth="158.0" text="Liste des Hierarchies :">
+                                 <styleClass>
+                                    <String fx:value="FontSize-15" />
+                                    <String fx:value="RobotoBoldItalic" />
+                                 </styleClass>
+                              </Label>
+                              <ComboBox fx:id="hierarCombo" onAction="#SelecHierar" prefHeight="31.0" prefWidth="323.0" />
+                           </children>
+                        </HBox>
+                        <AnchorPane layoutX="48.0" layoutY="103.0" prefHeight="559.0" prefWidth="1026.0" AnchorPane.bottomAnchor="26.0" AnchorPane.leftAnchor="48.0" AnchorPane.rightAnchor="45.0" AnchorPane.topAnchor="103.0">
+                           <children>
+                              <TreeTableView fx:id="userTable" layoutX="91.0" layoutY="85.0" prefHeight="447.0" prefWidth="844.0" AnchorPane.bottomAnchor="27.0" AnchorPane.leftAnchor="91.0" AnchorPane.rightAnchor="91.0" AnchorPane.topAnchor="85.0">
                                  <columns>
                                     <TreeTableColumn fx:id="idUserColumn" prefWidth="75.0" text="Matricule" />
                                     <TreeTableColumn fx:id="prenomUserColumn" prefWidth="140.0" text="Prenom" />
@@ -230,15 +305,15 @@
                                     <TreeTableColumn fx:id="managerUserColumn" prefWidth="155.0" text="Manager" />
                                  </columns>
                               </TreeTableView>
-                              <TextField fx:id="searchFieldUser" layoutX="656.0" layoutY="31.0" onAction="#rechercheUser1" prefHeight="29.0" prefWidth="279.0" promptText="Recherche" />
-                              <Label layoutX="91.0" layoutY="33.0" prefHeight="25.0" prefWidth="248.0" text="Hierarchie des employés">
+                              <TextField fx:id="searchFieldUser" layoutX="656.0" layoutY="31.0" onAction="#rechercheUser1" prefHeight="29.0" prefWidth="279.0" promptText="Recherche" AnchorPane.rightAnchor="91.0" />
+                              <Label layoutX="91.0" layoutY="33.0" prefHeight="25.0" prefWidth="248.0" text="Hierarchie des employés" AnchorPane.leftAnchor="91.0" AnchorPane.topAnchor="33.0">
                                  <styleClass>
                                     <String fx:value="FontSize-18" />
                                     <String fx:value="RobotoBoldItalic" />
                                  </styleClass>
                               </Label>
                            </children>
-                        </Pane>
+                        </AnchorPane>
                         <Pane fx:id="DepartPane1" layoutX="48.0" layoutY="85.0" prefHeight="567.0" prefWidth="1025.0" visible="false">
                            <children>
                               <TreeTableView fx:id="deptTable" layoutX="91.0" layoutY="85.0" prefHeight="447.0" prefWidth="844.0">
@@ -278,16 +353,11 @@
                               </Label>
                            </children>
                         </Pane>
-                        <Label layoutX="278.0" layoutY="39.0" prefHeight="25.0" prefWidth="158.0" text="Liste des Hierarchies :">
-                           <styleClass>
-                              <String fx:value="FontSize-15" />
-                              <String fx:value="RobotoBoldItalic" />
-                           </styleClass>
-                        </Label>
-                     </children></AnchorPane>
+                     </children>
+                  </AnchorPane>
                </content>
             </Tab>
          </tabs>
       </TabPane>
    </children>
-</Pane>
+</AnchorPane>

@@ -62,10 +62,13 @@ public class RHController {
             Pane pane = loader.load();
             PaneCont.getChildren().clear();
             PaneCont.getChildren().add(pane);
+            pane.prefWidthProperty().bind(PaneCont.widthProperty());
+            pane.prefHeightProperty().bind(PaneCont.heightProperty());
             centerPane(PaneCont, pane);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     private void centerPane(Pane container, Pane pane) {
