@@ -80,7 +80,6 @@ public class EmployeController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     private void fetchUserConges() {
