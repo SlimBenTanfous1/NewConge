@@ -14,13 +14,19 @@ public class StageManager {
     private static double lastStageHeight = 830; // Default height
 
     public static void addStage(Stage stage) {
+        setStageSize(stage);
         stages.add(stage);
+        addSizeListeners(stage);
+        updateLastStageSize(stage);
     }
 
     public static void addStage(String name, Stage stage) {
+        setStageSize(stage);
         stage.getIcons().add(ICON_IMAGE);
         stageMap.put(name, stage);
         stages.add(stage);
+        addSizeListeners(stage);
+        updateLastStageSize(stage);
     }
 
     public static void removeStage(Stage stage) {
@@ -49,4 +55,24 @@ public class StageManager {
         stages.clear();
         stageMap.clear();
     }
+    private static void setStageSize(Stage stage) {
+        stage.setWidth(lastStageWidth);
+        stage.setHeight(lastStageHeight);
+    }
+
+    private static void updateLastStageSize(Stage stage) {
+        lastStageWidth = stage.getWidth();
+        lastStageHeight = stage.getHeight();
+    }
+
+    private static void addSizeListeners(Stage stage) {
+        stage.widthProperty().addListener((obs, oldVal, newVal) -> {
+            lastStageWidth = newVal.doubleValue();
+        });
+
+        stage.heightProperty().addListener((obs, oldVal, newVal) -> {
+            lastStageHeight = newVal.doubleValue();
+        });
+    }
+
 }
