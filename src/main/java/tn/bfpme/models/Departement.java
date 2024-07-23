@@ -5,6 +5,7 @@ public class Departement {
     private String nom;
     private String description;
     private int parentDept;
+    private int level;
     private String parentDeptName; // New field for parent department name
 
     public Departement() {}
@@ -14,6 +15,13 @@ public class Departement {
         this.nom = nom;
         this.description = description;
         this.parentDept = parentDept;
+    }
+    public Departement(int idDepartement, String nom, String description, int parentDept,int level) {
+        this.idDepartement = idDepartement;
+        this.nom = nom;
+        this.description = description;
+        this.parentDept = parentDept;
+        this.level = level;
     }
 
     // Constructor with new field
