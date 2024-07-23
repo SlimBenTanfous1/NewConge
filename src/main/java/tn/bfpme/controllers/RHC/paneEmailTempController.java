@@ -29,16 +29,30 @@ public class paneEmailTempController implements Initializable {
     private TextField RechercheTemp;
     @FXML
     private TextField objectTF;
+    @FXML
+    private Button btnSave, btnSaveEdit, btnCancel;
+
+
     private final ServiceEmailTemp emailtempService = new ServiceEmailTemp();
     private FilteredList<EmailsTemplates> filteredData;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Load();
+        btnSave.setVisible(false);
+        btnCancel.setVisible(false);
+        btnSaveEdit.setVisible(false);
+        MessageTF.setDisable(true);
+        objectTF.setDisable(true);
         ObjListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 objectTF.setText(newValue.getObject());
                 MessageTF.setText(newValue.getMessage());
+                objectTF.setDisable(true);
+                MessageTF.setDisable(true);
+                btnSave.setVisible(false);
+                btnSaveEdit.setVisible(false);
+                btnCancel.setVisible(false);
             }
         });
         RechercheTemp.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -75,23 +89,62 @@ public class paneEmailTempController implements Initializable {
     }
 
     @FXML
-    void AjouterTemp(ActionEvent event) {
+    void Save(ActionEvent event) {
         String obj = objectTF.getText();
         String msg = MessageTF.getText();
+        if (MessageTF.getText().isEmpty() || objectTF.getText().isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Champs requis non remplis", "Veuillez remplir toutes les informations nécessaires.");
+            return;
+        }
         emailtempService.AddEmailTemp(obj, msg);
         Load();
+        btnSave.setVisible(false);
+    }
+
+    @FXML
+    void SaveEdit(ActionEvent event) {
+        EmailsTemplates selectedEmailTemp = ObjListView.getSelectionModel().getSelectedItem();
+        String obj = objectTF.getText();
+        String msg = MessageTF.getText();
+        if (MessageTF.getText().isEmpty() || objectTF.getText().isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Champs requis non remplis", "Veuillez remplir toutes les informations nécessaires.");
+            return;
+        }
+        emailtempService.UpdateEmailTemp(selectedEmailTemp.getId_Email(), obj, msg);
+        Load();
+        btnSaveEdit.setVisible(false);
+    }
+
+    @FXML
+    void Cancel(ActionEvent event) {
+        objectTF.clear();
+        MessageTF.clear();
+        objectTF.setDisable(true);
+        MessageTF.setDisable(true);
+        btnCancel.setVisible(false);
+        btnSaveEdit.setVisible(false);
+        btnSave.setVisible(false);
+    }
+
+    @FXML
+    void AjouterTemp(ActionEvent event) {
+        objectTF.setDisable(false);
+        MessageTF.setDisable(false);
+        objectTF.clear();
+        MessageTF.clear();
+        btnSave.setVisible(true);
+        btnCancel.setVisible(true);
+        btnSaveEdit.setVisible(false);
     }
 
     @FXML
     void ModifierTemp(ActionEvent event) {
-        EmailsTemplates selectedEmailTemp = ObjListView.getSelectionModel().getSelectedItem();
-        if (selectedEmailTemp != null) {
-            String obj = objectTF.getText();
-            String msg = MessageTF.getText();
-            emailtempService.UpdateEmailTemp(selectedEmailTemp.getId_Email(), obj, msg);
-            Load();
+        objectTF.setDisable(false);
+        MessageTF.setDisable(false);
+        btnSaveEdit.setVisible(true);
+        btnCancel.setVisible(true);
+        btnSave.setVisible(false);
 
-        }
     }
 
     @FXML
@@ -121,4 +174,13 @@ public class paneEmailTempController implements Initializable {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+    private void showAlert(Alert.AlertType alertType, String title, String header, String content) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
 }

@@ -1,10 +1,13 @@
 package tn.bfpme.models;
 
+import java.util.Objects;
+
 public class Role {
     private int idRole;
     private int RoleParent;
     private String nom;
     private String description;
+    private int level ;
 
     private String parentRoleName; // New field for parent role name
     private String childRoleName; // New field for child role name
@@ -15,12 +18,22 @@ public class Role {
         this.description = description;
     }
 
+
     public Role(int idRole, String nom, String description, int RoleParent) {
         this.idRole = idRole;
         this.nom = nom;
         this.description = description;
         this.RoleParent = RoleParent;
     }
+    public Role(int idRole, String nom, String description, int RoleParent, int level) {
+        this.idRole = idRole;
+        this.nom = nom;
+        this.description = description;
+        this.RoleParent = RoleParent;
+        this.level = level;
+    }
+
+
 
     public Role() {
 
@@ -77,5 +90,26 @@ public class Role {
     @Override
     public String toString() {
         return nom + " - " + description;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Role role = (Role) obj;
+        return idRole == role.idRole;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(idRole);
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
     }
 }

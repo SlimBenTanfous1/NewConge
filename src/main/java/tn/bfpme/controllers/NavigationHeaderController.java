@@ -61,8 +61,6 @@ public class NavigationHeaderController implements Initializable {
         } else {
             btnRH.setVisible(false);
         }
-        System.out.println(userDepartmentName);
-        System.out.println(userRoleName);
         admin_interface.setVisible("AdminIT".equals(userRoleName));
 
         settingsPopup = new Popup();

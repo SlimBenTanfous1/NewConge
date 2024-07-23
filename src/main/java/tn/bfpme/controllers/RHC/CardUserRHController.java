@@ -9,12 +9,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import tn.bfpme.models.User;
 import tn.bfpme.services.ServiceUtilisateur;
+import tn.bfpme.utils.StageManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -101,15 +103,20 @@ public class CardUserRHController {
             FXMLLoader mainLoader = new FXMLLoader(getClass().getResource("/RH_Interface.fxml"));
             Parent mainRoot = mainLoader.load();
             RHController mainController = mainLoader.getController();
-            mainController.getPaneCont().getChildren().setAll(paneUsersRoot);
+            AnchorPane paneUsersAnchorPane = (AnchorPane) paneUsersRoot;
+            paneUsersAnchorPane.prefWidthProperty().bind(mainController.getPaneCont().widthProperty());
+            paneUsersAnchorPane.prefHeightProperty().bind(mainController.getPaneCont().heightProperty());
+            mainController.getPaneCont().getChildren().setAll(paneUsersAnchorPane);
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(mainRoot);
             stage.setScene(scene);
             stage.show();
+            StageManager.addStage(stage);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 
     @FXML
     void SupprimerUser(ActionEvent event) {

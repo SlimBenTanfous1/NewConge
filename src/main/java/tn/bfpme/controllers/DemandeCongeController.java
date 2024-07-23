@@ -57,7 +57,7 @@ public class DemandeCongeController implements Initializable {
     @FXML
     private AnchorPane MainAnchorPane;
     @FXML
-    private Label TypeTitle,ForDoc1;
+    private Label TypeTitle, ForDoc1;
     @FXML
     private ComboBox<TypeConge> cb_typeconge;
     @FXML
@@ -109,6 +109,7 @@ public class DemandeCongeController implements Initializable {
         ForDoc2.setVisible(false);
         paneConge.setVisible(false);
     }
+
     @FXML
     void Demander(ActionEvent event) {
         LocalDate DD = datedebut.getValue();
@@ -185,6 +186,7 @@ public class DemandeCongeController implements Initializable {
         }
         return 0;
     }
+
     @FXML
     void Doc_Imp(ActionEvent event) {
         String documentPath = null;
@@ -210,6 +212,7 @@ public class DemandeCongeController implements Initializable {
             }
         }
     }
+
     @FXML
     void TypeSelec(ActionEvent event) {
         ForDoc1.setVisible(false);
@@ -218,12 +221,13 @@ public class DemandeCongeController implements Initializable {
         if (selectedTypeConge != null) {
             paneConge.setVisible(true);
             TypeTitle.setText("Congé " + selectedTypeConge.getDesignation());
-            if (selectedTypeConge.isFile()){
+            if (selectedTypeConge.isFile()) {
                 ForDoc1.setVisible(true);
                 ForDoc2.setVisible(true);
             }
         }
     }
+
     private void showAlert(Alert.AlertType alertType, String title, String header, String content) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);

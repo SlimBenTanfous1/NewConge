@@ -10,7 +10,7 @@ public class RHController {
     @FXML
     private AnchorPane MainAnchorPane;
     @FXML
-    private Pane PaneCont;
+    public Pane PaneCont;
 
     public void initialize() {
         try {

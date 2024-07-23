@@ -199,31 +199,6 @@
                               </VBox>
                               <VBox alignment="CENTER" spacing="10.0">
                                  <children>
-                                    <Label text="Départements">
-                                       <styleClass>
-                                          <String fx:value="FontSize-21" />
-                                          <String fx:value="RobotoBoldItalic" />
-                                       </styleClass>
-                                    </Label>
-                                    <Pane>
-                                       <children>
-                                          <TextField fx:id="Depart_field" layoutY="3.0" onKeyReleased="#Depart_Recherche" prefHeight="29.0" prefWidth="280.0" />
-                                          <Button layoutX="237.0" mnemonicParsing="false" onAction="#cleardepartselection" prefHeight="27.0" prefWidth="35.0" styleClass="settingsButton">
-                                             <graphic>
-                                                <ImageView fitHeight="25.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
-                                                   <image>
-                                                      <Image url="@assets/imgs/icons8-close-24.png" />
-                                                   </image>
-                                                </ImageView>
-                                             </graphic>
-                                          </Button>
-                                       </children>
-                                    </Pane>
-                                    <ListView fx:id="departListView" prefHeight="400.0" prefWidth="280.0" />
-                                 </children>
-                              </VBox>
-                              <VBox alignment="CENTER" spacing="10.0">
-                                 <children>
                                     <Label text="Rôles">
                                        <styleClass>
                                           <String fx:value="FontSize-21" />
@@ -245,6 +220,31 @@
                                        </children>
                                     </Pane>
                                     <ListView fx:id="roleListView" prefHeight="400.0" prefWidth="280.0" />
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER" spacing="10.0">
+                                 <children>
+                                    <Label text="Départements">
+                                       <styleClass>
+                                          <String fx:value="FontSize-21" />
+                                          <String fx:value="RobotoBoldItalic" />
+                                       </styleClass>
+                                    </Label>
+                                    <Pane>
+                                       <children>
+                                          <TextField fx:id="Depart_field" layoutY="3.0" onKeyReleased="#Depart_Recherche" prefHeight="29.0" prefWidth="280.0" />
+                                          <Button layoutX="237.0" mnemonicParsing="false" onAction="#cleardepartselection" prefHeight="27.0" prefWidth="35.0" styleClass="settingsButton">
+                                             <graphic>
+                                                <ImageView fitHeight="25.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@assets/imgs/icons8-close-24.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                          </Button>
+                                       </children>
+                                    </Pane>
+                                    <ListView fx:id="departListView" prefHeight="400.0" prefWidth="280.0" />
                                  </children>
                               </VBox>
                            </children>

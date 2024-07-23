@@ -39,14 +39,13 @@ public class ServiceUtilisateur implements IUtilisateur {
                 user.setRoleNom(rs.getString("Role"));
                 user.setDepartementNom(rs.getString("Departement"));
                 user.setManagerName(rs.getString("Manager")); // Fetch and set the contrat_id
-               // user.add(user);
+                // user.add(user);
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         return users;
     }
-
 
     @Override
     public List<User> afficherusers() {
@@ -77,6 +76,7 @@ public class ServiceUtilisateur implements IUtilisateur {
 
         return userList;
     }
+
     public UserConge AfficherEnAttente() {
         List<User> users = new ArrayList<>();
         List<Conge> conges = new ArrayList<>();
@@ -145,7 +145,6 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
         return new UserConge(users, conges);
     }
-
 
     @Override
     public UserConge TriType() {
@@ -560,7 +559,6 @@ public class ServiceUtilisateur implements IUtilisateur {
         return managerId;
     }
 
-
     public List<User> getUsersByDepartment(String departement) {
         List<User> users = new ArrayList<>();
         String sql = "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement " +
@@ -595,8 +593,6 @@ public class ServiceUtilisateur implements IUtilisateur {
 
         return users;
     }
-
-
 
     @Override
     public void updateUser(User user) {
@@ -687,8 +683,6 @@ public class ServiceUtilisateur implements IUtilisateur {
             }
         }
     }
-
-
 
 
     @Override
@@ -947,8 +941,6 @@ public class ServiceUtilisateur implements IUtilisateur {
     }
 
 
-
-
     public void setManagerForUser(int userId, int managerId) {
         String query = "UPDATE user SET ID_Manager = ? WHERE ID_User = ?";
         try {
@@ -1064,122 +1056,8 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
         return DepName;
     }
-    private void showErrorToUser(String message) {
-        // Implementation to show error message to the user
-        // For example, in JavaFX you might use:
-        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
 
 
-    public List<Role> getRolesByUserId(int userId) {
-        List<Role> roles = new ArrayList<>();
-        String query = "SELECT r.* FROM role r JOIN user_role ur ON r.ID_Role = ur.ID_Role WHERE ur.ID_User = ?";
-        try {
-            if (cnx == null || cnx.isClosed()) {
-                cnx = MyDataBase.getInstance().getCnx();
-            }
-            PreparedStatement statement = cnx.prepareStatement(query);
-            statement.setInt(1, userId);
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()) {
-                Role role = new Role(
-                        rs.getInt("ID_Role"),
-                        rs.getString("nom"),
-                        rs.getString("description")
-                );
-                roles.add(role);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return roles;
-    }
-    public List<Departement> getAllDepartments() throws SQLException {
-        List<Departement> departments = new ArrayList<>();
-        String query = "SELECT * FROM departement";
-
-        if (cnx == null || cnx.isClosed()) {
-            cnx = MyDataBase.getInstance().getCnx();
-        }
-
-        try (Statement stmt = cnx.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
-            while (rs.next()) {
-                Departement departement = new Departement(
-                        rs.getInt("ID_Departement"),
-                        rs.getString("nom"),
-                        rs.getString("description"),
-                        rs.getInt("Parent_Dept")
-                );
-                departments.add(departement);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return departments;
-    }
-
-    public List<Role> getAllRoles() throws SQLException {
-        List<Role> roles = new ArrayList<>();
-        String query = "SELECT * FROM role";
-
-        if (cnx == null || cnx.isClosed()) {
-            cnx = MyDataBase.getInstance().getCnx();
-        }
-
-        try (Statement stmt = cnx.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
-            while (rs.next()) {
-                Role role = new Role(
-                        rs.getInt("ID_Role"),
-                        rs.getString("nom"),
-                        rs.getString("description")
-                );
-                roles.add(role);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return roles;
-    }
-    public User getUserById1(int userId) {
-        User user = null;
-        String query = "SELECT u.*, ur.ID_Role FROM user u LEFT JOIN user_role ur ON u.ID_User = ur.ID_User WHERE u.ID_User = ?";
-
-        try {
-            if (cnx == null || cnx.isClosed()) {
-                cnx = MyDataBase.getInstance().getCnx();
-            }
-
-            PreparedStatement stmt = cnx.prepareStatement(query);
-            stmt.setInt(1, userId);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                java.sql.Date sqlCreationDate = rs.getDate("Creation_Date");
-                LocalDate creationDate = sqlCreationDate != null ? sqlCreationDate.toLocalDate() : null;
-
-                user = new User(
-                        rs.getInt("ID_User"),
-                        rs.getString("Nom"),
-                        rs.getString("Prenom"),
-                        rs.getString("Email"),
-                        rs.getString("MDP"),
-                        rs.getString("Image"),
-                        creationDate,
-                        rs.getInt("ID_Manager"),
-                        rs.getInt("ID_Departement"),
-                        rs.getInt("ID_Role")
-                );
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return user;
-    }
     private Integer findManagerInDepartmentHierarchy(int userId, int deptId, List<Integer> parentRoleIds) throws SQLException {
         Set<Integer> visitedDepts = new HashSet<>();
         while (deptId != 0 && !visitedDepts.contains(deptId)) {
@@ -1284,6 +1162,14 @@ public class ServiceUtilisateur implements IUtilisateur {
             cnx = MyDataBase.getInstance().getCnx();
         }
 
+        // Log the parameters
+        System.out.println("Updating user with UserID: " + userId + ", RoleID: " + roleId + ", DepartmentID: " + departmentId);
+
+        // Validate role-department relationship
+        if (!isRoleDepartmentValid(roleId, departmentId)) {
+            throw new SQLException("Invalid role-department relationship");
+        }
+
         // Update user's department
         String updateDepartmentQuery = "UPDATE user SET ID_Departement = ? WHERE ID_User = ?";
         try (PreparedStatement stmt = cnx.prepareStatement(updateDepartmentQuery)) {
@@ -1319,6 +1205,23 @@ public class ServiceUtilisateur implements IUtilisateur {
         // Update the manager for the user
         setManagerForUser(userId, departmentId, roleId);
     }
+
+    private boolean isRoleDepartmentValid(int roleId, int departmentId) throws SQLException {
+        System.out.println("Checking role-department validity for Role ID: " + roleId + ", Department ID: " + departmentId);
+        String query = "SELECT COUNT(*) FROM role_departement WHERE ID_Role = ? AND ID_Departement = ?";
+        try (PreparedStatement stmt = cnx.prepareStatement(query)) {
+            stmt.setInt(1, roleId);
+            stmt.setInt(2, departmentId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                System.out.println("Validation query result count: " + count);
+                return count > 0;
+            }
+        }
+        return false;
+    }
+
 
 
 
@@ -1389,6 +1292,7 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
         return null;
     }
+
     public void removeUserRole(int userId) throws SQLException {
         String query = "DELETE FROM user_role WHERE ID_User = ?";
         Connection conn = MyDataBase.getInstance().getCnx();

@@ -21,7 +21,8 @@ public class ServiceDepartement {
                         rs.getInt("ID_Departement"),
                         rs.getString("nom"),
                         rs.getString("description"),
-                        rs.getInt("Parent_Dept")
+                        rs.getInt("Parent_Dept"),
+                        rs.getInt("level")
                 );
             }
         } catch (SQLException e) {
@@ -42,7 +43,8 @@ public class ServiceDepartement {
                         rs.getInt("ID_Departement"),
                         rs.getString("nom"),
                         rs.getString("description"),
-                        rs.getInt("Parent_Dept")
+                        rs.getInt("Parent_Dept"),
+                        rs.getInt("level")
                 );
             }
         } catch (SQLException e) {
@@ -71,7 +73,8 @@ public class ServiceDepartement {
                         rs.getInt("ID_Departement"),
                         rs.getString("nom"),
                         rs.getString("description"),
-                        rs.getInt("Parent_Dept")
+                        rs.getInt("Parent_Dept"),
+                        rs.getInt("level")
                 );
                 dept.setParentDeptName(rs.getString("parentDeptName"));
                 departments.add(dept);
@@ -93,7 +96,8 @@ public class ServiceDepartement {
                         rs.getInt("ID_Departement"),
                         rs.getString("nom"),
                         rs.getString("description"),
-                        rs.getInt("Parent_Dept")
+                        rs.getInt("Parent_Dept"),
+                        rs.getInt("level")
                 );
                 //dept.setParentDeptName(rs.getString("parentDeptName"));
                 departments.add(dept);
@@ -117,7 +121,8 @@ public class ServiceDepartement {
                         rs.getInt("ID_Departement"),
                         rs.getString("nom"),
                         rs.getString("description"),
-                        rs.getInt("Parent_Dept")
+                        rs.getInt("Parent_Dept"),
+                        rs.getInt("level")
                 );
                 //dept.setParentDeptName(rs.getString("parentDeptName"));
                 departments.add(dept);
@@ -128,13 +133,14 @@ public class ServiceDepartement {
         return departments;
     }
 
-    public void addDepartement(String name, String description, Integer parentDeptId) {
-        String query = "INSERT INTO departement (nom, description, Parent_Dept) VALUES (?, ?, ?)";
+    public void addDepartement(String name, String description, Integer parentDeptId,int level) {
+        String query = "INSERT INTO departement (nom, description, Parent_Dept, level) VALUES (?, ?, ?,?)";
         try (Connection cnx = MyDataBase.getInstance().getCnx();
              PreparedStatement pstmt = cnx.prepareStatement(query)) {
             pstmt.setString(1, name);
             pstmt.setString(2, description);
             pstmt.setInt(3, parentDeptId);
+            pstmt.setInt(4, level);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -142,7 +148,7 @@ public class ServiceDepartement {
     }
 
     public void addDepartement2(String name, String description) {
-        String query = "INSERT INTO departement (nom, description) VALUES (?, ?)";
+        String query = "INSERT INTO departement (nom, description,level) VALUES (?, ?, 1)";
         try (Connection cnx = MyDataBase.getInstance().getCnx();
              PreparedStatement pstmt = cnx.prepareStatement(query)) {
             pstmt.setString(1, name);
