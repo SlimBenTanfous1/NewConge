@@ -237,6 +237,25 @@ public class paneRoleController implements Initializable {
         Role selectedRole = roleListView.getSelectionModel().getSelectedItem();
         List<Role> allRoles = roleService.getAllRoles();
         List<Role> filteredRoles = new ArrayList<>();
+        Set<Role> selectedRoles = new HashSet<>();
+
+        // Collect already selected roles from existing ComboBoxes
+        for (Node node : roleParentVBox.getChildren()) {
+            if (node instanceof HBox) {
+                HBox hBox = (HBox) node;
+                for (Node childNode : hBox.getChildren()) {
+                    if (childNode instanceof ComboBox) {
+                        ComboBox<Role> comboBox = (ComboBox<Role>) childNode;
+                        Role selected = comboBox.getValue();
+                        if (selected != null) {
+                            selectedRoles.add(selected);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Filter roles to exclude selected roles and the role with the same name as roleNameField
         for (Role role : allRoles) {
             if (selectedRole != null && role.getIdRole() == selectedRole.getIdRole()) {
                 continue;
@@ -244,8 +263,11 @@ public class paneRoleController implements Initializable {
             if (role.getNom().equals(roleNameToExclude)) {
                 continue;
             }
-            filteredRoles.add(role);
+            if (!selectedRoles.contains(role)) {
+                filteredRoles.add(role);
+            }
         }
+
         ComboBox<Role> comboBox = new ComboBox<>(FXCollections.observableArrayList(filteredRoles));
         comboBox.setPrefHeight(31);
         comboBox.setPrefWidth(281);
@@ -275,11 +297,55 @@ public class paneRoleController implements Initializable {
         removeButton.setPrefHeight(25);
         removeButton.setPrefWidth(25);
         removeButton.getStyleClass().addAll("btn-primary", "FontSize-12", "RobotoRegular");
-        removeButton.setOnAction(e -> roleParentVBox.getChildren().remove(comboBox.getParent()));
+        removeButton.setOnAction(e -> {
+            roleParentVBox.getChildren().remove(comboBox.getParent());
+            updateComboBoxOptions();
+        });
         HBox hBox = new HBox(comboBox, removeButton);
         hBox.setSpacing(5);
         roleParentVBox.getChildren().add(hBox);
+
+        updateComboBoxOptions();
     }
+    private void updateComboBoxOptions() {
+        List<Role> allRoles = roleService.getAllRoles();
+        Set<Role> selectedRoles = new HashSet<>();
+        for (Node node : roleParentVBox.getChildren()) {
+            if (node instanceof HBox) {
+                HBox hBox = (HBox) node;
+                for (Node childNode : hBox.getChildren()) {
+                    if (childNode instanceof ComboBox) {
+                        ComboBox<Role> comboBox = (ComboBox<Role>) childNode;
+                        Role selected = comboBox.getValue();
+                        if (selected != null) {
+                            selectedRoles.add(selected);
+                        }
+                    }
+                }
+            }
+        }
+        for (Node node : roleParentVBox.getChildren()) {
+            if (node instanceof HBox) {
+                HBox hBox = (HBox) node;
+                for (Node childNode : hBox.getChildren()) {
+                    if (childNode instanceof ComboBox) {
+                        ComboBox<Role> comboBox = (ComboBox<Role>) childNode;
+                        Role selected = comboBox.getValue();
+                        List<Role> filteredRoles = new ArrayList<>(allRoles);
+                        filteredRoles.removeAll(selectedRoles);
+                        if (selected != null && !filteredRoles.contains(selected)) {
+                            filteredRoles.add(selected);
+                        }
+                        comboBox.setItems(FXCollections.observableArrayList(filteredRoles));
+                        if (selected != null) {
+                            comboBox.setValue(selected);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
     void loadRoles() {
         try {
@@ -336,7 +402,7 @@ public class paneRoleController implements Initializable {
     private void fieldsClear() {
         roleNameField.clear();
         roleDescriptionField.clear();
-        VBox.clearConstraints(roleParentVBox);
+        roleParentVBox.getChildren().clear();
     }
 
     void reset() {

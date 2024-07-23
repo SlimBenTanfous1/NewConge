@@ -50,7 +50,7 @@
                   <String fx:value="RobotoItalic" />
                </styleClass>
             </Label>
-            <Button fx:id="AddNewRoleCombo" layoutX="852.0" layoutY="328.0" onAction="#addRole" prefHeight="25.0" prefWidth="25.0" text="+">
+            <Button fx:id="AddNewRoleCombo" layoutX="852.0" layoutY="328.0" onAction="#addRole" prefHeight="40.0" prefWidth="40.0" text="+">
                <styleClass>
                   <String fx:value="btn-primary" />
                   <String fx:value="FontSize-12" />
