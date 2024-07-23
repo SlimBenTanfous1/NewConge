@@ -30,7 +30,7 @@ public class paneEmailTempController implements Initializable {
     @FXML
     private TextField objectTF;
     @FXML
-    private Button btnSave,btnSaveEdit,btnCancel;
+    private Button btnSave, btnSaveEdit, btnCancel;
 
 
     private final ServiceEmailTemp emailtempService = new ServiceEmailTemp();
@@ -48,6 +48,11 @@ public class paneEmailTempController implements Initializable {
             if (newValue != null) {
                 objectTF.setText(newValue.getObject());
                 MessageTF.setText(newValue.getMessage());
+                objectTF.setDisable(true);
+                MessageTF.setDisable(true);
+                btnSave.setVisible(false);
+                btnSaveEdit.setVisible(false);
+                btnCancel.setVisible(false);
             }
         });
         RechercheTemp.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -95,6 +100,7 @@ public class paneEmailTempController implements Initializable {
         Load();
         btnSave.setVisible(false);
     }
+
     @FXML
     void SaveEdit(ActionEvent event) {
         EmailsTemplates selectedEmailTemp = ObjListView.getSelectionModel().getSelectedItem();
@@ -107,8 +113,9 @@ public class paneEmailTempController implements Initializable {
         emailtempService.UpdateEmailTemp(selectedEmailTemp.getId_Email(), obj, msg);
         Load();
         btnSaveEdit.setVisible(false);
-    } @FXML
+    }
 
+    @FXML
     void Cancel(ActionEvent event) {
         objectTF.clear();
         MessageTF.clear();
@@ -167,6 +174,7 @@ public class paneEmailTempController implements Initializable {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
     private void showAlert(Alert.AlertType alertType, String title, String header, String content) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
