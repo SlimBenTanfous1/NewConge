@@ -10,14 +10,16 @@ public class StageManager {
     private static final Map<String, Stage> stageMap = Collections.synchronizedMap(new HashMap<>());
     private static final String ICON_PATH = "/assets/imgs/logo_bfpme.png";
     private static final Image ICON_IMAGE = new Image(StageManager.class.getResourceAsStream(ICON_PATH));
-    private static double lastStageWidth = 1340; // Default width
-    private static double lastStageHeight = 830; // Default height
+    private static double lastStageWidth = 1920; // Default width
+    private static double lastStageHeight = 1080; // Default height
+    private static boolean lastStageMaximized = true; // Default to true for maximized state
 
     public static void addStage(Stage stage) {
         setStageSize(stage);
         stages.add(stage);
         addSizeListeners(stage);
         updateLastStageSize(stage);
+        System.out.println("Stage added: " + stage + ", Maximized: " + lastStageMaximized);
     }
 
     public static void addStage(String name, Stage stage) {
@@ -27,6 +29,7 @@ public class StageManager {
         stages.add(stage);
         addSizeListeners(stage);
         updateLastStageSize(stage);
+        System.out.println("Stage added with name: " + name + ", Maximized: " + lastStageMaximized);
     }
 
     public static void removeStage(Stage stage) {
@@ -55,14 +58,21 @@ public class StageManager {
         stages.clear();
         stageMap.clear();
     }
+
     private static void setStageSize(Stage stage) {
-        stage.setWidth(lastStageWidth);
-        stage.setHeight(lastStageHeight);
+        if (lastStageMaximized) {
+            stage.setMaximized(true);
+        } else {
+            stage.setWidth(lastStageWidth);
+            stage.setHeight(lastStageHeight);
+        }
     }
 
     private static void updateLastStageSize(Stage stage) {
         lastStageWidth = stage.getWidth();
         lastStageHeight = stage.getHeight();
+        lastStageMaximized = stage.isMaximized();
+        System.out.println("Updated last stage size: " + lastStageWidth + "x" + lastStageHeight + ", Maximized: " + lastStageMaximized);
     }
 
     private static void addSizeListeners(Stage stage) {
@@ -73,6 +83,10 @@ public class StageManager {
         stage.heightProperty().addListener((obs, oldVal, newVal) -> {
             lastStageHeight = newVal.doubleValue();
         });
-    }
 
+        stage.maximizedProperty().addListener((obs, oldVal, newVal) -> {
+            lastStageMaximized = newVal;
+            System.out.println("Stage maximized state changed: " + newVal);
+        });
+    }
 }

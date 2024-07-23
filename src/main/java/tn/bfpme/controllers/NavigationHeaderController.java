@@ -12,9 +12,9 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.image.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.Button;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -56,15 +56,12 @@ public class NavigationHeaderController implements Initializable {
         btnListe.setVisible(!"Employe".equals(userRoleName) || "AdminIT".equals(userRoleName));
         btnListe.setVisible(!userRoleName.equals("Employe")||userRoleName.equals("AdminIT"));
 
-        //btnRH.setVisible((userDepartmentName.equals("RH") && userDepartmentName.equals("Directeur"))||userDepartmentName.equals("AdminIT"));
         if ((userDepartmentName != null && userDepartmentName.equals("RH") && "Directeur".equals(userRoleName)) || "AdminIT".equals(userRoleName)) {
             btnRH.setVisible(true);
         } else {
             btnRH.setVisible(false);
         }
         admin_interface.setVisible("AdminIT".equals(userRoleName));
-
-        // test_interfaceID.setVisible(userRole.equals("RH") || userRole.equals("AdminIT"));
 
         settingsPopup = new Popup();
         settingsPopup.setAutoHide(true);
@@ -160,6 +157,9 @@ public class NavigationHeaderController implements Initializable {
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.setTitle(title);
+
+            stage.setMaximized(true);
+
             stage.show();
             StageManager.addStage(title, stage);
         } catch (IOException e) {

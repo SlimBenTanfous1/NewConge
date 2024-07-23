@@ -300,14 +300,20 @@ public class paneUserController implements Initializable {
     }
     private void handleRoleSelection(Role selectedRole) {
         try {
-            List<Departement> relatedDepartments = getRelatedDepartments(selectedRole.getIdRole());
-            ObservableList<Departement> observableList = FXCollections.observableArrayList(relatedDepartments);
+            List<Departement> departments;
+            if ("Employe".equals(selectedRole.getNom())) {
+                departments = depService.getAllDepartments();
+            } else {
+                departments = getRelatedDepartments(selectedRole.getIdRole());
+            }
+            ObservableList<Departement> observableList = FXCollections.observableArrayList(departments);
             departListView.setItems(observableList);
         } catch (SQLException e) {
             e.printStackTrace();
             showError("Une erreur s'est produite lors de la récupération des départements : " + e.getMessage());
         }
     }
+
 
 
     private void loadUsers1() {
@@ -990,8 +996,6 @@ public class paneUserController implements Initializable {
             refreshUserContainers();
         });
     }
-
-
     private void refreshUserContainers() {
         UserContainers.getChildren().clear();
         int column = 0;

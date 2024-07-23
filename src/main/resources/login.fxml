@@ -35,12 +35,12 @@
                     <children>
                         <HBox layoutX="196.0" layoutY="351.0" prefHeight="28.0" prefWidth="235.0" AnchorPane.leftAnchor="196.0" AnchorPane.rightAnchor="171.0">
                             <children>
-                                <TextField fx:id="LoginEmail" prefHeight="28.0" prefWidth="526.0" promptText="email" style="-fx-background-color: transparent; -fx-border-color: transparent transparent #eab53f transparent; -fx-border-width: 0 0 1 0; -fx-padding: 0 0 3 0;" text="999" />
+                                <TextField fx:id="LoginEmail" prefHeight="28.0" prefWidth="526.0" promptText="email" style="-fx-background-color: transparent; -fx-border-color: transparent transparent #eab53f transparent; -fx-border-width: 0 0 1 0; -fx-padding: 0 0 3 0;" />
                             </children>
                         </HBox>
                         <HBox layoutX="196.0" layoutY="400.0" prefHeight="28.0" prefWidth="274.0" AnchorPane.leftAnchor="196.0" AnchorPane.rightAnchor="132.0">
                             <children>
-                                <PasswordField fx:id="LoginMDP" prefHeight="28.0" prefWidth="476.0" promptText="mdp" style="-fx-background-color: transparent; -fx-border-color: transparent transparent #eab53f transparent; -fx-border-width: 0 0 1 0; -fx-padding: 0 0 3 0;" text="999" />
+                                <PasswordField fx:id="LoginMDP" prefHeight="28.0" prefWidth="476.0" promptText="mdp" style="-fx-background-color: transparent; -fx-border-color: transparent transparent #eab53f transparent; -fx-border-width: 0 0 1 0; -fx-padding: 0 0 3 0;" />
                                 <TextField fx:id="showPasswordField" managed="false" prefHeight="28.0" prefWidth="476.0" promptText="mdp" style="-fx-background-color: transparent; -fx-border-color: transparent transparent #eab53f transparent; -fx-border-width: 0 0 1 0; -fx-padding: 0 0 3 0;" visible="false" />
                                 <Button fx:id="toggleButton" layoutX="470.0" layoutY="0.0" prefHeight="28.0" prefWidth="50.0" style="-fx-background-color: transparent;">
                                     <graphic>
@@ -49,9 +49,9 @@
                                 </Button>
                             </children>
                         </HBox>
-                        <HBox alignment="CENTER" layoutX="197.0" layoutY="462.0" prefHeight="27.0" prefWidth="238.0" AnchorPane.leftAnchor="197.0" AnchorPane.rightAnchor="167.0">
+                        <HBox alignment="CENTER" layoutX="197.0" layoutY="462.0" AnchorPane.leftAnchor="197.0" AnchorPane.rightAnchor="211.0">
                             <children>
-                                <Button mnemonicParsing="false" onAction="#Login" prefHeight="27.0" prefWidth="246.0" styleClass="btn-primary" text="Se Connecter" />
+                                <Button mnemonicParsing="false" onAction="#Login" prefHeight="25.0" prefWidth="194.0" styleClass="btn-primary" text="Se Connecter" />
                             </children>
                         </HBox>
                         <Label layoutX="101.0" layoutY="361.0" text="E-mail :" />
