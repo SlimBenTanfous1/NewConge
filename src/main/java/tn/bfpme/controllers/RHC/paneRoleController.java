@@ -38,53 +38,7 @@ public class paneRoleController implements Initializable {
             }
         });
     }
-
-    private void populateParentRolesComboBoxes(int roleId) {
-        roleParentVBox.getChildren().clear();
-        List<Role> parentRoles = roleService.getParentRoles2(roleId);
-        List<Role> allRoles = roleService.getAllRoles();
-        allRoles.removeIf(role -> role.getIdRole() == roleId);
-        ObservableList<Role> allRolesObservable = FXCollections.observableArrayList(allRoles);
-        for (Role parentRole : parentRoles) {
-            ComboBox<Role> comboBox = new ComboBox<>(allRolesObservable);
-            comboBox.setValue(parentRole);
-            comboBox.setPrefHeight(31);
-            comboBox.setPrefWidth(281);
-            comboBox.setCellFactory(param -> new ListCell<Role>() {
-                @Override
-                protected void updateItem(Role item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty || item == null) {
-                        setText(null);
-                    } else {
-                        setText(item.getNom());
-                    }
-                }
-            });
-            comboBox.setButtonCell(new ListCell<Role>() {
-                @Override
-                protected void updateItem(Role item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty || item == null) {
-                        setText(null);
-                    } else {
-                        setText(item.getNom());
-                    }
-                }
-            });
-            HBox hBox = new HBox(comboBox);
-            hBox.setSpacing(5);
-            Button removeButton = new Button("-");
-            removeButton.setPrefHeight(25);
-            HBox.setMargin(removeButton, new Insets(2, 0, 0, 0)); // Top margin of 2
-            removeButton.setPrefWidth(25);
-            removeButton.getStyleClass().addAll("btn-primary", "FontSize-12", "RobotoRegular");
-            removeButton.setOnAction(e -> roleParentVBox.getChildren().remove(hBox));
-            hBox.getChildren().add(removeButton);
-            roleParentVBox.getChildren().add(hBox);
-        }
-    }
-
+    
     @FXML
     private void handleAddRole() {
         String name = roleNameField.getText();
@@ -239,6 +193,52 @@ public class paneRoleController implements Initializable {
             });
         } catch (Exception e) {
             showError("Failed to load roles: " + e.getMessage());
+        }
+    }
+
+    private void populateParentRolesComboBoxes(int roleId) {
+        roleParentVBox.getChildren().clear();
+        List<Role> parentRoles = roleService.getParentRoles2(roleId);
+        List<Role> allRoles = roleService.getAllRoles();
+        allRoles.removeIf(role -> role.getIdRole() == roleId);
+        ObservableList<Role> allRolesObservable = FXCollections.observableArrayList(allRoles);
+        for (Role parentRole : parentRoles) {
+            ComboBox<Role> comboBox = new ComboBox<>(allRolesObservable);
+            comboBox.setValue(parentRole);
+            comboBox.setPrefHeight(31);
+            comboBox.setPrefWidth(281);
+            comboBox.setCellFactory(param -> new ListCell<Role>() {
+                @Override
+                protected void updateItem(Role item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                    } else {
+                        setText(item.getNom());
+                    }
+                }
+            });
+            comboBox.setButtonCell(new ListCell<Role>() {
+                @Override
+                protected void updateItem(Role item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                    } else {
+                        setText(item.getNom());
+                    }
+                }
+            });
+            HBox hBox = new HBox(comboBox);
+            hBox.setSpacing(5);
+            Button removeButton = new Button("-");
+            removeButton.setPrefHeight(25);
+            HBox.setMargin(removeButton, new Insets(2, 0, 0, 0)); // Top margin of 2
+            removeButton.setPrefWidth(25);
+            removeButton.getStyleClass().addAll("btn-primary", "FontSize-12", "RobotoRegular");
+            removeButton.setOnAction(e -> roleParentVBox.getChildren().remove(hBox));
+            hBox.getChildren().add(removeButton);
+            roleParentVBox.getChildren().add(hBox);
         }
     }
 

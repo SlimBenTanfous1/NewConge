@@ -50,18 +50,18 @@
                   <String fx:value="RobotoItalic" />
                </styleClass>
             </Label>
-            <Button layoutX="832.0" layoutY="332.0" onAction="#addRole" prefHeight="25.0" prefWidth="25.0" text="+">
+            <Button layoutX="852.0" layoutY="328.0" onAction="#addRole" prefHeight="25.0" prefWidth="25.0" text="+">
                <styleClass>
                   <String fx:value="btn-primary" />
                   <String fx:value="FontSize-12" />
                   <String fx:value="RobotoRegular" />
                </styleClass>
             </Button>
-            <HBox layoutX="513.0" layoutY="326.0" minWidth="281.0" prefWidth="308.0" AnchorPane.leftAnchor="513.0" AnchorPane.topAnchor="326.0">
+            <HBox layoutX="515.0" layoutY="328.0" minWidth="281.0" prefHeight="179.0" prefWidth="330.0" AnchorPane.leftAnchor="514.0" AnchorPane.topAnchor="327.0">
                <children>
                   <ScrollPane prefHeight="179.0" prefWidth="333.0" styleClass="paneRoundedCornders">
                      <content>
-                        <VBox fx:id="roleParentVBox" prefHeight="0.0" prefWidth="295.0" spacing="4.0" />
+                        <VBox fx:id="roleParentVBox" prefHeight="0.0" prefWidth="315.0" spacing="4.0" />
                      </content>
                   </ScrollPane>
                </children>
