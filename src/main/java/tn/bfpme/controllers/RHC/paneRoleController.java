@@ -9,9 +9,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import tn.bfpme.models.Departement;
 import tn.bfpme.models.Role;
-import tn.bfpme.models.User;
 import tn.bfpme.services.ServiceRole;
 
 import java.net.URL;
@@ -26,9 +24,14 @@ public class paneRoleController implements Initializable {
     private TextField roleNameField;
     @FXML
     private VBox roleParentVBox;
-    public Role selectedRole;
+    @FXML
+    private Button btnEnregistrer, btnAnnuler, btnAjouter, btnModifier, btnSupprimer, AddNewRoleCombo;
+    @FXML
+    private HBox ParentRoleHBbox, btnEAHbox, btnCRUDHbox;
 
+    public Role selectedRole;
     private final ServiceRole roleService = new ServiceRole();
+    private int state = 0;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -38,9 +41,114 @@ public class paneRoleController implements Initializable {
                 roleNameField.setText(newValue.getNom());
                 roleDescriptionField.setText(newValue.getDescription());
                 populateParentRolesComboBoxes(newValue.getIdRole());
+                btnAjouter.setDisable(true);
+                btnModifier.setDisable(false);
+                btnSupprimer.setDisable(false);
             }
         });
+        fieldsDisable(true);
+        btnCRUDHbox.setVisible(true);
+        btnModifier.setDisable(true);
+        btnSupprimer.setDisable(true);
+        btnEAHbox.setVisible(false);
     }
+
+    @FXML
+    public void Annuler() {
+        state = 0;
+        btnCRUDHbox.setVisible(true);
+        btnModifier.setDisable(true);
+        btnSupprimer.setDisable(true);
+        btnEAHbox.setVisible(false);
+        fieldsDisable(true);
+        roleListView.setDisable(false);
+        fieldsClear();
+    }
+
+    @FXML
+    public void Enregistrer() {
+        if (state == 1) {
+            String name = roleNameField.getText();
+            String description = roleDescriptionField.getText();
+            if (roleNameField.getText().isEmpty() || roleDescriptionField.getText().isEmpty()) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Champs requis non remplis", "Veuillez remplir toutes les informations nécessaires.");
+                return;
+            }
+            Role newRole = roleService.addRole2(name, description, 0);
+            int id_role = newRole.getIdRole();
+            int n = 0;
+            if (newRole != null) {
+                for (Node node : roleParentVBox.getChildren()) {
+                    if (node instanceof HBox) {
+                        HBox hBox = (HBox) node;
+                        for (Node childNode : hBox.getChildren()) {
+                            if (childNode instanceof ComboBox) {
+                                ComboBox<Role> comboBox = (ComboBox<Role>) childNode;
+                                Role parentRole = comboBox.getValue();
+                                if (parentRole != null) {
+                                    roleService.addRoleHierarchy(parentRole.getIdRole(), newRole.getIdRole());
+                                    n = n + 1;
+                                }
+                            }
+                        }
+                    }
+                }
+                int n1 = n + 1;
+                Role newRole1 = roleService.updateRole1(id_role, n1);
+                showSuccess("Message de succès", "Le rôle a été ajouté avec succès.");
+                loadRoles();
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Ajout du rôle échoué", "Le rôle n'a pas pu être ajouté.");
+            }
+            roleListView.setDisable(false);
+            state = 0;
+        }
+        if (state == 2) {
+            Role selectedRole = roleListView.getSelectionModel().getSelectedItem();
+            if (selectedRole != null) {
+                String name = roleNameField.getText();
+                String description = roleDescriptionField.getText();
+                if (roleNameField.getText().isEmpty() || roleDescriptionField.getText().isEmpty()) {
+                    showAlert(Alert.AlertType.ERROR, "Erreur", "Champs requis non remplis", "Veuillez remplir toutes les informations nécessaires.");
+                    return;
+                }
+                roleService.updateRole(selectedRole.getIdRole(), name, description);
+                List<Role> currentParents = roleService.getRoleParents2(selectedRole.getIdRole());
+                Set<Role> newParentsSet = new HashSet<>();
+                for (Node node : roleParentVBox.getChildren()) {
+                    if (node instanceof HBox) {
+                        HBox hBox = (HBox) node;
+                        for (Node childNode : hBox.getChildren()) {
+                            if (childNode instanceof ComboBox) {
+                                ComboBox<Role> comboBox = (ComboBox<Role>) childNode;
+                                Role parentRole = comboBox.getValue();
+                                if (parentRole != null) {
+                                    newParentsSet.add(parentRole);
+                                }
+                            }
+                        }
+                    }
+                }
+                List<Role> newParents = new ArrayList<>(newParentsSet);
+                for (Role currentParent : currentParents) {
+                    if (!newParents.contains(currentParent)) {
+                        roleService.removeRoleHierarchy(currentParent.getIdRole(), selectedRole.getIdRole());
+                    }
+                }
+                for (Role newParent : newParents) {
+                    if (!currentParents.contains(newParent)) {
+                        roleService.addRoleHierarchy(newParent.getIdRole(), selectedRole.getIdRole());
+                    }
+                }
+                showSuccess("Message de succès", "Le rôle a été modifié avec succès");
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Aucun rôle sélectionné", "Veuillez sélectionner un rôle à modifier.");
+            }
+            loadRoles();
+            state = 0;
+        }
+    }
+
 
     private void populateParentRolesComboBoxes(int roleId) {
         roleParentVBox.getChildren().clear();
@@ -90,86 +198,33 @@ public class paneRoleController implements Initializable {
 
     @FXML
     private void handleAddRole() {
-        String name = roleNameField.getText();
-        String description = roleDescriptionField.getText();
-        if (roleNameField.getText().isEmpty() || roleDescriptionField.getText().isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Champs requis non remplis", "Veuillez remplir toutes les informations nécessaires.");
-            return;
-        }
-        Role newRole = roleService.addRole2(name, description,0);
-        int id_role= newRole.getIdRole();
-        int n=0;
-        if (newRole != null) {
-            for (Node node : roleParentVBox.getChildren()) {
-                if (node instanceof HBox) {
-                    HBox hBox = (HBox) node;
-                    for (Node childNode : hBox.getChildren()) {
-                        if (childNode instanceof ComboBox) {
-                            ComboBox<Role> comboBox = (ComboBox<Role>) childNode;
-                            Role parentRole = comboBox.getValue();
-                            if (parentRole != null) {
-                                roleService.addRoleHierarchy(parentRole.getIdRole(), newRole.getIdRole());
-                                n=n+1;
-                            }
-                        }
-                    }
-
-                }
-            }
-            int n1 = n+1 ;
-            Role newRole1 = roleService.updateRole1(id_role,n1);
-
-
-            showSuccess("Message de succès", "Le rôle a été ajouté avec succès.");
-            loadRoles();
-        } else {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Ajout du rôle échoué", "Le rôle n'a pas pu être ajouté.");
-        }
+        state = 1;
+        btnCRUDHbox.setVisible(false);
+        btnEAHbox.setVisible(true);
+        fieldsDisable(false);
+        roleListView.setDisable(true);
+        fieldsClear();
     }
 
     @FXML
     private void handleEditRole() {
-        Role selectedRole = roleListView.getSelectionModel().getSelectedItem();
-        if (selectedRole != null) {
-            String name = roleNameField.getText();
-            String description = roleDescriptionField.getText();
-            if (roleNameField.getText().isEmpty() || roleDescriptionField.getText().isEmpty()) {
-                showAlert(Alert.AlertType.ERROR, "Erreur", "Champs requis non remplis", "Veuillez remplir toutes les informations nécessaires.");
-                return;
-            }
-            roleService.updateRole(selectedRole.getIdRole(), name, description);
-            List<Role> currentParents = roleService.getRoleParents2(selectedRole.getIdRole());
-            Set<Role> newParentsSet = new HashSet<>();
-            for (Node node : roleParentVBox.getChildren()) {
-                if (node instanceof HBox) {
-                    HBox hBox = (HBox) node;
-                    for (Node childNode : hBox.getChildren()) {
-                        if (childNode instanceof ComboBox) {
-                            ComboBox<Role> comboBox = (ComboBox<Role>) childNode;
-                            Role parentRole = comboBox.getValue();
-                            if (parentRole != null) {
-                                newParentsSet.add(parentRole);
-                            }
-                        }
-                    }
-                }
-            }
-            List<Role> newParents = new ArrayList<>(newParentsSet);
-            for (Role currentParent : currentParents) {
-                if (!newParents.contains(currentParent)) {
-                    roleService.removeRoleHierarchy(currentParent.getIdRole(), selectedRole.getIdRole());
-                }
-            }
-            for (Role newParent : newParents) {
-                if (!currentParents.contains(newParent)) {
-                    roleService.addRoleHierarchy(newParent.getIdRole(), selectedRole.getIdRole());
-                }
-            }
-            showSuccess("Message de succès", "Le rôle a été modifié avec succès");
-        } else {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Aucun rôle sélectionné", "Veuillez sélectionner un rôle à modifier.");
-        }
+        state = 2;
+        btnCRUDHbox.setVisible(false);
+        btnEAHbox.setVisible(true);
+        fieldsDisable(false);
+        roleListView.setDisable(true);
+    }
+    @FXML
+    private void Unselect() {
+        state = 0;
+        fieldsClear();
         loadRoles();
+        btnEAHbox.setVisible(false);
+        btnCRUDHbox.setVisible(true);
+        btnAjouter.setDisable(true);
+        btnModifier.setDisable(false);
+        btnSupprimer.setDisable(false);
+        roleListView.setDisable(false);
     }
 
     @FXML
@@ -275,5 +330,17 @@ public class paneRoleController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private void fieldsDisable(boolean arg) {
+        roleNameField.setDisable(arg);
+        roleDescriptionField.setDisable(arg);
+        roleParentVBox.setDisable(arg);
+        AddNewRoleCombo.setDisable(arg);
+    }
+    private void fieldsClear() {
+        roleNameField.clear();
+        roleDescriptionField.clear();
+        roleNameField.clear();
     }
 }

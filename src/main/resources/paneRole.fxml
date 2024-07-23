@@ -13,9 +13,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="RolesPane" minWidth="87.0" prefHeight="726.0" prefWidth="1119.0" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.RHC.paneRoleController">
+<AnchorPane fx:id="RolesPane" minWidth="87.0" onMouseClicked="#Unselect" prefHeight="726.0" prefWidth="1119.0" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.RHC.paneRoleController">
    <children>
-      <AnchorPane layoutX="70.0" layoutY="73.0" prefHeight="597.0" prefWidth="980.0" styleClass="paneRoundedCornders" AnchorPane.bottomAnchor="55.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="68.0" AnchorPane.topAnchor="73.0">
+      <AnchorPane layoutX="70.0" layoutY="73.0" onMouseClicked="#Unselect" prefHeight="597.0" prefWidth="980.0" styleClass="paneRoundedCornders" AnchorPane.bottomAnchor="55.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="68.0" AnchorPane.topAnchor="73.0">
          <children>
             <HBox layoutX="54.0" layoutY="73.0" maxHeight="477.0" maxWidth="315.0" minHeight="477.0" minWidth="315.0" prefHeight="477.0" prefWidth="315.0" AnchorPane.bottomAnchor="46.0" AnchorPane.leftAnchor="54.0" AnchorPane.rightAnchor="611.0" AnchorPane.topAnchor="73.0">
                <children>
@@ -50,14 +50,14 @@
                   <String fx:value="RobotoItalic" />
                </styleClass>
             </Label>
-            <Button layoutX="852.0" layoutY="328.0" onAction="#addRole" prefHeight="25.0" prefWidth="25.0" text="+">
+            <Button fx:id="AddNewRoleCombo" layoutX="852.0" layoutY="328.0" onAction="#addRole" prefHeight="25.0" prefWidth="25.0" text="+">
                <styleClass>
                   <String fx:value="btn-primary" />
                   <String fx:value="FontSize-12" />
                   <String fx:value="RobotoRegular" />
                </styleClass>
             </Button>
-            <HBox layoutX="515.0" layoutY="328.0" minWidth="281.0" prefHeight="179.0" prefWidth="330.0" AnchorPane.leftAnchor="514.0" AnchorPane.topAnchor="327.0">
+            <HBox fx:id="ParentRoleHBbox" layoutX="515.0" layoutY="328.0" minWidth="281.0" prefHeight="179.0" prefWidth="330.0" AnchorPane.leftAnchor="514.0" AnchorPane.topAnchor="327.0">
                <children>
                   <ScrollPane prefHeight="179.0" prefWidth="333.0" styleClass="paneRoundedCornders">
                      <content>
@@ -66,23 +66,22 @@
                   </ScrollPane>
                </children>
             </HBox>
-            <VBox alignment="TOP_CENTER" layoutX="844.0" layoutY="95.0" prefHeight="165.0" prefWidth="87.0" spacing="20.0" AnchorPane.bottomAnchor="337.0" AnchorPane.leftAnchor="843.0" AnchorPane.rightAnchor="51.0" AnchorPane.topAnchor="95.0" />
-            <HBox layoutX="518.0" layoutY="520.0" prefHeight="48.0" prefWidth="302.0" spacing="8.0">
+            <HBox fx:id="btnCRUDHbox" layoutX="529.0" layoutY="519.0" prefHeight="48.0" prefWidth="302.0" spacing="8.0">
                <children>
                   <Separator orientation="VERTICAL" prefHeight="200.0" styleClass="seperator" />
-                  <Button maxHeight="50.0" maxWidth="87.0" onAction="#handleAddRole" prefHeight="41.0" prefWidth="87.0" text="Ajouter">
+                  <Button fx:id="btnAjouter" maxHeight="50.0" maxWidth="87.0" onAction="#handleAddRole" prefHeight="41.0" prefWidth="87.0" text="Ajouter">
                      <styleClass>
                         <String fx:value="btn-primary" />
                         <String fx:value="FontSize-14" />
                      </styleClass>
                   </Button>
-                  <Button maxHeight="71.0" maxWidth="87.0" minHeight="10.0" onAction="#handleEditRole" prefHeight="71.0" prefWidth="87.0" text="Modifier">
+                  <Button fx:id="btnModifier" maxHeight="71.0" maxWidth="87.0" minHeight="10.0" onAction="#handleEditRole" prefHeight="71.0" prefWidth="87.0" text="Modifier">
                      <styleClass>
                         <String fx:value="btn-primary" />
                         <String fx:value="FontSize-14" />
                      </styleClass>
                   </Button>
-                  <Button onAction="#handleDeleteRole" prefHeight="87.0" prefWidth="87.0" text="Supprimer">
+                  <Button fx:id="btnSupprimer" onAction="#handleDeleteRole" prefHeight="87.0" prefWidth="87.0" text="Supprimer">
                      <styleClass>
                         <String fx:value="btn-primary" />
                         <String fx:value="FontSize-14" />
@@ -102,6 +101,25 @@
                   <String fx:value="RobotoBlackItalic" />
                </styleClass>
             </Label>
+            <HBox fx:id="btnEAHbox" layoutX="529.0" layoutY="519.0" prefHeight="48.0" prefWidth="302.0" spacing="8.0">
+               <children>
+                  <Separator orientation="VERTICAL" prefHeight="200.0" styleClass="seperator" />
+                  <Button fx:id="btnAnnuler" maxHeight="50.0" maxWidth="87.0" onAction="#Annuler" prefHeight="41.0" prefWidth="87.0" text="Annuler">
+                     <styleClass>
+                        <String fx:value="btn-refuser" />
+                        <String fx:value="FontSize-14" />
+                        <String fx:value="RobotoRegular" />
+                     </styleClass>
+                  </Button>
+                  <Button fx:id="btnEnregistrer" onAction="#Enregistrer" prefHeight="48.0" prefWidth="149.0" text="Enregistrer">
+                     <styleClass>
+                        <String fx:value="btn-approver" />
+                        <String fx:value="FontSize-14" />
+                        <String fx:value="RobotoMedium" />
+                     </styleClass>
+                  </Button>
+               </children>
+            </HBox>
          </children>
       </AnchorPane>
       <Label alignment="TOP_CENTER" layoutX="366.0" layoutY="24.0" prefHeight="29.0" prefWidth="388.0" styleClass="RobotoBoldItalic" text="Gestion des rôles" AnchorPane.leftAnchor="366.0" AnchorPane.rightAnchor="365.0" AnchorPane.topAnchor="24.0">
