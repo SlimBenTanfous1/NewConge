@@ -9,6 +9,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.InputMethodEvent;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import tn.bfpme.models.EmailsTemplates;
 import tn.bfpme.models.Role;
 import tn.bfpme.models.User;
@@ -146,7 +147,13 @@ public class paneEmailTempController implements Initializable {
         btnSave.setVisible(false);
 
     }
-
+    @FXML
+    void Deselect(MouseEvent event) {
+        objectTF.clear();
+        MessageTF.clear();
+        objectTF.setDisable(true);
+        MessageTF.setDisable(true);
+    }
     @FXML
     void EmailTempRecherche(ActionEvent actionEvent) {
         String searchText = RechercheTemp.getText().trim();
