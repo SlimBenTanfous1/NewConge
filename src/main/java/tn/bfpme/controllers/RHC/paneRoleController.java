@@ -9,6 +9,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import tn.bfpme.models.Departement;
 import tn.bfpme.models.Role;
 import tn.bfpme.services.ServiceRole;
 
@@ -55,15 +56,7 @@ public class paneRoleController implements Initializable {
 
     @FXML
     public void Annuler() {
-        state = 0;
-        btnCRUDHbox.setVisible(true);
-        btnAjouter.setDisable(false);
-        btnModifier.setDisable(true);
-        btnSupprimer.setDisable(true);
-        btnEAHbox.setVisible(false);
-        fieldsDisable(true);
-        roleListView.setDisable(false);
-        fieldsClear();
+        reset();
     }
 
     @FXML
@@ -217,12 +210,25 @@ public class paneRoleController implements Initializable {
 
     @FXML
     private void handleDeleteRole() {
-        Role selectedRole = roleListView.getSelectionModel().getSelectedItem();
-        if (selectedRole != null) {
-            roleService.deleteRole(selectedRole.getIdRole());
-            loadRoles();
-            showSuccess("Message de success", "Le role à été supprimer avec success");
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Êtes vous sûrs?");
+        alert.setHeaderText("Êtes-vous certain de vouloir supprimer ce role ?");
+        ButtonType Oui = new ButtonType("Oui");
+        ButtonType Non = new ButtonType("Non");
+        alert.getButtonTypes().setAll(Oui, Non);
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == Oui) {
+            try {
+                Role selectedRole = roleListView.getSelectionModel().getSelectedItem();
+                if (selectedRole != null) {
+                    roleService.deleteRole(selectedRole.getIdRole());
+                    loadRoles();
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
+        reset();
     }
 
     @FXML
@@ -326,10 +332,22 @@ public class paneRoleController implements Initializable {
         roleParentVBox.setDisable(arg);
         AddNewRoleCombo.setDisable(arg);
     }
+
     private void fieldsClear() {
         roleNameField.clear();
         roleDescriptionField.clear();
         VBox.clearConstraints(roleParentVBox);
+    }
 
+    void reset() {
+        state = 0;
+        btnCRUDHbox.setVisible(true);
+        btnAjouter.setDisable(false);
+        btnModifier.setDisable(true);
+        btnSupprimer.setDisable(true);
+        btnEAHbox.setVisible(false);
+        fieldsDisable(true);
+        roleListView.setDisable(false);
+        fieldsClear();
     }
 }
