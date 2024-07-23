@@ -170,6 +170,7 @@ public class paneUserController implements Initializable {
     private final ServiceTypeConge serviceTypeConge = new ServiceTypeConge();
     private final ServiceRole roleService = new ServiceRole();
     private ObservableList<User> users;
+
     private ChangeListener<User> userSelectionListener = (observable, oldValue, newValue) -> {
         if (newValue != null) {
             handleUserSelection(newValue);
@@ -209,6 +210,11 @@ public class paneUserController implements Initializable {
 
         // Add the listener to the userListView
         userListView.getSelectionModel().selectedItemProperty().addListener(userSelectionListener);
+        roleListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                handleRoleSelection(newValue);
+            }
+        });
 
         // Initially hide solde fields
         hideSoldeFields();
@@ -292,6 +298,17 @@ public class paneUserController implements Initializable {
             }
         }
     }
+    private void handleRoleSelection(Role selectedRole) {
+        try {
+            List<Departement> relatedDepartments = getRelatedDepartments(selectedRole.getIdRole());
+            ObservableList<Departement> observableList = FXCollections.observableArrayList(relatedDepartments);
+            departListView.setItems(observableList);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showError("Une erreur s'est produite lors de la récupération des départements : " + e.getMessage());
+        }
+    }
+
 
     private void loadUsers1() {
         List<User> userList = userService.getAllUsers();
@@ -456,7 +473,7 @@ public class paneUserController implements Initializable {
         List<Role> roleList = roleService.getAllRoles();
         ObservableList<Role> roles = FXCollections.observableArrayList(roleList);
 
-        TreeItem<Role> root = new TreeItem<>(new Role(0, "Sans role parent", "", 0)); // Adjust constructor as necessary
+        TreeItem<Role> root = new TreeItem<>(new Role(0, "Sans role parent", "",0)); // Adjust constructor as necessary
         root.setExpanded(true);
         System.out.println("Root created.");
 
@@ -687,8 +704,12 @@ public class paneUserController implements Initializable {
                     showError("Veuillez sélectionner un rôle et/ou un département à attribuer.");
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
-                showError("Une erreur s'est produite lors de la mise à jour de l'utilisateur : " + e.getMessage());
+                if (e.getMessage().contains("Invalid role-department relationship")) {
+                    showError("La relation rôle-département n'est pas valide.");
+                } else {
+                    e.printStackTrace();
+                    showError("Une erreur s'est produite lors de la mise à jour de l'utilisateur : " + e.getMessage());
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 showError("Une erreur s'est produite : " + e.getMessage());
@@ -698,6 +719,7 @@ public class paneUserController implements Initializable {
         }
         loadUsers3();
     }
+
 
 
     @FXML
@@ -1178,5 +1200,30 @@ public class paneUserController implements Initializable {
     @FXML
     public void ExporterExcel(ActionEvent actionEvent) {
 
+    }
+    private List<Departement> getRelatedDepartments(int roleId) throws SQLException {
+        String query = "SELECT d.* FROM departement d JOIN role_departement rd ON d.ID_Departement = rd.ID_Departement WHERE rd.ID_Role = ?";
+        List<Departement> departments = new ArrayList<>();
+        try  {
+            if (cnx == null || cnx.isClosed()) {
+            cnx = MyDataBase.getInstance().getCnx();
+        }
+
+            PreparedStatement stmt = cnx.prepareStatement(query);
+            stmt.setInt(1, roleId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("ID_Departement");
+                String name = rs.getString("nom");
+                String description = rs.getString("description");
+                int parentDeptId = rs.getInt("Parent_Dept");
+                int level = rs.getInt("Level");
+                Departement dept = new Departement(id, name, description, parentDeptId, level);
+                departments.add(dept);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return departments;
     }
 }
