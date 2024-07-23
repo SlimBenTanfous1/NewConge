@@ -150,7 +150,6 @@ public class paneDepController implements Initializable {
     @FXML
     void AnuulerDepart(ActionEvent event) {
       reset();
-
     }
 
     @FXML

@@ -57,6 +57,7 @@ public class paneRoleController implements Initializable {
     public void Annuler() {
         state = 0;
         btnCRUDHbox.setVisible(true);
+        btnAjouter.setDisable(false);
         btnModifier.setDisable(true);
         btnSupprimer.setDisable(true);
         btnEAHbox.setVisible(false);
@@ -149,7 +150,6 @@ public class paneRoleController implements Initializable {
         }
     }
 
-
     private void populateParentRolesComboBoxes(int roleId) {
         roleParentVBox.getChildren().clear();
         List<Role> parentRoles = roleService.getParentRoles2(roleId);
@@ -213,18 +213,6 @@ public class paneRoleController implements Initializable {
         btnEAHbox.setVisible(true);
         fieldsDisable(false);
         roleListView.setDisable(true);
-    }
-    @FXML
-    private void Unselect() {
-        state = 0;
-        fieldsClear();
-        loadRoles();
-        btnEAHbox.setVisible(false);
-        btnCRUDHbox.setVisible(true);
-        btnAjouter.setDisable(true);
-        btnModifier.setDisable(false);
-        btnSupprimer.setDisable(false);
-        roleListView.setDisable(false);
     }
 
     @FXML
@@ -341,6 +329,7 @@ public class paneRoleController implements Initializable {
     private void fieldsClear() {
         roleNameField.clear();
         roleDescriptionField.clear();
-        roleNameField.clear();
+        VBox.clearConstraints(roleParentVBox);
+
     }
 }
