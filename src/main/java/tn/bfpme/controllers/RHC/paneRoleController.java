@@ -9,7 +9,9 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import tn.bfpme.models.Departement;
 import tn.bfpme.models.Role;
+import tn.bfpme.models.User;
 import tn.bfpme.services.ServiceRole;
 
 import java.net.URL;
@@ -24,6 +26,7 @@ public class paneRoleController implements Initializable {
     private TextField roleNameField;
     @FXML
     private VBox roleParentVBox;
+    public Role selectedRole;
 
     private final ServiceRole roleService = new ServiceRole();
 
@@ -35,8 +38,12 @@ public class paneRoleController implements Initializable {
                 roleNameField.setText(newValue.getNom());
                 roleDescriptionField.setText(newValue.getDescription());
                 populateParentRolesComboBoxes(newValue.getIdRole());
+                handleRoleSelection(newValue);
             }
         });
+    }
+    private void handleRoleSelection(Role selectedRole) {
+        this.selectedRole = selectedRole;
     }
 
     private void populateParentRolesComboBoxes(int roleId) {
@@ -93,7 +100,9 @@ public class paneRoleController implements Initializable {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Champs requis non remplis", "Veuillez remplir toutes les informations nécessaires.");
             return;
         }
-        Role newRole = roleService.addRole2(name, description);
+        Role newRole = roleService.addRole2(name, description,0);
+        int id_role= newRole.getIdRole();
+        int n=0;
         if (newRole != null) {
             for (Node node : roleParentVBox.getChildren()) {
                 if (node instanceof HBox) {
@@ -104,11 +113,17 @@ public class paneRoleController implements Initializable {
                             Role parentRole = comboBox.getValue();
                             if (parentRole != null) {
                                 roleService.addRoleHierarchy(parentRole.getIdRole(), newRole.getIdRole());
+                                n=n+1;
                             }
                         }
                     }
+
                 }
             }
+            int n1 = n+1 ;
+            Role newRole1 = roleService.updateRole1(id_role,n1);
+
+
             showSuccess("Message de succès", "Le rôle a été ajouté avec succès.");
             loadRoles();
         } else {

@@ -224,23 +224,27 @@ public class ServiceRole {
         }
     }
 
-    public Role addRole2(String nom, String description) {
-        String insertQuery = "INSERT INTO role (nom, description) VALUES (?, ?)";
-        String selectQuery = "SELECT * FROM role WHERE nom = ? AND description = ? ORDER BY ID_Role  DESC LIMIT 1"; // Assuming idRole is the primary key
+    public Role addRole2(String nom, String description, int level) {
+        String insertQuery = "INSERT INTO role (nom, description,level) VALUES (?, ?,?)";
+        String selectQuery = "SELECT * FROM role WHERE nom = ? AND description = ? AND level = ? ORDER BY ID_Role  DESC LIMIT 1"; // Assuming idRole is the primary key
         try (Connection cnx = MyDataBase.getInstance().getCnx();
              PreparedStatement pstmt = cnx.prepareStatement(insertQuery)) {
             pstmt.setString(1, nom);
             pstmt.setString(2, description);
+            pstmt.setInt(3, level);
+
             pstmt.executeUpdate();
             try (PreparedStatement selectStmt = cnx.prepareStatement(selectQuery)) {
                 selectStmt.setString(1, nom);
                 selectStmt.setString(2, description);
+                selectStmt.setInt(3, level);
                 try (ResultSet rs = selectStmt.executeQuery()) {
                     if (rs.next()) {
                         int idRole = rs.getInt("ID_Role");
                         String roleName = rs.getString("nom");
                         String roleDescription = rs.getString("description");
-                        return new Role(idRole, roleName, roleDescription);
+                        int levelRole = rs.getInt("level");
+                        return new Role(idRole, roleName, roleDescription,levelRole);
                     }
                 }
             }
@@ -261,6 +265,18 @@ public class ServiceRole {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+    public Role updateRole1(int idRole, int level) {
+        String query = "UPDATE role SET level = ? WHERE ID_Role = ?";
+        try (Connection cnx = MyDataBase.getInstance().getCnx();
+             PreparedStatement pstmt = cnx.prepareStatement(query)) {
+            pstmt.setInt(1, level);
+            pstmt.setInt(2, idRole);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public void deleteRole(int idRole) {

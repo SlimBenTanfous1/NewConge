@@ -473,7 +473,7 @@ public class paneUserController implements Initializable {
         List<Role> roleList = roleService.getAllRoles();
         ObservableList<Role> roles = FXCollections.observableArrayList(roleList);
 
-        TreeItem<Role> root = new TreeItem<>(new Role(0, "Sans role parent", "", 0)); // Adjust constructor as necessary
+        TreeItem<Role> root = new TreeItem<>(new Role(0, "Sans role parent", "",0)); // Adjust constructor as necessary
         root.setExpanded(true);
         System.out.println("Root created.");
 

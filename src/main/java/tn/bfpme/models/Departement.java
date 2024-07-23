@@ -79,8 +79,22 @@ public class Departement {
         this.parentDeptName = parentDeptName;
     }
 
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
     @Override
     public String toString() {
-        return nom;
+        return "Departement{" +
+                "idDepartement=" + idDepartement +
+                ", nom='" + nom + '\'' +
+                ", description='" + description + '\'' +
+                ", parentDept=" + parentDept +
+                ", level=" + level +
+                ", parentDeptName='" + parentDeptName + '\'' +
+                '}';
     }
 }
