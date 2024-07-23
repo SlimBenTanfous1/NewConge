@@ -2,14 +2,17 @@ package tn.bfpme.controllers.RHC;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import tn.bfpme.models.Departement;
 import tn.bfpme.services.ServiceDepartement;
 import javafx.scene.layout.*;
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class paneDepController implements Initializable {
@@ -23,6 +26,23 @@ public class paneDepController implements Initializable {
     private VBox comboBoxContainer;
     private final ServiceDepartement depService = new ServiceDepartement();
     private RHController RHC;
+    @FXML
+    private Button Update;
+    @FXML
+    private Button Add;
+    @FXML
+    private Button Annuler;
+    @FXML
+    private Button Enregistrer;
+
+    @FXML
+    private Button Delete;
+    @FXML
+    private HBox Hfirst;
+
+    @FXML
+    private HBox Hsecond;
+    private int state =0;
     private paneUserController PUC;
     private ComboBox<Departement> lastSelectedComboBox = null;
     private Departement lastSelectedParent = null;
@@ -35,6 +55,10 @@ public class paneDepController implements Initializable {
                 deptNameField.setText(newValue.getNom());
                 deptDescriptionField.setText(newValue.getDescription());
                 parentDeptComboBox.getSelectionModel().select(newValue.getParentDept() != 0 ? depService.getDepartmentById(newValue.getParentDept()) : null);
+                Add.setDisable(true);
+                Update.setDisable(false);
+                Delete.setDisable(false);
+
             }
         });
 
@@ -47,23 +71,35 @@ public class paneDepController implements Initializable {
                 lastSelectedParent = null;
             }
         });
+        Add.setDisable(false);
+        Update.setDisable(true);
+        Delete.setDisable(true);
+        deptDescriptionField.setDisable(true);
+        deptNameField.setDisable(true);
+        comboBoxContainer.setDisable(true);
+        parentDeptComboBox.setDisable(true);
+        Hsecond.setDisable(true);
+        Hsecond.setVisible(false);
+        departementListView.setDisable(false);
+        Hfirst.setVisible(true);
+        Hfirst.setDisable(false);
+
+
     }
 
     @FXML
     private void handleAddDepartment() {
-        String name = deptNameField.getText();
-        String description = deptDescriptionField.getText();
-        if (deptNameField.getText().isEmpty() || deptDescriptionField.getText().isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Champs requis non remplis", "Veuillez remplir toutes les informations nécessaires.");
-            return;
-        }
-        Departement parent = lastSelectedParent != null ? lastSelectedParent : parentDeptComboBox.getSelectionModel().getSelectedItem();
-        if (parent == null) {
-            depService.addDepartement2(name, description);
-        } else {
-            depService.addDepartement(name, description, parent.getIdDepartement() != 0 ? parent.getIdDepartement() : 0, parent.getLevel()+1);
-        }
-        loadDepartments();
+        state=1;
+        Hfirst.setVisible(false);
+        Hfirst.setDisable(true);
+        Hsecond.setDisable(false);
+        Hsecond.setVisible(true);
+        deptDescriptionField.setDisable(false);
+        deptNameField.setDisable(false);
+        comboBoxContainer.setDisable(false);
+        parentDeptComboBox.setDisable(false);
+        departementListView.setDisable(true);
+
     }
     private void showAlert(Alert.AlertType alertType, String title, String header, String content) {
         Alert alert = new Alert(alertType);
@@ -75,23 +111,79 @@ public class paneDepController implements Initializable {
 
     @FXML
     private void handleEditDepartment() {
-        Departement selectedDept = departementListView.getSelectionModel().getSelectedItem();
-        if (selectedDept != null) {
-            String name = deptNameField.getText();
-            String description = deptDescriptionField.getText();
-            Departement parent = lastSelectedParent != null ? lastSelectedParent : parentDeptComboBox.getSelectionModel().getSelectedItem();
-            depService.updateDepartment(selectedDept.getIdDepartement(), name, description, parent != null ? parent.getIdDepartement() : null);
-            loadDepartments();
-        }
+        state=2;
+        Hfirst.setVisible(false);
+        Hfirst.setDisable(true);
+        Hsecond.setDisable(false);
+        Hsecond.setVisible(true);
+        deptDescriptionField.setDisable(false);
+        deptNameField.setDisable(false);
+        comboBoxContainer.setDisable(false);
+        parentDeptComboBox.setDisable(false);
+        departementListView.setDisable(true);
+
     }
 
     @FXML
     private void handleDeleteDepartment() {
-        Departement selectedDept = departementListView.getSelectionModel().getSelectedItem();
-        if (selectedDept != null) {
-            depService.deleteDepartment(selectedDept.getIdDepartement());
-            loadDepartments();
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Êtes vous sûrs?");
+        alert.setHeaderText("Êtes-vous certain de vouloir rejeter cette demande ?");
+        ButtonType Oui = new ButtonType("Oui");
+        ButtonType Non = new ButtonType("Non");
+        alert.getButtonTypes().setAll(Oui, Non);
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.isPresent() && result.get() == Oui) {
+            try {
+                Departement selectedDept = departementListView.getSelectionModel().getSelectedItem();
+                if (selectedDept != null) {
+                    depService.deleteDepartment(selectedDept.getIdDepartement());
+                    loadDepartments();
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
+        reset();
+    }
+    @FXML
+    void AnuulerDepart(ActionEvent event) {
+      reset();
+
+    }
+
+    @FXML
+    void EnregistrerDepart(ActionEvent event) {
+        if (state==1) {
+            String name = deptNameField.getText();
+            String description = deptDescriptionField.getText();
+            if (deptNameField.getText().isEmpty() || deptDescriptionField.getText().isEmpty()) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Champs requis non remplis", "Veuillez remplir toutes les informations nécessaires.");
+                return;
+            }
+            Departement parent = lastSelectedParent != null ? lastSelectedParent : parentDeptComboBox.getSelectionModel().getSelectedItem();
+            if (parent == null) {
+                depService.addDepartement2(name, description);
+            } else {
+                depService.addDepartement(name, description, parent.getIdDepartement() != 0 ? parent.getIdDepartement() : 0, parent.getLevel()+1);
+            }
+            loadDepartments();
+            reset();
+
+        }
+
+        else if (state==2) { Departement selectedDept = departementListView.getSelectionModel().getSelectedItem();
+            if (selectedDept != null) {
+                String name = deptNameField.getText();
+                String description = deptDescriptionField.getText();
+                Departement parent = lastSelectedParent != null ? lastSelectedParent : parentDeptComboBox.getSelectionModel().getSelectedItem();
+                depService.updateDepartment(selectedDept.getIdDepartement(), name, description, parent != null ? parent.getIdDepartement() : null);
+                loadDepartments();
+            }
+            reset();
+        }
+        state=0;
     }
 
     protected void loadDepartments() {
@@ -191,5 +283,27 @@ public class paneDepController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    @FXML
+    void Unselect(MouseEvent event) {
+        reset();
+    }
+    void reset(){
+        departementListView.getSelectionModel().clearSelection();
+        departementListView.setDisable(false);
+        deptNameField.setText("");
+        deptDescriptionField.setText("");
+        deptDescriptionField.setDisable(true);
+        deptNameField.setDisable(true);
+        comboBoxContainer.setDisable(true);
+        parentDeptComboBox.setDisable(true);
+        Add.setDisable(false);
+        Update.setDisable(true);
+        Delete.setDisable(true);
+        Hfirst.setVisible(true);
+        Hfirst.setDisable(false);
+        Hsecond.setDisable(true);
+        Hsecond.setVisible(false);
     }
 }
