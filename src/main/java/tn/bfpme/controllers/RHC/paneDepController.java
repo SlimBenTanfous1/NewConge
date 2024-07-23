@@ -21,7 +21,6 @@ public class paneDepController implements Initializable {
     private ComboBox<Departement> parentDeptComboBox;
     @FXML
     private VBox comboBoxContainer;
-
     private final ServiceDepartement depService = new ServiceDepartement();
     private RHController RHC;
     private paneUserController PUC;
@@ -59,11 +58,10 @@ public class paneDepController implements Initializable {
             return;
         }
         Departement parent = lastSelectedParent != null ? lastSelectedParent : parentDeptComboBox.getSelectionModel().getSelectedItem();
-
         if (parent == null) {
             depService.addDepartement2(name, description);
         } else {
-            depService.addDepartement(name, description, parent.getIdDepartement() != 0 ? parent.getIdDepartement() : 0);
+            depService.addDepartement(name, description, parent.getIdDepartement() != 0 ? parent.getIdDepartement() : 0, parent.getLevel()+1);
         }
         loadDepartments();
     }
