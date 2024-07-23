@@ -1084,7 +1084,6 @@ public class paneUserController implements Initializable {
     void removeFilters(ActionEvent event) {
 
     }
-
     private void setupRemoveFilterButton() {
         removeFilterButton.setOnAction(event -> {
             RoleComboFilter.getSelectionModel().clearSelection();
@@ -1092,7 +1091,6 @@ public class paneUserController implements Initializable {
             loadFilteredUsers();
         });
     }
-
     private void setupRoleSearchBar() {
         RoleSearchBar.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == null || newValue.isEmpty()) {
@@ -1116,7 +1114,6 @@ public class paneUserController implements Initializable {
             }
         });
     }
-
     private void resetRoleComboBoxItems() {
         List<Role> roles = roleService.getAllRoles();
         ObservableList<String> roleNames = FXCollections.observableArrayList();
@@ -1125,11 +1122,8 @@ public class paneUserController implements Initializable {
         }
         RoleComboFilter.setItems(roleNames);
     }
-
     public void TabGestion(Event event) {
     }
-
-
     public void clearuserselection(ActionEvent actionEvent) {
         Depart_field.setText("");
         User_field.setText("");
@@ -1149,7 +1143,6 @@ public class paneUserController implements Initializable {
         departListView.setItems(filteredDepartments);
         roleListView.setItems(filteredRoles);
     }
-
     public void clearroleselection(ActionEvent actionEvent) {
         Role_field.setText("");
         Role_field.clear();
@@ -1157,7 +1150,6 @@ public class paneUserController implements Initializable {
         filteredRoles.setPredicate(role -> true);
         roleListView.setItems(filteredRoles);
     }
-
     public void cleardepartselection(ActionEvent actionEvent) {
         Depart_field.setText("");
         Depart_field.clear();
@@ -1172,7 +1164,6 @@ public class paneUserController implements Initializable {
             resetAffectationTab();
         }
     }
-
     private void resetAffectationTab() {
         affectationlabel.setText("");
         // Clear selection and fields
@@ -1193,8 +1184,6 @@ public class paneUserController implements Initializable {
         departListView.setItems(filteredDepartments);
         roleListView.setItems(filteredRoles);
     }
-
-
     @FXML
     public void ExporterExcel(ActionEvent actionEvent) {
 

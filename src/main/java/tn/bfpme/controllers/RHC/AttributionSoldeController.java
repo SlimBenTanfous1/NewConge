@@ -9,8 +9,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
 import tn.bfpme.models.TypeConge;
-import tn.bfpme.models.User;
 import tn.bfpme.services.ServiceTypeConge;
 import tn.bfpme.services.ServiceUserSolde;
 import tn.bfpme.services.ServiceUtilisateur;
@@ -47,6 +47,8 @@ public class AttributionSoldeController implements Initializable {
     private Label periodlabel, labelSolde;
     @FXML
     private Button btnSave, btnSaveEdit, btnCancel, Ajout_Solde, Supprimer_Solde, Modifier_Solde, btnRemoveFilter;
+    @FXML
+    private HBox buttonBox, saveCancelBox;
 
     private ObservableList<TypeConge> originalList;
     private FilteredList<TypeConge> filteredList;
@@ -81,17 +83,14 @@ public class AttributionSoldeController implements Initializable {
         Table_TypeConge.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> populateFields(newValue));
         formDisableOption(true);
-        SaveEditVisibleOption(false,false,false);
+        toggleButtonVisibility(true);
     }
-
 
     @FXML
     private void loadSoldeConge() {
         List<TypeConge> soldeCongeList = serviceTypeConge.getAllTypeConge();
         filteredList = new FilteredList<>(FXCollections.observableArrayList(soldeCongeList), p -> true);
         Table_TypeConge.setItems(filteredList);
-        // distributeExistingLeaveTypesToUsers();
-
     }
 
     @FXML
@@ -105,7 +104,27 @@ public class AttributionSoldeController implements Initializable {
     }
 
     @FXML
-    public void Save() {
+    public void SaveAjout() {
+
+        int idSolde = Integer.parseInt(ID_Solde.getText().trim());
+        String designation = Designation_Solde.getText().trim();
+        double pas = Double.parseDouble(Pas_Solde.getText().trim());
+        int totalDays = periodespinner.getValue();
+        int[] periods = new int[3]; // 0: years, 1: months, 2: days
+        splitPeriod(totalDays, periods);
+        boolean file = fileOuiRadioButton.isSelected();
+        if (Designation_Solde.getText().isEmpty() || Pas_Solde.getText().isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Champs requis non remplis", "Veuillez remplir toutes les informations nécessaires.");
+            return;
+        }
+        serviceTypeConge.updateTypeConge(idSolde, designation, pas, periods[2], periods[1], periods[0], file);
+        loadSoldeConge();
+        labelSolde.setText("Solde modifié.");
+        toggleButtonVisibility(true);
+    }
+
+    @FXML
+    void SaveEdit(ActionEvent event) {
         String designation = Designation_Solde.getText().trim();
         double pas = Double.parseDouble(Pas_Solde.getText().trim());
         int totalDays = periodespinner.getValue();
@@ -129,51 +148,38 @@ public class AttributionSoldeController implements Initializable {
     }
 
     @FXML
-    void SaveEdit(ActionEvent event) {
-        int idSolde = Integer.parseInt(ID_Solde.getText().trim());
-        String designation = Designation_Solde.getText().trim();
-        double pas = Double.parseDouble(Pas_Solde.getText().trim());
-        int totalDays = periodespinner.getValue();
-        int[] periods = new int[3]; // 0: years, 1: months, 2: days
-        splitPeriod(totalDays, periods);
-        boolean file = fileOuiRadioButton.isSelected();
-        if (Designation_Solde.getText().isEmpty() || Pas_Solde.getText().isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Champs requis non remplis", "Veuillez remplir toutes les informations nécessaires.");
-            return;
-        }
-        serviceTypeConge.updateTypeConge(idSolde, designation, pas, periods[2], periods[1], periods[0], file);
-        loadSoldeConge();
-        labelSolde.setText("Solde modifié.");
-    }
-
-    @FXML
     public void AjouterTypeButton() {
         formDisableOption(false);
         clearTextFields();
-        SaveEditVisibleOption(true, false, true);
-        crudDisableOption(true);
+        toggleButtonVisibility(false);
     }
 
     @FXML
     void Cancel(ActionEvent event) {
         formClear();
         formDisableOption(true);
-        SaveEditVisibleOption(false, false, false);
-        crudDisableOption(false);
+        toggleButtonVisibility(true);
     }
 
     @FXML
     public void ModifierTypeButton() {
+        TypeConge selected = Table_TypeConge.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showAlert(Alert.AlertType.WARNING, "Avertissement", "Aucun congé sélectionné", "Veuillez sélectionner un congé à modifier.");
+            return;
+        }
         formDisableOption(false);
-        clearTextFields();
-        SaveEditVisibleOption(false, true, true);
-        crudDisableOption(true);
+        toggleButtonVisibility(false);
     }
 
     @FXML
     public void SupprimerTypeButton() {
-        int idSolde = Integer.parseInt(ID_Solde.getText().trim());
-
+        TypeConge selected = Table_TypeConge.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showAlert(Alert.AlertType.WARNING, "Avertissement", "Aucun congé sélectionné", "Veuillez sélectionner un congé à supprimer.");
+            return;
+        }
+        int idSolde = selected.getIdTypeConge();
         serviceTypeConge.deleteTypeConge(idSolde);
         loadSoldeConge();
         labelSolde.setText("Solde supprimé.");
@@ -195,12 +201,6 @@ public class AttributionSoldeController implements Initializable {
                 distributeStmt.setInt(1, idSolde);
                 distributeStmt.executeUpdate();
             }
-            /*String updateUserSoldeQuery = "UPDATE user_Solde SET TotalSolde = TotalSolde + ? WHERE ID_TypeConge = ?";
-            try (PreparedStatement updateUserSoldeStmt = conn.prepareStatement(updateUserSoldeQuery)) {
-                updateUserSoldeStmt.setDouble(1, pas);
-                updateUserSoldeStmt.setInt(2, idSolde);
-                updateUserSoldeStmt.executeUpdate();
-            }*/
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -273,40 +273,8 @@ public class AttributionSoldeController implements Initializable {
         fileNonRadioButton.setSelected(false);
     }
 
-    private void SaveEditVisibleOption(boolean arg1, boolean arg2, boolean arg3) {
-        btnSave.setVisible(arg1);
-        btnSaveEdit.setVisible(arg2);
-        btnCancel.setVisible(arg3);
+    private void toggleButtonVisibility(boolean showCrud) {
+        buttonBox.setVisible(showCrud);
+        saveCancelBox.setVisible(!showCrud);
     }
-
-    private void crudDisableOption(boolean arg) {
-        Modifier_Solde.setDisable(arg);
-        Supprimer_Solde.setDisable(arg);
-        Ajout_Solde.setDisable(arg);
-    }
-    /*private void distributeExistingLeaveTypesToUsers() {
-        List<TypeConge> soldeCongeList = serviceTypeConge.getAllTypeConge();
-        try (Connection conn = MyDataBase.getInstance().getCnx()) {
-            for (TypeConge typeConge : soldeCongeList) {
-                int idSolde = typeConge.getIdTypeConge();
-                double pas = typeConge.getPas();
-
-                String distributeQuery = "INSERT INTO user_Solde (ID_User, ID_TypeConge, TotalSolde) SELECT ID_User, ?, 0 FROM user WHERE NOT EXISTS (SELECT 1 FROM user_Solde WHERE user_Solde.ID_User = user.ID_User AND user_Solde.ID_TypeConge = ?)";
-                try (PreparedStatement distributeStmt = conn.prepareStatement(distributeQuery)) {
-                    distributeStmt.setInt(1, idSolde);
-                    distributeStmt.setInt(2, idSolde);
-                    distributeStmt.executeUpdate();
-                }
-
-                String updateUserSoldeQuery = "UPDATE user_Solde SET TotalSolde = TotalSolde + ? WHERE ID_TypeConge = ?";
-                try (PreparedStatement updateUserSoldeStmt = conn.prepareStatement(updateUserSoldeQuery)) {
-                    updateUserSoldeStmt.setDouble(1, pas);
-                    updateUserSoldeStmt.setInt(2, idSolde);
-                    updateUserSoldeStmt.executeUpdate();
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }*/
 }
