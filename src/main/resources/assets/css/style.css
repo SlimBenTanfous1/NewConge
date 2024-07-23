@@ -255,8 +255,6 @@
     -fx-border-width: 1;
     -fx-border-radius: 5;
     -fx-cursor: hand;
-    -fx-font-family: "Roboto";
-    -fx-font-weight: bold;
 }
 .btn-secondary:hover {
     -fx-background-color: linear-gradient(#D88A1A, #E9A91F); /* Reverse the gradient for hover effect */
