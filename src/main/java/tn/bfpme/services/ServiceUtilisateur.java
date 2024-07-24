@@ -719,31 +719,32 @@ public class ServiceUtilisateur implements IUtilisateur {
 
     @Override
     public User getUserById(int userId) {
-        String query = "SELECT * FROM user WHERE ID_User=?";
-        try {
-            if (cnx == null || cnx.isClosed()) {
-                cnx = MyDataBase.getInstance().getCnx();
+        User user = null;
+        String query = "SELECT * FROM user WHERE ID_User = ?";
+        try (Connection connection = MyDataBase.getInstance().getCnx();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, userId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                user = new User();
+                user.setIdUser(resultSet.getInt("ID_User"));
+                user.setPrenom(resultSet.getString("Prenom"));
+                user.setNom(resultSet.getString("Nom"));
+                user.setEmail(resultSet.getString("Email"));
+                user.setMdp(resultSet.getString("MDP"));
+                user.setImage(resultSet.getString("Image"));
+
+                Date sqlDate = resultSet.getDate("Creation_Date");
+                if (sqlDate != null) {
+                    user.setCreationDate(sqlDate.toLocalDate());
+                } else {
+                    user.setCreationDate(null);
+                }
             }
-            PreparedStatement pst = cnx.prepareStatement(query);
-            pst.setInt(1, userId);
-            ResultSet rs = pst.executeQuery();
-            if (rs.next()) {
-                return new User(
-                        rs.getInt("ID_User"),
-                        rs.getString("Nom"),
-                        rs.getString("Prenom"),
-                        rs.getString("Email"),
-                        rs.getString("MDP"),
-                        rs.getString("Image"),
-                        rs.getInt("ID_Departement"),
-                        rs.getInt("ID_Manager"),
-                        rs.getDate("Creation_Date").toLocalDate()
-                );
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        return null;
+        return user;
     }
 
     @Override
