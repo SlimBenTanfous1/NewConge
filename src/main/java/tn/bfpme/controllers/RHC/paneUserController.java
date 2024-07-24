@@ -30,6 +30,7 @@ import tn.bfpme.utils.MyDataBase;
 import tn.bfpme.utils.SessionManager;
 
 import java.io.*;
+
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -47,7 +48,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class paneUserController implements Initializable {
-    public int state=0;
+    public int state = 0;
     @FXML
     private TextField Depart_field;
     @FXML
@@ -190,6 +191,7 @@ public class paneUserController implements Initializable {
     public HBox Hfirst;
     @FXML
     public Button upload;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         loadUsers();
@@ -232,8 +234,6 @@ public class paneUserController implements Initializable {
 
     private void hideSoldeFields() {
     }
-
-
 
     @FXML
     void SelecHierar(ActionEvent event) {
@@ -308,6 +308,7 @@ public class paneUserController implements Initializable {
             }
         }
     }
+
     private void handleRoleSelection(Role selectedRole) {
         try {
             List<Departement> departments;
@@ -323,8 +324,6 @@ public class paneUserController implements Initializable {
             showError("Une erreur s'est produite lors de la récupération des départements : " + e.getMessage());
         }
     }
-
-
 
     private void loadUsers1() {
         List<User> userList = userService.getAllUsers();
@@ -483,13 +482,11 @@ public class paneUserController implements Initializable {
         }
     }
 
-
-
     private void loadRoles3() {
         List<Role> roleList = roleService.getAllRoles();
         ObservableList<Role> roles = FXCollections.observableArrayList(roleList);
 
-        TreeItem<Role> root = new TreeItem<>(new Role(0, "Sans role parent", "",0)); // Adjust constructor as necessary
+        TreeItem<Role> root = new TreeItem<>(new Role(0, "Sans role parent", "", 0)); // Adjust constructor as necessary
         root.setExpanded(true);
         System.out.println("Root created.");
 
@@ -571,12 +568,10 @@ public class paneUserController implements Initializable {
         DeptparColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("parentDeptName"));
     }
 
-
     private boolean isCurrentUser(int userId, String email) {
         User user = UserS.getUserById(userId);
         return user != null && user.getEmail().equals(email);
     }
-
 
     @FXML
     public void User_Recherche(KeyEvent event) {
@@ -618,7 +613,6 @@ public class paneUserController implements Initializable {
         });
     }
 
-
     @FXML
     void rechercheUser1(ActionEvent event) {
         String searchText = searchFieldUser.getText().trim();
@@ -658,8 +652,6 @@ public class paneUserController implements Initializable {
                     role.getDescription().toLowerCase().contains(lowerCaseFilter);
         });
     }
-
-
 
     private List<UserSolde> getSoldeCongeByUserId(int userId) {
         List<UserSolde> soldeCongeList = new ArrayList<>();
@@ -736,8 +728,6 @@ public class paneUserController implements Initializable {
         loadUsers3();
     }
 
-
-
     @FXML
     private void handleRemoveUserAssignment() {
         Integer userId = getSelectedUserId();
@@ -779,8 +769,6 @@ public class paneUserController implements Initializable {
     }
 
 
-
-
     public Integer getSelectedUserId() {
         return selectedUser != null ? selectedUser.getIdUser() : null;
     }
@@ -804,7 +792,6 @@ public class paneUserController implements Initializable {
         alert.setContentText(message);
         alert.showAndWait();
     }
-
 
 
     @FXML
@@ -845,7 +832,7 @@ public class paneUserController implements Initializable {
                 Files.copy(selectedFile.toPath(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
                 imagePath = destinationPath.toString();
                 System.out.println("Image uploaded successfully: " + imagePath);
-                image_A.setText(fileName);
+                image_A.setText("src/main/resources/assets/imgs/"+fileName);
                 if (imagePath != null) {
                     try {
                         File file = new File(imagePath);
@@ -948,6 +935,7 @@ public class paneUserController implements Initializable {
             refreshUserContainers();
         });
     }
+
     private void refreshUserContainers() {
         UserContainers.getChildren().clear();
         int column = 0;
@@ -1125,6 +1113,7 @@ public class paneUserController implements Initializable {
         departListView.setItems(filteredDepartments);
 
     }
+
     @FXML
     private void TabAffectation(Event event) {
         if (TabAffectationid.isSelected()) {
@@ -1158,13 +1147,14 @@ public class paneUserController implements Initializable {
     public void ExporterExcel(ActionEvent actionEvent) {
 
     }
+
     private List<Departement> getRelatedDepartments(int roleId) throws SQLException {
         String query = "SELECT d.* FROM departement d JOIN role_departement rd ON d.ID_Departement = rd.ID_Departement WHERE rd.ID_Role = ?";
         List<Departement> departments = new ArrayList<>();
-        try  {
+        try {
             if (cnx == null || cnx.isClosed()) {
-            cnx = MyDataBase.getInstance().getCnx();
-        }
+                cnx = MyDataBase.getInstance().getCnx();
+            }
 
             PreparedStatement stmt = cnx.prepareStatement(query);
             stmt.setInt(1, roleId);
@@ -1183,6 +1173,7 @@ public class paneUserController implements Initializable {
         }
         return departments;
     }
+
     @FXML
     void modifier_user(ActionEvent event) {
         String Nom = nom_A.getText();
@@ -1208,9 +1199,10 @@ public class paneUserController implements Initializable {
             infolabel.setText("Email est invalide");
         }
     }
+
     @FXML
     void ajouter_user(ActionEvent actionEvent) {
-        state=1;
+        state = 1;
         ID_A.setDisable(true);
         email_A.setDisable(false);
         nom_A.setDisable(false);
@@ -1228,7 +1220,7 @@ public class paneUserController implements Initializable {
 
     @FXML
     void Enregistrer_user(ActionEvent event) {
-        if (state==1){
+        if (state == 1) {
             String nom = nom_A.getText();
             String prenom = Prenom_A.getText();
             String email = email_A.getText();
@@ -1257,26 +1249,26 @@ public class paneUserController implements Initializable {
         }*/
             reset();
 
-        } else if (state==2) {
+        } else if (state == 2) {
             String Nom = nom_A.getText();
             String Prenom = Prenom_A.getText();
             String Email = email_A.getText();
             String Mdp = MDP_A.getText();
             String Image = image_A.getText();
             /*if (Email.matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@(bfpme\\.tn|gmail\\.com)$")) {*/
-                int IdUser = Integer.parseInt(ID_A.getText());
-                try {
-                    if (!emailExistss(Email, IdUser) || isCurrentUser(IdUser, Email)) {
-                        User user = new User(IdUser, Nom, Prenom, Email, Mdp, Image);
-                        UserS.Update(user);
-                        infolabel.setText("Modification Effectuée");
-                    } else {
-                        infolabel.setText("Email déjà existe");
-                    }
-                } catch (SQLException e) {
-                    infolabel.setText("Erreur de base de données: " + e.getMessage());
-                    e.printStackTrace();
+            int IdUser = Integer.parseInt(ID_A.getText());
+            try {
+                if (!emailExistss(Email, IdUser) || isCurrentUser(IdUser, Email)) {
+                    User user = new User(IdUser, Nom, Prenom, Email, Mdp, Image);
+                    UserS.Update(user);
+                    infolabel.setText("Modification Effectuée");
+                } else {
+                    infolabel.setText("Email déjà existe");
                 }
+            } catch (SQLException e) {
+                infolabel.setText("Erreur de base de données: " + e.getMessage());
+                e.printStackTrace();
+            }
            /* } else {
                 infolabel.setText("Email est invalide");
             }*/
@@ -1285,6 +1277,7 @@ public class paneUserController implements Initializable {
 
 
     }
+
     @FXML
     void Annuler_user(ActionEvent event) {
         reset();
@@ -1295,6 +1288,7 @@ public class paneUserController implements Initializable {
         reset();
 
     }
+
     void reset() {
         ID_A.setText("");
         email_A.setText("");
@@ -1316,6 +1310,7 @@ public class paneUserController implements Initializable {
         Hfirst.setVisible(false);
         Hfirst.setDisable(true);
     }
+
     @FXML
     public void Listerefresh(Event event) {
         loadUsers();
