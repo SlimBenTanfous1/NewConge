@@ -1,15 +1,18 @@
 package tn.bfpme.controllers;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.shape.Circle;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import tn.bfpme.utils.SessionManager;
 import tn.bfpme.utils.StageManager;
@@ -93,7 +96,18 @@ public class SettingsController implements Initializable {
             Stage stage = new Stage();
             stage.setScene(new Scene(root));
             stage.setTitle("Gestion de Congés - Connection");
+            stage.setMaximized(true); // Ensure the stage is maximized
             stage.show();
+
+            // Ensure the stage is resized and repositioned after it has been shown
+            Platform.runLater(() -> {
+                Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
+                stage.setX(primaryScreenBounds.getMinX());
+                stage.setY(primaryScreenBounds.getMinY());
+                stage.setWidth(primaryScreenBounds.getWidth());
+                stage.setHeight(primaryScreenBounds.getHeight());
+            });
+
             StageManager.closeAllStages();
             StageManager.addStage(stage);
 
@@ -101,6 +115,7 @@ public class SettingsController implements Initializable {
             e.printStackTrace();
         }
     }
+
 
 
 

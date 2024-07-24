@@ -18,6 +18,7 @@ public class MainFX extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
     @Override
     public void start(Stage primaryStage) {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
@@ -30,11 +31,11 @@ public class MainFX extends Application {
             primaryStage.show();
             Platform.runLater(() -> {
                 primaryStage.setMaximized(true);
-                Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
+              /*  Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
                 primaryStage.setX(primaryScreenBounds.getMinX());
                 primaryStage.setY(primaryScreenBounds.getMinY());
                 primaryStage.setWidth(primaryScreenBounds.getWidth());
-                primaryStage.setHeight(primaryScreenBounds.getHeight());
+                primaryStage.setHeight(primaryScreenBounds.getHeight());*/
             });
             StageManager.addStage(primaryStage);
         } catch (IOException e) {

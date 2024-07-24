@@ -40,6 +40,7 @@ public class LoginController {
     private Image showPasswordImage;
     private Image hidePasswordImage;
 
+
     @FXML
     void initialize()   {
 
@@ -142,7 +143,7 @@ public class LoginController {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Profile");
-        stage.setMaximized(true);
+        //stage.setMaximized(true);
         stage.show();
         stage.toFront(); // Bring the stage to the front
         System.out.println("Setting stage to maximized in navigateToProfile");
