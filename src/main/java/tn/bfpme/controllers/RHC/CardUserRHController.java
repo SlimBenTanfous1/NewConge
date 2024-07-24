@@ -100,6 +100,17 @@ public class CardUserRHController {
                     System.err.println("Image file not found: " + imagePath);
                 }
             }
+            pUC.state=2;
+            pUC.Hfirst.setDisable(false);
+            pUC.Hfirst.setVisible(true);
+            pUC.adduserbtn.setDisable(true);
+            pUC.adduserbtn.setVisible(false);
+            pUC.ID_A.setDisable(true);
+            pUC.nom_A.setDisable(false);
+            pUC.Prenom_A.setDisable(false);
+            pUC.email_A.setDisable(false);
+            pUC.MDP_A.setDisable(false);
+
             FXMLLoader mainLoader = new FXMLLoader(getClass().getResource("/RH_Interface.fxml"));
             Parent mainRoot = mainLoader.load();
             RHController mainController = mainLoader.getController();

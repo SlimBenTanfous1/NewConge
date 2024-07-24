@@ -30,13 +30,13 @@
          <tabs>
             <Tab fx:id="TabGestionid" onSelectionChanged="#TabGestion" text="Géstion des utilisateurs">
                <content>
-                  <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="grad-bg" stylesheets="@assets/css/style.css">
+                  <AnchorPane onMouseClicked="#unselect" prefHeight="200.0" prefWidth="200.0" styleClass="grad-bg" stylesheets="@assets/css/style.css">
                      <children>
                         <HBox layoutX="28.0" layoutY="66.0" prefHeight="538.0" prefWidth="644.0" AnchorPane.bottomAnchor="84.0" AnchorPane.leftAnchor="28.0" AnchorPane.rightAnchor="559.0" AnchorPane.topAnchor="66.0">
                            <children>
                               <AnchorPane prefHeight="538.0" prefWidth="580.0" styleClass="paneRoundedCornders">
                                  <children>
-                                    <GridPane layoutX="64.0" layoutY="112.0" prefHeight="400.0" prefWidth="372.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="64.0" AnchorPane.rightAnchor="95.0" AnchorPane.topAnchor="112.0">
+                                    <GridPane layoutX="81.0" layoutY="39.0" prefHeight="400.0" prefWidth="372.0" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="81.0" AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="39.0">
                                        <columnConstraints>
                                           <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="167.0" minWidth="10.0" prefWidth="117.0" />
                                           <ColumnConstraints hgrow="SOMETIMES" maxWidth="269.0" minWidth="10.0" prefWidth="255.0" />
@@ -64,7 +64,7 @@
                                           <HBox alignment="CENTER" prefHeight="0.0" prefWidth="255.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
                                              <children>
                                                 <TextField fx:id="image_A" disable="true" editable="false" prefHeight="29.0" prefWidth="232.0" />
-                                                <Button maxHeight="29.0" minHeight="29.0" mnemonicParsing="false" onAction="#upload_image" prefHeight="29.0" styleClass="btn-primary">
+                                                <Button fx:id="upload" maxHeight="29.0" minHeight="29.0" mnemonicParsing="false" onAction="#upload_image" prefHeight="29.0" styleClass="btn-primary">
                                                    <graphic>
                                                       <ImageView fitHeight="29.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                                                          <image>
@@ -80,36 +80,38 @@
                                           </HBox>
                                        </children>
                                     </GridPane>
-                                    <ImageView fx:id="PDPimageHolder" fitHeight="98.0" fitWidth="98.0" layoutX="201.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="201.0" AnchorPane.rightAnchor="231.0" AnchorPane.topAnchor="14.0" />
+                                    <Button fx:id="adduserbtn" layoutX="209.0" layoutY="454.0" mnemonicParsing="false" onAction="#ajouter_user" prefHeight="56.0" prefWidth="116.0" styleClass="btn-primary" text="Ajouter">
+                                       <font>
+                                          <Font size="15.0" />
+                                       </font>
+                                    </Button>
+                                    <HBox fx:id="Hfirst" layoutX="147.0" layoutY="454.0" prefHeight="56.0" prefWidth="238.0">
+                                       <children>
+                                          <Button fx:id="Enregistrer" mnemonicParsing="false" onAction="#Enregistrer_user" prefHeight="56.0" prefWidth="100.0" text="Enregistrer">
+                                             <styleClass>
+                                                <String fx:value="FontSize-14" />
+                                                <String fx:value="btn-secondary" />
+                                                <String fx:value="btn-approver" />
+                                             </styleClass>
+                                          </Button>
+                                          <Separator orientation="VERTICAL" prefHeight="56.0" prefWidth="38.0" styleClass="seperator" />
+                                          <Button fx:id="Annuler" mnemonicParsing="false" onAction="#Annuler_user" prefHeight="56.0" prefWidth="100.0" text="Annuler">
+                                             <styleClass>
+                                                <String fx:value="FontSize-14" />
+                                                <String fx:value="btn-secondary" />
+                                                <String fx:value="btn-refuser" />
+                                             </styleClass>
+                                          </Button>
+                                       </children>
+                                    </HBox>
                                  </children>
                               </AnchorPane>
                            </children>
                         </HBox>
-                        <HBox alignment="CENTER_LEFT" layoutX="640.0" layoutY="476.0" prefHeight="54.0" prefWidth="361.0" AnchorPane.bottomAnchor="158.0" AnchorPane.leftAnchor="640.0" AnchorPane.rightAnchor="118.0">
-                           <children>
-                              <Button fx:id="adduserbtn" mnemonicParsing="false" onAction="#ajouter_user" prefHeight="56.0" prefWidth="116.0" styleClass="btn-primary" text="Ajouter">
-                                 <font>
-                                    <Font size="15.0" />
-                                 </font>
-                              </Button>
-                              <Separator orientation="VERTICAL" prefHeight="200.0" prefWidth="20.0" styleClass="seperator" />
-                              <Button mnemonicParsing="false" onAction="#modifier_user" prefHeight="56.0" prefWidth="116.0" styleClass="btn-primary" text="Modifier">
-                                 <font>
-                                    <Font size="15.0" />
-                                 </font>
-                              </Button>
-                              <Separator orientation="VERTICAL" prefHeight="200.0" prefWidth="20.0" styleClass="seperator" />
-                              <Button mnemonicParsing="false" onAction="#supprimer_user" prefHeight="56.0" prefWidth="116.0" styleClass="btn-primary" text="Supprimer">
-                                 <font>
-                                    <Font size="15.0" />
-                                 </font>
-                              </Button>
-                           </children>
-                        </HBox>
                         <Label fx:id="infolabel" layoutX="389.0" layoutY="20.0" prefHeight="29.0" prefWidth="342.0" AnchorPane.leftAnchor="389.0" AnchorPane.rightAnchor="388.0" AnchorPane.topAnchor="20.0" />
-                        <HBox layoutX="645.0" layoutY="66.0" prefHeight="289.0" prefWidth="333.0" AnchorPane.bottomAnchor="321.0" AnchorPane.leftAnchor="645.0" AnchorPane.rightAnchor="129.0" AnchorPane.topAnchor="66.0">
+                        <HBox layoutX="664.0" layoutY="303.0" prefHeight="289.0" prefWidth="333.0" AnchorPane.bottomAnchor="84.0" AnchorPane.leftAnchor="664.0" AnchorPane.rightAnchor="110.0" AnchorPane.topAnchor="303.0">
                            <children>
-                              <AnchorPane prefHeight="301.0" prefWidth="500.0" styleClass="paneRoundedCornders">
+                              <AnchorPane prefHeight="339.0" prefWidth="345.0" styleClass="paneRoundedCornders">
                                  <children>
                                     <ScrollPane layoutX="9.0" layoutY="9.0" prefHeight="289.0" prefWidth="333.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <content>
@@ -120,11 +122,12 @@
                               </AnchorPane>
                            </children>
                         </HBox>
+                        <ImageView fx:id="PDPimageHolder" fitHeight="191.0" fitWidth="206.0" layoutX="734.0" layoutY="66.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="734.0" AnchorPane.rightAnchor="179.0" AnchorPane.topAnchor="66.0" />
                      </children>
                   </AnchorPane>
                </content>
             </Tab>
-            <Tab text="Liste des utilisateurs">
+            <Tab onSelectionChanged="#Listerefresh" text="Liste des utilisateurs">
                <content>
                   <AnchorPane prefHeight="200.0" prefWidth="200.0">
                      <children>
