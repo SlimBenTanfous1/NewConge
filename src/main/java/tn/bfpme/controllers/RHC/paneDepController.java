@@ -12,10 +12,7 @@ import tn.bfpme.services.ServiceDepartement;
 import javafx.scene.layout.*;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class paneDepController implements Initializable {
     @FXML
@@ -227,8 +224,43 @@ public class paneDepController implements Initializable {
 
     private void addParentDepartmentComboBoxes(Departement department) {
         List<Departement> parentHierarchy = getParentHierarchy(department);
+        Collections.reverse(parentHierarchy);
         for (Departement parent : parentHierarchy) {
-            addSubDepartmentComboBox(parent.getIdDepartement());
+            ComboBox<Departement> subDeptComboBox = new ComboBox<>();
+            subDeptComboBox.setPrefHeight(31);
+            subDeptComboBox.setPrefWidth(443);
+            subDeptComboBox.setCellFactory(param -> new ListCell<Departement>() {
+                @Override
+                protected void updateItem(Departement item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null || item.getNom() == null) {
+                        setText(null);
+                    } else {
+                        setText(item.getNom());
+                    }
+                }
+            });
+            subDeptComboBox.setButtonCell(new ListCell<Departement>() {
+                @Override
+                protected void updateItem(Departement item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null || item.getNom() == null) {
+                        setText(null);
+                    } else {
+                        setText(item.getNom());
+                    }
+                }
+            });
+            subDeptComboBox.setItems(FXCollections.observableArrayList(depService.getDepItsParent(parent.getParentDept())));
+            subDeptComboBox.getSelectionModel().select(parent);
+            subDeptComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+                if (newSelection != null) {
+                    lastSelectedParent = newSelection;
+                    addSubDepartmentComboBox(newSelection.getIdDepartement());
+                }
+            });
+            comboBoxContainer.getChildren().add(subDeptComboBox);
+            lastSelectedComboBox = subDeptComboBox;
         }
     }
 
@@ -237,7 +269,7 @@ public class paneDepController implements Initializable {
         while (department != null && department.getParentDept() != 0) {
             department = depService.getDepartmentById(department.getParentDept());
             if (department != null) {
-                hierarchy.add(0, department); // Add to the start to maintain order from highest level to lowest
+                hierarchy.add(department);
             }
         }
         return hierarchy;
@@ -301,6 +333,7 @@ public class paneDepController implements Initializable {
     void reset() {
         departementListView.getSelectionModel().clearSelection();
         departementListView.setDisable(false);
+        comboBoxContainer.getChildren().clear();
         deptNameField.setText("");
         deptDescriptionField.setText("");
         deptDescriptionField.setDisable(true);
