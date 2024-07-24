@@ -10,6 +10,7 @@ import javafx.scene.input.MouseEvent;
 import tn.bfpme.models.Departement;
 import tn.bfpme.services.ServiceDepartement;
 import javafx.scene.layout.*;
+
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
@@ -27,22 +28,11 @@ public class paneDepController implements Initializable {
     private final ServiceDepartement depService = new ServiceDepartement();
     private RHController RHC;
     @FXML
-    private Button Update;
+    private Button Annuler,Enregistrer,Delete,Update,Add;
     @FXML
-    private Button Add;
-    @FXML
-    private Button Annuler;
-    @FXML
-    private Button Enregistrer;
+    private HBox Hfirst,Hsecond;
 
-    @FXML
-    private Button Delete;
-    @FXML
-    private HBox Hfirst;
-
-    @FXML
-    private HBox Hsecond;
-    private int state =0;
+    private int state = 0;
     private paneUserController PUC;
     private ComboBox<Departement> lastSelectedComboBox = null;
     private Departement lastSelectedParent = null;
@@ -89,7 +79,7 @@ public class paneDepController implements Initializable {
 
     @FXML
     private void handleAddDepartment() {
-        state=1;
+        state = 1;
         Hfirst.setVisible(false);
         Hfirst.setDisable(true);
         Hsecond.setDisable(false);
@@ -101,6 +91,7 @@ public class paneDepController implements Initializable {
         departementListView.setDisable(true);
 
     }
+
     private void showAlert(Alert.AlertType alertType, String title, String header, String content) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
@@ -111,7 +102,7 @@ public class paneDepController implements Initializable {
 
     @FXML
     private void handleEditDepartment() {
-        state=2;
+        state = 2;
         Hfirst.setVisible(false);
         Hfirst.setDisable(true);
         Hsecond.setDisable(false);
@@ -147,15 +138,15 @@ public class paneDepController implements Initializable {
         }
         reset();
     }
+
     @FXML
     void AnuulerDepart(ActionEvent event) {
-      reset();
-
+        reset();
     }
 
     @FXML
     void EnregistrerDepart(ActionEvent event) {
-        if (state==1) {
+        if (state == 1) {
             String name = deptNameField.getText();
             String description = deptDescriptionField.getText();
             if (deptNameField.getText().isEmpty() || deptDescriptionField.getText().isEmpty()) {
@@ -166,14 +157,13 @@ public class paneDepController implements Initializable {
             if (parent == null) {
                 depService.addDepartement2(name, description);
             } else {
-                depService.addDepartement(name, description, parent.getIdDepartement() != 0 ? parent.getIdDepartement() : 0, parent.getLevel()+1);
+                depService.addDepartement(name, description, parent.getIdDepartement() != 0 ? parent.getIdDepartement() : 0, parent.getLevel() + 1);
             }
             loadDepartments();
             reset();
 
-        }
-
-        else if (state==2) { Departement selectedDept = departementListView.getSelectionModel().getSelectedItem();
+        } else if (state == 2) {
+            Departement selectedDept = departementListView.getSelectionModel().getSelectedItem();
             if (selectedDept != null) {
                 String name = deptNameField.getText();
                 String description = deptDescriptionField.getText();
@@ -183,7 +173,7 @@ public class paneDepController implements Initializable {
             }
             reset();
         }
-        state=0;
+        state = 0;
     }
 
     protected void loadDepartments() {
@@ -289,7 +279,8 @@ public class paneDepController implements Initializable {
     void Unselect(MouseEvent event) {
         reset();
     }
-    void reset(){
+
+    void reset() {
         departementListView.getSelectionModel().clearSelection();
         departementListView.setDisable(false);
         deptNameField.setText("");

@@ -5,6 +5,7 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -41,9 +42,13 @@
                         <String fx:value="RobotoItalic" />
                      </styleClass>
                   </Label>
-            <HBox layoutX="583.0" layoutY="316.0" minHeight="167.0" minWidth="281.0" prefHeight="167.0" prefWidth="281.0" AnchorPane.leftAnchor="582.0" AnchorPane.rightAnchor="117.0" AnchorPane.topAnchor="315.0">
+            <HBox layoutX="584.0" layoutY="317.0" minHeight="167.0" minWidth="281.0" prefHeight="167.0" prefWidth="291.0" AnchorPane.leftAnchor="583.0" AnchorPane.rightAnchor="107.0" AnchorPane.topAnchor="316.0">
                <children>
-                        <VBox fx:id="comboBoxContainer" disable="true" minHeight="167.0" minWidth="281.0" prefHeight="167.0" prefWidth="443.0" spacing="12.0" styleClass="paneRoundedCornders" />
+                  <ScrollPane prefHeight="167.0" prefWidth="307.0">
+                     <content>
+                              <VBox fx:id="comboBoxContainer" disable="true" prefHeight="165.0" prefWidth="287.0" spacing="12.0" styleClass="paneRoundedCornders" />
+                     </content>
+                  </ScrollPane>
                </children>
             </HBox>
             <HBox layoutX="582.0" layoutY="276.0" minHeight="31.0" minWidth="281.0" prefHeight="31.0" prefWidth="281.0" AnchorPane.leftAnchor="582.0" AnchorPane.rightAnchor="116.0">

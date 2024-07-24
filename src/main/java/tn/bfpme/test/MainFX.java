@@ -25,18 +25,10 @@ public class MainFX extends Application {
             primaryStage.setTitle("Gestion de Congés - Connection");
             primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/assets/imgs/logo_bfpme.png")));
             primaryStage.setScene(scene);
-
-            // Set the primary stage to maximized before showing it
-            primaryStage.setMaximized(true);
             primaryStage.show();
-
-            // Add the stage to StageManager if applicable
             StageManager.addStage(primaryStage);
-
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
     }
-
-
 }
