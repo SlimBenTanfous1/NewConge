@@ -143,8 +143,9 @@ public class LoginController {
         stage.setScene(scene);
         stage.setTitle("Profile");
         stage.setMaximized(true);
-        System.out.println("Setting stage to maximized in navigateToProfile");
         stage.show();
+        stage.toFront(); // Bring the stage to the front
+        System.out.println("Setting stage to maximized in navigateToProfile");
         StageManager.addStage("Profile", stage);
 
     }
