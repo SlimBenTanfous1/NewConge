@@ -48,7 +48,8 @@ public class AttributionSoldeController implements Initializable {
     @FXML
     private Button btnSave, btnSaveEdit, btnCancel, Ajout_Solde, Supprimer_Solde, Modifier_Solde, btnRemoveFilter;
     @FXML
-    private HBox buttonBox, saveCancelBox;
+    private HBox Hfirst, HEnrgBox;
+    private int state = 0;
 
     private ObservableList<TypeConge> originalList;
     private FilteredList<TypeConge> filteredList;
@@ -105,26 +106,6 @@ public class AttributionSoldeController implements Initializable {
 
     @FXML
     public void SaveAjout() {
-
-        int idSolde = Integer.parseInt(ID_Solde.getText().trim());
-        String designation = Designation_Solde.getText().trim();
-        double pas = Double.parseDouble(Pas_Solde.getText().trim());
-        int totalDays = periodespinner.getValue();
-        int[] periods = new int[3]; // 0: years, 1: months, 2: days
-        splitPeriod(totalDays, periods);
-        boolean file = fileOuiRadioButton.isSelected();
-        if (Designation_Solde.getText().isEmpty() || Pas_Solde.getText().isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Champs requis non remplis", "Veuillez remplir toutes les informations nécessaires.");
-            return;
-        }
-        serviceTypeConge.updateTypeConge(idSolde, designation, pas, periods[2], periods[1], periods[0], file);
-        loadSoldeConge();
-        labelSolde.setText("Solde modifié.");
-        toggleButtonVisibility(true);
-    }
-
-    @FXML
-    void SaveEdit(ActionEvent event) {
         String designation = Designation_Solde.getText().trim();
         double pas = Double.parseDouble(Pas_Solde.getText().trim());
         int totalDays = periodespinner.getValue();
@@ -143,12 +124,31 @@ public class AttributionSoldeController implements Initializable {
         loadSoldeConge();
         distributeNewLeaveTypeToUsers(designation);
         labelSolde.setText("Type de congé ajouté.");
-        btnSave.setVisible(false);
-        btnSaveEdit.setVisible(false);
+        toggleButtonVisibility(true);
+    }
+
+    @FXML
+    public void SaveEdit(ActionEvent event) {
+        int idSolde = Integer.parseInt(ID_Solde.getText().trim());
+        String designation = Designation_Solde.getText().trim();
+        double pas = Double.parseDouble(Pas_Solde.getText().trim());
+        int totalDays = periodespinner.getValue();
+        int[] periods = new int[3]; // 0: years, 1: months, 2: days
+        splitPeriod(totalDays, periods);
+        boolean file = fileOuiRadioButton.isSelected();
+        if (Designation_Solde.getText().isEmpty() || Pas_Solde.getText().isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Champs requis non remplis", "Veuillez remplir toutes les informations nécessaires.");
+            return;
+        }
+        serviceTypeConge.updateTypeConge(idSolde, designation, pas, periods[2], periods[1], periods[0], file);
+        loadSoldeConge();
+        labelSolde.setText("Solde modifié.");
+        toggleButtonVisibility(true);
     }
 
     @FXML
     public void AjouterTypeButton() {
+        state = 1;
         formDisableOption(false);
         clearTextFields();
         toggleButtonVisibility(false);
@@ -156,9 +156,7 @@ public class AttributionSoldeController implements Initializable {
 
     @FXML
     void Cancel(ActionEvent event) {
-        formClear();
-        formDisableOption(true);
-        toggleButtonVisibility(true);
+        reset();
     }
 
     @FXML
@@ -168,6 +166,7 @@ public class AttributionSoldeController implements Initializable {
             showAlert(Alert.AlertType.WARNING, "Avertissement", "Aucun congé sélectionné", "Veuillez sélectionner un congé à modifier.");
             return;
         }
+        state = 2;
         formDisableOption(false);
         toggleButtonVisibility(false);
     }
@@ -274,7 +273,26 @@ public class AttributionSoldeController implements Initializable {
     }
 
     private void toggleButtonVisibility(boolean showCrud) {
-        buttonBox.setVisible(showCrud);
-        saveCancelBox.setVisible(!showCrud);
+        Hfirst.setVisible(showCrud);
+        Hfirst.setDisable(!showCrud);
+        HEnrgBox.setVisible(!showCrud);
+        HEnrgBox.setDisable(showCrud);
+    }
+
+    private void reset() {
+        Table_TypeConge.getSelectionModel().clearSelection();
+        Table_TypeConge.setDisable(false);
+        clearTextFields();
+        formDisableOption(true);
+        toggleButtonVisibility(true);
+    }
+
+    public void SaveButton(ActionEvent actionEvent) {
+        if (state == 1) {
+            SaveAjout();
+        } else if (state == 2) {
+            SaveEdit(actionEvent);
+        }
+        state = 0;
     }
 }
