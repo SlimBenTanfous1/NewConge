@@ -10,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.InputMethodEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import tn.bfpme.models.EmailsTemplates;
 import tn.bfpme.models.Role;
 import tn.bfpme.models.User;
@@ -18,6 +19,7 @@ import tn.bfpme.services.ServiceRole;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
@@ -30,8 +32,25 @@ public class paneEmailTempController implements Initializable {
     private TextField RechercheTemp;
     @FXML
     private TextField objectTF;
+
     @FXML
-    private Button btnSave, btnSaveEdit, btnCancel;
+    private Button Add;
+    @FXML
+    private Button Enregistrer;
+    private int state =0;
+
+    @FXML
+    private Button Annuler;
+    @FXML
+    private Button Update;
+    @FXML
+    private Button Delete;
+
+    @FXML
+    private HBox Hfirst;
+
+    @FXML
+    private HBox Hsecond;
 
 
     private final ServiceEmailTemp emailtempService = new ServiceEmailTemp();
@@ -40,20 +59,30 @@ public class paneEmailTempController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Load();
-        btnSave.setVisible(false);
-        btnCancel.setVisible(false);
-        btnSaveEdit.setVisible(false);
+        RechercheTemp.setDisable(false);
+        RechercheTemp.setText("");
         MessageTF.setDisable(true);
         objectTF.setDisable(true);
+        Add.setDisable(false);
+        Update.setDisable(true);
+        Delete.setDisable(true);
+        Hsecond.setDisable(true);
+        Hsecond.setVisible(false);
+        ObjListView.setDisable(false);
+        Hfirst.setVisible(true);
+        Hfirst.setDisable(false);
         ObjListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 objectTF.setText(newValue.getObject());
                 MessageTF.setText(newValue.getMessage());
                 objectTF.setDisable(true);
                 MessageTF.setDisable(true);
-                btnSave.setVisible(false);
-                btnSaveEdit.setVisible(false);
-                btnCancel.setVisible(false);
+                RechercheTemp.setDisable(false);
+                ObjListView.setDisable(false);
+                Add.setDisable(true);
+                Update.setDisable(false);
+                Delete.setDisable(false);
+
             }
         });
         RechercheTemp.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -90,69 +119,30 @@ public class paneEmailTempController implements Initializable {
     }
 
     @FXML
-    void Save(ActionEvent event) {
-        String obj = objectTF.getText();
-        String msg = MessageTF.getText();
-        if (MessageTF.getText().isEmpty() || objectTF.getText().isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Champs requis non remplis", "Veuillez remplir toutes les informations nécessaires.");
-            return;
-        }
-        emailtempService.AddEmailTemp(obj, msg);
-        Load();
-        btnSave.setVisible(false);
-    }
-
-    @FXML
-    void SaveEdit(ActionEvent event) {
-        EmailsTemplates selectedEmailTemp = ObjListView.getSelectionModel().getSelectedItem();
-        String obj = objectTF.getText();
-        String msg = MessageTF.getText();
-        if (MessageTF.getText().isEmpty() || objectTF.getText().isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Champs requis non remplis", "Veuillez remplir toutes les informations nécessaires.");
-            return;
-        }
-        emailtempService.UpdateEmailTemp(selectedEmailTemp.getId_Email(), obj, msg);
-        Load();
-        btnSaveEdit.setVisible(false);
-    }
-
-    @FXML
-    void Cancel(ActionEvent event) {
-        objectTF.clear();
-        MessageTF.clear();
-        objectTF.setDisable(true);
-        MessageTF.setDisable(true);
-        btnCancel.setVisible(false);
-        btnSaveEdit.setVisible(false);
-        btnSave.setVisible(false);
-    }
-
-    @FXML
     void AjouterTemp(ActionEvent event) {
+        state=1;
+        RechercheTemp.setDisable(true);
+        Hfirst.setVisible(false);
+        Hfirst.setDisable(true);
+        Hsecond.setDisable(false);
+        Hsecond.setVisible(true);
         objectTF.setDisable(false);
         MessageTF.setDisable(false);
-        objectTF.clear();
-        MessageTF.clear();
-        btnSave.setVisible(true);
-        btnCancel.setVisible(true);
-        btnSaveEdit.setVisible(false);
+        ObjListView.setDisable(true);
     }
 
     @FXML
     void ModifierTemp(ActionEvent event) {
+        state=2;
+        RechercheTemp.setDisable(true);
+        Hfirst.setVisible(false);
+        Hfirst.setDisable(true);
+        Hsecond.setDisable(false);
+        Hsecond.setVisible(true);
         objectTF.setDisable(false);
         MessageTF.setDisable(false);
-        btnSaveEdit.setVisible(true);
-        btnCancel.setVisible(true);
-        btnSave.setVisible(false);
+        ObjListView.setDisable(true);
 
-    }
-    @FXML
-    void Deselect(MouseEvent event) {
-        objectTF.clear();
-        MessageTF.clear();
-        objectTF.setDisable(true);
-        MessageTF.setDisable(true);
     }
     @FXML
     void EmailTempRecherche(ActionEvent actionEvent) {
@@ -167,11 +157,25 @@ public class paneEmailTempController implements Initializable {
 
     @FXML
     void SupprimerTemp(ActionEvent event) {
-        EmailsTemplates selectedEmailTemp = ObjListView.getSelectionModel().getSelectedItem();
-        if (selectedEmailTemp != null) {
-            emailtempService.DeleteEmailTelp(selectedEmailTemp.getId_Email());
-            Load();
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Êtes vous sûrs?");
+        alert.setHeaderText("Êtes-vous certain de vouloir supprimer ce modèle de correspondance ?");
+        ButtonType Oui = new ButtonType("Oui");
+        ButtonType Non = new ButtonType("Non");
+        alert.getButtonTypes().setAll(Oui, Non);
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == Oui) {
+            try {
+                EmailsTemplates selectedEmailTemp = ObjListView.getSelectionModel().getSelectedItem();
+                if (selectedEmailTemp != null) {
+                    emailtempService.DeleteEmailTelp(selectedEmailTemp.getId_Email());
+                    Load();
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
+        reset1();
     }
 
     protected void showError(String message) {
@@ -188,6 +192,60 @@ public class paneEmailTempController implements Initializable {
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+    @FXML
+    void AnnulerEmail(ActionEvent event) {
+        reset1();
+
+    }
+
+    @FXML
+    void EnregistrerEmail(ActionEvent event) {
+        if (state==1){
+            String obj = objectTF.getText();
+            String msg = MessageTF.getText();
+            if (MessageTF.getText().isEmpty() || objectTF.getText().isEmpty()) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Champs requis non remplis", "Veuillez remplir toutes les informations nécessaires.");
+                return;
+            }
+            emailtempService.AddEmailTemp(obj, msg);
+            Load();
+            reset1();
+        } else if (state==2) {
+            EmailsTemplates selectedEmailTemp = ObjListView.getSelectionModel().getSelectedItem();
+            String obj = objectTF.getText();
+            String msg = MessageTF.getText();
+            if (MessageTF.getText().isEmpty() || objectTF.getText().isEmpty()) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Champs requis non remplis", "Veuillez remplir toutes les informations nécessaires.");
+                return;
+            }
+            emailtempService.UpdateEmailTemp(selectedEmailTemp.getId_Email(), obj, msg);
+            Load();
+            reset1();
+
+        }
+
+    }
+    @FXML
+    void Deselect(MouseEvent event) {
+       reset1();
+    }
+    void reset1(){
+        ObjListView.getSelectionModel().clearSelection();
+        ObjListView.setDisable(false);
+        objectTF.setText("");
+        MessageTF.setText("");
+        MessageTF.setDisable(true);
+        objectTF.setDisable(true);
+        RechercheTemp.setDisable(false);
+        RechercheTemp.setText("");
+        Add.setDisable(false);
+        Update.setDisable(true);
+        Delete.setDisable(true);
+        Hfirst.setVisible(true);
+        Hfirst.setDisable(false);
+        Hsecond.setDisable(true);
+        Hsecond.setVisible(false);
     }
 
 }
