@@ -333,6 +333,7 @@ public class paneDepController implements Initializable {
     void reset() {
         departementListView.getSelectionModel().clearSelection();
         departementListView.setDisable(false);
+        parentDeptComboBox.getSelectionModel().clearSelection();
         comboBoxContainer.getChildren().clear();
         deptNameField.setText("");
         deptDescriptionField.setText("");
