@@ -15,7 +15,9 @@ import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -45,6 +47,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class paneUserController implements Initializable {
+    public int state=0;
     @FXML
     private TextField Depart_field;
     @FXML
@@ -151,7 +154,7 @@ public class paneUserController implements Initializable {
     private Pane UserPane1;
 
     @FXML
-    private Button removeFilterButton, adduserbtn;
+    public Button removeFilterButton, adduserbtn;
 
     @FXML
     private Tab TabAffectationid;
@@ -179,7 +182,14 @@ public class paneUserController implements Initializable {
 
 
     ObservableList<String> HierarchieList = FXCollections.observableArrayList("Utilisateurs", "Départements");
-
+    @FXML
+    public Button Annuler;
+    @FXML
+    public Button Enregistrer;
+    @FXML
+    public HBox Hfirst;
+    @FXML
+    public Button upload;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         loadUsers();
@@ -795,65 +805,7 @@ public class paneUserController implements Initializable {
         alert.showAndWait();
     }
 
-    @FXML
-    void ajouter_user(ActionEvent actionEvent) {
-        String nom = nom_A.getText();
-        String prenom = Prenom_A.getText();
-        String email = email_A.getText();
-        String mdp = MDP_A.getText();
-        String image = image_A.getText();
 
-        /*if (email.matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@(bfpme\\.tn|gmail\\.com)$")) {*/
-            try {
-                if (!emailExists(email)) {
-                    User newUser = new User(0, nom, prenom, email, mdp, image, LocalDate.now());
-                    UserS.AddUser_RH(newUser);
-                    int newUserId = UserS.getLastInsertedUserId();
-                    List<TypeConge> typeConges = serviceTypeConge.getAllTypeConge();
-                    for (TypeConge typeConge : typeConges) {
-                        serviceUserSolde.addUserSolde(newUserId, typeConge.getIdTypeConge(), 0.0);
-                    }
-                    infolabel.setText("Ajout Effectué");
-                } else {
-                    infolabel.setText("Email déjà existe");
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-       /* } else {
-            infolabel.setText("Email est invalide");
-        }*/
-    }
-
-    @FXML
-    void modifier_user(ActionEvent event) {
-        String Nom = nom_A.getText();
-        String Prenom = Prenom_A.getText();
-        String Email = email_A.getText();
-        String Mdp = MDP_A.getText();
-        String Image = image_A.getText();
-        /*int solde_annuel = parseIntOrZero(S_Ann.getText());
-        int solde_maladie = parseIntOrZero(S_mal.getText());
-        int solde_exceptionnel = parseIntOrZero(S_exc.getText());
-        int solde_maternite = parseIntOrZero(S_mat.getText());*/
-        if (Email.matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@(bfpme\\.tn|gmail\\.com)$")) {
-            int IdUser = Integer.parseInt(ID_A.getText());
-            try {
-                if (!emailExistss(Email, IdUser) || isCurrentUser(IdUser, Email)) {
-                    User user = new User(IdUser, Nom, Prenom, Email, Mdp, Image);
-                    UserS.Update(user);
-                    infolabel.setText("Modification Effectuée");
-                } else {
-                    infolabel.setText("Email déjà existe");
-                }
-            } catch (SQLException e) {
-                infolabel.setText("Erreur de base de données: " + e.getMessage());
-                e.printStackTrace();
-            }
-        } else {
-            infolabel.setText("Email est invalide");
-        }
-    }
 
     @FXML
     void supprimer_user(ActionEvent event) {
@@ -1133,6 +1085,7 @@ public class paneUserController implements Initializable {
     }
 
     public void TabGestion(Event event) {
+        reset();
     }
 
 
@@ -1230,4 +1183,142 @@ public class paneUserController implements Initializable {
         }
         return departments;
     }
+    @FXML
+    void modifier_user(ActionEvent event) {
+        String Nom = nom_A.getText();
+        String Prenom = Prenom_A.getText();
+        String Email = email_A.getText();
+        String Mdp = MDP_A.getText();
+        String Image = image_A.getText();
+        if (Email.matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@(bfpme\\.tn|gmail\\.com)$")) {
+            int IdUser = Integer.parseInt(ID_A.getText());
+            try {
+                if (!emailExistss(Email, IdUser) || isCurrentUser(IdUser, Email)) {
+                    User user = new User(IdUser, Nom, Prenom, Email, Mdp, Image);
+                    UserS.Update(user);
+                    infolabel.setText("Modification Effectuée");
+                } else {
+                    infolabel.setText("Email déjà existe");
+                }
+            } catch (SQLException e) {
+                infolabel.setText("Erreur de base de données: " + e.getMessage());
+                e.printStackTrace();
+            }
+        } else {
+            infolabel.setText("Email est invalide");
+        }
+    }
+    @FXML
+    void ajouter_user(ActionEvent actionEvent) {
+        state=1;
+        ID_A.setDisable(true);
+        email_A.setDisable(false);
+        nom_A.setDisable(false);
+        Prenom_A.setDisable(false);
+        PDPimageHolder.setDisable(false);
+        image_A.setDisable(true);
+        MDP_A.setDisable(false);
+        upload.setDisable(false);
+        adduserbtn.setVisible(false);
+        adduserbtn.setDisable(true);
+        Hfirst.setVisible(true);
+        Hfirst.setDisable(false);
+
+    }
+
+    @FXML
+    void Enregistrer_user(ActionEvent event) {
+        if (state==1){
+            String nom = nom_A.getText();
+            String prenom = Prenom_A.getText();
+            String email = email_A.getText();
+            String mdp = MDP_A.getText();
+            String image = image_A.getText();
+
+            /*if (email.matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@(bfpme\\.tn|gmail\\.com)$")) {*/
+            try {
+                if (!emailExists(email)) {
+                    User newUser = new User(0, nom, prenom, email, mdp, image, LocalDate.now());
+                    UserS.AddUser_RH(newUser);
+                    int newUserId = UserS.getLastInsertedUserId();
+                    List<TypeConge> typeConges = serviceTypeConge.getAllTypeConge();
+                    for (TypeConge typeConge : typeConges) {
+                        serviceUserSolde.addUserSolde(newUserId, typeConge.getIdTypeConge(), 0.0);
+                    }
+                    infolabel.setText("Ajout Effectué");
+                } else {
+                    infolabel.setText("Email déjà existe");
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+       /* } else {
+            infolabel.setText("Email est invalide");
+        }*/
+            reset();
+
+        } else if (state==2) {
+            String Nom = nom_A.getText();
+            String Prenom = Prenom_A.getText();
+            String Email = email_A.getText();
+            String Mdp = MDP_A.getText();
+            String Image = image_A.getText();
+            /*if (Email.matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@(bfpme\\.tn|gmail\\.com)$")) {*/
+                int IdUser = Integer.parseInt(ID_A.getText());
+                try {
+                    if (!emailExistss(Email, IdUser) || isCurrentUser(IdUser, Email)) {
+                        User user = new User(IdUser, Nom, Prenom, Email, Mdp, Image);
+                        UserS.Update(user);
+                        infolabel.setText("Modification Effectuée");
+                    } else {
+                        infolabel.setText("Email déjà existe");
+                    }
+                } catch (SQLException e) {
+                    infolabel.setText("Erreur de base de données: " + e.getMessage());
+                    e.printStackTrace();
+                }
+           /* } else {
+                infolabel.setText("Email est invalide");
+            }*/
+
+        }
+
+
+    }
+    @FXML
+    void Annuler_user(ActionEvent event) {
+        reset();
+    }
+
+    @FXML
+    void unselect(MouseEvent event) {
+        reset();
+
+    }
+    void reset() {
+        ID_A.setText("");
+        email_A.setText("");
+        nom_A.setText("");
+        Prenom_A.setText("");
+        PDPimageHolder.setImage(null);
+        image_A.setText("");
+        MDP_A.setText("");
+        ID_A.setDisable(true);
+        email_A.setDisable(true);
+        nom_A.setDisable(true);
+        Prenom_A.setDisable(true);
+        PDPimageHolder.setDisable(true);
+        image_A.setDisable(true);
+        MDP_A.setDisable(true);
+        upload.setDisable(true);
+        adduserbtn.setVisible(true);
+        adduserbtn.setDisable(false);
+        Hfirst.setVisible(false);
+        Hfirst.setDisable(true);
+    }
+    @FXML
+    public void Listerefresh(Event event) {
+        loadUsers();
+    }
+
 }

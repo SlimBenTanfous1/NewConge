@@ -789,17 +789,18 @@ public class ServiceUtilisateur implements IUtilisateur {
 
     @Override
     public void Update(User user) {
-        String query = "UPDATE user SET Nom=?, Prenom=?, Email=?, MDP=?, Image=?, ID_Departement=?, ID_Manager=? WHERE ID_User=?";
+        String query = "UPDATE user SET Nom=?, Prenom=?, Email=?, MDP=?, Image=? WHERE ID_User=?";
         try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
             PreparedStatement pst = cnx.prepareStatement(query);
             pst.setString(1, user.getNom());
             pst.setString(2, user.getPrenom());
             pst.setString(3, user.getEmail());
             pst.setString(4, user.getMdp());
             pst.setString(5, user.getImage());
-            pst.setInt(6, user.getIdDepartement());
-            pst.setInt(7, user.getIdManager());
-            pst.setInt(8, user.getIdUser());
+            pst.setInt(6, user.getIdUser());
             pst.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace();
