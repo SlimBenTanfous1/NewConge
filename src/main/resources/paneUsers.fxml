@@ -80,12 +80,16 @@
                                           </HBox>
                                        </children>
                                     </GridPane>
-                                    <Button fx:id="adduserbtn" layoutX="209.0" layoutY="454.0" mnemonicParsing="false" onAction="#ajouter_user" prefHeight="56.0" prefWidth="116.0" styleClass="btn-primary" text="Ajouter">
-                                       <font>
-                                          <Font size="15.0" />
-                                       </font>
-                                    </Button>
-                                    <HBox fx:id="Hfirst" layoutX="147.0" layoutY="454.0" prefHeight="56.0" prefWidth="238.0">
+                                    <HBox alignment="CENTER" layoutX="200.0" layoutY="443.0" AnchorPane.bottomAnchor="28.0" AnchorPane.leftAnchor="209.0" AnchorPane.rightAnchor="206.0">
+                                       <children>
+                                          <Button fx:id="adduserbtn" mnemonicParsing="false" onAction="#ajouter_user" prefHeight="56.0" prefWidth="116.0" styleClass="btn-primary" text="Ajouter">
+                                             <font>
+                                                <Font size="15.0" />
+                                             </font>
+                                          </Button>
+                                       </children>
+                                    </HBox>
+                                    <HBox fx:id="Hfirst" layoutX="147.0" layoutY="454.0" prefHeight="56.0" prefWidth="238.0" AnchorPane.bottomAnchor="28.0" AnchorPane.leftAnchor="146.0" AnchorPane.rightAnchor="147.0">
                                        <children>
                                           <Button fx:id="Enregistrer" mnemonicParsing="false" onAction="#Enregistrer_user" prefHeight="56.0" prefWidth="100.0" text="Enregistrer">
                                              <styleClass>
