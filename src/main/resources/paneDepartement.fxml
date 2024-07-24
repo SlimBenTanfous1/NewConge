@@ -24,7 +24,7 @@
                               <String fx:value="RobotoBlackItalic" />
                            </styleClass>
                         </Label>
-                        <ListView fx:id="departementListView" prefHeight="727.0" prefWidth="315.0" />
+                        <ListView fx:id="departementListView" disable="true" prefHeight="727.0" prefWidth="315.0" />
                </children>
             </VBox>
                   <TextField fx:id="deptNameField" disable="true" layoutX="582.0" layoutY="82.0" prefHeight="29.0" prefWidth="281.0" AnchorPane.leftAnchor="583.0" AnchorPane.rightAnchor="117.0" />
@@ -51,7 +51,7 @@
                         <ComboBox fx:id="parentDeptComboBox" disable="true" prefHeight="31.0" prefWidth="443.0" promptText="Selectionner departement parent" />
                </children>
             </HBox>
-                  <HBox fx:id="Hfirst" alignment="CENTER" layoutX="582.0" layoutY="507.0" prefHeight="38.0" prefWidth="281.0" spacing="10">
+                  <HBox fx:id="Hfirst" alignment="CENTER" disable="true" layoutX="582.0" layoutY="507.0" prefHeight="38.0" prefWidth="281.0" spacing="10">
                      <children>
                         <Button fx:id="Add" alignment="CENTER" disable="true" onAction="#handleAddDepartment" prefHeight="41.0" prefWidth="87.0" text="Ajouter">
                            <styleClass>
@@ -75,7 +75,7 @@
                   </HBox>
             <HBox fx:id="Hsecond" disable="true" layoutX="614.0" layoutY="507.0" prefHeight="38.0" prefWidth="218.0" visible="false">
                <children>
-                  <Button fx:id="Enregistrer" mnemonicParsing="false" onAction="#EnregistrerDepart" prefHeight="38.0" prefWidth="95.0" text="Enregistrer">
+                  <Button fx:id="Enregistrer" disable="true" mnemonicParsing="false" onAction="#EnregistrerDepart" prefHeight="38.0" prefWidth="95.0" text="Enregistrer">
                      <styleClass>
                         <String fx:value="btn-secondary" />
                         <String fx:value="btn-approver" />
@@ -83,7 +83,7 @@
                      </styleClass>
                   </Button>
                   <Separator orientation="VERTICAL" prefHeight="38.0" prefWidth="27.0" styleClass="seperator" />
-                  <Button fx:id="Annuler" mnemonicParsing="false" onAction="#AnuulerDepart" prefHeight="38.0" prefWidth="95.0" text="Annuler">
+                  <Button fx:id="Annuler" disable="true" mnemonicParsing="false" onAction="#AnuulerDepart" prefHeight="38.0" prefWidth="95.0" text="Annuler">
                      <styleClass>
                         <String fx:value="btn-secondary" />
                         <String fx:value="btn-refuser" />

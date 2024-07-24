@@ -128,7 +128,7 @@ public class paneDepController implements Initializable {
     private void handleDeleteDepartment() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Êtes vous sûrs?");
-        alert.setHeaderText("Êtes-vous certain de vouloir rejeter cette demande ?");
+        alert.setHeaderText("Êtes-vous certain de vouloir supprimer ce département ?");
         ButtonType Oui = new ButtonType("Oui");
         ButtonType Non = new ButtonType("Non");
         alert.getButtonTypes().setAll(Oui, Non);
