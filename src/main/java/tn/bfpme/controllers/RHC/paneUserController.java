@@ -1280,7 +1280,7 @@ public class paneUserController implements Initializable {
            /* } else {
                 infolabel.setText("Email est invalide");
             }*/
-
+            reset();
         }
 
 
