@@ -284,7 +284,7 @@ public class paneUserController implements Initializable {
             HBox soldeRow = new HBox(10); // Horizontal box with spacing
             Label congeTypeLabel = new Label(solde.getDesignation());
             TextField soldeField = new TextField(String.valueOf(solde.getTotalSolde()));
-            soldeField.setEditable(false); // Make the TextField non-editable
+            soldeField.setEditable(true); // Make the TextField editable
             soldeRow.getChildren().addAll(congeTypeLabel, soldeField);
             CongeVbox.getChildren().add(soldeRow);
         }
