@@ -21,6 +21,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class AttributionSoldeController implements Initializable {
@@ -178,11 +179,21 @@ public class AttributionSoldeController implements Initializable {
             showAlert(Alert.AlertType.WARNING, "Avertissement", "Aucun congé sélectionné", "Veuillez sélectionner un congé à supprimer.");
             return;
         }
-        int idSolde = selected.getIdTypeConge();
-        serviceTypeConge.deleteTypeConge(idSolde);
-        loadSoldeConge();
-        labelSolde.setText("Solde supprimé.");
-        clearTextFields(); // Clear text fields after deletion
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Êtes-vous sûr?");
+        alert.setHeaderText("Confirmation de la suppression");
+        alert.setContentText("Êtes-vous sûr de vouloir supprimer ce type de congé?");
+        ButtonType oui = new ButtonType("Oui");
+        ButtonType non = new ButtonType("Non");
+        alert.getButtonTypes().setAll(oui, non);
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == oui) {
+            int idSolde = selected.getIdTypeConge();
+            serviceTypeConge.deleteTypeConge(idSolde);
+            loadSoldeConge();
+            labelSolde.setText("Solde supprimé.");
+            clearTextFields(); // Clear text fields after deletion
+        }
     }
 
     @FXML
