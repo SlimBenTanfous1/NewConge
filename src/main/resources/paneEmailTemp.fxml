@@ -73,7 +73,7 @@
                </styleClass>
             </Label>
             <TextArea fx:id="MessageTF" layoutX="380.0" layoutY="110.0" prefHeight="396.0" prefWidth="562.0" wrapText="true" AnchorPane.bottomAnchor="90.0" AnchorPane.leftAnchor="380.0" AnchorPane.rightAnchor="37.0" AnchorPane.topAnchor="110.0" />
-            <HBox fx:id="Hsecond" layoutX="378.0" layoutY="534.0" prefHeight="37.0" prefWidth="224.0">
+            <HBox fx:id="Hsecond" alignment="CENTER" layoutX="378.0" layoutY="534.0" prefHeight="37.0" prefWidth="224.0" AnchorPane.bottomAnchor="26.0" AnchorPane.leftAnchor="377.0" AnchorPane.rightAnchor="378.0">
                <children>
                   <Button fx:id="Enregistrer" mnemonicParsing="false" onAction="#EnregistrerEmail" prefHeight="38.0" prefWidth="95.0" text="Enregistrer">
                      <styleClass>
