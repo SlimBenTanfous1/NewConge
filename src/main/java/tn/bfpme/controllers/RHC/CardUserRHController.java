@@ -83,12 +83,14 @@ public class CardUserRHController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/paneUsers.fxml"));
             Parent paneUsersRoot = loader.load();
             paneUserController pUC = loader.getController();
+
             pUC.ID_A.setText(String.valueOf(uid));
             pUC.nom_A.setText(unom);
             pUC.Prenom_A.setText(uprenom);
             pUC.email_A.setText(uemail);
             pUC.MDP_A.setText(umdp);
             pUC.image_A.setText(updp);
+
             String imagePath = updp;
             if (imagePath != null) {
                 try {
@@ -100,7 +102,12 @@ public class CardUserRHController {
                     System.err.println("Image file not found: " + imagePath);
                 }
             }
-            pUC.state=2;
+
+            // Populate solde fields
+            User user = new User(uid, unom, uprenom, uemail, umdp, updp); // Ensure the User object is created correctly
+            pUC.populateSoldeFields(user);
+
+            pUC.state = 2;
             pUC.Hfirst.setDisable(false);
             pUC.Hfirst.setVisible(true);
             pUC.adduserbtn.setDisable(true);
@@ -127,6 +134,7 @@ public class CardUserRHController {
             e.printStackTrace();
         }
     }
+
 
 
     @FXML

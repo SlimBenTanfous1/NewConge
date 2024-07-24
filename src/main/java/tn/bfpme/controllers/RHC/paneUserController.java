@@ -19,6 +19,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.lang.ObjectUtils;
@@ -33,7 +34,6 @@ import java.io.*;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 
 import java.io.FileOutputStream;
 import java.net.URL;
@@ -125,7 +125,7 @@ public class paneUserController implements Initializable {
     @FXML
     private TextField RoleSearchBar;
     @FXML
-    private TextField soldeField1, soldeField2;
+    private VBox CongeVbox;
     @FXML
     private Button modifier_user, saveButton;
     @FXML
@@ -227,12 +227,113 @@ public class paneUserController implements Initializable {
                 handleRoleSelection(newValue);
             }
         });
+        userListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                handleUserSelection(newValue);
+            }
+        });
+    }
 
-        // Initially hide solde fields
-        hideSoldeFields();
+    private void handleUserSelection(User selectedUser) {
+        this.selectedUser = selectedUser;
+        if (selectedUser != null) {
+            ID_A.setText(String.valueOf(selectedUser.getIdUser()));
+            Prenom_A.setText(selectedUser.getPrenom());
+            nom_A.setText(selectedUser.getNom());
+            email_A.setText(selectedUser.getEmail());
+            MDP_A.setText(selectedUser.getMdp());
+            image_A.setText(selectedUser.getImage());
+
+            // Set image
+            if (selectedUser.getImage() != null && !selectedUser.getImage().isEmpty()) {
+                try {
+                    File file = new File(selectedUser.getImage());
+                    FileInputStream inputStream = new FileInputStream(file);
+                    Image image = new Image(inputStream);
+                    PDPimageHolder.setImage(image);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            // Fetch and set the department
+            Departement department = depService.getDepartmentById(selectedUser.getIdDepartement());
+            if (department != null) {
+                Depart_field.setText(department.getNom());
+            } else {
+                Depart_field.setText("No department");
+            }
+
+            // Fetch and set the role
+            Role role = roleService.getRoleByUserId(selectedUser.getIdUser());
+            if (role != null) {
+                Role_field.setText(role.getNom());
+            } else {
+                Role_field.setText("No role");
+            }
+
+            // Fetch and set the solde data
+            populateCongeSolde(selectedUser.getIdUser());
+        }
+    }
+    public void populateSoldeFields(User user) {
+        List<UserSolde> soldeList = getSoldeCongeByUserId(user.getIdUser());
+        CongeVbox.getChildren().clear(); // Clear existing entries
+
+        for (UserSolde solde : soldeList) {
+            HBox soldeRow = new HBox(10); // Horizontal box with spacing
+            Label congeTypeLabel = new Label(solde.getDesignation());
+            TextField soldeField = new TextField(String.valueOf(solde.getTotalSolde()));
+            soldeField.setEditable(false); // Make the TextField non-editable
+            soldeRow.getChildren().addAll(congeTypeLabel, soldeField);
+            CongeVbox.getChildren().add(soldeRow);
+        }
+    }
+
+    private void populateCongeSolde(int userId) {
+        System.out.println("Fetching solde data for user ID: " + userId); // Debugging
+        List<UserSolde> soldeList = getSoldeCongeByUserId(userId);
+        CongeVbox.getChildren().clear(); // Clear existing entries
+
+        for (UserSolde solde : soldeList) {
+            System.out.println("Adding solde: " + solde.getDesignation() + " - " + solde.getTotalSolde()); // Debugging
+            HBox soldeRow = new HBox(10); // Horizontal box with spacing
+            Label congeTypeLabel = new Label(solde.getDesignation());
+            TextField soldeField = new TextField(String.valueOf(solde.getTotalSolde()));
+            soldeField.setEditable(false); // Make the TextField non-editable
+            soldeRow.getChildren().addAll(congeTypeLabel, soldeField);
+            CongeVbox.getChildren().add(soldeRow);
+        }
+    }
+
+
+    private List<UserSolde> getSoldeCongeByUserId(int userId) {
+        List<UserSolde> soldeCongeList = new ArrayList<>();
+        String query = "SELECT us.*, tc.Designation FROM user_solde us " +
+                "JOIN typeconge tc ON us.ID_TypeConge = tc.ID_TypeConge " +
+                "WHERE us.ID_User = ?";
+        try (Connection cnx = MyDataBase.getInstance().getCnx();
+             PreparedStatement stm = cnx.prepareStatement(query)) {
+            stm.setInt(1, userId);
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                UserSolde userSolde = new UserSolde(
+                        rs.getInt("ID_UserSolde"),
+                        rs.getInt("ID_User"),
+                        rs.getInt("ID_TypeConge"),
+                        rs.getDouble("TotalSolde"),
+                        rs.getString("Designation")
+                );
+                soldeCongeList.add(userSolde);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return soldeCongeList;
     }
 
     private void hideSoldeFields() {
+        // Implement this if necessary
     }
 
     @FXML
@@ -247,11 +348,6 @@ public class paneUserController implements Initializable {
             DepartPane1.setVisible(true);
             RolePane1.setVisible(false);
         }
-        /*if (hierarCombo.getValue().equals("Roles")) {
-            UserPane1.setVisible(false);
-            DepartPane1.setVisible(false);
-            RolePane1.setVisible(true);
-        }*/
     }
 
     private void loadUsers() {
@@ -283,29 +379,6 @@ public class paneUserController implements Initializable {
             }
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    private void handleUserSelection(User selectedUser) {
-        this.selectedUser = selectedUser;
-        if (selectedUser != null) {
-            User_field.setText(selectedUser.getPrenom() + " " + selectedUser.getNom());
-
-            // Fetch and set the department
-            Departement department = depService.getDepartmentById(selectedUser.getIdDepartement());
-            if (department != null) {
-                Depart_field.setText(department.getNom());
-            } else {
-                Depart_field.setText("No department");
-            }
-
-            // Fetch and set the role
-            Role role = roleService.getRoleByUserId(selectedUser.getIdUser());
-            if (role != null) {
-                Role_field.setText(role.getNom());
-            } else {
-                Role_field.setText("No role");
-            }
         }
     }
 
@@ -653,34 +726,6 @@ public class paneUserController implements Initializable {
         });
     }
 
-    private List<UserSolde> getSoldeCongeByUserId(int userId) {
-        List<UserSolde> soldeCongeList = new ArrayList<>();
-        String query = "SELECT us.*, tc.Designation FROM user_solde us " +
-                "JOIN typeconge tc ON us.ID_TypeConge = tc.ID_TypeConge " +
-                "WHERE us.ID_User = ?";
-        try {
-            if (cnx == null || cnx.isClosed()) {
-                cnx = MyDataBase.getInstance().getCnx();
-            }
-            PreparedStatement stm = cnx.prepareStatement(query);
-            stm.setInt(1, userId);
-            ResultSet rs = stm.executeQuery();
-            while (rs.next()) {
-                UserSolde userSolde = new UserSolde(
-                        rs.getInt("ID_UserSolde"),
-                        rs.getInt("ID_User"),
-                        rs.getInt("ID_TypeConge"),
-                        rs.getDouble("TotalSolde"),
-                        rs.getString("Designation")
-                );
-                soldeCongeList.add(userSolde);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return soldeCongeList;
-    }
-
     @FXML
     private void handleEditUser() {
         if (selectedUser != null) {
@@ -870,27 +915,6 @@ public class paneUserController implements Initializable {
             }
         }
     }
-
-    /*private TypeConge getDefaultSolde() {
-        String query = "SELECT SoldeAnn, SoldeMal, SoldeExc, SoldeMat FROM soldeconge LIMIT 1";
-        try (Connection cnx = MyDataBase.getInstance().getCnx();
-             PreparedStatement stm = cnx.prepareStatement(query);
-             ResultSet rs = stm.executeQuery()) {
-            if (rs.next()) {
-                return new TypeConge(
-                        rs.getDouble("SoldeAnn"),
-                        rs.getDouble("SoldeMal"),
-                        rs.getDouble("SoldeExc"),
-                        rs.getDouble("SoldeMat")
-                );
-            } else {
-                throw new SQLException("No default solde values found in soldeconge table.");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return new TypeConge(0, 0, 0, 0);
-        }
-    }*/
 
     @FXML
     public void RechercheBarUser(ActionEvent actionEvent) {
@@ -1216,7 +1240,6 @@ public class paneUserController implements Initializable {
             String mdp = MDP_A.getText();
             String image = image_A.getText();
 
-            /*if (email.matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@(bfpme\\.tn|gmail\\.com)$")) {*/
             try {
                 if (!emailExists(email)) {
                     User newUser = new User(0, nom, prenom, email, mdp, image, LocalDate.now());
@@ -1233,9 +1256,6 @@ public class paneUserController implements Initializable {
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-       /* } else {
-            infolabel.setText("Email est invalide");
-        }*/
             reset();
 
         } else if (state == 2) {
@@ -1244,7 +1264,6 @@ public class paneUserController implements Initializable {
             String Email = email_A.getText();
             String Mdp = MDP_A.getText();
             String Image = image_A.getText();
-            /*if (Email.matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@(bfpme\\.tn|gmail\\.com)$")) {*/
             int IdUser = Integer.parseInt(ID_A.getText());
             try {
                 if (!emailExistss(Email, IdUser) || isCurrentUser(IdUser, Email)) {
@@ -1258,13 +1277,8 @@ public class paneUserController implements Initializable {
                 infolabel.setText("Erreur de base de données: " + e.getMessage());
                 e.printStackTrace();
             }
-           /* } else {
-                infolabel.setText("Email est invalide");
-            }*/
             reset();
         }
-
-
     }
 
     @FXML
