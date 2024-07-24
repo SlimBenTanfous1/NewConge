@@ -12,6 +12,7 @@ import tn.bfpme.services.ServiceDepartement;
 import javafx.scene.layout.*;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -28,9 +29,9 @@ public class paneDepController implements Initializable {
     private final ServiceDepartement depService = new ServiceDepartement();
     private RHController RHC;
     @FXML
-    private Button Annuler,Enregistrer,Delete,Update,Add;
+    private Button Annuler, Enregistrer, Delete, Update, Add;
     @FXML
-    private HBox Hfirst,Hsecond;
+    private HBox Hfirst, Hsecond;
 
     private int state = 0;
     private paneUserController PUC;
@@ -49,6 +50,9 @@ public class paneDepController implements Initializable {
                 Update.setDisable(false);
                 Delete.setDisable(false);
 
+                // Clear and add the parent department hierarchy
+                comboBoxContainer.getChildren().clear();
+                addParentDepartmentComboBoxes(newValue);
             }
         });
 
@@ -73,8 +77,6 @@ public class paneDepController implements Initializable {
         departementListView.setDisable(false);
         Hfirst.setVisible(true);
         Hfirst.setDisable(false);
-
-
     }
 
     @FXML
@@ -89,7 +91,6 @@ public class paneDepController implements Initializable {
         comboBoxContainer.setDisable(false);
         parentDeptComboBox.setDisable(false);
         departementListView.setDisable(true);
-
     }
 
     private void showAlert(Alert.AlertType alertType, String title, String header, String content) {
@@ -112,7 +113,6 @@ public class paneDepController implements Initializable {
         comboBoxContainer.setDisable(false);
         parentDeptComboBox.setDisable(false);
         departementListView.setDisable(true);
-
     }
 
     @FXML
@@ -223,6 +223,24 @@ public class paneDepController implements Initializable {
         } catch (Exception e) {
             showError("Failed to load departments: " + e.getMessage());
         }
+    }
+
+    private void addParentDepartmentComboBoxes(Departement department) {
+        List<Departement> parentHierarchy = getParentHierarchy(department);
+        for (Departement parent : parentHierarchy) {
+            addSubDepartmentComboBox(parent.getIdDepartement());
+        }
+    }
+
+    private List<Departement> getParentHierarchy(Departement department) {
+        List<Departement> hierarchy = new ArrayList<>();
+        while (department != null && department.getParentDept() != 0) {
+            department = depService.getDepartmentById(department.getParentDept());
+            if (department != null) {
+                hierarchy.add(0, department); // Add to the start to maintain order from highest level to lowest
+            }
+        }
+        return hierarchy;
     }
 
     private void addSubDepartmentComboBox(int parentId) {
