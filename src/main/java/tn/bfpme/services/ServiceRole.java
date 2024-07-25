@@ -355,7 +355,7 @@ public class ServiceRole {
     public List<Role> getParentRoles2(int roleId) {
         Connection cnx = MyDataBase.getInstance().getCnx();
         List<Role> roles = new ArrayList<>();
-        String query = "SELECT r.ID_Role, r.nom, r.description " +
+        String query = "SELECT r.ID_Role, r.nom, r.Level, r.description " +
                 "FROM role r " +
                 "JOIN rolehierarchie rh ON r.ID_Role = rh.ID_RoleP " +
                 "WHERE rh.ID_RoleC = ?";
@@ -369,6 +369,7 @@ public class ServiceRole {
                 role.setIdRole(resultSet.getInt("ID_Role"));
                 role.setNom(resultSet.getString("nom"));
                 role.setDescription(resultSet.getString("description"));
+                role.setLevel(resultSet.getInt("Level"));
                 roles.add(role);
             }
         } catch (SQLException e) {

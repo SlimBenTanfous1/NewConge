@@ -96,6 +96,9 @@ public class paneRoleController implements Initializable {
             }
             roleListView.setDisable(false);
             state = 0;
+            fieldsDisable(true);
+            btnEAHbox.setVisible(false);
+            btnCRUDHbox.setVisible(true);
         }
         if (state == 2) {
             Role selectedRole = roleListView.getSelectionModel().getSelectedItem();
@@ -139,7 +142,11 @@ public class paneRoleController implements Initializable {
                 showAlert(Alert.AlertType.ERROR, "Erreur", "Aucun rôle sélectionné", "Veuillez sélectionner un rôle à modifier.");
             }
             loadRoles();
+            roleListView.setDisable(false);
             state = 0;
+            fieldsDisable(true);
+            btnEAHbox.setVisible(false);
+            btnCRUDHbox.setVisible(true);
         }
     }
 
@@ -149,6 +156,10 @@ public class paneRoleController implements Initializable {
         List<Role> allRoles = roleService.getAllRoles();
         allRoles.removeIf(role -> role.getIdRole() == roleId);
         ObservableList<Role> allRolesObservable = FXCollections.observableArrayList(allRoles);
+
+        // Sort parentRoles by Level in ascending order
+        parentRoles.sort(Comparator.comparingInt(Role::getLevel));
+
         for (Role parentRole : parentRoles) {
             ComboBox<Role> comboBox = new ComboBox<>(allRolesObservable);
             comboBox.setValue(parentRole);
@@ -239,7 +250,6 @@ public class paneRoleController implements Initializable {
         List<Role> filteredRoles = new ArrayList<>();
         Set<Role> selectedRoles = new HashSet<>();
 
-        // Collect already selected roles from existing ComboBoxes
         for (Node node : roleParentVBox.getChildren()) {
             if (node instanceof HBox) {
                 HBox hBox = (HBox) node;
@@ -255,7 +265,6 @@ public class paneRoleController implements Initializable {
             }
         }
 
-        // Filter roles to exclude selected roles and the role with the same name as roleNameField
         for (Role role : allRoles) {
             if (selectedRole != null && role.getIdRole() == selectedRole.getIdRole()) {
                 continue;
@@ -267,6 +276,9 @@ public class paneRoleController implements Initializable {
                 filteredRoles.add(role);
             }
         }
+
+        // Sort roles by their level before adding to the ComboBox
+        filteredRoles.sort(Comparator.comparingInt(Role::getLevel));
 
         ComboBox<Role> comboBox = new ComboBox<>(FXCollections.observableArrayList(filteredRoles));
         comboBox.setPrefHeight(31);
@@ -293,6 +305,7 @@ public class paneRoleController implements Initializable {
                 }
             }
         });
+
         Button removeButton = new Button("-");
         removeButton.setPrefHeight(25);
         removeButton.setPrefWidth(25);
@@ -301,15 +314,32 @@ public class paneRoleController implements Initializable {
             roleParentVBox.getChildren().remove(comboBox.getParent());
             updateComboBoxOptions();
         });
+
         HBox hBox = new HBox(comboBox, removeButton);
         hBox.setSpacing(5);
-        roleParentVBox.getChildren().add(hBox);
 
+        // Add a listener to handle reordering when a role is selected
+        comboBox.setOnAction(e -> reorderRoles());
+
+        roleParentVBox.getChildren().add(hBox);
         updateComboBoxOptions();
     }
+
+    private void reorderRoles() {
+        List<Node> hBoxList = new ArrayList<>(roleParentVBox.getChildren());
+        hBoxList.sort(Comparator.comparingInt(node -> {
+            ComboBox<Role> comboBox = (ComboBox<Role>) ((HBox) node).getChildren().get(0);
+            Role role = comboBox.getValue();
+            return role != null ? role.getLevel() : Integer.MAX_VALUE;
+        }));
+        roleParentVBox.getChildren().setAll(hBoxList);
+        updateComboBoxOptions();
+    }
+
     private void updateComboBoxOptions() {
         List<Role> allRoles = roleService.getAllRoles();
         Set<Role> selectedRoles = new HashSet<>();
+
         for (Node node : roleParentVBox.getChildren()) {
             if (node instanceof HBox) {
                 HBox hBox = (HBox) node;
@@ -324,6 +354,7 @@ public class paneRoleController implements Initializable {
                 }
             }
         }
+
         for (Node node : roleParentVBox.getChildren()) {
             if (node instanceof HBox) {
                 HBox hBox = (HBox) node;
@@ -336,6 +367,7 @@ public class paneRoleController implements Initializable {
                         if (selected != null && !filteredRoles.contains(selected)) {
                             filteredRoles.add(selected);
                         }
+                        filteredRoles.sort(Comparator.comparingInt(Role::getLevel));
                         comboBox.setItems(FXCollections.observableArrayList(filteredRoles));
                         if (selected != null) {
                             comboBox.setValue(selected);
