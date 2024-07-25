@@ -182,6 +182,7 @@ public class paneUserController implements Initializable {
     };
 
 
+
     ObservableList<String> HierarchieList = FXCollections.observableArrayList("Utilisateurs", "Départements");
     @FXML
     public Button Annuler;
@@ -194,6 +195,7 @@ public class paneUserController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        System.out.println("Initializing paneUserController..."); // Debugging
         loadUsers();
         loadUsers1();
         loadUsers3();
@@ -229,12 +231,18 @@ public class paneUserController implements Initializable {
         });
         userListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
+                System.out.println("User selected from initialize: " + newValue); // Debugging
                 handleUserSelection(newValue);
             }
         });
+
+        // Clear solde fields initially
+        clearSoldeFields();
     }
 
+
     private void handleUserSelection(User selectedUser) {
+        System.out.println("User selected: " + selectedUser); // Debugging
         this.selectedUser = selectedUser;
         if (selectedUser != null) {
             ID_A.setText(String.valueOf(selectedUser.getIdUser()));
@@ -273,22 +281,56 @@ public class paneUserController implements Initializable {
             }
 
             // Fetch and set the solde data
+            System.out.println("Calling populateCongeSolde for user ID: " + selectedUser.getIdUser()); // Debugging
             populateCongeSolde(selectedUser.getIdUser());
+        } else {
+            System.out.println("Selected user is null"); // Debugging
         }
     }
+
     public void populateSoldeFields(User user) {
+        System.out.println("Populating solde fields for user: " + user); // Debugging
         List<UserSolde> soldeList = getSoldeCongeByUserId(user.getIdUser());
         CongeVbox.getChildren().clear(); // Clear existing entries
 
         for (UserSolde solde : soldeList) {
+            System.out.println("Adding solde: " + solde.getDesignation() + " - " + solde.getTotalSolde()); // Debugging
             HBox soldeRow = new HBox(10); // Horizontal box with spacing
             Label congeTypeLabel = new Label(solde.getDesignation());
             TextField soldeField = new TextField(String.valueOf(solde.getTotalSolde()));
             soldeField.setEditable(true); // Make the TextField editable
+
+            // Add listener to capture changes
+            soldeField.textProperty().addListener((observable, oldValue, newValue) -> {
+                try {
+                    double updatedSolde = Double.parseDouble(newValue);
+                    solde.setTotalSolde(updatedSolde);
+                } catch (NumberFormatException e) {
+                    System.err.println("Invalid input: " + newValue);
+                }
+            });
+
+            soldeRow.setUserData(solde); // Set UserSolde as user data
             soldeRow.getChildren().addAll(congeTypeLabel, soldeField);
             CongeVbox.getChildren().add(soldeRow);
         }
     }
+
+    private void updateUserSoldeInDatabase(UserSolde solde) {
+        String query = "UPDATE user_solde SET TotalSolde = ? WHERE ID_UserSolde = ?";
+        try (Connection cnx = MyDataBase.getInstance().getCnx();
+             PreparedStatement stm = cnx.prepareStatement(query)) {
+            stm.setDouble(1, solde.getTotalSolde());
+            stm.setInt(2, solde.getUD_UserSolde());
+            stm.executeUpdate();
+            System.out.println("Updated solde in database for ID_UserSolde: " + solde.getUD_UserSolde());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
 
     private void populateCongeSolde(int userId) {
         System.out.println("Fetching solde data for user ID: " + userId); // Debugging
@@ -300,11 +342,44 @@ public class paneUserController implements Initializable {
             HBox soldeRow = new HBox(10); // Horizontal box with spacing
             Label congeTypeLabel = new Label(solde.getDesignation());
             TextField soldeField = new TextField(String.valueOf(solde.getTotalSolde()));
-            soldeField.setEditable(false); // Make the TextField non-editable
+            soldeField.setEditable(true); // Make the TextField editable
+            soldeField.textProperty().addListener((observable, oldValue, newValue) -> {
+                try {
+                    double newSolde = Double.parseDouble(newValue);
+                    serviceUserSolde.updateUserSolde(userId, solde.getID_TypeConge(), newSolde); // Update database
+                    System.out.println("Updated solde: " + newSolde + " for user ID: " + userId + " and conge ID: " + solde.getID_TypeConge()); // Debugging
+                } catch (NumberFormatException e) {
+                    System.err.println("Invalid input for solde: " + newValue); // Debugging
+                }
+            });
             soldeRow.getChildren().addAll(congeTypeLabel, soldeField);
             CongeVbox.getChildren().add(soldeRow);
         }
     }
+
+
+
+
+
+    /*public void updateUserSolde(int userId, int typeCongeId, double newSolde) {
+        String query = "UPDATE user_solde SET TotalSolde = ? WHERE ID_User = ? AND ID_TypeConge = ?";
+        try (Connection cnx = MyDataBase.getInstance().getCnx();
+             PreparedStatement stm = cnx.prepareStatement(query)) {
+            stm.setDouble(1, newSolde);
+            stm.setInt(2, userId);
+            stm.setInt(3, typeCongeId);
+            int rowsUpdated = stm.executeUpdate();
+            System.out.println("Rows updated: " + rowsUpdated); // Debugging
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }*/
+
+
+
+
+
+
 
 
     private List<UserSolde> getSoldeCongeByUserId(int userId) {
@@ -325,12 +400,14 @@ public class paneUserController implements Initializable {
                         rs.getString("Designation")
                 );
                 soldeCongeList.add(userSolde);
+                System.out.println("Fetched solde: " + userSolde); // Debugging
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return soldeCongeList;
     }
+
 
     private void hideSoldeFields() {
         // Implement this if necessary
@@ -417,14 +494,15 @@ public class paneUserController implements Initializable {
         userListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 handleUserSelection(newValue);
-                // Filter the list to show only the selected user
+                System.out.println("User selected from loadUsers1: " + newValue); // Debugging
                 filteredData.setPredicate(user -> user.equals(newValue));
             } else {
-                // Reset the list to show all users when the selection is cleared
+                System.out.println("No user selected");
                 filteredData.setPredicate(user -> true);
             }
         });
     }
+
 
     private void loadDepartments1() {
         List<Departement> departmentList = depService.getAllDepartments();
@@ -513,7 +591,7 @@ public class paneUserController implements Initializable {
                 }
 
                 // Debugging: Print user details to verify
-                System.out.println("User: " + user.getNom() + ", Manager: " + user.getManagerName() + ", Department: " + user.getDepartementNom() + ", Role: " + user.getRoleNom());
+               // System.out.println("User: " + user.getNom() + ", Manager: " + user.getManagerName() + ", Department: " + user.getDepartementNom() + ", Role: " + user.getRoleNom());
             }
 
             ObservableList<User> users = FXCollections.observableArrayList(userList);
@@ -561,19 +639,19 @@ public class paneUserController implements Initializable {
 
         TreeItem<Role> root = new TreeItem<>(new Role(0, "Sans role parent", "", 0)); // Adjust constructor as necessary
         root.setExpanded(true);
-        System.out.println("Root created.");
+        //System.out.println("Root created.");
 
         Map<Integer, TreeItem<Role>> roleMap = new HashMap<>();
         roleMap.put(0, root);
 
         for (Role role : roles) {
-            System.out.println("Processing role: " + role);
+            //System.out.println("Processing role: " + role);
             TreeItem<Role> item = new TreeItem<>(role);
             roleMap.put(role.getIdRole(), item);
 
             TreeItem<Role> parentItem = roleMap.getOrDefault(role.getRoleParent(), root);
             parentItem.getChildren().add(item);
-            System.out.println("Added role to parent: " + role.getRoleParent());
+           // System.out.println("Added role to parent: " + role.getRoleParent());
         }
 
         // Update roles with their parent and child names
@@ -590,7 +668,7 @@ public class paneUserController implements Initializable {
 
         roleTable.setRoot(root);
         roleTable.setShowRoot(false);
-        System.out.println("Roles loaded into table.");
+       // System.out.println("Roles loaded into table.");
 
         idRoleColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("idRole"));
         nomRoleColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("nom"));
@@ -600,26 +678,26 @@ public class paneUserController implements Initializable {
     }
 
     private void loadDeparts3() {
-        System.out.println("Loading departments...");
+        //System.out.println("Loading departments...");
         List<Departement> departmentList = depService.getAllDepartments();
-        System.out.println("Departments: " + departmentList);
+        //System.out.println("Departments: " + departmentList);
         ObservableList<Departement> departments = FXCollections.observableArrayList(departmentList);
 
         TreeItem<Departement> root = new TreeItem<>(new Departement(0, "Sans dep.Parent", "", 0));
         root.setExpanded(true);
-        System.out.println("Root created.");
+       // System.out.println("Root created.");
 
         Map<Integer, TreeItem<Departement>> departMap = new HashMap<>();
         departMap.put(0, root);
 
         for (Departement departement : departments) {
-            System.out.println("Processing department: " + departement);
+            //System.out.println("Processing department: " + departement);
             TreeItem<Departement> item = new TreeItem<>(departement);
             departMap.put(departement.getIdDepartement(), item);
 
             TreeItem<Departement> parentItem = departMap.getOrDefault(departement.getParentDept(), root);
             parentItem.getChildren().add(item);
-            System.out.println("Added department to parent: " + departement.getParentDept());
+            //System.out.println("Added department to parent: " + departement.getParentDept());
         }
 
         // Update departments with their parent names
@@ -633,7 +711,7 @@ public class paneUserController implements Initializable {
 
         deptTable.setRoot(root);
         deptTable.setShowRoot(false);
-        System.out.println("Departments loaded into table.");
+        //System.out.println("Departments loaded into table.");
 
         idDapartementColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("idDepartement"));
         nomDeptColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("nom"));
@@ -1277,17 +1355,44 @@ public class paneUserController implements Initializable {
                 infolabel.setText("Erreur de base de données: " + e.getMessage());
                 e.printStackTrace();
             }
+
+            // Update solde data
+            CongeVbox.getChildren().forEach(node -> {
+                if (node instanceof HBox) {
+                    HBox soldeRow = (HBox) node;
+                    if (soldeRow.getChildren().size() == 2 && soldeRow.getChildren().get(1) instanceof TextField) {
+                        TextField soldeField = (TextField) soldeRow.getChildren().get(1);
+                        try {
+                            double updatedSolde = Double.parseDouble(soldeField.getText());
+                            UserSolde solde = (UserSolde) soldeRow.getUserData(); // Retrieve UserSolde from user data
+                            if (solde != null) {
+                                solde.setTotalSolde(updatedSolde);
+                                updateUserSoldeInDatabase(solde); // Update in the database
+                            } else {
+                                System.err.println("Solde object is null for HBox: " + soldeRow);
+                            }
+                        } catch (NumberFormatException e) {
+                            System.err.println("Invalid input: " + soldeField.getText());
+                        }
+                    }
+                }
+            });
+
+            clearSoldeFields();
             reset();
         }
     }
 
+
     @FXML
     void Annuler_user(ActionEvent event) {
+        clearSoldeFields();
         reset();
     }
 
     @FXML
     void unselect(MouseEvent event) {
+        clearSoldeFields();
         reset();
 
     }
@@ -1298,6 +1403,7 @@ public class paneUserController implements Initializable {
         nom_A.setText("");
         Prenom_A.setText("");
         PDPimageHolder.setImage(null);
+
         image_A.setText("");
         MDP_A.setText("");
         ID_A.setDisable(true);
@@ -1317,6 +1423,11 @@ public class paneUserController implements Initializable {
     @FXML
     public void Listerefresh(Event event) {
         loadUsers();
+    }
+
+    private void clearSoldeFields() {
+        System.out.println("Clearing solde fields..."); // Debugging
+        CongeVbox.getChildren().clear();
     }
 
 }

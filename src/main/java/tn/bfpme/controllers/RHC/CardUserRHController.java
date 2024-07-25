@@ -79,6 +79,7 @@ public class CardUserRHController {
 
     @FXML
     void ModifierUser(ActionEvent event) {
+        System.out.println("ModifierUser button clicked."); // Debugging
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/paneUsers.fxml"));
             Parent paneUsersRoot = loader.load();
@@ -90,6 +91,7 @@ public class CardUserRHController {
             pUC.email_A.setText(uemail);
             pUC.MDP_A.setText(umdp);
             pUC.image_A.setText(updp);
+            System.out.println("Populating fields for user: " + uid); // Debugging
 
             String imagePath = updp;
             if (imagePath != null) {
@@ -105,6 +107,7 @@ public class CardUserRHController {
 
             // Populate solde fields
             User user = new User(uid, unom, uprenom, uemail, umdp, updp); // Ensure the User object is created correctly
+            System.out.println("Calling populateSoldeFields for user: " + user); // Debugging
             pUC.populateSoldeFields(user);
 
             pUC.state = 2;
@@ -134,6 +137,7 @@ public class CardUserRHController {
             e.printStackTrace();
         }
     }
+
 
 
 

@@ -36,18 +36,22 @@ public class ServiceUserSolde {
             e.printStackTrace();
         }
     }
-    public void updateUserSolde(int userId, int typeCongeId, double newTotalSolde) {
+    public void updateUserSolde(int userId, int typeCongeId, double newSolde) {
+        System.out.println("updating solde");
         String query = "UPDATE user_solde SET TotalSolde = ? WHERE ID_User = ? AND ID_TypeConge = ?";
         try (Connection cnx = MyDataBase.getInstance().getCnx();
-             PreparedStatement pstmt = cnx.prepareStatement(query)) {
-            pstmt.setDouble(1, newTotalSolde);
-            pstmt.setInt(2, userId);
-            pstmt.setInt(3, typeCongeId);
-            pstmt.executeUpdate();
+             PreparedStatement stm = cnx.prepareStatement(query)) {
+            stm.setDouble(1, newSolde);
+            stm.setInt(2, userId);
+            stm.setInt(3, typeCongeId);
+            int rowsUpdated = stm.executeUpdate();
+            System.out.println("Rows updated: " + rowsUpdated); // Debugging
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
+
     public void addUserSolde(int userId, int typeCongeId, double totalSolde) {
         Connection cnx = MyDataBase.getInstance().getCnx();
         String query = "INSERT INTO user_solde(ID_User, ID_TypeConge, TotalSolde) VALUES (?,?,?)";
