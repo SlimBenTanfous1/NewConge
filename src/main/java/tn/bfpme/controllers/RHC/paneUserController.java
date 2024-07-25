@@ -10,6 +10,7 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.image.Image;
@@ -165,6 +166,7 @@ public class paneUserController implements Initializable {
     public FilteredList<User> filteredData;
     public FilteredList<Departement> filteredDepartments;
     public FilteredList<Role> filteredRoles;
+
     ServiceUtilisateur UserS = new ServiceUtilisateur();
     Connection cnx = MyDataBase.getInstance().getCnx();
 
@@ -238,6 +240,8 @@ public class paneUserController implements Initializable {
 
         // Clear solde fields initially
         clearSoldeFields();
+        CongeVbox.setPadding(new Insets(10, 0, 10, 0));
+        CongeVbox.setSpacing(10);
     }
 
 
@@ -295,10 +299,16 @@ public class paneUserController implements Initializable {
 
         for (UserSolde solde : soldeList) {
             System.out.println("Adding solde: " + solde.getDesignation() + " - " + solde.getTotalSolde()); // Debugging
-            HBox soldeRow = new HBox(10); // Horizontal box with spacing
+
+            // Create the Label and TextField for each solde
             Label congeTypeLabel = new Label(solde.getDesignation());
+            congeTypeLabel.setPrefWidth(100); // Adjust the width as necessary
+            congeTypeLabel.getStyleClass().add("label"); // Apply the same style class as other labels
+
             TextField soldeField = new TextField(String.valueOf(solde.getTotalSolde()));
             soldeField.setEditable(true); // Make the TextField editable
+            soldeField.setPrefWidth(200); // Adjust the width as necessary
+            soldeField.getStyleClass().add("text-field"); // Apply the same style class as other text fields
 
             // Add listener to capture changes
             soldeField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -310,11 +320,14 @@ public class paneUserController implements Initializable {
                 }
             });
 
-            soldeRow.setUserData(solde); // Set UserSolde as user data
+            // Set UserSolde as user data
+            HBox soldeRow = new HBox(10); // Horizontal box with spacing
+            soldeRow.setUserData(solde);
             soldeRow.getChildren().addAll(congeTypeLabel, soldeField);
             CongeVbox.getChildren().add(soldeRow);
         }
     }
+
 
     private void updateUserSoldeInDatabase(UserSolde solde) {
         String query = "UPDATE user_solde SET TotalSolde = ? WHERE ID_UserSolde = ?";
@@ -1356,7 +1369,6 @@ public class paneUserController implements Initializable {
                 e.printStackTrace();
             }
 
-            // Update solde data
             CongeVbox.getChildren().forEach(node -> {
                 if (node instanceof HBox) {
                     HBox soldeRow = (HBox) node;

@@ -503,7 +503,7 @@
     -fx-background-color: white;
     -fx-text-fill: black;
     -fx-padding: 10;
-    -fx-border-color: gray;
+    -fx-border-color: rgb(128, 128, 128);
     -fx-border-width: 1;
     -fx-border-radius: 5;
     -fx-background-radius: 5;
@@ -548,3 +548,4 @@
 .tab-pane > .tab-header-area > .headers-region > .tab:selected >.tab-container >.focus-indicator {
     -fx-opacity: 0;
 }
+

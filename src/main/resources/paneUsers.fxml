@@ -119,7 +119,7 @@
                                  <children>
                                     <ScrollPane layoutX="9.0" layoutY="9.0" prefHeight="289.0" prefWidth="333.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <content>
-                                          <VBox fx:id="CongeVbox" alignment="TOP_CENTER" prefHeight="297.0" prefWidth="341.0" spacing="5.0" />
+                                          <VBox fx:id="CongeVbox" alignment="TOP_CENTER" prefHeight="297.0" prefWidth="341.0" spacing="10.0" styleClass="vbox-conge" />
                                        </content>
                                     </ScrollPane>
                                  </children>
