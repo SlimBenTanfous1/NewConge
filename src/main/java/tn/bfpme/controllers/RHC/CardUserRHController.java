@@ -6,6 +6,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -22,6 +24,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Optional;
 
 public class CardUserRHController {
     @FXML
@@ -79,20 +82,16 @@ public class CardUserRHController {
 
     @FXML
     void ModifierUser(ActionEvent event) {
-        System.out.println("ModifierUser button clicked."); // Debugging
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/paneUsers.fxml"));
             Parent paneUsersRoot = loader.load();
             paneUserController pUC = loader.getController();
-
             pUC.ID_A.setText(String.valueOf(uid));
             pUC.nom_A.setText(unom);
             pUC.Prenom_A.setText(uprenom);
             pUC.email_A.setText(uemail);
             pUC.MDP_A.setText(umdp);
             pUC.image_A.setText(updp);
-            System.out.println("Populating fields for user: " + uid); // Debugging
-
             String imagePath = updp;
             if (imagePath != null) {
                 try {
@@ -104,12 +103,8 @@ public class CardUserRHController {
                     System.err.println("Image file not found: " + imagePath);
                 }
             }
-
-            // Populate solde fields
             User user = new User(uid, unom, uprenom, uemail, umdp, updp); // Ensure the User object is created correctly
-            System.out.println("Calling populateSoldeFields for user: " + user); // Debugging
             pUC.populateSoldeFields(user);
-
             pUC.state = 2;
             pUC.Hfirst.setDisable(false);
             pUC.Hfirst.setVisible(true);
@@ -121,7 +116,6 @@ public class CardUserRHController {
             pUC.email_A.setDisable(false);
             pUC.MDP_A.setDisable(false);
             pUC.upload.setDisable(false);
-
             FXMLLoader mainLoader = new FXMLLoader(getClass().getResource("/RH_Interface.fxml"));
             Parent mainRoot = mainLoader.load();
             RHController mainController = mainLoader.getController();
@@ -139,13 +133,18 @@ public class CardUserRHController {
         }
     }
 
-
-
-
-
     @FXML
     void SupprimerUser(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Êtes vous sûrs?");
+        alert.setHeaderText("Êtes-vous certain de vouloir supprimer cette utilisateur ?");
+        ButtonType Oui = new ButtonType("Oui");
+        ButtonType Non = new ButtonType("Non");
+        alert.getButtonTypes().setAll(Oui, Non);
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == Oui) {
         UserS.DeleteByID(uid);
         ((GridPane) UserCard.getParent()).getChildren().remove(UserCard);
+        }
     }
 }
