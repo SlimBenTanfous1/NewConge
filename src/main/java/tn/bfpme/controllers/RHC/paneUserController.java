@@ -411,7 +411,7 @@ public class paneUserController implements Initializable {
         });
     }
 
-    private void loadUsers3() {
+    public void loadUsers3() {
         try {
             List<User> userList = userService.getAllUsers();
             Map<Integer, User> userMap = userList.stream().collect(Collectors.toMap(User::getIdUser, user -> user));
@@ -433,7 +433,7 @@ public class paneUserController implements Initializable {
                 }
 
                 Role role = userService.getRoleByUserId(user.getIdUser());
-                if (role != null) {
+                if (role != null) { 
                     user.setRoleNom(role.getNom());
                 } else {
                     user.setRoleNom("sans rôle");
@@ -470,7 +470,6 @@ public class paneUserController implements Initializable {
             userTable.setRoot(null);
             userTable.setRoot(root);
             userTable.setShowRoot(false);
-
             idUserColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("idUser"));
             prenomUserColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("prenom"));
             nomUserColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("nom"));
@@ -481,6 +480,7 @@ public class paneUserController implements Initializable {
             e.printStackTrace();
         }
     }
+
 
     private void loadRoles3() {
         List<Role> roleList = roleService.getAllRoles();

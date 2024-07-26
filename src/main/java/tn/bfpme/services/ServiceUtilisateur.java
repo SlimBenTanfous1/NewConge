@@ -1110,41 +1110,6 @@ public class ServiceUtilisateur implements IUtilisateur {
         return null;
     }
 
-    private void setManagerForUser(int userId, int departmentId, int roleId) throws SQLException {
-        System.out.println("Setting manager for user ID: " + userId);
-
-        // Fetch the parent role IDs
-        List<Integer> parentRoleIds = getParentRoleIds(roleId);
-        if (parentRoleIds.isEmpty()) {
-            System.out.println("No parent roles found for role ID: " + roleId);
-            return;
-        }
-
-        // Find manager within the department hierarchy
-        Integer managerId = findManagerInDepartmentHierarchy(userId, departmentId, parentRoleIds);
-
-        // If no manager found, set to default manager (e.g., PDG)
-        if (managerId == null) {
-            managerId = getPDGId();
-            System.out.println("No manager found in department hierarchy. Defaulting to PDG: " + managerId);
-        }
-
-        // Ensure managerId is not null before proceeding
-        if (managerId == null) {
-            System.out.println("No PDG found. Cannot set manager for user ID: " + userId);
-            return;
-        }
-
-        // Update user's manager
-        String updateManagerQuery = "UPDATE user SET ID_Manager = ? WHERE ID_User = ?";
-        try (PreparedStatement stmt = cnx.prepareStatement(updateManagerQuery)) {
-            stmt.setInt(1, managerId);
-            stmt.setInt(2, userId);
-            stmt.executeUpdate();
-            System.out.println("Manager set for user ID: " + userId + " to manager ID: " + managerId);
-        }
-    }
-
     private List<Integer> getParentRoleIds(int roleId) throws SQLException {
         String query = "SELECT ID_RoleP FROM rolehierarchie WHERE ID_RoleC = ?";
         List<Integer> parentRoleIds = new ArrayList<>();
@@ -1158,6 +1123,59 @@ public class ServiceUtilisateur implements IUtilisateur {
         return parentRoleIds;
     }
 
+
+
+
+    public void removeUserRole(int userId) throws SQLException {
+        String query = "DELETE FROM user_role WHERE ID_User = ?";
+        Connection conn = MyDataBase.getInstance().getCnx();
+        if (conn == null || conn.isClosed()) {
+            conn = MyDataBase.getInstance().getCnx();
+        }
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, userId);
+            pstmt.executeUpdate();
+        }
+    }
+
+    public void removeUserDepartment(int userId) throws SQLException {
+        String query = "UPDATE user SET ID_Departement = NULL WHERE ID_User = ?";
+        Connection conn = MyDataBase.getInstance().getCnx();
+        if (conn == null || conn.isClosed()) {
+            conn = MyDataBase.getInstance().getCnx();
+        }
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, userId);
+            pstmt.executeUpdate();
+        }
+    }
+
+    public void removeUserRoleAndDepartment(int userId) throws SQLException {
+        String queryRole = "DELETE FROM user_role WHERE ID_User = ?";
+        String queryDepartmentAndManager = "UPDATE user SET ID_Departement = NULL, ID_Manager = NULL WHERE ID_User = ?";
+        Connection conn = MyDataBase.getInstance().getCnx();
+        if (conn == null || conn.isClosed()) {
+            conn = MyDataBase.getInstance().getCnx();
+        }
+        try (PreparedStatement pstmtRole = conn.prepareStatement(queryRole);
+             PreparedStatement pstmtDepartmentAndManager = conn.prepareStatement(queryDepartmentAndManager)) {
+
+            conn.setAutoCommit(false); // Begin transaction
+
+            pstmtRole.setInt(1, userId);
+            pstmtRole.executeUpdate();
+
+            pstmtDepartmentAndManager.setInt(1, userId);
+            pstmtDepartmentAndManager.executeUpdate();
+
+            conn.commit(); // Commit transaction
+        } catch (SQLException e) {
+            conn.rollback(); // Rollback transaction if an error occurs
+            throw e;
+        } finally {
+            conn.setAutoCommit(true); // Reset auto-commit to true
+        }
+    }
     public void updateUserRoleAndDepartment(int userId, int roleId, int departmentId) throws SQLException {
         if (cnx == null || cnx.isClosed()) {
             cnx = MyDataBase.getInstance().getCnx();
@@ -1203,8 +1221,55 @@ public class ServiceUtilisateur implements IUtilisateur {
             }
         }
 
-        // Update the manager for the user
+        // Find and update the manager for the user based on the department and role hierarchy
         setManagerForUser(userId, departmentId, roleId);
+    }
+
+    private void setManagerForUser(int userId, int departmentId, int roleId) throws SQLException {
+        // Log the parameters
+        System.out.println("Setting manager for user ID: " + userId + ", Department ID: " + departmentId + ", Role ID: " + roleId);
+
+        // Find the new manager based on role and department hierarchy
+        Integer newManagerId = findManagerByRoleAndDepartment(roleId, departmentId);
+
+        // If no manager is found using the hierarchy, set to a default manager if applicable
+        if (newManagerId == null) {
+            System.out.println("No suitable manager found in hierarchy for user ID: " + userId);
+            newManagerId = getDefaultManager(); // Implement this method if you have a default manager
+        }
+
+        // Update the user's manager in the database
+        if (newManagerId != null) {
+            String updateManagerQuery = "UPDATE user SET ID_Manager = ? WHERE ID_User = ?";
+            try (PreparedStatement stmt = cnx.prepareStatement(updateManagerQuery)) {
+                stmt.setInt(1, newManagerId);
+                stmt.setInt(2, userId);
+                stmt.executeUpdate();
+                System.out.println("Manager set for user ID: " + userId + " to manager ID: " + newManagerId);
+            }
+        } else {
+            System.out.println("No manager set for user ID: " + userId);
+        }
+    }
+
+    private Integer findManagerByRoleAndDepartment(int roleId, int departmentId) throws SQLException {
+        // Define the query to find the suitable manager based on role and department hierarchy
+        String query = "SELECT u.ID_User " +
+                "FROM user u " +
+                "JOIN user_role ur ON u.ID_User = ur.ID_User " +
+                "JOIN departement d ON u.ID_Departement = d.ID_Departement " +
+                "WHERE ur.ID_Role = (SELECT rh.ID_RoleP FROM rolehierarchie rh WHERE rh.ID_RoleC = ? LIMIT 1) " +
+                "AND d.ID_Departement = (SELECT d.Parent_Dept FROM departement d WHERE d.ID_Departement = ? LIMIT 1) " +
+                "LIMIT 1";
+        try (PreparedStatement stmt = cnx.prepareStatement(query)) {
+            stmt.setInt(1, roleId);
+            stmt.setInt(2, departmentId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("ID_User");
+            }
+        }
+        return null; // Return null if no suitable manager is found
     }
 
     private boolean isRoleDepartmentValid(int roleId, int departmentId) throws SQLException {
@@ -1223,10 +1288,12 @@ public class ServiceUtilisateur implements IUtilisateur {
         return false;
     }
 
-
-
-
-
+    private Integer getDefaultManager() throws SQLException {
+        // Implement logic to return a default manager ID, if applicable
+        // For example, return the ID of the CEO or a specific default manager
+        // Here, we'll just return null to indicate no default manager is set
+        return null;
+    }
 
     public List<User> getAllUsers() {
         List<User> userList = new ArrayList<>();
@@ -1292,57 +1359,6 @@ public class ServiceUtilisateur implements IUtilisateur {
             ex.printStackTrace();
         }
         return null;
-    }
-
-    public void removeUserRole(int userId) throws SQLException {
-        String query = "DELETE FROM user_role WHERE ID_User = ?";
-        Connection conn = MyDataBase.getInstance().getCnx();
-        if (conn == null || conn.isClosed()) {
-            conn = MyDataBase.getInstance().getCnx();
-        }
-        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setInt(1, userId);
-            pstmt.executeUpdate();
-        }
-    }
-
-    public void removeUserDepartment(int userId) throws SQLException {
-        String query = "UPDATE user SET ID_Departement = NULL WHERE ID_User = ?";
-        Connection conn = MyDataBase.getInstance().getCnx();
-        if (conn == null || conn.isClosed()) {
-            conn = MyDataBase.getInstance().getCnx();
-        }
-        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setInt(1, userId);
-            pstmt.executeUpdate();
-        }
-    }
-
-    public void removeUserRoleAndDepartment(int userId) throws SQLException {
-        String queryRole = "DELETE FROM user_role WHERE ID_User = ?";
-        String queryDepartmentAndManager = "UPDATE user SET ID_Departement = NULL, ID_Manager = NULL WHERE ID_User = ?";
-        Connection conn = MyDataBase.getInstance().getCnx();
-        if (conn == null || conn.isClosed()) {
-            conn = MyDataBase.getInstance().getCnx();
-        }
-        try (PreparedStatement pstmtRole = conn.prepareStatement(queryRole);
-             PreparedStatement pstmtDepartmentAndManager = conn.prepareStatement(queryDepartmentAndManager)) {
-
-            conn.setAutoCommit(false); // Begin transaction
-
-            pstmtRole.setInt(1, userId);
-            pstmtRole.executeUpdate();
-
-            pstmtDepartmentAndManager.setInt(1, userId);
-            pstmtDepartmentAndManager.executeUpdate();
-
-            conn.commit(); // Commit transaction
-        } catch (SQLException e) {
-            conn.rollback(); // Rollback transaction if an error occurs
-            throw e;
-        } finally {
-            conn.setAutoCommit(true); // Reset auto-commit to true
-        }
     }
 
 }
