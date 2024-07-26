@@ -3,6 +3,11 @@ package tn.bfpme.controllers.RHC;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
@@ -308,6 +313,8 @@ public class paneUserController implements Initializable {
             TextField soldeField = new TextField(String.valueOf(solde.getTotalSolde()));
             soldeField.setEditable(true); // Make the TextField editable
             soldeField.setPrefWidth(200); // Adjust the width as necessary
+            soldeField.setMinWidth(200); // Adjust the width as necessary
+
             soldeField.getStyleClass().add("text-field"); // Apply the same style class as other text fields
 
             // Add listener to capture changes
@@ -1249,7 +1256,68 @@ public class paneUserController implements Initializable {
     }
     @FXML
     public void ExporterExcel(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Excel File");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Excel Files", "*.xlsx"));
+        Stage stage = (Stage) ExporterExcelButton.getScene().getWindow();
+        File file = fileChooser.showSaveDialog(stage);
 
+        if (file != null) {
+            List<User> users = userService.getAllUsers(); // Fetch all users
+            exportToExcel(users, String.valueOf(file));
+        }
+    }
+    private void exportToExcel(List<User> users, String fileName) {
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Utilisateurs");
+
+        // Create header row
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("Matricule");
+        headerRow.createCell(1).setCellValue("Nom");
+        headerRow.createCell(2).setCellValue("Prénom");
+        headerRow.createCell(3).setCellValue("Email");
+        headerRow.createCell(4).setCellValue("Mot de Passe");
+       // headerRow.createCell(5).setCellValue("Image");
+        headerRow.createCell(5).setCellValue("Département");
+        headerRow.createCell(6).setCellValue("Rôle");
+        int rowNum = 1;
+        for (User user : users) {
+            Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue(user.getIdUser());
+            row.createCell(1).setCellValue(user.getNom());
+            row.createCell(2).setCellValue(user.getPrenom());
+            row.createCell(3).setCellValue(user.getEmail());
+            row.createCell(4).setCellValue(user.getMdp());
+
+            // Fetch department and role names
+            Departement department = depService.getDepartmentById(user.getIdDepartement());
+            String departmentName = department != null ? department.getNom() : "N/A";
+            row.createCell(5).setCellValue(departmentName);
+
+            Role role = roleService.getRoleByUserId(user.getIdUser());
+            String roleName = role != null ? role.getNom() : "N/A";
+            row.createCell(6).setCellValue(roleName);
+        }
+
+        // Auto-size columns
+        for (int i = 0; i < 8; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        // Write the output to a file
+        try (FileOutputStream fileOut = new FileOutputStream(fileName)) {
+            workbook.write(fileOut);
+            System.out.println("Exported to Excel file: " + fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                workbook.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private List<Departement> getRelatedDepartments(int roleId) throws SQLException {

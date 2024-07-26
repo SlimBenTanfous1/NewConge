@@ -125,7 +125,7 @@ public class DemandeDepController implements Initializable {
             String Subject = "Approbation de Demande de Congé";
             String NotifContent = "";
             String MessageText = Mails.generateApprobationDemande(employeeName, startDate, endDate, managerName, managerRole);
-            //Mails.sendEmail(to, Subject, MessageText); //Mailing
+            //xMails.sendEmail(to, Subject, MessageText); //Mailing
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/DemandeDepListe.fxml"));
                 Parent root = loader.load();
