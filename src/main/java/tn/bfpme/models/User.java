@@ -122,6 +122,28 @@ public class User {
         this.idRole = idRole;
     }
 
+    public User(int idUser, String nom, String prenom, String email, String mdp, String image, LocalDate creationDate, int idDepartement, int idManager, int ID_UserSolde, int idRole) {
+        this.idUser = idUser;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.email = email;
+        this.mdp = mdp;
+        this.image = image;
+        this.creationDate = creationDate != null ? creationDate : LocalDate.now();
+        this.idDepartement = idDepartement;
+        this.idManager = idManager;
+        this.idRole = idRole;
+        this.ID_UserSolde = ID_UserSolde;
+
+    }
+
+    public User(int idUser, int idDepartement, int idRole) {
+        this.idUser = idUser;
+        this.idDepartement = idDepartement;
+        this.idRole = idRole;
+
+    }
+
     public int getID_UserSolde() {
         return ID_UserSolde;
     }

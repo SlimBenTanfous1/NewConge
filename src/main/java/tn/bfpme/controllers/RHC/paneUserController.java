@@ -816,7 +816,6 @@ public class paneUserController implements Initializable {
                     role.getDescription().toLowerCase().contains(lowerCaseFilter);
         });
     }
-
     @FXML
     private void handleEditUser() {
         if (selectedUser != null) {
@@ -826,17 +825,14 @@ public class paneUserController implements Initializable {
             try {
                 if (selectedRole != null && selectedDepartement != null) {
                     System.out.println("Updating role and department for user: " + selectedUser);
-                    userService.checkRoleDepartmentUniqueness(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedDepartement.getIdDepartement());
                     userService.updateUserRoleAndDepartment(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedDepartement.getIdDepartement());
                     isUpdated = true;
                 } else if (selectedRole != null) {
                     System.out.println("Updating role for user: " + selectedUser);
-                    userService.checkRoleDepartmentUniqueness(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedUser.getIdDepartement());
                     userService.updateUserRoleAndDepartment(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedUser.getIdDepartement());
                     isUpdated = true;
                 } else if (selectedDepartement != null) {
                     System.out.println("Updating department for user: " + selectedUser);
-                    userService.checkRoleDepartmentUniqueness(selectedUser.getIdUser(), selectedUser.getIdRole(), selectedDepartement.getIdDepartement());
                     userService.updateUserRoleAndDepartment(selectedUser.getIdUser(), selectedUser.getIdRole(), selectedDepartement.getIdDepartement());
                     isUpdated = true;
                 }
@@ -863,6 +859,7 @@ public class paneUserController implements Initializable {
         }
         loadUsers3();
     }
+
 
     @FXML
     private void handleRemoveUserAssignment() {
@@ -903,6 +900,8 @@ public class paneUserController implements Initializable {
         }
         loadUsers3();
     }
+
+
 
 
     public Integer getSelectedUserId() {
