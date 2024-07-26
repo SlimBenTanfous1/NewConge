@@ -135,9 +135,13 @@
                <content>
                   <AnchorPane prefHeight="200.0" prefWidth="200.0">
                      <children>
-                        <ScrollPane layoutY="40.0" pannable="true" prefHeight="639.0" prefWidth="1119.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="40.0">
+                        <ScrollPane fitToHeight="true" fitToWidth="true" layoutY="97.0" pannable="true" prefHeight="591.0" prefWidth="1119.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="97.0">
                            <content>
                               <GridPane fx:id="UserContainers" alignment="TOP_CENTER">
+                                 <columnConstraints>
+                                    <ColumnConstraints hgrow="ALWAYS" />
+                                    <ColumnConstraints hgrow="ALWAYS" />
+                                 </columnConstraints>
                               </GridPane>
                            </content>
                         </ScrollPane>
@@ -145,13 +149,21 @@
                            <children>
                               <HBox alignment="CENTER_LEFT" spacing="21.0">
                                  <children>
-                                    <Label text="Exporter en Excel:" />
+                                    <Label text="Exporter en Excel:">
+                                       <styleClass>
+                                          <String fx:value="FontSize-13" />
+                                          <String fx:value="RobotoBoldItalic" />
+                                       </styleClass></Label>
                                     <Button fx:id="ExporterExcelButton" mnemonicParsing="false" onAction="#ExporterExcel" styleClass="btn-primary" text="Exporter" />
                                  </children>
                               </HBox>
                               <HBox alignment="CENTER_LEFT" spacing="7.0">
                                  <children>
-                                    <Label prefHeight="17.0" prefWidth="88.0" text="Trier par rôle:" />
+                                    <Label prefHeight="17.0" prefWidth="88.0" text="Trier par rôle:">
+                                       <styleClass>
+                                          <String fx:value="FontSize-13" />
+                                          <String fx:value="RobotoBoldItalic" />
+                                       </styleClass></Label>
                                     <Pane>
                                        <children>
                                           <ComboBox fx:id="RoleComboFilter" onAction="#filterByRoleCB" prefWidth="150.0" promptText="Roles" />
@@ -162,13 +174,41 @@
                               </HBox>
                               <HBox alignment="CENTER_LEFT" prefHeight="31.0" prefWidth="306.0" spacing="20.0">
                                  <children>
-                                    <Label text="Recherche:" />
+                                    <Label text="Recherche:">
+                                       <styleClass>
+                                          <String fx:value="FontSize-13" />
+                                          <String fx:value="RobotoBoldItalic" />
+                                       </styleClass></Label>
                                     <TextField fx:id="RechercheBarUser" onAction="#RechercheBarUser" />
                                     <Button fx:id="removeFilterButton" mnemonicParsing="false" onAction="#removeFilters" styleClass="btn-primary" text="X" />
                                  </children>
                               </HBox>
                            </children>
                         </HBox>
+                        <Label layoutX="133.0" layoutY="70.0" minWidth="96.0" prefHeight="19.0" prefWidth="96.0" text="Utillisateur" AnchorPane.leftAnchor="133.0">
+                           <styleClass>
+                              <String fx:value="FontSize-15" />
+                              <String fx:value="RobotoBold" />
+                           </styleClass>
+                        </Label>
+                        <Label alignment="CENTER" layoutX="465.0" layoutY="70.0" maxWidth="66.0" minWidth="66.0" prefHeight="19.0" prefWidth="66.0" text="Role" AnchorPane.leftAnchor="465.0" AnchorPane.rightAnchor="588.0">
+                           <styleClass>
+                              <String fx:value="FontSize-15" />
+                              <String fx:value="RobotoBold" />
+                           </styleClass>
+                        </Label>
+                        <Label alignment="CENTER" layoutX="758.0" layoutY="70.0" maxWidth="104.0" minWidth="104.0" prefHeight="19.0" prefWidth="104.0" text="Departement" AnchorPane.leftAnchor="758.0" AnchorPane.rightAnchor="257.0">
+                           <styleClass>
+                              <String fx:value="FontSize-15" />
+                              <String fx:value="RobotoBold" />
+                           </styleClass>
+                        </Label>
+                        <Label alignment="CENTER" layoutX="1004.0" layoutY="70.0" maxWidth="62.0" minWidth="62.0" prefHeight="19.0" prefWidth="62.0" text="Action" AnchorPane.rightAnchor="62.0">
+                           <styleClass>
+                              <String fx:value="FontSize-15" />
+                              <String fx:value="RobotoBold" />
+                           </styleClass>
+                        </Label>
                      </children>
                   </AnchorPane>
                </content>

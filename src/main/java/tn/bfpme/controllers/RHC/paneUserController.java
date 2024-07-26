@@ -90,10 +90,8 @@ public class paneUserController implements Initializable {
     private TreeTableColumn<User, String> roleUserColumn;
     @FXML
     private TreeTableColumn<User, String> managerUserColumn;
-
     @FXML
     private ComboBox<String> RoleComboFilter;
-
     @FXML
     private TextField Role_field;
     @FXML
@@ -110,7 +108,6 @@ public class paneUserController implements Initializable {
     public ImageView PDPimageHolder;
     @FXML
     public TextField Prenom_A;
-
     @FXML
     private TextField searchFieldDept;
     @FXML
@@ -131,7 +128,6 @@ public class paneUserController implements Initializable {
     private Button modifier_user, saveButton;
     @FXML
     private Pane paneSoldeUsers;
-
     @FXML
     public GridPane UserContainers;
     @FXML
@@ -154,37 +150,28 @@ public class paneUserController implements Initializable {
     private Pane RolePane1;
     @FXML
     private Pane UserPane1;
-
     @FXML
     public Button removeFilterButton, adduserbtn;
-
     @FXML
     private Tab TabAffectationid;
-
 
     public User selectedUser;
     public FilteredList<User> filteredData;
     public FilteredList<Departement> filteredDepartments;
     public FilteredList<Role> filteredRoles;
-
-    ServiceUtilisateur UserS = new ServiceUtilisateur();
-    Connection cnx = MyDataBase.getInstance().getCnx();
-
     private final ServiceDepartement depService = new ServiceDepartement();
     private final ServiceUtilisateur userService = new ServiceUtilisateur();
     private final ServiceUserSolde serviceUserSolde = new ServiceUserSolde();
     private final ServiceTypeConge serviceTypeConge = new ServiceTypeConge();
     private final ServiceRole roleService = new ServiceRole();
     private ObservableList<User> users;
-
     private ChangeListener<User> userSelectionListener = (observable, oldValue, newValue) -> {
         if (newValue != null) {
             handleUserSelection(newValue);
         }
     };
-
-
-
+    ServiceUtilisateur UserS = new ServiceUtilisateur();
+    Connection cnx = MyDataBase.getInstance().getCnx();
     ObservableList<String> HierarchieList = FXCollections.observableArrayList("Utilisateurs", "Départements");
     @FXML
     public Button Annuler;
@@ -243,7 +230,6 @@ public class paneUserController implements Initializable {
         CongeVbox.setPadding(new Insets(10, 0, 10, 0));
         CongeVbox.setSpacing(10);
     }
-
 
     private void handleUserSelection(User selectedUser) {
         System.out.println("User selected: " + selectedUser); // Debugging
@@ -308,6 +294,7 @@ public class paneUserController implements Initializable {
             TextField soldeField = new TextField(String.valueOf(solde.getTotalSolde()));
             soldeField.setEditable(true); // Make the TextField editable
             soldeField.setPrefWidth(200); // Adjust the width as necessary
+            soldeField.setMinWidth(200); // Adjust the width as necessary
             soldeField.getStyleClass().add("text-field"); // Apply the same style class as other text fields
 
             // Add listener to capture changes
@@ -328,7 +315,6 @@ public class paneUserController implements Initializable {
         }
     }
 
-
     private void updateUserSoldeInDatabase(UserSolde solde) {
         String query = "UPDATE user_solde SET TotalSolde = ? WHERE ID_UserSolde = ?";
         try (Connection cnx = MyDataBase.getInstance().getCnx();
@@ -341,9 +327,6 @@ public class paneUserController implements Initializable {
             e.printStackTrace();
         }
     }
-
-
-
 
     private void populateCongeSolde(int userId) {
         System.out.println("Fetching solde data for user ID: " + userId); // Debugging
@@ -387,12 +370,6 @@ public class paneUserController implements Initializable {
             e.printStackTrace();
         }
     }*/
-
-
-
-
-
-
 
 
     private List<UserSolde> getSoldeCongeByUserId(int userId) {
@@ -456,7 +433,7 @@ public class paneUserController implements Initializable {
                 CardUserRHController cardController = fxmlLoader.getController();
                 Departement department = depService.getDepartmentById(user.getIdDepartement());
                 Role role = roleService.getRoleByUserId(user.getIdUser());
-                userBox.prefWidthProperty().bind(UserContainers.widthProperty());
+                userBox.prefWidthProperty().bind(UserContainers.widthProperty()/*.divide(2).subtract(20)*/);
                 String departmentName = department != null ? department.getNom() : "N/A";
                 String roleName = role != null ? role.getNom() : "N/A";
                 cardController.setData(user, roleName, departmentName);
@@ -471,6 +448,7 @@ public class paneUserController implements Initializable {
             e.printStackTrace();
         }
     }
+
 
     private void handleRoleSelection(Role selectedRole) {
         try {
@@ -604,7 +582,7 @@ public class paneUserController implements Initializable {
                 }
 
                 // Debugging: Print user details to verify
-               // System.out.println("User: " + user.getNom() + ", Manager: " + user.getManagerName() + ", Department: " + user.getDepartementNom() + ", Role: " + user.getRoleNom());
+                // System.out.println("User: " + user.getNom() + ", Manager: " + user.getManagerName() + ", Department: " + user.getDepartementNom() + ", Role: " + user.getRoleNom());
             }
 
             ObservableList<User> users = FXCollections.observableArrayList(userList);
@@ -664,7 +642,7 @@ public class paneUserController implements Initializable {
 
             TreeItem<Role> parentItem = roleMap.getOrDefault(role.getRoleParent(), root);
             parentItem.getChildren().add(item);
-           // System.out.println("Added role to parent: " + role.getRoleParent());
+            // System.out.println("Added role to parent: " + role.getRoleParent());
         }
 
         // Update roles with their parent and child names
@@ -681,7 +659,7 @@ public class paneUserController implements Initializable {
 
         roleTable.setRoot(root);
         roleTable.setShowRoot(false);
-       // System.out.println("Roles loaded into table.");
+        // System.out.println("Roles loaded into table.");
 
         idRoleColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("idRole"));
         nomRoleColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("nom"));
@@ -698,7 +676,7 @@ public class paneUserController implements Initializable {
 
         TreeItem<Departement> root = new TreeItem<>(new Departement(0, "Sans dep.Parent", "", 0));
         root.setExpanded(true);
-       // System.out.println("Root created.");
+        // System.out.println("Root created.");
 
         Map<Integer, TreeItem<Departement>> departMap = new HashMap<>();
         departMap.put(0, root);
@@ -929,26 +907,6 @@ public class paneUserController implements Initializable {
         alert.showAndWait();
     }
 
-
-    @FXML
-    void supprimer_user(ActionEvent event) {
-        try {
-            int userId = Integer.parseInt(ID_A.getText());
-
-            User user = UserS.getUserById(userId);
-            if (user != null) {
-                UserS.DeleteByID(user.getIdUser());
-                infolabel.setText("Suppression Effectuée");
-                System.out.println("User deleted: " + user);
-                loadUsers();
-            } else {
-                infolabel.setText("Utilisateur non trouvé");
-            }
-        } catch (NumberFormatException e) {
-            infolabel.setText("L'ID de l'utilisateur doit être un nombre.");
-        }
-    }
-
     @FXML
     void upload_image(ActionEvent event) {
         String imagePath = null;
@@ -968,7 +926,7 @@ public class paneUserController implements Initializable {
                 Files.copy(selectedFile.toPath(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
                 imagePath = destinationPath.toString();
                 System.out.println("Image uploaded successfully: " + imagePath);
-                image_A.setText("src/main/resources/assets/imgs/"+fileName);
+                image_A.setText("src/main/resources/assets/imgs/" + fileName);
                 if (imagePath != null) {
                     try {
                         File file = new File(imagePath);
@@ -1145,6 +1103,7 @@ public class paneUserController implements Initializable {
     void removeFilters(ActionEvent event) {
 
     }
+
     private void setupRemoveFilterButton() {
         removeFilterButton.setOnAction(event -> {
             RoleComboFilter.getSelectionModel().clearSelection();
@@ -1152,6 +1111,7 @@ public class paneUserController implements Initializable {
             loadFilteredUsers();
         });
     }
+
     private void setupRoleSearchBar() {
         RoleSearchBar.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == null || newValue.isEmpty()) {
@@ -1175,6 +1135,7 @@ public class paneUserController implements Initializable {
             }
         });
     }
+
     private void resetRoleComboBoxItems() {
         List<Role> roles = roleService.getAllRoles();
         ObservableList<String> roleNames = FXCollections.observableArrayList();
@@ -1183,9 +1144,11 @@ public class paneUserController implements Initializable {
         }
         RoleComboFilter.setItems(roleNames);
     }
+
     public void TabGestion(Event event) {
         reset();
     }
+
     public void clearuserselection(ActionEvent actionEvent) {
         Depart_field.setText("");
         User_field.setText("");
@@ -1205,6 +1168,7 @@ public class paneUserController implements Initializable {
         departListView.setItems(filteredDepartments);
         roleListView.setItems(filteredRoles);
     }
+
     public void clearroleselection(ActionEvent actionEvent) {
         Role_field.setText("");
         Role_field.clear();
@@ -1212,6 +1176,7 @@ public class paneUserController implements Initializable {
         filteredRoles.setPredicate(role -> true);
         roleListView.setItems(filteredRoles);
     }
+
     public void cleardepartselection(ActionEvent actionEvent) {
         Depart_field.setText("");
         Depart_field.clear();
@@ -1227,6 +1192,7 @@ public class paneUserController implements Initializable {
             resetAffectationTab();
         }
     }
+
     private void resetAffectationTab() {
         affectationlabel.setText("");
         // Clear selection and fields
@@ -1247,6 +1213,7 @@ public class paneUserController implements Initializable {
         departListView.setItems(filteredDepartments);
         roleListView.setItems(filteredRoles);
     }
+
     @FXML
     public void ExporterExcel(ActionEvent actionEvent) {
 
