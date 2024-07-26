@@ -118,6 +118,50 @@ public class LoginController {
             ex.printStackTrace();
         }
     }
+    /*
+    @FXML
+void Login(ActionEvent event) {
+    cnx = MyDataBase.getInstance().getCnx();
+    String qry = "SELECT u.*, ur.ID_Role " +
+                 "FROM `user` as u " +
+                 "JOIN `user_role` ur ON ur.ID_User = u.ID_User " +
+                 "WHERE u.`Email`=?";
+    try {
+        PreparedStatement stm = cnx.prepareStatement(qry);
+        stm.setString(1, LoginEmail.getText());
+        ResultSet rs = stm.executeQuery();
+        if (rs.next()) {
+            String storedHashedPassword = rs.getString("MDP");
+            String enteredPassword = LoginMDP.getText();
+
+            // Verify the entered password with the stored hashed password
+            if (BCrypt.checkpw(enteredPassword, storedHashedPassword)) {
+                User connectedUser = new User(
+                        rs.getInt("ID_User"),
+                        rs.getString("Nom"),
+                        rs.getString("Prenom"),
+                        rs.getString("Email"),
+                        rs.getString("MDP"),
+                        rs.getString("Image"),
+                        rs.getInt("ID_Manager"),
+                        rs.getInt("ID_Departement"),
+                        rs.getInt("ID_Role")
+                );
+                connectedUser.setIdRole(rs.getInt("ID_Role"));
+                populateUserSolde(connectedUser);
+                SessionManager.getInstance(connectedUser);
+                navigateToProfile(event);
+            } else {
+                System.out.println("Login failed: Invalid email or password.");
+            }
+        } else {
+            System.out.println("Login failed: Invalid email or password.");
+        }
+    } catch (SQLException | IOException ex) {
+        ex.printStackTrace();
+    }
+}*/
+
 
     private void populateUserSolde(User user) {
         String soldeQuery = "SELECT us.*, tc.Designation FROM user_solde us JOIN typeconge tc ON us.ID_TypeConge = tc.ID_TypeConge WHERE us.ID_User = ?";

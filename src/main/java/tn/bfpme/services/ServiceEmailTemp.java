@@ -44,27 +44,6 @@ public class ServiceEmailTemp {
         }
     }
 
-    public List<EmailsTemplates> RechercheEmailTemp(String rech) {
-        List<EmailsTemplates> emailstemps = new ArrayList<>();
-        String query = "SELECT * FROM `email_templates` WHERE `object` = ?";
-        Connection cnx = MyDataBase.getInstance().getCnx();
-        try {
-            PreparedStatement pts = cnx.prepareStatement(query);
-            pts.setString(1, rech);
-            ResultSet rs = pts.executeQuery();
-            while (rs.next()) {
-                EmailsTemplates EmailTemp = new EmailsTemplates(
-                        rs.getInt("id_Email"),
-                        rs.getString("object"),
-                        rs.getString("message")
-                );
-                emailstemps.add(EmailTemp);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return emailstemps;
-    }
 
     public void UpdateEmailTemp(int id, String object, String message) {
         String query = "UPDATE `email_templates` SET `object`=? ,`message`=? WHERE  `id_Email`=?";

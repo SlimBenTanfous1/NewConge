@@ -5,6 +5,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -1294,9 +1295,11 @@ public class paneUserController implements Initializable {
             String mdp = MDP_A.getText();
             String image = image_A.getText();
 
+            String hashedPassword = BCrypt.hashpw(mdp, BCrypt.gensalt());
+
             try {
                 if (!emailExists(email)) {
-                    User newUser = new User(0, nom, prenom, email, mdp, image, LocalDate.now());
+                    User newUser = new User(0, nom, prenom, email, hashedPassword, image, LocalDate.now());
                     UserS.AddUser_RH(newUser);
                     int newUserId = UserS.getLastInsertedUserId();
                     List<TypeConge> typeConges = serviceTypeConge.getAllTypeConge();
@@ -1319,9 +1322,11 @@ public class paneUserController implements Initializable {
             String Mdp = MDP_A.getText();
             String Image = image_A.getText();
             int IdUser = Integer.parseInt(ID_A.getText());
+            String hashedPassword = BCrypt.hashpw(Mdp, BCrypt.gensalt());
+
             try {
                 if (!emailExistss(Email, IdUser) || isCurrentUser(IdUser, Email)) {
-                    User user = new User(IdUser, Nom, Prenom, Email, Mdp, Image);
+                    User user = new User(IdUser, Nom, Prenom, Email, hashedPassword, Image);
                     UserS.Update(user);
                     infolabel.setText("Modification Effectuée");
                 } else {
