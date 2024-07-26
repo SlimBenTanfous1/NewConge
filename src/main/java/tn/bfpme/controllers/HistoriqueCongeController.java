@@ -48,11 +48,7 @@ public class HistoriqueCongeController implements Initializable {
     }
 
     public void load() {
-        ColumnConstraints columnConstraints = new ColumnConstraints();
-        columnConstraints.setHgrow(Priority.ALWAYS);
-        congeContainer.getColumnConstraints().add(columnConstraints);
-        congeContainer.setVgap(4);
-        congeContainer.setPadding(new Insets(4));
+        congeContainer.getColumnConstraints().clear();
         int row = 0;
         try {
             for (Conge conge : CongeS.afficher()) {
@@ -61,16 +57,18 @@ public class HistoriqueCongeController implements Initializable {
                 Pane CardBox = fxmlLoader.load();
                 CongeCarteController cardC = fxmlLoader.getController();
                 cardC.setData(conge);
+                CardBox.prefWidthProperty().bind(congeContainer.widthProperty()/*.divide(2).subtract(20)*/);
                 congeContainer.add(CardBox, 0, row++);
-                GridPane.setMargin(CardBox, new Insets(4, 4, 4, 4));
+                //GridPane.setMargin(CardBox, new Insets(4, 4, 4, 4));
                 CardBox.setMaxWidth(Double.MAX_VALUE);
-                congeContainer.setColumnSpan(CardBox, GridPane.REMAINING);
-                GridPane.setHalignment(CardBox, javafx.geometry.HPos.CENTER);
+                GridPane.setMargin(CardBox, new Insets(10));
+                //GridPane.setHalignment(CardBox, javafx.geometry.HPos.CENTER);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 
     @FXML
     void Recherche(KeyEvent event) {
@@ -81,7 +79,7 @@ public class HistoriqueCongeController implements Initializable {
             for (Conge conge : CongeS.Rechreche(recherche)) {
                 FXMLLoader fxmlLoader = new FXMLLoader();
                 fxmlLoader.setLocation(getClass().getResource("/CongeCarte.fxml"));
-                Pane CardBox = fxmlLoader.load();
+                AnchorPane CardBox = fxmlLoader.load();
                 CongeCarteController cardC = fxmlLoader.getController();
                 cardC.setData(conge);
                 congeContainer.add(CardBox, 0, row++);
