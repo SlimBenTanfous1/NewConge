@@ -378,7 +378,6 @@ public class paneRoleController implements Initializable {
         }
     }
 
-
     void loadRoles() {
         try {
             List<Role> roleList = roleService.getAllRoles();
