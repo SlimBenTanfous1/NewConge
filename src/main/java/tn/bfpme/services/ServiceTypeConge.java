@@ -33,29 +33,27 @@ public class ServiceTypeConge {
                         rs.getInt("ID_TypeConge"),
                         rs.getString("Designation"),
                         rs.getDouble("Pas"),
-                        rs.getInt("PeriodeJ"),
-                        rs.getInt("PeriodeM"),
-                        rs.getInt("PeriodeA"),
                         rs.getBoolean("File"),
-                        rs.getDouble("Limite")
-                );
+                        rs.getDouble("Limite"),
+                        rs.getString("Periode")
+
+                        );
                 typeconges.add(type);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return typeconges;
-    }    public void AddTypeConge(String designation, double pas, int periodeJ, int periodeM, int periodeA, boolean file, double limite) {
-        String query = "INSERT INTO typeconge (Designation, Pas, PeriodeJ, PeriodeM, PeriodeA, File,Limite) VALUES (?, ?, ?, ?, ?, ?,?)";
+    }    public void AddTypeConge(String designation, double pas, boolean file, double limite, String periode) {
+        String query = "INSERT INTO typeconge (Designation, Pas, File,Limite, Periode) VALUES (?, ?, ?, ?, ?)";
         try (Connection connection = MyDataBase.getInstance().getCnx();
              PreparedStatement preparedStatement = connection.prepareStatement(query)){
             preparedStatement.setString(1, designation);
             preparedStatement.setDouble(2, pas);
-            preparedStatement.setInt(3, periodeJ);
-            preparedStatement.setInt(4, periodeM);
-            preparedStatement.setInt(5, periodeA);
-            preparedStatement.setBoolean(6, file);
-            preparedStatement.setDouble(7, limite);
+            preparedStatement.setBoolean(3, file);
+            preparedStatement.setDouble(4, limite);
+            preparedStatement.setString(5, periode);
+
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -92,19 +90,25 @@ public class ServiceTypeConge {
         }
         return 0;
     }
-    public void updateTypeConge(int idSolde, String designation, double pas, int periodeJ, int periodeM, int periodeA, boolean fileRequired,double limite) {
-        String query = "UPDATE typeconge SET Designation = ?, Pas = ?, PeriodeJ = ?, PeriodeM = ?, PeriodeA = ?, File = ?, Limite= ? WHERE ID_TypeConge = ?";
+    public void updateTypeConge(int idSolde, String designation, double pas, boolean file, double limite, String periode) {
+        String query = "UPDATE typeconge SET Designation = ?, Pas = ?, File = ?, Limite = ?, Periode = ? WHERE ID_TypeConge = ?";
+
         try (Connection conn = MyDataBase.getInstance().getCnx();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, designation);
             stmt.setDouble(2, pas);
-            stmt.setInt(3, periodeJ);
-            stmt.setInt(4, periodeM);
-            stmt.setInt(5, periodeA);
-            stmt.setBoolean(6, fileRequired);
-            stmt.setDouble(7,limite);
-            stmt.setInt(8, idSolde);
-            stmt.executeUpdate();
+            stmt.setBoolean(3, file);
+            stmt.setDouble(4, limite);
+            stmt.setString(5, periode);
+            stmt.setInt(6, idSolde);
+
+            int rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected == 0) {
+                System.out.println("No rows were updated. Verify that the ID_TypeConge exists.");
+            } else {
+                System.out.println("Update successful.");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }

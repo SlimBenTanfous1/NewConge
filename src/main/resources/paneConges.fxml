@@ -3,10 +3,10 @@
 <?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
@@ -57,9 +57,7 @@
          <columns>
             <TableColumn fx:id="colDesignation" prefWidth="116.0" text="Designation" />
             <TableColumn fx:id="colPas" prefWidth="85.0" text="Pas" />
-            <TableColumn fx:id="colPeriodeJ" prefWidth="129.0" text="Période (Jour)" />
-            <TableColumn fx:id="colPeriodeM" prefWidth="164.0" text="Période (Mois)" />
-            <TableColumn fx:id="colPeriodeA" prefWidth="153.0" text="Période (Année)" />
+            <TableColumn fx:id="colPeriode" prefWidth="164.0" text="Période" />
             <TableColumn fx:id="colFile" prefWidth="145.0" text="Fichier" />
             <TableColumn fx:id="colLimite" prefWidth="155.0" text="Limite" />
          </columns>
@@ -140,11 +138,7 @@
                   </HBox>
                   <VBox prefHeight="94.0" prefWidth="289.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                      <children>
-                        <Spinner fx:id="periodespinner" centerShape="false" prefHeight="29.0" prefWidth="204.0" scaleShape="false">
-                           <VBox.margin>
-                              <Insets top="7.0" />
-                           </VBox.margin>
-                        </Spinner>
+                        <ComboBox fx:id="ComboPeriode" prefHeight="31.0" prefWidth="308.0" />
                         <Separator prefHeight="16.0" prefWidth="289.0" />
                         <Label fx:id="periodlabel" prefHeight="24.0" prefWidth="289.0" styleClass="FontSize-15" />
                      </children>

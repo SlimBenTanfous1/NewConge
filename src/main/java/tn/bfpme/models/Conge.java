@@ -182,9 +182,7 @@ public class Conge {
                     typeConge.setIdTypeConge(rs.getInt("ID_TypeConge"));
                     typeConge.setDesignation(rs.getString("Designation"));
                     typeConge.setPas(rs.getDouble("Pas"));
-                    typeConge.setPeriodeJ(rs.getInt("PeriodeJ"));
-                    typeConge.setPeriodeM(rs.getInt("PeriodeM"));
-                    typeConge.setPeriodeA(rs.getInt("PeriodeA"));
+                    typeConge.setPeriode(rs.getString("Periode"));
                     typeConge.setFile(rs.getBoolean("File"));
                 }
             }

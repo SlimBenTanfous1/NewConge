@@ -11,9 +11,7 @@ public class TypeConge {
     private int idTypeConge;
     private String Designation;
     private double Pas;
-    private int PeriodeJ;
-    private int PeriodeM;
-    private int PeriodeA;
+    private String Periode;
     private double Limite;
     private boolean File;
 
@@ -24,15 +22,14 @@ public class TypeConge {
         this.Designation = designation;
         this.Limite = Limite;
     }
-    public TypeConge(int idTypeConge, String Designation, double pas, int periodeJ, int periodeM, int periodeA, boolean file, double Limite) {
+    public TypeConge(int idTypeConge, String Designation, double pas, boolean file, double Limite, String Periode) {
         this.idTypeConge = idTypeConge;
         this.Designation = Designation;
         this.Pas = pas;
-        this.PeriodeJ = periodeJ;
-        this.PeriodeM = periodeM;
-        this.PeriodeA = periodeA;
         this.File = file;
         this.Limite = Limite;
+        this.Periode = Periode;
+
     }
 
     public TypeConge(int typeCongeID, String designation) {
@@ -55,10 +52,9 @@ public class TypeConge {
                 // type.setIdTypeConge(rs.getInt("ID_TypeConge"), totalsolde);
                 type.setDesignation(rs.getString("Type"));
                 type.setPas(rs.getDouble("Pas"));
-                type.setPeriodeJ(rs.getInt("PeriodeJ"));
-                type.setPeriodeM(rs.getInt("PeriodeM"));
-                type.setPeriodeA(rs.getInt("PeriodeA"));
                 type.setFile(rs.getBoolean("File"));
+                type.setPeriode(rs.getString("Periode"));
+
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -91,28 +87,13 @@ public class TypeConge {
         Pas = pas;
     }
 
-    public int getPeriodeJ() {
-        return PeriodeJ;
+
+    public String getPeriode() {
+        return Periode;
     }
 
-    public void setPeriodeJ(int periodeJ) {
-        PeriodeJ = periodeJ;
-    }
-
-    public int getPeriodeM() {
-        return PeriodeM;
-    }
-
-    public void setPeriodeM(int periodeM) {
-        PeriodeM = periodeM;
-    }
-
-    public int getPeriodeA() {
-        return PeriodeA;
-    }
-
-    public void setPeriodeA(int periodeA) {
-        PeriodeA = periodeA;
+    public void setPeriode(String periode) {
+        Periode = periode;
     }
 
     public boolean isFile() {
@@ -137,9 +118,7 @@ public class TypeConge {
                 "idTypeConge=" + idTypeConge +
                 ", Designation=" + Designation +
                 ", Pas=" + Pas +
-                ", PeriodeJ=" + PeriodeJ +
-                ", PeriodeM=" + PeriodeM +
-                ", PeriodeA=" + PeriodeA +
+                ", Periode=" + Periode +
                 ", File=" + File +
                 '}';
     }

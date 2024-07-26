@@ -20,6 +20,7 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -29,25 +30,25 @@ public class AttributionSoldeController implements Initializable {
     @FXML
     private TableView<TypeConge> Table_TypeConge;
     @FXML
-    private Spinner<Integer> periodespinner;
-    @FXML
     private TableColumn<TypeConge, String> colDesignation;
     @FXML
     private TableColumn<TypeConge, Double> colPas;
     @FXML
     private TableColumn<TypeConge, Double> colLimite;
     @FXML
-    private TableColumn<TypeConge, Integer> colPeriodeJ, colPeriodeM, colPeriodeA;
+    private TableColumn<TypeConge, String> colPeriode;
     @FXML
     private TableColumn<TypeConge, Boolean> colFile;
     @FXML
-    private TextField RechercheSol, Pas_Solde, ID_Solde, Designation_Solde,Limite_Solde;
+    private TextField RechercheSol, Pas_Solde, ID_Solde, Designation_Solde, Limite_Solde;
     @FXML
     private RadioButton fileOuiRadioButton, fileNonRadioButton;
     @FXML
     private ToggleGroup fileToggleGroup;
     @FXML
     private Label periodlabel, labelSolde;
+    @FXML
+    private ComboBox<String> ComboPeriode;
     @FXML
     private Button btnSave, btnSaveEdit, btnCancel, Ajout_Solde, Supprimer_Solde, Modifier_Solde, btnRemoveFilter;
     @FXML
@@ -60,27 +61,30 @@ public class AttributionSoldeController implements Initializable {
     private ServiceUtilisateur serviceUtilisateur;
     private ServiceUserSolde serviceUserSolde;
 
+    private HashMap<String, Integer> periodDaysMap;
+
     public AttributionSoldeController() {
         this.serviceTypeConge = new ServiceTypeConge();
         this.serviceUtilisateur = new ServiceUtilisateur();
         this.serviceUserSolde = new ServiceUserSolde();
+        this.periodDaysMap = new HashMap<>();
+        this.periodDaysMap.put("Semestriel", 180);
+        this.periodDaysMap.put("Trimestriel", 90);
+        this.periodDaysMap.put("Annuel", 365);
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        ComboPeriode.setItems(FXCollections.observableArrayList("Semestriel", "Trimestriel", "Annuel"));
+
         colDesignation.setCellValueFactory(new PropertyValueFactory<>("designation"));
         colPas.setCellValueFactory(new PropertyValueFactory<>("pas"));
-        colPeriodeJ.setCellValueFactory(new PropertyValueFactory<>("periodeJ"));
-        colPeriodeM.setCellValueFactory(new PropertyValueFactory<>("periodeM"));
-        colPeriodeA.setCellValueFactory(new PropertyValueFactory<>("periodeA"));
-        colFile.setCellValueFactory(new PropertyValueFactory<>("file"));
         colLimite.setCellValueFactory(new PropertyValueFactory<>("limite"));
+        colPeriode.setCellValueFactory(new PropertyValueFactory<>("periode"));
+        colFile.setCellValueFactory(new PropertyValueFactory<>("file"));
 
+        ComboPeriode.valueProperty().addListener((obs, oldVal, newVal) -> updatePeriodLabel(newVal));
 
-        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 3650, 0);
-        periodespinner.setValueFactory(valueFactory);
-        periodespinner.setEditable(true);
-        periodespinner.valueProperty().addListener((obs, oldValue, newValue) -> updatePeriodLabel(newValue));
         loadSoldeConge();
         RechercheSol.addEventHandler(KeyEvent.KEY_RELEASED, event -> Recherche_Solde());
         btnRemoveFilter.setOnAction(event -> {
@@ -114,10 +118,8 @@ public class AttributionSoldeController implements Initializable {
     public void SaveAjout() {
         String designation = Designation_Solde.getText().trim();
         double pas = Double.parseDouble(Pas_Solde.getText().trim());
-        int totalDays = periodespinner.getValue();
-        int[] periods = new int[3]; // 0: years, 1: months, 2: days
-        double limite= Double.parseDouble(Limite_Solde.getText().trim());
-        splitPeriod(totalDays, periods);
+        String periode = ComboPeriode.getValue();
+        double limite = Double.parseDouble(Limite_Solde.getText().trim());
         boolean file = fileOuiRadioButton.isSelected();
         if (Designation_Solde.getText().isEmpty() || Pas_Solde.getText().isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Champs requis non remplis", "Veuillez remplir toutes les informations nécessaires.");
@@ -127,8 +129,7 @@ public class AttributionSoldeController implements Initializable {
             labelSolde.setText("Type de congé avec cette désignation existe déjà.");
             return;
         }
-        //serviceTypeConge.AddTypeConge(designation, pas, periods[2], periods[1], periods[0], file);
-        serviceTypeConge.AddTypeConge(designation,pas,periods[2],periods[1],periods[0],file,limite);
+        serviceTypeConge.AddTypeConge(designation, pas, file, limite, periode);
         loadSoldeConge();
         distributeNewLeaveTypeToUsers(designation);
         labelSolde.setText("Type de congé ajouté.");
@@ -140,17 +141,14 @@ public class AttributionSoldeController implements Initializable {
         int idSolde = Integer.parseInt(ID_Solde.getText().trim());
         String designation = Designation_Solde.getText().trim();
         double pas = Double.parseDouble(Pas_Solde.getText().trim());
-        int totalDays = periodespinner.getValue();
-        int[] periods = new int[3]; // 0: years, 1: months, 2: days
+        String periode = ComboPeriode.getValue();
         double limite = Double.parseDouble(Limite_Solde.getText().trim());
-
-        splitPeriod(totalDays, periods);
         boolean file = fileOuiRadioButton.isSelected();
         if (Designation_Solde.getText().isEmpty() || Pas_Solde.getText().isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Champs requis non remplis", "Veuillez remplir toutes les informations nécessaires.");
             return;
         }
-        serviceTypeConge.updateTypeConge(idSolde, designation, pas, periods[2], periods[1], periods[0], file,limite);
+        serviceTypeConge.updateTypeConge(idSolde, designation, pas, file, limite, periode);
         loadSoldeConge();
         labelSolde.setText("Solde modifié.");
         toggleButtonVisibility(true);
@@ -238,15 +236,17 @@ public class AttributionSoldeController implements Initializable {
             ID_Solde.setText(String.valueOf(typeConge.getIdTypeConge()));
             Designation_Solde.setText(typeConge.getDesignation());
             Pas_Solde.setText(String.valueOf(typeConge.getPas()));
-            int totalDays = typeConge.getPeriodeJ() + typeConge.getPeriodeM() * 30 + typeConge.getPeriodeA() * 365;
-            periodespinner.getValueFactory().setValue(totalDays);
-            updatePeriodLabel(totalDays);
-            formDisableOption(true);
+            Limite_Solde.setText(String.valueOf(typeConge.getLimite()));
+            ComboPeriode.setValue(typeConge.getPeriode());
+            updatePeriodLabel(typeConge.getPeriode());
+
             if (typeConge.isFile()) {
                 fileOuiRadioButton.setSelected(true);
             } else {
                 fileNonRadioButton.setSelected(true);
             }
+
+            formDisableOption(true);
         }
     }
 
@@ -254,42 +254,46 @@ public class AttributionSoldeController implements Initializable {
         ID_Solde.clear();
         Designation_Solde.clear();
         Pas_Solde.clear();
-        periodespinner.getValueFactory().setValue(0);
+        Limite_Solde.clear();
+        ComboPeriode.setValue(null);
         periodlabel.setText("");
         fileToggleGroup.selectToggle(null); // Clear radio button selection
-        Limite_Solde.clear();
     }
 
-    private void splitPeriod(int totalDays, int[] periods) {
-        periods[0] = totalDays / 365; // years
-        totalDays %= 365;
-        periods[1] = totalDays / 30; // months
-        periods[2] = totalDays % 30; // days
-    }
-
-    private void updatePeriodLabel(int totalDays) {
-        int[] periods = new int[3]; // 0: years, 1: months, 2: days
-        splitPeriod(totalDays, periods);
-        String periodText = String.format("%d année%s, %d mois, %d jour%s",
-                periods[0], periods[0] > 1 ? "s" : "",
-                periods[1],
-                periods[2], periods[2] > 1 ? "s" : "");
+    private void updatePeriodLabel(String periode) {
+        String periodText = "";
+        switch (periode) {
+            case "Semestriel":
+                periodText = "6 mois";
+                break;
+            case "Trimestriel":
+                periodText = "3 mois";
+                break;
+            case "Annuel":
+                periodText = "1 année";
+                break;
+            default:
+                periodText = "Période non définie";
+                break;
+        }
         periodlabel.setText(periodText);
     }
 
     private void formDisableOption(boolean arg) {
         Designation_Solde.setDisable(arg);
         Pas_Solde.setDisable(arg);
+        Limite_Solde.setDisable(arg);
         fileOuiRadioButton.setDisable(arg);
         fileNonRadioButton.setDisable(arg);
-        periodespinner.setDisable(arg);
-        Limite_Solde.setDisable(arg);
+        ComboPeriode.setDisable(arg);
     }
 
     private void formClear() {
         Designation_Solde.clear();
         Pas_Solde.clear();
-        periodespinner.cancelEdit();
+        Limite_Solde.clear();
+        ComboPeriode.setValue(null);
+        periodlabel.setText("");
         fileOuiRadioButton.setSelected(false);
         fileNonRadioButton.setSelected(false);
     }

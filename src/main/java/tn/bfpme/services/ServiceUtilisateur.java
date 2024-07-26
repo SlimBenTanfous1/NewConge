@@ -133,9 +133,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 typeConge.setIdTypeConge(rs.getInt("TypeConge"));
                 typeConge.setDesignation(rs.getString("Designation"));
                 typeConge.setPas(rs.getDouble("Pas"));
-                typeConge.setPeriodeJ(rs.getInt("PeriodeJ"));
-                typeConge.setPeriodeM(rs.getInt("PeriodeM"));
-                typeConge.setPeriodeA(rs.getInt("PeriodeA"));
+                typeConge.setPeriode(rs.getString("Periode"));
                 typeConge.setFile(rs.getBoolean("File"));
                 conge.setTypeConge2(typeConge); // Set the TypeConge object
                 conges.add(conge);
@@ -310,9 +308,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 typeConge.setIdTypeConge(rs.getInt("TypeConge"));
                 typeConge.setDesignation(rs.getString("Designation"));
                 typeConge.setPas(rs.getDouble("Pas"));
-                typeConge.setPeriodeJ(rs.getInt("PeriodeJ"));
-                typeConge.setPeriodeM(rs.getInt("PeriodeM"));
-                typeConge.setPeriodeA(rs.getInt("PeriodeA"));
+                typeConge.setPeriode(rs.getString("Periode"));
                 typeConge.setFile(rs.getBoolean("File"));
                 conge.setTypeConge2(typeConge); // Set the TypeConge object
                 conges.add(conge);
@@ -379,9 +375,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 typeConge.setIdTypeConge(rs.getInt("TypeConge"));
                 typeConge.setDesignation(rs.getString("Designation"));
                 typeConge.setPas(rs.getDouble("Pas"));
-                typeConge.setPeriodeJ(rs.getInt("PeriodeJ"));
-                typeConge.setPeriodeM(rs.getInt("PeriodeM"));
-                typeConge.setPeriodeA(rs.getInt("PeriodeA"));
+                typeConge.setPeriode(rs.getString("Periode"));
                 typeConge.setFile(rs.getBoolean("File"));
                 conge.setTypeConge2(typeConge); // Set the TypeConge object
                 conges.add(conge);
@@ -423,9 +417,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 // typeConge.setIdTypeConge(rs.getInt("ID_TypeConge"), totalSolde);
                 typeConge.setDesignation(rs.getString("Designation"));
                 typeConge.setPas(rs.getDouble("Pas"));
-                typeConge.setPeriodeJ(rs.getInt("PeriodeJ"));
-                typeConge.setPeriodeM(rs.getInt("PeriodeM"));
-                typeConge.setPeriodeA(rs.getInt("PeriodeA"));
+                typeConge.setPeriode(rs.getString("Periode"));
                 typeConge.setFile(rs.getBoolean("File"));
 
                 user.addTypeConge(typeConge);
@@ -504,9 +496,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 //typeConge.setIdTypeConge(rs.getInt("ID_TypeConge"), totalSolde);
                 typeConge.setDesignation(rs.getString("Type"));
                 typeConge.setPas(rs.getDouble("Pas"));
-                typeConge.setPeriodeJ(rs.getInt("PeriodeJ"));
-                typeConge.setPeriodeM(rs.getInt("PeriodeM"));
-                typeConge.setPeriodeA(rs.getInt("PeriodeA"));
+                typeConge.setPeriode(rs.getString("Periode"));
                 typeConge.setFile(rs.getBoolean("File"));
                 typeConges.add(typeConge);
             }
