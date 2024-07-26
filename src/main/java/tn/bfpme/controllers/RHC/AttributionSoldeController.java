@@ -29,25 +29,25 @@ public class AttributionSoldeController implements Initializable {
     @FXML
     private TableView<TypeConge> Table_TypeConge;
     @FXML
-    private Spinner<Integer> periodespinner;
-    @FXML
     private TableColumn<TypeConge, String> colDesignation;
     @FXML
     private TableColumn<TypeConge, Double> colPas;
     @FXML
     private TableColumn<TypeConge, Double> colLimite;
     @FXML
-    private TableColumn<TypeConge, Integer> colPeriodeJ, colPeriodeM, colPeriodeA;
+    private TableColumn<TypeConge, String> colPeriode;
     @FXML
     private TableColumn<TypeConge, Boolean> colFile;
     @FXML
-    private TextField RechercheSol, Pas_Solde, ID_Solde, Designation_Solde,Limite_Solde;
+    private TextField RechercheSol, Pas_Solde, ID_Solde, Designation_Solde, Limite_Solde;
     @FXML
     private RadioButton fileOuiRadioButton, fileNonRadioButton;
     @FXML
     private ToggleGroup fileToggleGroup;
     @FXML
     private Label periodlabel, labelSolde;
+    @FXML
+    private ComboBox<String> ComboPeriode;
     @FXML
     private Button btnSave, btnSaveEdit, btnCancel, Ajout_Solde, Supprimer_Solde, Modifier_Solde, btnRemoveFilter;
     @FXML
@@ -68,19 +68,14 @@ public class AttributionSoldeController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        ComboPeriode.setItems(FXCollections.observableArrayList("Semestriel", "Trimestriel", "Annuel"));
+
         colDesignation.setCellValueFactory(new PropertyValueFactory<>("designation"));
         colPas.setCellValueFactory(new PropertyValueFactory<>("pas"));
-        colPeriodeJ.setCellValueFactory(new PropertyValueFactory<>("periodeJ"));
-        colPeriodeM.setCellValueFactory(new PropertyValueFactory<>("periodeM"));
-        colPeriodeA.setCellValueFactory(new PropertyValueFactory<>("periodeA"));
+        colPeriode.setCellValueFactory(new PropertyValueFactory<>("periode"));
         colFile.setCellValueFactory(new PropertyValueFactory<>("file"));
         colLimite.setCellValueFactory(new PropertyValueFactory<>("limite"));
 
-
-        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 3650, 0);
-        periodespinner.setValueFactory(valueFactory);
-        periodespinner.setEditable(true);
-        periodespinner.valueProperty().addListener((obs, oldValue, newValue) -> updatePeriodLabel(newValue));
         loadSoldeConge();
         RechercheSol.addEventHandler(KeyEvent.KEY_RELEASED, event -> Recherche_Solde());
         btnRemoveFilter.setOnAction(event -> {
@@ -114,12 +109,11 @@ public class AttributionSoldeController implements Initializable {
     public void SaveAjout() {
         String designation = Designation_Solde.getText().trim();
         double pas = Double.parseDouble(Pas_Solde.getText().trim());
-        int totalDays = periodespinner.getValue();
-        int[] periods = new int[3]; // 0: years, 1: months, 2: days
-        double limite= Double.parseDouble(Limite_Solde.getText().trim());
-        splitPeriod(totalDays, periods);
+        String periode = ComboPeriode.getValue();
+        double limite = Double.parseDouble(Limite_Solde.getText().trim());
         boolean file = fileOuiRadioButton.isSelected();
-        if (Designation_Solde.getText().isEmpty() || Pas_Solde.getText().isEmpty()) {
+
+        if (designation.isEmpty() || Pas_Solde.getText().isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Champs requis non remplis", "Veuillez remplir toutes les informations nécessaires.");
             return;
         }
@@ -127,8 +121,7 @@ public class AttributionSoldeController implements Initializable {
             labelSolde.setText("Type de congé avec cette désignation existe déjà.");
             return;
         }
-        //serviceTypeConge.AddTypeConge(designation, pas, periods[2], periods[1], periods[0], file);
-        serviceTypeConge.AddTypeConge(designation,pas,periods[2],periods[1],periods[0],file,limite);
+        serviceTypeConge.AddTypeConge(designation, pas, file, limite,periode);
         loadSoldeConge();
         distributeNewLeaveTypeToUsers(designation);
         labelSolde.setText("Type de congé ajouté.");
@@ -140,21 +133,20 @@ public class AttributionSoldeController implements Initializable {
         int idSolde = Integer.parseInt(ID_Solde.getText().trim());
         String designation = Designation_Solde.getText().trim();
         double pas = Double.parseDouble(Pas_Solde.getText().trim());
-        int totalDays = periodespinner.getValue();
-        int[] periods = new int[3]; // 0: years, 1: months, 2: days
+        String periode = ComboPeriode.getValue();
         double limite = Double.parseDouble(Limite_Solde.getText().trim());
-
-        splitPeriod(totalDays, periods);
         boolean file = fileOuiRadioButton.isSelected();
-        if (Designation_Solde.getText().isEmpty() || Pas_Solde.getText().isEmpty()) {
+
+        if (designation.isEmpty() || Pas_Solde.getText().isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Champs requis non remplis", "Veuillez remplir toutes les informations nécessaires.");
             return;
         }
-        serviceTypeConge.updateTypeConge(idSolde, designation, pas, periods[2], periods[1], periods[0], file,limite);
+        serviceTypeConge.updateTypeConge(idSolde, designation, pas, file, limite, periode);
         loadSoldeConge();
         labelSolde.setText("Solde modifié.");
         toggleButtonVisibility(true);
     }
+
 
     @FXML
     public void AjouterTypeButton() {
@@ -238,9 +230,8 @@ public class AttributionSoldeController implements Initializable {
             ID_Solde.setText(String.valueOf(typeConge.getIdTypeConge()));
             Designation_Solde.setText(typeConge.getDesignation());
             Pas_Solde.setText(String.valueOf(typeConge.getPas()));
-            int totalDays = typeConge.getPeriodeJ() + typeConge.getPeriodeM() * 30 + typeConge.getPeriodeA() * 365;
-            periodespinner.getValueFactory().setValue(totalDays);
-            updatePeriodLabel(totalDays);
+            ComboPeriode.setValue(typeConge.getPeriode());
+            Limite_Solde.setText(String.valueOf(typeConge.getLimite()));
             formDisableOption(true);
             if (typeConge.isFile()) {
                 fileOuiRadioButton.setSelected(true);
@@ -254,44 +245,18 @@ public class AttributionSoldeController implements Initializable {
         ID_Solde.clear();
         Designation_Solde.clear();
         Pas_Solde.clear();
-        periodespinner.getValueFactory().setValue(0);
-        periodlabel.setText("");
-        fileToggleGroup.selectToggle(null); // Clear radio button selection
+        ComboPeriode.setValue(null);
         Limite_Solde.clear();
-    }
-
-    private void splitPeriod(int totalDays, int[] periods) {
-        periods[0] = totalDays / 365; // years
-        totalDays %= 365;
-        periods[1] = totalDays / 30; // months
-        periods[2] = totalDays % 30; // days
-    }
-
-    private void updatePeriodLabel(int totalDays) {
-        int[] periods = new int[3]; // 0: years, 1: months, 2: days
-        splitPeriod(totalDays, periods);
-        String periodText = String.format("%d année%s, %d mois, %d jour%s",
-                periods[0], periods[0] > 1 ? "s" : "",
-                periods[1],
-                periods[2], periods[2] > 1 ? "s" : "");
-        periodlabel.setText(periodText);
+        fileToggleGroup.selectToggle(null); // Clear radio button selection
     }
 
     private void formDisableOption(boolean arg) {
         Designation_Solde.setDisable(arg);
         Pas_Solde.setDisable(arg);
+        ComboPeriode.setDisable(arg);
+        Limite_Solde.setDisable(arg);
         fileOuiRadioButton.setDisable(arg);
         fileNonRadioButton.setDisable(arg);
-        periodespinner.setDisable(arg);
-        Limite_Solde.setDisable(arg);
-    }
-
-    private void formClear() {
-        Designation_Solde.clear();
-        Pas_Solde.clear();
-        periodespinner.cancelEdit();
-        fileOuiRadioButton.setSelected(false);
-        fileNonRadioButton.setSelected(false);
     }
 
     private void toggleButtonVisibility(boolean showCrud) {
