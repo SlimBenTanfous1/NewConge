@@ -11,9 +11,6 @@ import java.util.List;
 public class ServiceTypeConge {
     private Connection cnx;
 
-    public ServiceTypeConge(Connection cnx) {
-        this.cnx = cnx;
-    }
 
     public ServiceTypeConge() {
         this.cnx = MyDataBase.getInstance().getCnx();
