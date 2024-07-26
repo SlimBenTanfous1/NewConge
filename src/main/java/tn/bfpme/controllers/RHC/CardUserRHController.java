@@ -115,6 +115,7 @@ public class CardUserRHController {
             pUC.Prenom_A.setDisable(false);
             pUC.email_A.setDisable(false);
             pUC.MDP_A.setDisable(false);
+            pUC.upload.setDisable(false);
             FXMLLoader mainLoader = new FXMLLoader(getClass().getResource("/RH_Interface.fxml"));
             Parent mainRoot = mainLoader.load();
             RHController mainController = mainLoader.getController();

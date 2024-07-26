@@ -707,35 +707,8 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
     }
 
-    @Override
-    public User getUserById(int userId) {
-        User user = null;
-        String query = "SELECT * FROM user WHERE ID_User = ?";
-        try (Connection connection = MyDataBase.getInstance().getCnx();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, userId);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                user = new User();
-                user.setIdUser(resultSet.getInt("ID_User"));
-                user.setPrenom(resultSet.getString("Prenom"));
-                user.setNom(resultSet.getString("Nom"));
-                user.setEmail(resultSet.getString("Email"));
-                user.setMdp(resultSet.getString("MDP"));
-                user.setImage(resultSet.getString("Image"));
 
-                Date sqlDate = resultSet.getDate("Creation_Date");
-                if (sqlDate != null) {
-                    user.setCreationDate(sqlDate.toLocalDate());
-                } else {
-                    user.setCreationDate(null);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return user;
-    }
+
 
     @Override
     public void Add(User user) {
@@ -1048,176 +1021,94 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
         return DepName;
     }
-
-
-    private Integer findManagerInDepartmentHierarchy(int userId, int deptId, List<Integer> parentRoleIds) throws SQLException {
-        Set<Integer> visitedDepts = new HashSet<>();
-        while (deptId != 0 && !visitedDepts.contains(deptId)) {
-            visitedDepts.add(deptId);
-            Integer managerId = findManagerInDepartment(userId, deptId, parentRoleIds);
-            if (managerId != null) {
-                return managerId;
-            }
-
-            // If not found, check the parent department recursively
-            String parentDeptQuery = "SELECT Parent_Dept FROM departement WHERE ID_Departement = ?";
-            try (PreparedStatement stmt = cnx.prepareStatement(parentDeptQuery)) {
-                stmt.setInt(1, deptId);
-                ResultSet rs = stmt.executeQuery();
-                if (rs.next()) {
-                    deptId = rs.getInt("Parent_Dept");
-                } else {
-                    break;
-                }
-            }
-        }
-        return null;
-    }
-
-    private Integer findManagerInDepartment(int userId, int deptId, List<Integer> parentRoleIds) throws SQLException {
-        for (int parentRoleId : parentRoleIds) {
-            String query = "SELECT u.ID_User FROM user u JOIN user_role ur ON u.ID_User = ur.ID_User WHERE u.ID_Departement = ? AND ur.ID_Role = ? AND u.ID_User != ? LIMIT 1";
-            try (PreparedStatement stmt = cnx.prepareStatement(query)) {
-                stmt.setInt(1, deptId);
-                stmt.setInt(2, parentRoleId);
-                stmt.setInt(3, userId);
-                ResultSet rs = stmt.executeQuery();
-                if (rs.next()) {
-                    return rs.getInt("ID_User");
-                }
-            }
-        }
-        return null;
-    }
-
-    private Integer getPDGId() throws SQLException {
-        String query = "SELECT u.ID_User FROM user u JOIN user_role ur ON u.ID_User = ur.ID_User WHERE ur.ID_Role = (SELECT r.ID_Role FROM role r WHERE r.nom = 'PDG') LIMIT 1";
+    private int getEmployeeRoleId() throws SQLException {
+        String query = "SELECT ID_Role FROM role WHERE nom = 'Employee' LIMIT 1";
         try (PreparedStatement stmt = cnx.prepareStatement(query)) {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return rs.getInt("ID_User");
+                return rs.getInt("ID_Role");
             }
         }
-        return null;
+        return -1; // Or handle appropriately if 'Employee' role doesn't exist
     }
 
-    private void setManagerForUser(int userId, int departmentId, int roleId) throws SQLException {
-        System.out.println("Setting manager for user ID: " + userId);
 
-        // Fetch the parent role IDs
-        List<Integer> parentRoleIds = getParentRoleIds(roleId);
-        if (parentRoleIds.isEmpty()) {
-            System.out.println("No parent roles found for role ID: " + roleId);
-            return;
-        }
 
-        // Find manager within the department hierarchy
-        Integer managerId = findManagerInDepartmentHierarchy(userId, departmentId, parentRoleIds);
 
-        // If no manager found, set to default manager (e.g., PDG)
-        if (managerId == null) {
-            managerId = getPDGId();
-            System.out.println("No manager found in department hierarchy. Defaulting to PDG: " + managerId);
-        }
-
-        // Ensure managerId is not null before proceeding
-        if (managerId == null) {
-            System.out.println("No PDG found. Cannot set manager for user ID: " + userId);
-            return;
-        }
-
-        // Update user's manager
-        String updateManagerQuery = "UPDATE user SET ID_Manager = ? WHERE ID_User = ?";
-        try (PreparedStatement stmt = cnx.prepareStatement(updateManagerQuery)) {
-            stmt.setInt(1, managerId);
-            stmt.setInt(2, userId);
-            stmt.executeUpdate();
-            System.out.println("Manager set for user ID: " + userId + " to manager ID: " + managerId);
-        }
-    }
-
-    private List<Integer> getParentRoleIds(int roleId) throws SQLException {
-        String query = "SELECT ID_RoleP FROM rolehierarchie WHERE ID_RoleC = ?";
-        List<Integer> parentRoleIds = new ArrayList<>();
-        try (PreparedStatement stmt = cnx.prepareStatement(query)) {
-            stmt.setInt(1, roleId);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                parentRoleIds.add(rs.getInt("ID_RoleP"));
-            }
-        }
-        return parentRoleIds;
-    }
-
-    public void updateUserRoleAndDepartment(int userId, int roleId, int departmentId) throws SQLException {
-        if (cnx == null || cnx.isClosed()) {
-            cnx = MyDataBase.getInstance().getCnx();
-        }
-
-        // Log the parameters
-        System.out.println("Updating user with UserID: " + userId + ", RoleID: " + roleId + ", DepartmentID: " + departmentId);
-
-        // Validate role-department relationship
-        if (!isRoleDepartmentValid(roleId, departmentId)) {
-            throw new SQLException("Invalid role-department relationship");
-        }
-
-        // Update user's department
-        String updateDepartmentQuery = "UPDATE user SET ID_Departement = ? WHERE ID_User = ?";
-        try (PreparedStatement stmt = cnx.prepareStatement(updateDepartmentQuery)) {
-            stmt.setInt(1, departmentId);
-            stmt.setInt(2, userId);
-            stmt.executeUpdate();
-        }
-
-        // Check if the user already has a role
-        String checkRoleQuery = "SELECT COUNT(*) FROM user_role WHERE ID_User = ?";
-        try (PreparedStatement stmt = cnx.prepareStatement(checkRoleQuery)) {
-            stmt.setInt(1, userId);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next() && rs.getInt(1) > 0) {
-                // Update the user's role
-                String updateRoleQuery = "UPDATE user_role SET ID_Role = ? WHERE ID_User = ?";
-                try (PreparedStatement roleStmt = cnx.prepareStatement(updateRoleQuery)) {
-                    roleStmt.setInt(1, roleId);
-                    roleStmt.setInt(2, userId);
-                    roleStmt.executeUpdate();
-                }
-            } else {
-                // Insert a new role for the user
-                String insertRoleQuery = "INSERT INTO user_role (ID_User, ID_Role) VALUES (?, ?)";
-                try (PreparedStatement roleStmt = cnx.prepareStatement(insertRoleQuery)) {
-                    roleStmt.setInt(1, userId);
-                    roleStmt.setInt(2, roleId);
-                    roleStmt.executeUpdate();
-                }
-            }
-        }
-
-        // Update the manager for the user
-        setManagerForUser(userId, departmentId, roleId);
-    }
-
-    private boolean isRoleDepartmentValid(int roleId, int departmentId) throws SQLException {
-        System.out.println("Checking role-department validity for Role ID: " + roleId + ", Department ID: " + departmentId);
-        String query = "SELECT COUNT(*) FROM role_departement WHERE ID_Role = ? AND ID_Departement = ?";
+    private Integer findManagerByRoleAndDepartment(int roleId, int departmentId) throws SQLException {
+        // Define the query to find the suitable manager based on role and department hierarchy
+        String query = "SELECT u.ID_User " +
+                "FROM user u " +
+                "JOIN user_role ur ON u.ID_User = ur.ID_User " +
+                "JOIN departement d ON u.ID_Departement = d.ID_Departement " +
+                "WHERE ur.ID_Role = (SELECT rh.ID_RoleP FROM rolehierarchie rh WHERE rh.ID_RoleC = ? LIMIT 1) " +
+                "AND d.ID_Departement = (SELECT d.Parent_Dept FROM departement d WHERE d.ID_Departement = ? LIMIT 1) " +
+                "LIMIT 1";
         try (PreparedStatement stmt = cnx.prepareStatement(query)) {
             stmt.setInt(1, roleId);
             stmt.setInt(2, departmentId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                int count = rs.getInt(1);
-                System.out.println("Validation query result count: " + count);
-                return count > 0;
+                return rs.getInt("ID_User");
             }
         }
-        return false;
+        return null; // Return null if no suitable manager is found
+    }
+
+    private List<User> getUsersInDepartment(int departmentId) throws SQLException {
+        List<User> users = new ArrayList<>();
+        String query = "SELECT u.*, ur.ID_Role FROM user u JOIN user_role ur ON u.ID_User = ur.ID_User WHERE u.ID_Departement = ?";
+        try (PreparedStatement stmt = cnx.prepareStatement(query)) {
+            stmt.setInt(1, departmentId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                users.add(new User(
+                        rs.getInt("ID_User"),
+                        rs.getString("Nom"),
+                        rs.getString("Prenom"),
+                        rs.getString("Email"),
+                        rs.getString("MDP"),
+                        rs.getString("Image"),
+                        rs.getDate("Creation_Date") != null ? rs.getDate("Creation_Date").toLocalDate() : null,
+                        rs.getInt("ID_Departement"),
+                        rs.getInt("ID_Manager"),
+                        rs.getInt("ID_Role")));
+            }
+        }
+        return users;
+    }
+
+    // Method to get all subordinate departments
+    private List<Integer> getSubDepartmentIds(int departmentId) throws SQLException {
+        List<Integer> subDepartmentIds = new ArrayList<>();
+        String query = "SELECT ID_Departement FROM departement WHERE Parent_Dept = ?";
+        try (PreparedStatement stmt = cnx.prepareStatement(query)) {
+            stmt.setInt(1, departmentId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                subDepartmentIds.add(rs.getInt("ID_Departement"));
+                // Recursively get sub-departments
+                subDepartmentIds.addAll(getSubDepartmentIds(rs.getInt("ID_Departement")));
+            }
+        }
+        return subDepartmentIds;
     }
 
 
 
 
 
+    private int getRoleIdByName(String roleName) throws SQLException {
+        String query = "SELECT ID_Role FROM role WHERE nom = ?";
+        try (PreparedStatement stmt = cnx.prepareStatement(query)) {
+            stmt.setString(1, roleName);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("ID_Role");
+            }
+        }
+        return -1; // Return -1 if the role is not found
+    }
 
     public List<User> getAllUsers() {
         List<User> userList = new ArrayList<>();
@@ -1285,55 +1176,372 @@ public class ServiceUtilisateur implements IUtilisateur {
         return null;
     }
 
-    public void removeUserRole(int userId) throws SQLException {
-        String query = "DELETE FROM user_role WHERE ID_User = ?";
-        Connection conn = MyDataBase.getInstance().getCnx();
-        if (conn == null || conn.isClosed()) {
-            conn = MyDataBase.getInstance().getCnx();
-        }
-        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setInt(1, userId);
-            pstmt.executeUpdate();
-        }
-    }
 
-    public void removeUserDepartment(int userId) throws SQLException {
-        String query = "UPDATE user SET ID_Departement = NULL WHERE ID_User = ?";
-        Connection conn = MyDataBase.getInstance().getCnx();
-        if (conn == null || conn.isClosed()) {
-            conn = MyDataBase.getInstance().getCnx();
-        }
-        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setInt(1, userId);
-            pstmt.executeUpdate();
-        }
-    }
 
+
+    //------------------------------- Hierarchie ---------------------------//*
     public void removeUserRoleAndDepartment(int userId) throws SQLException {
-        String queryRole = "DELETE FROM user_role WHERE ID_User = ?";
-        String queryDepartmentAndManager = "UPDATE user SET ID_Departement = NULL, ID_Manager = NULL WHERE ID_User = ?";
-        Connection conn = MyDataBase.getInstance().getCnx();
-        if (conn == null || conn.isClosed()) {
-            conn = MyDataBase.getInstance().getCnx();
+        if (cnx == null || cnx.isClosed()) {
+            cnx = MyDataBase.getInstance().getCnx();
         }
-        try (PreparedStatement pstmtRole = conn.prepareStatement(queryRole);
-             PreparedStatement pstmtDepartmentAndManager = conn.prepareStatement(queryDepartmentAndManager)) {
 
-            conn.setAutoCommit(false); // Begin transaction
+        User currentUser = getUserById(userId);
+        if (currentUser == null) {
+            throw new SQLException("User not found.");
+        }
 
-            pstmtRole.setInt(1, userId);
-            pstmtRole.executeUpdate();
+        // Update subordinates before removing the user from the hierarchy
+        updateSubordinatesForUser(userId);
 
-            pstmtDepartmentAndManager.setInt(1, userId);
-            pstmtDepartmentAndManager.executeUpdate();
+        // Remove the user's role and department
+        String removeRoleQuery = "DELETE FROM user_role WHERE ID_User = ?";
+        String removeDepartmentQuery = "UPDATE user SET ID_Departement = NULL, ID_Manager = NULL WHERE ID_User = ?";
 
-            conn.commit(); // Commit transaction
-        } catch (SQLException e) {
-            conn.rollback(); // Rollback transaction if an error occurs
-            throw e;
-        } finally {
-            conn.setAutoCommit(true); // Reset auto-commit to true
+        try (PreparedStatement stmtRole = cnx.prepareStatement(removeRoleQuery);
+             PreparedStatement stmtDept = cnx.prepareStatement(removeDepartmentQuery)) {
+            stmtRole.setInt(1, userId);
+            stmtRole.executeUpdate();
+
+            stmtDept.setInt(1, userId);
+            stmtDept.executeUpdate();
         }
     }
+
+
+
+    public void updateUserRoleAndDepartment(int userId, int roleId, int departmentId) throws SQLException {
+        if (cnx == null || cnx.isClosed()) {
+            cnx = MyDataBase.getInstance().getCnx();
+        }
+
+        System.out.println("Updating user with UserID: " + userId + ", RoleID: " + roleId + ", DepartmentID: " + departmentId);
+
+        if (!isRoleDepartmentValid(roleId, departmentId)) {
+            throw new SQLException("Invalid role-department relationship for RoleID: " + roleId + " and DepartmentID: " + departmentId);
+        }
+
+        String updateDepartmentQuery = "UPDATE user SET ID_Departement = ? WHERE ID_User = ?";
+        try (PreparedStatement stmt = cnx.prepareStatement(updateDepartmentQuery)) {
+            stmt.setInt(1, departmentId);
+            stmt.setInt(2, userId);
+            stmt.executeUpdate();
+            System.out.println("Updated department for user ID: " + userId);
+        }
+
+        String checkRoleQuery = "SELECT COUNT(*) FROM user_role WHERE ID_User = ?";
+        try (PreparedStatement stmt = cnx.prepareStatement(checkRoleQuery)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                String updateRoleQuery = "UPDATE user_role SET ID_Role = ? WHERE ID_User = ?";
+                try (PreparedStatement roleStmt = cnx.prepareStatement(updateRoleQuery)) {
+                    roleStmt.setInt(1, roleId);
+                    roleStmt.setInt(2, userId);
+                    roleStmt.executeUpdate();
+                    System.out.println("Updated role for user ID: " + userId);
+                }
+            } else {
+                String insertRoleQuery = "INSERT INTO user_role (ID_User, ID_Role) VALUES (?, ?)";
+                try (PreparedStatement roleStmt = cnx.prepareStatement(insertRoleQuery)) {
+                    roleStmt.setInt(1, userId);
+                    roleStmt.setInt(2, roleId);
+                    roleStmt.executeUpdate();
+                    System.out.println("Inserted role for user ID: " + userId);
+                }
+            }
+        }
+
+        // Set the manager for the user
+        setManagerForUser(userId, departmentId, roleId);
+
+        // Update subordinates for the user
+        reassignOrphanedSubordinates(departmentId, roleId, userId);
+    }
+
+
+
+
+
+
+    public User getUserById(int userId) throws SQLException {
+        String query = "SELECT * FROM user WHERE ID_User = ?";
+        try (PreparedStatement stmt = cnx.prepareStatement(query)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return new User(
+                        rs.getInt("ID_User"),
+                        rs.getString("Nom"),
+                        rs.getString("Prenom"),
+                        rs.getString("Email"),
+                        rs.getString("MDP"),
+                        rs.getString("Image"),
+                        rs.getDate("Creation_Date") != null ? rs.getDate("Creation_Date").toLocalDate() : null,
+                        rs.getInt("ID_Departement"),
+                        rs.getInt("ID_Manager"),
+                        rs.getInt("idSolde")
+                );
+            }
+        }
+        return null;
+    }
+
+
+
+
+    public boolean isRoleDepartmentValid(int roleId, int departmentId) throws SQLException {
+        // Assuming the role ID for "Employe" is 5
+        final int EMPLOYE_ROLE_ID = 5;
+
+        if (roleId == EMPLOYE_ROLE_ID) {
+            // Allow "Employe" role to have any department
+            return true;
+        }
+
+        String query = "SELECT COUNT(*) FROM role_departement WHERE ID_Role = ? AND ID_Departement = ?";
+        try (PreparedStatement stmt = cnx.prepareStatement(query)) {
+            stmt.setInt(1, roleId);
+            stmt.setInt(2, departmentId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    private void setManagerForUser(int userId, int departmentId, int roleId) throws SQLException {
+        User user = getUserById(userId);
+        user.setIdDepartement(departmentId);
+        user.setIdRole(roleId);
+
+        System.out.println("Setting manager for user: " + user);
+
+        List<Integer> parentRoleIds = getParentRoleIds(roleId);
+        Integer managerId = findManagerInDepartment(userId, departmentId, parentRoleIds);
+        if (managerId == null) {
+            managerId = findManagerInDepartmentHierarchy(userId, departmentId, parentRoleIds);
+        }
+        if (managerId == null) {
+            managerId = getPDGId();
+        }
+
+        String updateManagerQuery = "UPDATE user SET ID_Manager = ? WHERE ID_User = ?";
+        try (PreparedStatement stmt = cnx.prepareStatement(updateManagerQuery)) {
+            if (managerId != null) {
+                stmt.setInt(1, managerId);
+            } else {
+                stmt.setNull(1, java.sql.Types.INTEGER);
+            }
+            stmt.setInt(2, userId);
+            stmt.executeUpdate();
+            System.out.println("Manager set for user " + userId + ": " + managerId);
+        }
+    }
+
+    private void reassignSubordinates(int departmentId, int roleId) throws SQLException {
+        String query = "SELECT ID_User FROM user WHERE ID_Departement = ? AND ID_Manager IS NULL";
+        try (PreparedStatement stmt = cnx.prepareStatement(query)) {
+            stmt.setInt(1, departmentId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                int userId = rs.getInt("ID_User");
+                System.out.println("Reassigning subordinate: " + userId);
+                setManagerForUser(userId, departmentId, roleId);
+            }
+        }
+    }
+    private void updateSubordinatesForUser(int userId) throws SQLException {
+        List<User> subordinates = getSubordinates(userId);
+        for (User subordinate : subordinates) {
+            String updateManagerQuery = "UPDATE user SET ID_Manager = NULL WHERE ID_User = ?";
+            try (PreparedStatement stmt = cnx.prepareStatement(updateManagerQuery)) {
+                stmt.setInt(1, subordinate.getIdUser());
+                stmt.executeUpdate();
+                System.out.println("Set manager to null for subordinate: " + subordinate.getIdUser());
+            }
+        }
+    }
+
+
+
+    private List<User> getSubordinates(int userId) throws SQLException {
+        List<User> subordinates = new ArrayList<>();
+        String query = "SELECT u.ID_User, u.ID_Departement, ur.ID_Role FROM user u " +
+                "JOIN user_role ur ON u.ID_User = ur.ID_User " +
+                "WHERE u.ID_Manager = ?";
+        try (PreparedStatement stmt = cnx.prepareStatement(query)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                User user = new User(
+                        rs.getInt("ID_User"),
+                        rs.getInt("ID_Departement"),
+                        rs.getInt("ID_Role")
+                );
+                subordinates.add(user);
+            }
+        }
+        return subordinates;
+    }
+
+    public User findManagerForUser(User user) throws SQLException {
+        // Get all parent roles for the current user's role
+        List<Integer> parentRoleIds = getParentRoleIds(user.getIdRole());
+        System.out.println("Parent roles for user " + user.getIdUser() + ": " + parentRoleIds);
+
+        // Try to find a manager in the same department first
+        System.out.println("Looking for manager in the same department for user " + user.getIdUser() + "...");
+        Integer managerId = findManagerInDepartment(user.getIdUser(), user.getIdDepartement(), parentRoleIds);
+        if (managerId != null) {
+            System.out.println("Manager found in the same department: " + managerId);
+            return getUserById(managerId);
+        }
+
+        // If no manager is found in the same department, search in parent departments
+        System.out.println("Looking for manager in parent departments for user " + user.getIdUser() + "...");
+        managerId = findManagerInDepartmentHierarchy(user.getIdUser(), user.getIdDepartement(), parentRoleIds);
+        if (managerId != null) {
+            System.out.println("Manager found in parent department: " + managerId);
+            return getUserById(managerId);
+        }
+
+        // If no manager is found, return the PDG as the last resort
+        System.out.println("Looking for PDG for user " + user.getIdUser() + "...");
+        managerId = getPDGId();
+        if (managerId != null) {
+            System.out.println("PDG found: " + managerId);
+            return getUserById(managerId);
+        }
+
+        System.out.println("No manager found for user " + user.getIdUser());
+        return null;
+    }
+
+
+    private Integer findManagerInDepartment(int userId, int departmentId, List<Integer> parentRoleIds) throws SQLException {
+        for (int parentRoleId : parentRoleIds) {
+            String query = "SELECT u.ID_User FROM user u JOIN user_role ur ON u.ID_User = ur.ID_User WHERE u.ID_Departement = ? AND ur.ID_Role = ? AND u.ID_User != ? LIMIT 1";
+            try (PreparedStatement stmt = cnx.prepareStatement(query)) {
+                stmt.setInt(1, departmentId);
+                stmt.setInt(2, parentRoleId);
+                stmt.setInt(3, userId);
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    return rs.getInt("ID_User");
+                }
+            }
+        }
+        return null;
+    }
+
+
+    private Integer findManagerInDepartmentHierarchy(int userId, int deptId, List<Integer> parentRoleIds) throws SQLException {
+        Set<Integer> visitedDepts = new HashSet<>();
+        while (deptId != 0 && !visitedDepts.contains(deptId)) {
+            visitedDepts.add(deptId);
+            Integer managerId = findManagerInDepartment(userId, deptId, parentRoleIds);
+            if (managerId != null) {
+                return managerId;
+            }
+
+            String parentDeptQuery = "SELECT Parent_Dept FROM departement WHERE ID_Departement = ?";
+            try (PreparedStatement stmt = cnx.prepareStatement(parentDeptQuery)) {
+                stmt.setInt(1, deptId);
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    deptId = rs.getInt("Parent_Dept");
+                } else {
+                    break;
+                }
+            }
+        }
+        return null;
+    }
+
+
+
+    private Integer getPDGId() throws SQLException {
+        String query = "SELECT u.ID_User FROM user u JOIN user_role ur ON u.ID_User = ur.ID_User WHERE ur.ID_Role = (SELECT r.ID_Role FROM role r WHERE r.nom = 'PDG') LIMIT 1";
+        try (PreparedStatement stmt = cnx.prepareStatement(query)) {
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("ID_User");
+            }
+        }
+        return null;
+    }
+
+    private List<Integer> getParentRoleIds(int roleId) throws SQLException {
+        String query = "SELECT ID_RoleP FROM rolehierarchie WHERE ID_RoleC = ?";
+        List<Integer> parentRoleIds = new ArrayList<>();
+        try (PreparedStatement stmt = cnx.prepareStatement(query)) {
+            stmt.setInt(1, roleId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                parentRoleIds.add(rs.getInt("ID_RoleP"));
+            }
+        }
+        return parentRoleIds;
+    }
+
+    private void reassignOrphanedSubordinates(int departmentId, int roleId, int newManagerId) throws SQLException {
+        List<User> orphanedUsers = getOrphanedUsersInDepartment(departmentId);
+
+        for (User orphan : orphanedUsers) {
+            // Only update if the orphaned user's role hierarchy is under the new manager's role
+            if (isChildRole(orphan.getIdRole(), roleId)) {
+                setManagerForUser(orphan.getIdUser(), departmentId, roleId, newManagerId);
+            }
+        }
+    }
+
+    private List<User> getOrphanedUsersInDepartment(int departmentId) throws SQLException {
+        List<User> orphanedUsers = new ArrayList<>();
+        String query = "SELECT u.ID_User, u.ID_Departement, ur.ID_Role FROM user u " +
+                "JOIN user_role ur ON u.ID_User = ur.ID_User " +
+                "WHERE u.ID_Departement = ? AND u.ID_Manager IS NULL";
+        try (PreparedStatement stmt = cnx.prepareStatement(query)) {
+            stmt.setInt(1, departmentId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                User user = new User(
+                        rs.getInt("ID_User"),
+                        rs.getInt("ID_Departement"),
+                        rs.getInt("ID_Role")
+                );
+                orphanedUsers.add(user);
+            }
+        }
+        return orphanedUsers;
+    }
+
+    private boolean isChildRole(int childRoleId, int parentRoleId) throws SQLException {
+        String query = "SELECT COUNT(*) FROM rolehierarchie WHERE ID_RoleC = ? AND ID_RoleP = ?";
+        try (PreparedStatement stmt = cnx.prepareStatement(query)) {
+            stmt.setInt(1, childRoleId);
+            stmt.setInt(2, parentRoleId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void setManagerForUser(int userId, int departmentId, int roleId, int managerId) throws SQLException {
+        String updateManagerQuery = "UPDATE user SET ID_Manager = ? WHERE ID_User = ?";
+        try (PreparedStatement stmt = cnx.prepareStatement(updateManagerQuery)) {
+            stmt.setInt(1, managerId);
+            stmt.setInt(2, userId);
+            stmt.executeUpdate();
+        }
+    }
+
+
+
 
 }
+
+
