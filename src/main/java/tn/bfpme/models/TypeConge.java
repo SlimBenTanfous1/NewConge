@@ -14,15 +14,17 @@ public class TypeConge {
     private int PeriodeJ;
     private int PeriodeM;
     private int PeriodeA;
+    private double Limite;
     private boolean File;
 
     public TypeConge() {
     }
-    public TypeConge(int idTypeConge, String designation) {
+    public TypeConge(int idTypeConge, String designation,double Limite) {
         this.idTypeConge = idTypeConge;
         this.Designation = designation;
+        this.Limite = Limite;
     }
-    public TypeConge(int idTypeConge, String Designation, double pas, int periodeJ, int periodeM, int periodeA, boolean file) {
+    public TypeConge(int idTypeConge, String Designation, double pas, int periodeJ, int periodeM, int periodeA, boolean file, double Limite) {
         this.idTypeConge = idTypeConge;
         this.Designation = Designation;
         this.Pas = pas;
@@ -30,6 +32,12 @@ public class TypeConge {
         this.PeriodeM = periodeM;
         this.PeriodeA = periodeA;
         this.File = file;
+        this.Limite = Limite;
+    }
+
+    public TypeConge(int typeCongeID, String designation) {
+        this.idTypeConge = idTypeConge;
+        this.Designation = designation;
     }
 
     public static int valueOf(String typeConge) {
@@ -113,6 +121,14 @@ public class TypeConge {
 
     public void setFile(boolean file) {
         File = file;
+    }
+
+    public double getLimite() {
+        return Limite;
+    }
+
+    public void setLimite(double limite) {
+        Limite = limite;
     }
 
     @Override
