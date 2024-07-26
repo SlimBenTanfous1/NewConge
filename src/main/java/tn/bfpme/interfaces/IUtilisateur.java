@@ -49,7 +49,7 @@ public interface IUtilisateur {
 
     void updateUserDepartment(int userId, int departmentId);
 
-    User getUserById(int userId);
+    User getUserById(int userId) throws SQLException;
 
     void Add(User user);
 

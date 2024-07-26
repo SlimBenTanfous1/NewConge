@@ -722,7 +722,7 @@ public class paneUserController implements Initializable {
         DeptparColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("parentDeptName"));
     }
 
-    private boolean isCurrentUser(int userId, String email) {
+    private boolean isCurrentUser(int userId, String email) throws SQLException {
         User user = UserS.getUserById(userId);
         return user != null && user.getEmail().equals(email);
     }
@@ -829,7 +829,7 @@ public class paneUserController implements Initializable {
                 if (isUpdated) {
                     loadUsers();
                     affectationlabel.setText("Modification effectuée");
-                    resetAffectationTab(); // Reset the tab after editing
+                    resetAffectationTab();
                 } else {
                     showError("Veuillez sélectionner un rôle et/ou un département à attribuer.");
                 }
@@ -857,24 +857,8 @@ public class paneUserController implements Initializable {
 
         if (userId != null) {
             try {
-                Departement selectedDepartement = departListView.getSelectionModel().getSelectedItem();
-                Role selectedRole = roleListView.getSelectionModel().getSelectedItem();
-
-                // Update the user's department and/or role
-                if (selectedRole != null && selectedDepartement != null) {
-                    userService.removeUserRoleAndDepartment(userId);
-                    affectationlabel.setText("Rôle et département supprimés.");
-                } else if (selectedRole != null) {
-                    userService.removeUserRole(userId);
-                    affectationlabel.setText("Rôle supprimé.");
-                } else if (selectedDepartement != null) {
-                    userService.removeUserDepartment(userId);
-                    affectationlabel.setText("Département supprimé.");
-                } else {
-                    // If no role and department selected, remove both
-                    userService.removeUserRoleAndDepartment(userId);
-                    affectationlabel.setText("Rôle et département supprimés.");
-                }
+                userService.removeUserRoleAndDepartment(userId);
+                affectationlabel.setText("Rôle et département supprimés.");
 
                 loadUsers();
                 resetAffectationTab(); // Reset the tab after deletion
@@ -890,6 +874,9 @@ public class paneUserController implements Initializable {
         }
         loadUsers3();
     }
+
+
+
 
 
 
