@@ -21,6 +21,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class AttributionSoldeController implements Initializable {
@@ -48,7 +49,8 @@ public class AttributionSoldeController implements Initializable {
     @FXML
     private Button btnSave, btnSaveEdit, btnCancel, Ajout_Solde, Supprimer_Solde, Modifier_Solde, btnRemoveFilter;
     @FXML
-    private HBox buttonBox, saveCancelBox;
+    private HBox Hfirst, HEnrgBox;
+    private int state = 0;
 
     private ObservableList<TypeConge> originalList;
     private FilteredList<TypeConge> filteredList;
@@ -105,26 +107,6 @@ public class AttributionSoldeController implements Initializable {
 
     @FXML
     public void SaveAjout() {
-
-        int idSolde = Integer.parseInt(ID_Solde.getText().trim());
-        String designation = Designation_Solde.getText().trim();
-        double pas = Double.parseDouble(Pas_Solde.getText().trim());
-        int totalDays = periodespinner.getValue();
-        int[] periods = new int[3]; // 0: years, 1: months, 2: days
-        splitPeriod(totalDays, periods);
-        boolean file = fileOuiRadioButton.isSelected();
-        if (Designation_Solde.getText().isEmpty() || Pas_Solde.getText().isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Champs requis non remplis", "Veuillez remplir toutes les informations nécessaires.");
-            return;
-        }
-        serviceTypeConge.updateTypeConge(idSolde, designation, pas, periods[2], periods[1], periods[0], file);
-        loadSoldeConge();
-        labelSolde.setText("Solde modifié.");
-        toggleButtonVisibility(true);
-    }
-
-    @FXML
-    void SaveEdit(ActionEvent event) {
         String designation = Designation_Solde.getText().trim();
         double pas = Double.parseDouble(Pas_Solde.getText().trim());
         int totalDays = periodespinner.getValue();
@@ -143,12 +125,31 @@ public class AttributionSoldeController implements Initializable {
         loadSoldeConge();
         distributeNewLeaveTypeToUsers(designation);
         labelSolde.setText("Type de congé ajouté.");
-        btnSave.setVisible(false);
-        btnSaveEdit.setVisible(false);
+        toggleButtonVisibility(true);
+    }
+
+    @FXML
+    public void SaveEdit(ActionEvent event) {
+        int idSolde = Integer.parseInt(ID_Solde.getText().trim());
+        String designation = Designation_Solde.getText().trim();
+        double pas = Double.parseDouble(Pas_Solde.getText().trim());
+        int totalDays = periodespinner.getValue();
+        int[] periods = new int[3]; // 0: years, 1: months, 2: days
+        splitPeriod(totalDays, periods);
+        boolean file = fileOuiRadioButton.isSelected();
+        if (Designation_Solde.getText().isEmpty() || Pas_Solde.getText().isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Champs requis non remplis", "Veuillez remplir toutes les informations nécessaires.");
+            return;
+        }
+        serviceTypeConge.updateTypeConge(idSolde, designation, pas, periods[2], periods[1], periods[0], file);
+        loadSoldeConge();
+        labelSolde.setText("Solde modifié.");
+        toggleButtonVisibility(true);
     }
 
     @FXML
     public void AjouterTypeButton() {
+        state = 1;
         formDisableOption(false);
         clearTextFields();
         toggleButtonVisibility(false);
@@ -156,9 +157,7 @@ public class AttributionSoldeController implements Initializable {
 
     @FXML
     void Cancel(ActionEvent event) {
-        formClear();
-        formDisableOption(true);
-        toggleButtonVisibility(true);
+        reset();
     }
 
     @FXML
@@ -168,6 +167,7 @@ public class AttributionSoldeController implements Initializable {
             showAlert(Alert.AlertType.WARNING, "Avertissement", "Aucun congé sélectionné", "Veuillez sélectionner un congé à modifier.");
             return;
         }
+        state = 2;
         formDisableOption(false);
         toggleButtonVisibility(false);
     }
@@ -179,11 +179,21 @@ public class AttributionSoldeController implements Initializable {
             showAlert(Alert.AlertType.WARNING, "Avertissement", "Aucun congé sélectionné", "Veuillez sélectionner un congé à supprimer.");
             return;
         }
-        int idSolde = selected.getIdTypeConge();
-        serviceTypeConge.deleteTypeConge(idSolde);
-        loadSoldeConge();
-        labelSolde.setText("Solde supprimé.");
-        clearTextFields(); // Clear text fields after deletion
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Êtes-vous sûr?");
+        alert.setHeaderText("Confirmation de la suppression");
+        alert.setContentText("Êtes-vous sûr de vouloir supprimer ce type de congé?");
+        ButtonType oui = new ButtonType("Oui");
+        ButtonType non = new ButtonType("Non");
+        alert.getButtonTypes().setAll(oui, non);
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == oui) {
+            int idSolde = selected.getIdTypeConge();
+            serviceTypeConge.deleteTypeConge(idSolde);
+            loadSoldeConge();
+            labelSolde.setText("Solde supprimé.");
+            clearTextFields(); // Clear text fields after deletion
+        }
     }
 
     @FXML
@@ -274,7 +284,26 @@ public class AttributionSoldeController implements Initializable {
     }
 
     private void toggleButtonVisibility(boolean showCrud) {
-        buttonBox.setVisible(showCrud);
-        saveCancelBox.setVisible(!showCrud);
+        Hfirst.setVisible(showCrud);
+        Hfirst.setDisable(!showCrud);
+        HEnrgBox.setVisible(!showCrud);
+        HEnrgBox.setDisable(showCrud);
+    }
+
+    private void reset() {
+        Table_TypeConge.getSelectionModel().clearSelection();
+        Table_TypeConge.setDisable(false);
+        clearTextFields();
+        formDisableOption(true);
+        toggleButtonVisibility(true);
+    }
+
+    public void SaveButton(ActionEvent actionEvent) {
+        if (state == 1) {
+            SaveAjout();
+        } else if (state == 2) {
+            SaveEdit(actionEvent);
+        }
+        state = 0;
     }
 }
