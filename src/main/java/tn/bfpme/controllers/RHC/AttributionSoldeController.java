@@ -20,6 +20,7 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -60,10 +61,16 @@ public class AttributionSoldeController implements Initializable {
     private ServiceUtilisateur serviceUtilisateur;
     private ServiceUserSolde serviceUserSolde;
 
+    private HashMap<String, Integer> periodDaysMap;
+
     public AttributionSoldeController() {
         this.serviceTypeConge = new ServiceTypeConge();
         this.serviceUtilisateur = new ServiceUtilisateur();
         this.serviceUserSolde = new ServiceUserSolde();
+        this.periodDaysMap = new HashMap<>();
+        this.periodDaysMap.put("Semestriel", 180);
+        this.periodDaysMap.put("Trimestriel", 90);
+        this.periodDaysMap.put("Annuel", 365);
     }
 
     @Override
@@ -72,9 +79,11 @@ public class AttributionSoldeController implements Initializable {
 
         colDesignation.setCellValueFactory(new PropertyValueFactory<>("designation"));
         colPas.setCellValueFactory(new PropertyValueFactory<>("pas"));
+        colLimite.setCellValueFactory(new PropertyValueFactory<>("limite"));
         colPeriode.setCellValueFactory(new PropertyValueFactory<>("periode"));
         colFile.setCellValueFactory(new PropertyValueFactory<>("file"));
-        colLimite.setCellValueFactory(new PropertyValueFactory<>("limite"));
+
+        ComboPeriode.valueProperty().addListener((obs, oldVal, newVal) -> updatePeriodLabel(newVal));
 
         loadSoldeConge();
         RechercheSol.addEventHandler(KeyEvent.KEY_RELEASED, event -> Recherche_Solde());
@@ -112,8 +121,7 @@ public class AttributionSoldeController implements Initializable {
         String periode = ComboPeriode.getValue();
         double limite = Double.parseDouble(Limite_Solde.getText().trim());
         boolean file = fileOuiRadioButton.isSelected();
-
-        if (designation.isEmpty() || Pas_Solde.getText().isEmpty()) {
+        if (Designation_Solde.getText().isEmpty() || Pas_Solde.getText().isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Champs requis non remplis", "Veuillez remplir toutes les informations nécessaires.");
             return;
         }
@@ -121,7 +129,7 @@ public class AttributionSoldeController implements Initializable {
             labelSolde.setText("Type de congé avec cette désignation existe déjà.");
             return;
         }
-        serviceTypeConge.AddTypeConge(designation, pas, file, limite,periode);
+        serviceTypeConge.AddTypeConge(designation, pas, file, limite, periode);
         loadSoldeConge();
         distributeNewLeaveTypeToUsers(designation);
         labelSolde.setText("Type de congé ajouté.");
@@ -136,8 +144,7 @@ public class AttributionSoldeController implements Initializable {
         String periode = ComboPeriode.getValue();
         double limite = Double.parseDouble(Limite_Solde.getText().trim());
         boolean file = fileOuiRadioButton.isSelected();
-
-        if (designation.isEmpty() || Pas_Solde.getText().isEmpty()) {
+        if (Designation_Solde.getText().isEmpty() || Pas_Solde.getText().isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Champs requis non remplis", "Veuillez remplir toutes les informations nécessaires.");
             return;
         }
@@ -146,7 +153,6 @@ public class AttributionSoldeController implements Initializable {
         labelSolde.setText("Solde modifié.");
         toggleButtonVisibility(true);
     }
-
 
     @FXML
     public void AjouterTypeButton() {
@@ -230,14 +236,17 @@ public class AttributionSoldeController implements Initializable {
             ID_Solde.setText(String.valueOf(typeConge.getIdTypeConge()));
             Designation_Solde.setText(typeConge.getDesignation());
             Pas_Solde.setText(String.valueOf(typeConge.getPas()));
-            ComboPeriode.setValue(typeConge.getPeriode());
             Limite_Solde.setText(String.valueOf(typeConge.getLimite()));
-            formDisableOption(true);
+            ComboPeriode.setValue(typeConge.getPeriode());
+            updatePeriodLabel(typeConge.getPeriode());
+
             if (typeConge.isFile()) {
                 fileOuiRadioButton.setSelected(true);
             } else {
                 fileNonRadioButton.setSelected(true);
             }
+
+            formDisableOption(true);
         }
     }
 
@@ -245,18 +254,48 @@ public class AttributionSoldeController implements Initializable {
         ID_Solde.clear();
         Designation_Solde.clear();
         Pas_Solde.clear();
-        ComboPeriode.setValue(null);
         Limite_Solde.clear();
+        ComboPeriode.setValue(null);
+        periodlabel.setText("");
         fileToggleGroup.selectToggle(null); // Clear radio button selection
+    }
+
+    private void updatePeriodLabel(String periode) {
+        String periodText = "";
+        switch (periode) {
+            case "Semestriel":
+                periodText = "6 mois";
+                break;
+            case "Trimestriel":
+                periodText = "3 mois";
+                break;
+            case "Annuel":
+                periodText = "1 année";
+                break;
+            default:
+                periodText = "Période non définie";
+                break;
+        }
+        periodlabel.setText(periodText);
     }
 
     private void formDisableOption(boolean arg) {
         Designation_Solde.setDisable(arg);
         Pas_Solde.setDisable(arg);
-        ComboPeriode.setDisable(arg);
         Limite_Solde.setDisable(arg);
         fileOuiRadioButton.setDisable(arg);
         fileNonRadioButton.setDisable(arg);
+        ComboPeriode.setDisable(arg);
+    }
+
+    private void formClear() {
+        Designation_Solde.clear();
+        Pas_Solde.clear();
+        Limite_Solde.clear();
+        ComboPeriode.setValue(null);
+        periodlabel.setText("");
+        fileOuiRadioButton.setSelected(false);
+        fileNonRadioButton.setSelected(false);
     }
 
     private void toggleButtonVisibility(boolean showCrud) {
