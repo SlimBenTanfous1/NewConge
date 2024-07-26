@@ -35,11 +35,13 @@ public class AttributionSoldeController implements Initializable {
     @FXML
     private TableColumn<TypeConge, Double> colPas;
     @FXML
+    private TableColumn<TypeConge, Double> colLimite;
+    @FXML
     private TableColumn<TypeConge, Integer> colPeriodeJ, colPeriodeM, colPeriodeA;
     @FXML
     private TableColumn<TypeConge, Boolean> colFile;
     @FXML
-    private TextField RechercheSol, Pas_Solde, ID_Solde, Designation_Solde;
+    private TextField RechercheSol, Pas_Solde, ID_Solde, Designation_Solde,Limite_Solde;
     @FXML
     private RadioButton fileOuiRadioButton, fileNonRadioButton;
     @FXML
@@ -72,6 +74,9 @@ public class AttributionSoldeController implements Initializable {
         colPeriodeM.setCellValueFactory(new PropertyValueFactory<>("periodeM"));
         colPeriodeA.setCellValueFactory(new PropertyValueFactory<>("periodeA"));
         colFile.setCellValueFactory(new PropertyValueFactory<>("file"));
+        colLimite.setCellValueFactory(new PropertyValueFactory<>("limite"));
+
+
         SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 3650, 0);
         periodespinner.setValueFactory(valueFactory);
         periodespinner.setEditable(true);
@@ -111,6 +116,7 @@ public class AttributionSoldeController implements Initializable {
         double pas = Double.parseDouble(Pas_Solde.getText().trim());
         int totalDays = periodespinner.getValue();
         int[] periods = new int[3]; // 0: years, 1: months, 2: days
+        double limite= Double.parseDouble(Limite_Solde.getText().trim());
         splitPeriod(totalDays, periods);
         boolean file = fileOuiRadioButton.isSelected();
         if (Designation_Solde.getText().isEmpty() || Pas_Solde.getText().isEmpty()) {
@@ -121,7 +127,8 @@ public class AttributionSoldeController implements Initializable {
             labelSolde.setText("Type de congé avec cette désignation existe déjà.");
             return;
         }
-        serviceTypeConge.AddTypeConge(designation, pas, periods[2], periods[1], periods[0], file);
+        //serviceTypeConge.AddTypeConge(designation, pas, periods[2], periods[1], periods[0], file);
+        serviceTypeConge.AddTypeConge(designation,pas,periods[2],periods[1],periods[0],file,limite);
         loadSoldeConge();
         distributeNewLeaveTypeToUsers(designation);
         labelSolde.setText("Type de congé ajouté.");
@@ -135,13 +142,15 @@ public class AttributionSoldeController implements Initializable {
         double pas = Double.parseDouble(Pas_Solde.getText().trim());
         int totalDays = periodespinner.getValue();
         int[] periods = new int[3]; // 0: years, 1: months, 2: days
+        double limite = Double.parseDouble(Limite_Solde.getText().trim());
+
         splitPeriod(totalDays, periods);
         boolean file = fileOuiRadioButton.isSelected();
         if (Designation_Solde.getText().isEmpty() || Pas_Solde.getText().isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Champs requis non remplis", "Veuillez remplir toutes les informations nécessaires.");
             return;
         }
-        serviceTypeConge.updateTypeConge(idSolde, designation, pas, periods[2], periods[1], periods[0], file);
+        serviceTypeConge.updateTypeConge(idSolde, designation, pas, periods[2], periods[1], periods[0], file,limite);
         loadSoldeConge();
         labelSolde.setText("Solde modifié.");
         toggleButtonVisibility(true);
@@ -248,6 +257,7 @@ public class AttributionSoldeController implements Initializable {
         periodespinner.getValueFactory().setValue(0);
         periodlabel.setText("");
         fileToggleGroup.selectToggle(null); // Clear radio button selection
+        Limite_Solde.clear();
     }
 
     private void splitPeriod(int totalDays, int[] periods) {
@@ -273,6 +283,7 @@ public class AttributionSoldeController implements Initializable {
         fileOuiRadioButton.setDisable(arg);
         fileNonRadioButton.setDisable(arg);
         periodespinner.setDisable(arg);
+        Limite_Solde.setDisable(arg);
     }
 
     private void formClear() {

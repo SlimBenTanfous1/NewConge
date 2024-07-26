@@ -57,10 +57,11 @@
          <columns>
             <TableColumn fx:id="colDesignation" prefWidth="116.0" text="Designation" />
             <TableColumn fx:id="colPas" prefWidth="85.0" text="Pas" />
-            <TableColumn fx:id="colPeriodeJ" prefWidth="203.0" text="Période (Jour)" />
-            <TableColumn fx:id="colPeriodeM" prefWidth="208.0" text="Période (Mois)" />
-            <TableColumn fx:id="colPeriodeA" prefWidth="198.0" text="Période (Année)" />
-            <TableColumn fx:id="colFile" prefWidth="135.0" text="Fichier" />
+            <TableColumn fx:id="colPeriodeJ" prefWidth="129.0" text="Période (Jour)" />
+            <TableColumn fx:id="colPeriodeM" prefWidth="164.0" text="Période (Mois)" />
+            <TableColumn fx:id="colPeriodeA" prefWidth="153.0" text="Période (Année)" />
+            <TableColumn fx:id="colFile" prefWidth="145.0" text="Fichier" />
+            <TableColumn fx:id="colLimite" prefWidth="155.0" text="Limite" />
          </columns>
       </TableView>
       <TextField fx:id="ID_Solde" layoutX="34.0" layoutY="571.0" opacity="0.0" prefHeight="29.0" prefWidth="18.0" />
@@ -75,6 +76,7 @@
                   <RowConstraints maxHeight="64.0" minHeight="10.0" prefHeight="58.0" vgrow="SOMETIMES" />
                   <RowConstraints maxHeight="64.0" minHeight="10.0" prefHeight="64.0" vgrow="SOMETIMES" />
                   <RowConstraints maxHeight="102.0" minHeight="10.0" prefHeight="78.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="74.0" minHeight="10.0" prefHeight="51.0" vgrow="SOMETIMES" />
                   <RowConstraints maxHeight="74.0" minHeight="10.0" prefHeight="51.0" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
@@ -98,7 +100,7 @@
                      </GridPane.margin>
                   </Label>
                   <TextField fx:id="Pas_Solde" prefHeight="29.0" prefWidth="251.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                  <Label text="Fichier:" GridPane.rowIndex="3">
+                  <Label text="Fichier:" GridPane.rowIndex="4">
                      <styleClass>
                         <String fx:value="FontSize-15" />
                         <String fx:value="RobotoMediumItalic" />
@@ -107,7 +109,7 @@
                         <Insets left="20.0" />
                      </GridPane.margin>
                   </Label>
-                  <Label text="Periode" GridPane.rowIndex="2">
+                  <Label text="Limite:" GridPane.rowIndex="3">
                      <styleClass>
                         <String fx:value="FontSize-15" />
                         <String fx:value="RobotoMediumItalic" />
@@ -116,7 +118,16 @@
                         <Insets left="20.0" />
                      </GridPane.margin>
                   </Label>
-                  <HBox maxHeight="20.0" maxWidth="260.0" prefHeight="12.0" prefWidth="260.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                  <Label text="Periode:" GridPane.rowIndex="2">
+                     <styleClass>
+                        <String fx:value="FontSize-15" />
+                        <String fx:value="RobotoMediumItalic" />
+                     </styleClass>
+                     <GridPane.margin>
+                        <Insets left="20.0" />
+                     </GridPane.margin>
+                  </Label>
+                  <HBox maxHeight="20.0" maxWidth="260.0" prefHeight="12.0" prefWidth="260.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                      <children>
                         <RadioButton fx:id="fileOuiRadioButton" mnemonicParsing="false" prefHeight="17.0" prefWidth="134.0" styleClass="FontSize-15" text="Oui">
                            <toggleGroup>
@@ -138,6 +149,7 @@
                         <Label fx:id="periodlabel" prefHeight="24.0" prefWidth="289.0" styleClass="FontSize-15" />
                      </children>
                   </VBox>
+                  <TextField fx:id="Limite_Solde" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                </children>
                <styleClass>
                   <String fx:value="paneRoundedCornders" />
