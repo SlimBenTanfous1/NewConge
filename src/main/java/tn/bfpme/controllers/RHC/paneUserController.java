@@ -365,26 +365,6 @@ public class paneUserController implements Initializable {
             CongeVbox.getChildren().add(soldeRow);
         }
     }
-
-
-
-
-
-    /*public void updateUserSolde(int userId, int typeCongeId, double newSolde) {
-        String query = "UPDATE user_solde SET TotalSolde = ? WHERE ID_User = ? AND ID_TypeConge = ?";
-        try (Connection cnx = MyDataBase.getInstance().getCnx();
-             PreparedStatement stm = cnx.prepareStatement(query)) {
-            stm.setDouble(1, newSolde);
-            stm.setInt(2, userId);
-            stm.setInt(3, typeCongeId);
-            int rowsUpdated = stm.executeUpdate();
-            System.out.println("Rows updated: " + rowsUpdated); // Debugging
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }*/
-
-
     private List<UserSolde> getSoldeCongeByUserId(int userId) {
         List<UserSolde> soldeCongeList = new ArrayList<>();
         String query = "SELECT us.*, tc.Designation FROM user_solde us " +
@@ -410,12 +390,6 @@ public class paneUserController implements Initializable {
         }
         return soldeCongeList;
     }
-
-
-    private void hideSoldeFields() {
-        // Implement this if necessary
-    }
-
     @FXML
     void SelecHierar(ActionEvent event) {
         if (hierarCombo.getValue().equals("Utilisateurs")) {
@@ -899,17 +873,6 @@ public class paneUserController implements Initializable {
         return selectedUser != null ? selectedUser.getIdUser() : null;
     }
 
-    private void highlightSelectedUser(User user) {
-        Platform.runLater(() -> {
-            userListView.getItems().forEach(u -> {
-                if (u.equals(user)) {
-                    userListView.getSelectionModel().select(u);
-                    userListView.scrollTo(u);
-                }
-            });
-            System.out.println("Highlighted User: " + user);
-        });
-    }
 
     protected void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -1316,32 +1279,6 @@ public class paneUserController implements Initializable {
             throw new RuntimeException(e);
         }
         return departments;
-    }
-
-    @FXML
-    void modifier_user(ActionEvent event) {
-        String Nom = nom_A.getText();
-        String Prenom = Prenom_A.getText();
-        String Email = email_A.getText();
-        String Mdp = MDP_A.getText();
-        String Image = image_A.getText();
-        if (Email.matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@(bfpme\\.tn|gmail\\.com)$")) {
-            int IdUser = Integer.parseInt(ID_A.getText());
-            try {
-                if (!emailExistss(Email, IdUser) || isCurrentUser(IdUser, Email)) {
-                    User user = new User(IdUser, Nom, Prenom, Email, Mdp, Image);
-                    UserS.Update(user);
-                    infolabel.setText("Modification Effectuée");
-                } else {
-                    infolabel.setText("Email déjà existe");
-                }
-            } catch (SQLException e) {
-                infolabel.setText("Erreur de base de données: " + e.getMessage());
-                e.printStackTrace();
-            }
-        } else {
-            infolabel.setText("Email est invalide");
-        }
     }
 
     @FXML
