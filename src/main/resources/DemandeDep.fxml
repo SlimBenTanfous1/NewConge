@@ -49,7 +49,7 @@
                      <children>
                         <Label contentDisplay="CENTER" prefHeight="27.0" prefWidth="79.0" text="Type :">
                            <font>
-                              <Font name="Roboto Bold" size="12.0" />
+                              <Font size="15.0" />
                            </font>
                            <styleClass>
                               <String fx:value="FontSize-12" />

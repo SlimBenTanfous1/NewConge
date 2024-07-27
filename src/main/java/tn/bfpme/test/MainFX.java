@@ -6,11 +6,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.stage.Screen;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import javafx.geometry.Rectangle2D;
 import tn.bfpme.utils.StageManager;
-
 import java.io.IOException;
 
 public class MainFX extends Application {
@@ -31,11 +29,6 @@ public class MainFX extends Application {
             primaryStage.show();
             Platform.runLater(() -> {
                 primaryStage.setMaximized(true);
-              /*  Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
-                primaryStage.setX(primaryScreenBounds.getMinX());
-                primaryStage.setY(primaryScreenBounds.getMinY());
-                primaryStage.setWidth(primaryScreenBounds.getWidth());
-                primaryStage.setHeight(primaryScreenBounds.getHeight());*/
             });
             StageManager.addStage(primaryStage);
         } catch (IOException e) {
