@@ -22,7 +22,7 @@
                   <String fx:value="RobotoBold" />
                </styleClass>
             </Label>
-            <Label fx:id="email_card" contentDisplay="CENTER" prefHeight="28.0" prefWidth="228.0" text="Email">
+            <Label fx:id="email_card" contentDisplay="CENTER" prefHeight="28.0" prefWidth="228.0" text="E-mail">
                <font>
                   <Font name="Roboto Italic" size="13.0" />
                </font>

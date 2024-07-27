@@ -37,7 +37,7 @@
                      </styleClass>
                   </Button>
                   <Separator prefHeight="10.0" prefWidth="200.0" />
-                  <Button mnemonicParsing="false" onAction="#showRolesPane" prefHeight="55.0" prefWidth="204.0" text="Rôles">
+                  <Button mnemonicParsing="false" onAction="#showRolesPane" prefHeight="55.0" prefWidth="204.0" text="Fonctions">
                      <font>
                         <Font size="14.0" />
                      </font>

@@ -51,7 +51,10 @@
                                        </rowConstraints>
                                        <children>
                                           <Label text="Prénom" GridPane.rowIndex="1" />
-                                          <Label text="Nom" GridPane.rowIndex="2" />
+                                          <Label text="Nom" GridPane.rowIndex="2">
+                                             <opaqueInsets>
+                                                <Insets />
+                                             </opaqueInsets></Label>
                                           <Label text="Image" GridPane.rowIndex="5" />
                                           <Label text="Mot de Passe" GridPane.rowIndex="4" />
                                           <Label text="E-mail" GridPane.rowIndex="3" />
@@ -147,9 +150,9 @@
                         </ScrollPane>
                         <HBox alignment="CENTER" layoutX="145.0" layoutY="9.0" prefHeight="31.0" prefWidth="859.0" spacing="50.0" AnchorPane.leftAnchor="145.0" AnchorPane.rightAnchor="115.0">
                            <children>
-                              <HBox alignment="CENTER_LEFT" spacing="21.0">
+                              <HBox alignment="CENTER_LEFT" prefHeight="31.0" prefWidth="244.0" spacing="21.0">
                                  <children>
-                                    <Label text="Exporter en Excel:">
+                                    <Label prefHeight="15.0" prefWidth="110.0" text="Exporter en Excel:">
                                        <styleClass>
                                           <String fx:value="FontSize-13" />
                                           <String fx:value="RobotoBoldItalic" />
@@ -157,17 +160,17 @@
                                     <Button fx:id="ExporterExcelButton" mnemonicParsing="false" onAction="#ExporterExcel" styleClass="btn-primary" text="Exporter" />
                                  </children>
                               </HBox>
-                              <HBox alignment="CENTER_LEFT" spacing="7.0">
+                              <HBox alignment="CENTER_LEFT" prefHeight="31.0" prefWidth="298.0" spacing="7.0">
                                  <children>
-                                    <Label prefHeight="17.0" prefWidth="88.0" text="Trier par rôle:">
+                                    <Label prefHeight="17.0" prefWidth="155.0" text="Trier par fonction:">
                                        <styleClass>
                                           <String fx:value="FontSize-13" />
                                           <String fx:value="RobotoBoldItalic" />
                                        </styleClass></Label>
                                     <Pane>
                                        <children>
-                                          <ComboBox fx:id="RoleComboFilter" onAction="#filterByRoleCB" prefWidth="150.0" promptText="Roles" />
-                                          <TextField fx:id="RoleSearchBar" layoutY="1.0" prefHeight="29.0" prefWidth="121.0" />
+                                          <ComboBox fx:id="RoleComboFilter" layoutX="-20.0" onAction="#filterByRoleCB" prefHeight="31.0" prefWidth="170.0" promptText="Roles" />
+                                          <TextField fx:id="RoleSearchBar" layoutX="-19.0" layoutY="1.0" prefHeight="29.0" prefWidth="140.0" text="Fonction..." />
                                        </children>
                                     </Pane>
                                  </children>
@@ -179,31 +182,31 @@
                                           <String fx:value="FontSize-13" />
                                           <String fx:value="RobotoBoldItalic" />
                                        </styleClass></Label>
-                                    <TextField fx:id="RechercheBarUser" onAction="#RechercheBarUser" />
+                                    <TextField fx:id="RechercheBarUser" onAction="#RechercheBarUser" text="Recherche..." />
                                     <Button fx:id="removeFilterButton" mnemonicParsing="false" onAction="#removeFilters" styleClass="btn-primary" text="X" />
                                  </children>
                               </HBox>
                            </children>
                         </HBox>
-                        <Label layoutX="133.0" layoutY="70.0" minWidth="96.0" prefHeight="19.0" prefWidth="96.0" text="Utillisateur" AnchorPane.leftAnchor="133.0">
+                        <Label layoutX="133.0" layoutY="70.0" minWidth="96.0" prefHeight="19.0" prefWidth="96.0" text="Utillisateur:" AnchorPane.leftAnchor="133.0">
                            <styleClass>
                               <String fx:value="FontSize-15" />
                               <String fx:value="RobotoBold" />
                            </styleClass>
                         </Label>
-                        <Label alignment="CENTER" layoutX="465.0" layoutY="70.0" maxWidth="66.0" minWidth="66.0" prefHeight="19.0" prefWidth="66.0" text="Role" AnchorPane.leftAnchor="465.0" AnchorPane.rightAnchor="588.0">
+                        <Label alignment="CENTER" layoutX="465.0" layoutY="70.0" maxWidth="66.0" minWidth="66.0" prefHeight="19.0" prefWidth="66.0" text="Fonction:" AnchorPane.leftAnchor="465.0" AnchorPane.rightAnchor="588.0">
                            <styleClass>
                               <String fx:value="FontSize-15" />
                               <String fx:value="RobotoBold" />
                            </styleClass>
                         </Label>
-                        <Label alignment="CENTER" layoutX="758.0" layoutY="70.0" maxWidth="104.0" minWidth="104.0" prefHeight="19.0" prefWidth="104.0" text="Departement" AnchorPane.leftAnchor="758.0" AnchorPane.rightAnchor="257.0">
+                        <Label alignment="CENTER" layoutX="758.0" layoutY="70.0" maxWidth="104.0" minWidth="104.0" prefHeight="19.0" prefWidth="104.0" text="Département:" AnchorPane.leftAnchor="758.0" AnchorPane.rightAnchor="257.0">
                            <styleClass>
                               <String fx:value="FontSize-15" />
                               <String fx:value="RobotoBold" />
                            </styleClass>
                         </Label>
-                        <Label alignment="CENTER" layoutX="1004.0" layoutY="70.0" maxWidth="62.0" minWidth="62.0" prefHeight="19.0" prefWidth="62.0" text="Action" AnchorPane.rightAnchor="62.0">
+                        <Label alignment="CENTER" layoutX="1004.0" layoutY="70.0" maxWidth="62.0" minWidth="62.0" prefHeight="19.0" prefWidth="62.0" text="Actions:" AnchorPane.rightAnchor="62.0">
                            <styleClass>
                               <String fx:value="FontSize-15" />
                               <String fx:value="RobotoBold" />
@@ -229,7 +232,7 @@
                                     </Label>
                                     <Pane>
                                        <children>
-                                          <TextField fx:id="User_field" layoutY="3.0" onKeyReleased="#User_Recherche" prefHeight="29.0" prefWidth="280.0" />
+                                          <TextField fx:id="User_field" layoutY="3.0" onKeyReleased="#User_Recherche" prefHeight="29.0" prefWidth="280.0" text="Employe..." />
                                           <Button layoutX="237.0" mnemonicParsing="false" onAction="#clearuserselection" prefHeight="27.0" prefWidth="35.0" styleClass="settingsButton">
                                              <graphic>
                                                 <ImageView fitHeight="25.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
@@ -246,7 +249,7 @@
                               </VBox>
                               <VBox alignment="CENTER" spacing="10.0">
                                  <children>
-                                    <Label text="Rôles">
+                                    <Label text="Fonctions">
                                        <styleClass>
                                           <String fx:value="FontSize-21" />
                                           <String fx:value="RobotoBoldItalic" />
@@ -254,7 +257,7 @@
                                     </Label>
                                     <Pane>
                                        <children>
-                                          <TextField fx:id="Role_field" layoutY="3.0" onKeyReleased="#Role_Recherche" prefHeight="29.0" prefWidth="280.0" />
+                                          <TextField fx:id="Role_field" layoutY="3.0" onKeyReleased="#Role_Recherche" prefHeight="29.0" prefWidth="280.0" text="Fonction..." />
                                           <Button layoutX="237.0" mnemonicParsing="false" onAction="#clearroleselection" prefHeight="27.0" prefWidth="35.0" styleClass="settingsButton">
                                              <graphic>
                                                 <ImageView fitHeight="25.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
@@ -279,7 +282,7 @@
                                     </Label>
                                     <Pane>
                                        <children>
-                                          <TextField fx:id="Depart_field" layoutY="3.0" onKeyReleased="#Depart_Recherche" prefHeight="29.0" prefWidth="280.0" />
+                                          <TextField fx:id="Depart_field" layoutY="3.0" onKeyReleased="#Depart_Recherche" prefHeight="29.0" prefWidth="280.0" text="Département..." />
                                           <Button layoutX="237.0" mnemonicParsing="false" onAction="#cleardepartselection" prefHeight="27.0" prefWidth="35.0" styleClass="settingsButton">
                                              <graphic>
                                                 <ImageView fitHeight="25.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
@@ -347,7 +350,7 @@
                                     <TreeTableColumn fx:id="idUserColumn" prefWidth="75.0" text="Matricule" />
                                     <TreeTableColumn fx:id="prenomUserColumn" prefWidth="140.0" text="Prénom" />
                                     <TreeTableColumn fx:id="nomUserColumn" prefWidth="153.0" text="Nom" />
-                                    <TreeTableColumn fx:id="roleUserColumn" prefWidth="161.0" text="Rôle" />
+                                    <TreeTableColumn fx:id="roleUserColumn" prefWidth="161.0" text="Fonction" />
                                     <TreeTableColumn fx:id="departUserColumn" prefWidth="159.0" text="Département" />
                                     <TreeTableColumn fx:id="managerUserColumn" prefWidth="155.0" text="Manager" />
                                  </columns>

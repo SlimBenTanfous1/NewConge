@@ -49,11 +49,11 @@
                   <String fx:value="RobotoMediumItalic" />
                </styleClass>
             </Label>
-            <TextField fx:id="RechercheSol" onAction="#Recherche_Solde" />
+            <TextField fx:id="RechercheSol" onAction="#Recherche_Solde" text="Recherche..." />
             <Button fx:id="btnRemoveFilter" mnemonicParsing="false" onAction="#removeFilter" styleClass="btn-primary" text="X" />
          </children>
       </HBox>
-      <TableView fx:id="Table_TypeConge" layoutX="86.0" layoutY="411.0" prefHeight="256.0" prefWidth="948.0" AnchorPane.bottomAnchor="59.0" AnchorPane.leftAnchor="86.0" AnchorPane.rightAnchor="85.0" AnchorPane.topAnchor="411.0">
+      <TableView fx:id="Table_TypeConge" layoutX="248.0" layoutY="411.0" prefHeight="256.0" prefWidth="673.0" AnchorPane.bottomAnchor="59.0" AnchorPane.leftAnchor="248.0" AnchorPane.rightAnchor="198.0" AnchorPane.topAnchor="411.0">
          <columns>
             <TableColumn fx:id="colDesignation" prefWidth="116.0" text="Designation" />
             <TableColumn fx:id="colPas" prefWidth="85.0" text="Pas" />
@@ -78,7 +78,7 @@
                   <RowConstraints maxHeight="74.0" minHeight="10.0" prefHeight="51.0" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
-                  <Label text="Designation :">
+                  <Label text="Désignation:">
                      <styleClass>
                         <String fx:value="FontSize-15" />
                         <String fx:value="RobotoMediumItalic" />
@@ -87,7 +87,7 @@
                         <Insets left="20.0" />
                      </GridPane.margin>
                   </Label>
-                  <TextField fx:id="Designation_Solde" prefHeight="17.0" prefWidth="147.0" GridPane.columnIndex="1" />
+                  <TextField fx:id="Designation_Solde" prefHeight="17.0" prefWidth="147.0" text="Désignation..." GridPane.columnIndex="1" />
                   <Label text="Pas : " GridPane.rowIndex="1">
                      <styleClass>
                         <String fx:value="FontSize-15" />
@@ -97,7 +97,7 @@
                         <Insets left="20.0" />
                      </GridPane.margin>
                   </Label>
-                  <TextField fx:id="Pas_Solde" prefHeight="29.0" prefWidth="251.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <TextField fx:id="Pas_Solde" prefHeight="29.0" prefWidth="251.0" text="Pas..." GridPane.columnIndex="1" GridPane.rowIndex="1" />
                   <Label text="Fichier:" GridPane.rowIndex="4">
                      <styleClass>
                         <String fx:value="FontSize-15" />
@@ -116,7 +116,7 @@
                         <Insets left="20.0" />
                      </GridPane.margin>
                   </Label>
-                  <Label text="Periode:" GridPane.rowIndex="2">
+                  <Label text="Période:" GridPane.rowIndex="2">
                      <styleClass>
                         <String fx:value="FontSize-15" />
                         <String fx:value="RobotoMediumItalic" />
@@ -143,7 +143,7 @@
                         <Label fx:id="periodlabel" prefHeight="24.0" prefWidth="289.0" styleClass="FontSize-15" />
                      </children>
                   </VBox>
-                  <TextField fx:id="Limite_Solde" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <TextField fx:id="Limite_Solde" text="Limite..." GridPane.columnIndex="1" GridPane.rowIndex="3" />
                </children>
                <styleClass>
                   <String fx:value="paneRoundedCornders" />

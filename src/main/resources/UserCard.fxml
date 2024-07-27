@@ -61,12 +61,12 @@
                   <String fx:value="RobotoItalic" />
                </styleClass>
                 </Label>
-                <Label fx:id="cardrole" prefHeight="30.0" prefWidth="176.0" styleClass="FontSize-15" text="Role">
+                <Label fx:id="cardrole" prefHeight="30.0" prefWidth="176.0" styleClass="FontSize-15" text="Fonction">
                     <font>
                         <Font name="Roboto Bold" size="14.0" />
                     </font>
                 </Label>
-                <Label fx:id="carddepart" prefHeight="41.0" prefWidth="177.0" styleClass="FontSize-15" text="Departement">
+                <Label fx:id="carddepart" prefHeight="41.0" prefWidth="177.0" styleClass="FontSize-15" text="Département">
                     <font>
                         <Font name="Roboto Bold" size="14.0" />
                     </font>

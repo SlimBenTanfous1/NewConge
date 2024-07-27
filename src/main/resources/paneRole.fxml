@@ -22,7 +22,7 @@
                   <ListView fx:id="roleListView" prefHeight="477.0" prefWidth="395.0" />
                </children>
             </HBox>
-            <Label layoutX="514.0" layoutY="61.0" text="Désignation de rôle :" AnchorPane.leftAnchor="514.0" AnchorPane.topAnchor="61.0">
+            <Label layoutX="514.0" layoutY="61.0" text="Désignation de la fonction :" AnchorPane.leftAnchor="514.0" AnchorPane.topAnchor="61.0">
                <styleClass>
                   <String fx:value="FontSize-13" />
                   <String fx:value="RobotoItalic" />
@@ -30,7 +30,7 @@
             </Label>
             <HBox layoutX="514.0" layoutY="88.0" prefHeight="29.0" prefWidth="281.0" AnchorPane.leftAnchor="514.0" AnchorPane.rightAnchor="186.0">
                <children>
-                  <TextField fx:id="roleNameField" prefHeight="29.0" prefWidth="333.0" promptText="Désignation de rôle..." />
+                  <TextField fx:id="roleNameField" prefHeight="29.0" prefWidth="333.0" promptText="Désignation de rôle..." text="Fonction..." />
                </children>
             </HBox>
             <Label layoutX="516.0" layoutY="135.0" text="Déscription :" AnchorPane.leftAnchor="515.0" AnchorPane.topAnchor="135.0">
@@ -44,7 +44,7 @@
                   <TextArea fx:id="roleDescriptionField" prefHeight="104.0" prefWidth="333.0" promptText="Déscription..." wrapText="true" />
                </children>
             </HBox>
-            <Label layoutX="516.0" layoutY="296.0" text="Rôle parent :">
+            <Label layoutX="516.0" layoutY="296.0" text="Fonction parente :">
                <styleClass>
                   <String fx:value="FontSize-13" />
                   <String fx:value="RobotoItalic" />
@@ -95,7 +95,7 @@
                   <String fx:value="RobotoMediumItalic" />
                </styleClass>
             </Label>
-            <Label layoutX="54.0" layoutY="42.0" prefHeight="18.0" prefWidth="174.0" text="Liste des rôles" AnchorPane.leftAnchor="54.0" AnchorPane.topAnchor="42.0">
+            <Label layoutX="54.0" layoutY="42.0" prefHeight="18.0" prefWidth="174.0" text="Liste des fonctions" AnchorPane.leftAnchor="54.0" AnchorPane.topAnchor="42.0">
                <styleClass>
                   <String fx:value="FontSize-18" />
                   <String fx:value="RobotoBlackItalic" />
@@ -122,7 +122,7 @@
             </HBox>
          </children>
       </AnchorPane>
-      <Label alignment="TOP_CENTER" layoutX="366.0" layoutY="24.0" prefHeight="29.0" prefWidth="388.0" styleClass="RobotoBoldItalic" text="Gestion des rôles" AnchorPane.leftAnchor="366.0" AnchorPane.rightAnchor="365.0" AnchorPane.topAnchor="24.0">
+      <Label alignment="TOP_CENTER" layoutX="366.0" layoutY="24.0" prefHeight="29.0" prefWidth="388.0" styleClass="RobotoBoldItalic" text="Gestion des fonctions" AnchorPane.leftAnchor="366.0" AnchorPane.rightAnchor="365.0" AnchorPane.topAnchor="24.0">
          <font>
             <Font size="24.0" />
          </font>
