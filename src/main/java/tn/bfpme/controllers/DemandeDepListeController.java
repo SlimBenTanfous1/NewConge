@@ -72,15 +72,18 @@ public class DemandeDepListeController implements Initializable {
             FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight());
         });
     }
+
     public void setData(UserConge enAtt, UserConge app, UserConge reg) {
         this.EnAtt = enAtt;
         this.App = app;
         this.Reg = reg;
         load(EnAtt); // Load the initial data
     }
+
     @FXML
     void Recherche(KeyEvent event) {
-
+        UserConge rechUC = UserS.RechercheUserCongeEnAtt(Recherche_demande.getText());
+        load(rechUC);
     }
 
     public void load(UserConge Arg) {
