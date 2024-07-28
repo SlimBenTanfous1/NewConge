@@ -679,7 +679,7 @@ public class ServiceUtilisateur implements IUtilisateur {
     }
 
     public int getManagerIdByUserId(int userId) {
-        int managerId = 0;
+        int managerId = Integer.parseInt(null);
         String query = "SELECT ID_Manager FROM user WHERE ID_User = ?";
 
         try {
@@ -825,6 +825,7 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
     }
 
+
     @Override
     public void updateUserRole(int userId, int roleId) {
         String query = "UPDATE user_role SET ID_Role=? WHERE ID_User=?";
@@ -841,21 +842,7 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
     }
 
-    @Override
-    public void updateUserDepartment(int userId, int departmentId) {
-        String query = "UPDATE user SET ID_Departement=? WHERE ID_User=?";
-        try {
-            if (cnx == null || cnx.isClosed()) {
-                cnx = MyDataBase.getInstance().getCnx();
-            }
-            PreparedStatement pst = cnx.prepareStatement(query);
-            pst.setInt(1, departmentId);
-            pst.setInt(2, userId);
-            pst.executeUpdate();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-    }
+
 
     @Override
     public void Add(User user) {
@@ -1181,6 +1168,8 @@ public class ServiceUtilisateur implements IUtilisateur {
     }
 
 
+
+
     private Integer findManagerByRoleAndDepartment(int roleId, int departmentId) throws SQLException {
         // Define the query to find the suitable manager based on role and department hierarchy
         String query = "SELECT u.ID_User " +
@@ -1323,6 +1312,8 @@ public class ServiceUtilisateur implements IUtilisateur {
     }
 
     //------------------------------- Hierarchie ---------------------------//*
+
+
     private void ensureConnection() throws SQLException {
         if (cnx == null || cnx.isClosed()) {
             cnx = MyDataBase.getInstance().getCnx();
@@ -1330,6 +1321,7 @@ public class ServiceUtilisateur implements IUtilisateur {
     }
 
     public void updateSubordinatesManager(int managerId) throws SQLException {
+        ensureConnection();
         String query = "UPDATE user SET ID_Manager = NULL WHERE ID_Manager = ?";
         try (PreparedStatement statement = cnx.prepareStatement(query)) {
             statement.setInt(1, managerId);
@@ -1340,10 +1332,9 @@ public class ServiceUtilisateur implements IUtilisateur {
     }
 
     public User getUserById(int userId) throws SQLException {
+        ensureConnection();
         String query = "SELECT * FROM user WHERE ID_User = ?";
-        try {
-            ensureConnection();
-            PreparedStatement statement = cnx.prepareStatement(query);
+        try (PreparedStatement statement = cnx.prepareStatement(query)) {
             statement.setInt(1, userId);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
@@ -1356,11 +1347,10 @@ public class ServiceUtilisateur implements IUtilisateur {
     }
 
     public List<User> getUsersByDepartementId(int departementId) throws SQLException {
+        ensureConnection();
         List<User> users = new ArrayList<>();
         String query = "SELECT * FROM user WHERE ID_Departement = ?";
-        try {
-            ensureConnection();
-            PreparedStatement statement = cnx.prepareStatement(query);
+        try (PreparedStatement statement = cnx.prepareStatement(query)) {
             statement.setInt(1, departementId);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -1373,10 +1363,9 @@ public class ServiceUtilisateur implements IUtilisateur {
     }
 
     public User getUserByRole(String roleName) throws SQLException {
+        ensureConnection();
         String query = "SELECT u.* FROM user u JOIN user_role ur ON u.ID_User = ur.ID_User JOIN role r ON ur.ID_Role = r.ID_Role WHERE r.nom = ?";
-        try {
-            ensureConnection();
-            PreparedStatement statement = cnx.prepareStatement(query);
+        try (PreparedStatement statement = cnx.prepareStatement(query)) {
             statement.setString(1, roleName);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
@@ -1392,7 +1381,7 @@ public class ServiceUtilisateur implements IUtilisateur {
         ensureConnection();
         String query = "UPDATE user SET ID_Manager = ? WHERE ID_User = ?";
         try (PreparedStatement statement = cnx.prepareStatement(query)) {
-            if (managerId == null) {
+            if (managerId == null || !isUserExists(managerId)) {
                 statement.setNull(1, java.sql.Types.INTEGER);
             } else {
                 statement.setInt(1, managerId);
@@ -1404,12 +1393,24 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
     }
 
+    // Helper method to check if a user exists by ID
+    private boolean isUserExists(int userId) throws SQLException {
+        ensureConnection();
+        String query = "SELECT 1 FROM user WHERE ID_User = ?";
+        try (PreparedStatement statement = cnx.prepareStatement(query)) {
+            statement.setInt(1, userId);
+            ResultSet resultSet = statement.executeQuery();
+            return resultSet.next();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error checking if user exists: " + e.getMessage(), e);
+        }
+    }
+
     public List<User> getSubordinates(int managerId) throws SQLException {
+        ensureConnection();
         List<User> users = new ArrayList<>();
         String query = "SELECT * FROM user WHERE ID_Manager = ?";
-        try {
-            ensureConnection();
-            PreparedStatement statement = cnx.prepareStatement(query);
+        try (PreparedStatement statement = cnx.prepareStatement(query)) {
             statement.setInt(1, managerId);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -1422,11 +1423,10 @@ public class ServiceUtilisateur implements IUtilisateur {
     }
 
     public List<User> getUsersWithoutManager() throws SQLException {
+        ensureConnection();
         List<User> users = new ArrayList<>();
         String query = "SELECT * FROM user WHERE ID_Manager IS NULL";
-        try {
-            ensureConnection();
-            PreparedStatement statement = cnx.prepareStatement(query);
+        try (PreparedStatement statement = cnx.prepareStatement(query)) {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 users.add(extractUserFromResultSet(resultSet));
