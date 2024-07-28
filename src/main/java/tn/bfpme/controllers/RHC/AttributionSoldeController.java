@@ -298,16 +298,6 @@ public class AttributionSoldeController implements Initializable {
         ComboPeriode.setDisable(arg);
     }
 
-    private void formClear() {
-        Designation_Solde.clear();
-        Pas_Solde.clear();
-        Limite_Solde.clear();
-        ComboPeriode.setValue(null);
-        periodlabel.setText("");
-        fileOuiRadioButton.setSelected(false);
-        fileNonRadioButton.setSelected(false);
-    }
-
     private void toggleButtonVisibility(boolean showCrud) {
         Hfirst.setVisible(showCrud);
         Hfirst.setDisable(!showCrud);
@@ -326,8 +316,12 @@ public class AttributionSoldeController implements Initializable {
     public void SaveButton(ActionEvent actionEvent) {
         if (state == 1) {
             SaveAjout();
+            formDisableOption(true);
+            clearTextFields();
         } else if (state == 2) {
             SaveEdit(actionEvent);
+            formDisableOption(true);
+            clearTextFields();
         }
         state = 0;
     }
