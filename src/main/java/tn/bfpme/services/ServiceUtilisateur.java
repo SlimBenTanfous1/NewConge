@@ -1388,11 +1388,15 @@ public class ServiceUtilisateur implements IUtilisateur {
         return null;
     }
 
-    public void updateUserManager(int userId, int managerId) throws SQLException {
+    public void updateUserManager(int userId, Integer managerId) throws SQLException {
         ensureConnection();
         String query = "UPDATE user SET ID_Manager = ? WHERE ID_User = ?";
         try (PreparedStatement statement = cnx.prepareStatement(query)) {
-            statement.setInt(1, managerId);
+            if (managerId == null) {
+                statement.setNull(1, java.sql.Types.INTEGER);
+            } else {
+                statement.setInt(1, managerId);
+            }
             statement.setInt(2, userId);
             statement.executeUpdate();
         } catch (SQLException e) {

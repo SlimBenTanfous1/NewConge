@@ -149,10 +149,10 @@ public class ServiceSubordinateManager {
             userService.removeUserRole(userId);
 
             // Set department to NULL in user table
-            userService.updateUserDepartment(userId, 0);
+            userService.updateUserDepartment(userId, null);
 
             // Set manager to NULL in user table
-            userService.updateUserManager(userId, 0);
+            userService.updateUserManager(userId, null);
 
             // Reassign subordinates' managers to NULL
             userService.updateSubordinatesManager(userId);
