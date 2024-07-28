@@ -11,6 +11,7 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class ServiceUtilisateur implements IUtilisateur {
@@ -1330,72 +1331,7 @@ public class ServiceUtilisateur implements IUtilisateur {
             throw new RuntimeException("Error updating subordinates' manager: " + e.getMessage(), e);
         }
     }
-    public void updateUserManager(int userId, Integer managerId) throws SQLException {
-        String query = "UPDATE user SET ID_Manager = ? WHERE ID_User = ?";
-        try (PreparedStatement statement = cnx.prepareStatement(query)) {
-            if (managerId == null) {
-                statement.setNull(1, java.sql.Types.INTEGER);
-                System.out.println("Manager ID is null for user ID: " + userId + ". Setting manager to null.");
-            } else {
-                statement.setInt(1, managerId);
-                System.out.println("Setting manager ID: " + managerId + " for user ID: " + userId);
-            }
-            statement.setInt(2, userId);
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("Error updating user manager: " + e.getMessage(), e);
-        }
-    }
 
-    public void updateUserDepartment(int userId, int departmentId) throws SQLException {
-        String query = "UPDATE user SET ID_Departement = ? WHERE ID_User = ?";
-        try (PreparedStatement statement = cnx.prepareStatement(query)) {
-            statement.setInt(1, departmentId);
-            statement.setInt(2, userId);
-            statement.executeUpdate();
-            System.out.println("Updated department to ID: " + departmentId + " for user ID: " + userId);
-        } catch (SQLException e) {
-            throw new RuntimeException("Error updating user department: " + e.getMessage(), e);
-        }
-    }
-
-
-    public void removeUserRole(int userId) throws SQLException {
-        String query = "DELETE FROM user_role WHERE ID_User = ?";
-        try (PreparedStatement statement = cnx.prepareStatement(query)) {
-            statement.setInt(1, userId);
-            statement.executeUpdate();
-            System.out.println("Removed old roles for user ID: " + userId);
-        } catch (SQLException e) {
-            throw new RuntimeException("Error deleting old roles: " + e.getMessage(), e);
-        }
-    }
-
-
-    public void addUserRole(int userId, int roleId) throws SQLException {
-        String query = "INSERT INTO user_role (ID_User, ID_Role) VALUES (?, ?)";
-        try (PreparedStatement statement = cnx.prepareStatement(query)) {
-            statement.setInt(1, userId);
-            statement.setInt(2, roleId);
-            statement.executeUpdate();
-            System.out.println("Assigned new role ID: " + roleId + " to user ID: " + userId);
-        } catch (SQLException e) {
-            throw new RuntimeException("Error assigning new role: " + e.getMessage(), e);
-        }
-    }
-
-
-    public boolean isUserExists(int userId) throws SQLException {
-        ensureConnection();
-        String query = "SELECT 1 FROM user WHERE ID_User = ?";
-        try (PreparedStatement statement = cnx.prepareStatement(query)) {
-            statement.setInt(1, userId);
-            ResultSet resultSet = statement.executeQuery();
-            return resultSet.next();
-        } catch (SQLException e) {
-            throw new RuntimeException("Error checking if user exists: " + e.getMessage(), e);
-        }
-    }
     public User getUserById(int userId) throws SQLException {
         ensureConnection();
         String query = "SELECT * FROM user WHERE ID_User = ?";
@@ -1443,6 +1379,34 @@ public class ServiceUtilisateur implements IUtilisateur {
         return null;
     }
 
+    public void updateUserManager(int userId, Integer managerId) throws SQLException {
+        ensureConnection();
+        String query = "UPDATE user SET ID_Manager = ? WHERE ID_User = ?";
+        try (PreparedStatement statement = cnx.prepareStatement(query)) {
+            if (managerId == null || !isUserExists(managerId)) {
+                statement.setNull(1, java.sql.Types.INTEGER);
+            } else {
+                statement.setInt(1, managerId);
+            }
+            statement.setInt(2, userId);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error updating user manager: " + e.getMessage(), e);
+        }
+    }
+
+    // Helper method to check if a user exists by ID
+    boolean isUserExists(int userId) throws SQLException {
+        ensureConnection();
+        String query = "SELECT 1 FROM user WHERE ID_User = ?";
+        try (PreparedStatement statement = cnx.prepareStatement(query)) {
+            statement.setInt(1, userId);
+            ResultSet resultSet = statement.executeQuery();
+            return resultSet.next();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error checking if user exists: " + e.getMessage(), e);
+        }
+    }
 
     public List<User> getSubordinates(int managerId) throws SQLException {
         ensureConnection();
@@ -1491,6 +1455,28 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
     }
 
+    public void addUserRole(int userId, int roleId) throws SQLException {
+        ensureConnection();
+        String query = "INSERT INTO user_role (ID_User, ID_Role) VALUES (?, ?)";
+        try (PreparedStatement statement = cnx.prepareStatement(query)) {
+            statement.setInt(1, userId);
+            statement.setInt(2, roleId);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error adding user role: " + e.getMessage(), e);
+        }
+    }
+
+    public void removeUserRole(int userId) throws SQLException {
+        ensureConnection();
+        String query = "DELETE FROM user_role WHERE ID_User = ?";
+        try (PreparedStatement statement = cnx.prepareStatement(query)) {
+            statement.setInt(1, userId);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error removing user role: " + e.getMessage(), e);
+        }
+    }
 
     private User extractUserFromResultSet(ResultSet resultSet) throws SQLException {
         User user = new User();
@@ -1507,8 +1493,104 @@ public class ServiceUtilisateur implements IUtilisateur {
         return user;
     }
 
+    public void assignUserToRole(int newUserId, int tempUserId) {
+        int managerId = getManagerIdByUserId(tempUserId);
 
-    // Method to update user department
+        Connection conn = MyDataBase.getInstance().getCnx();
+
+        try {
+            // Update subordinates of the temporary user to the new user
+            String updateSubordinatesQuery = "UPDATE user SET ID_Manager = ? WHERE ID_Manager = ?";
+            try (PreparedStatement updateSubStmt = conn.prepareStatement(updateSubordinatesQuery)) {
+                updateSubStmt.setInt(1, newUserId);
+                updateSubStmt.setInt(2, tempUserId);
+                updateSubStmt.executeUpdate();
+            }
+
+            // Update the new user's manager to the temporary user's manager
+            String updateUserManagerQuery = "UPDATE user SET ID_Manager = ? WHERE ID_User = ?";
+            try (PreparedStatement updateUserStmt = conn.prepareStatement(updateUserManagerQuery)) {
+                updateUserStmt.setInt(1, managerId);
+                updateUserStmt.setInt(2, newUserId);
+                updateUserStmt.executeUpdate();
+            }
+
+            // Delete the temporary user
+            String deleteTempUserQuery = "DELETE FROM user WHERE ID_User = ?";
+            try (PreparedStatement deleteStmt = conn.prepareStatement(deleteTempUserQuery)) {
+                deleteStmt.setInt(1, tempUserId);
+                deleteStmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public int generateTemporaryUser(int managerId) {
+        String insertQuery = "INSERT INTO user (Nom, Prenom, Email, MDP, Image, ID_Departement, ID_Manager, Creation_Date, idSolde) " +
+                "VALUES ('Pas d\'utilisateur', '(En Attente)', ?, 'defaultPassword', NULL, NULL, ?, CURDATE(), NULL)";
+        String email = "default_" + UUID.randomUUID().toString() + "@bpfme.com";
+
+        try (Connection conn = MyDataBase.getInstance().getCnx();
+             PreparedStatement stmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, email);
+            stmt.setInt(2, managerId);
+            stmt.executeUpdate();
+
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1; // Handle this appropriately in your code
+    }
+    public void deleteUserAndReplaceWithTemporary(int userId) {
+        int managerId = getManagerIdByUserId(userId);
+
+        Connection conn = MyDataBase.getInstance().getCnx();
+
+        try {
+            // Generate a temporary user to replace the user being deleted
+            int tempUserId = generateTemporaryUser(managerId);
+
+            // Update subordinates of the user being deleted to the temporary user
+            String updateSubordinatesQuery = "UPDATE user SET ID_Manager = ? WHERE ID_Manager = ?";
+            try (PreparedStatement updateSubStmt = conn.prepareStatement(updateSubordinatesQuery)) {
+                updateSubStmt.setInt(1, tempUserId);
+                updateSubStmt.setInt(2, userId);
+                updateSubStmt.executeUpdate();
+            }
+
+            // Delete the user
+            String deleteUserQuery = "DELETE FROM user WHERE ID_User = ?";
+            try (PreparedStatement deleteStmt = conn.prepareStatement(deleteUserQuery)) {
+                deleteStmt.setInt(1, userId);
+                deleteStmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+
+   /* public void ensureDefaultUserExists() {
+        String query = "INSERT INTO user (Nom, Prenom, Email, MDP, Image, ID_Departement, ID_Manager, Creation_Date, idSolde) " +
+                "VALUES ('Pas d\'utilisateur', '(En Attente)', 'default@company.com', 'defaultPassword', 'attente', NULL, NULL, CURDATE(), NULL) " +
+                "ON DUPLICATE KEY UPDATE Email = VALUES(Email)";
+        try (Connection conn = MyDataBase.getInstance().getCnx();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }*/
+
+
 
 
 }
