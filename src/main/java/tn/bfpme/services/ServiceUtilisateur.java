@@ -1486,4 +1486,43 @@ public class ServiceUtilisateur implements IUtilisateur {
         user.setID_UserSolde(resultSet.getInt("idSolde"));
         return user;
     }
+
+    public void assignUserToRole(int newUserId, int replacingUserId) {
+        Connection conn = MyDataBase.getInstance().getCnx();
+
+        try {
+            // Update subordinates to the new user
+            String updateSubordinatesQuery = "UPDATE user SET ID_Manager = ? WHERE ID_Manager = ?";
+            try (PreparedStatement updateSubStmt = conn.prepareStatement(updateSubordinatesQuery)) {
+                updateSubStmt.setInt(1, newUserId);
+                updateSubStmt.setInt(2, replacingUserId);
+                updateSubStmt.executeUpdate();
+            }
+
+            // Delete the default user
+            String deleteUserQuery = "DELETE FROM user WHERE ID_User = ?";
+            try (PreparedStatement deleteStmt = conn.prepareStatement(deleteUserQuery)) {
+                deleteStmt.setInt(1, replacingUserId);
+                deleteStmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void ensureDefaultUserExists() {
+        String query = "INSERT INTO user (Nom, Prenom, Email, MDP, Image, ID_Departement, ID_Manager, Creation_Date, idSolde) " +
+                "VALUES ('Pas d\'utilisateur', '(En Attente)', 'default@company.com', 'defaultPassword', 'attente', NULL, NULL, CURDATE(), NULL) " +
+                "ON DUPLICATE KEY UPDATE Email = VALUES(Email)";
+        try (Connection conn = MyDataBase.getInstance().getCnx();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
 }
