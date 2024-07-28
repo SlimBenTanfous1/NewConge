@@ -5,10 +5,7 @@ import tn.bfpme.models.Role;
 import tn.bfpme.models.User;
 import tn.bfpme.utils.MyDataBase;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.*;
 public class ServiceSubordinateManager {
     private ServiceUtilisateur userService;
@@ -173,6 +170,28 @@ public class ServiceSubordinateManager {
             throw new RuntimeException("Error removing user assignment: " + e.getMessage(), e);
         }
     }
+    public int generateTemporaryUser(int managerId) {
+        String insertQuery = "INSERT INTO user (Nom, Prenom, Email, MDP, Image, ID_Departement, ID_Manager, Creation_Date, idSolde) " +
+                "VALUES ('Pas d\'utilisateur', '(En Attente)', ?, 'defaultPassword', NULL, NULL, ?, CURDATE(), NULL)";
+        String email = "default_" + UUID.randomUUID().toString() + "@bpfme.com";
+
+        try (Connection conn = MyDataBase.getInstance().getCnx();
+             PreparedStatement stmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, email);
+            stmt.setInt(2, managerId);
+            stmt.executeUpdate();
+
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1; // Handle this appropriately in your code
+    }
+
 
     private void reassignSubordinatesToNewManager(int userId, int roleId, int departementId) throws SQLException {
         List<User> subordinates = userService.getUsersWithoutManager();
@@ -205,4 +224,87 @@ public class ServiceSubordinateManager {
             throw new RuntimeException("Error checking if user exists: " + e.getMessage(), e);
         }
     }
+
+    public void updateSubordinates(int oldManagerId, int newManagerId) throws SQLException {
+        String updateQuery = "UPDATE user SET ID_Manager = ? WHERE ID_Manager = ?";
+        try (Connection conn = MyDataBase.getInstance().getCnx();
+             PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
+            stmt.setInt(1, newManagerId);
+            stmt.setInt(2, oldManagerId);
+            stmt.executeUpdate();
+        }
+    }
+
+    public int findTemporaryUser(int userId) {
+        String query = "SELECT ID_User FROM user WHERE ID_Manager = ? AND Nom = 'Pas d''utilisateur' AND Prenom = '(En Attente)' LIMIT 1";
+        try (Connection conn = MyDataBase.getInstance().getCnx();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("ID_User");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    public void replaceTemporaryUser(int realUserId, int tempUserId) throws SQLException {
+        String updateSubordinatesQuery = "UPDATE user SET ID_Manager = ? WHERE ID_Manager = ?";
+        String updateUserManagerQuery = "UPDATE user SET ID_Manager = ? WHERE ID_User = ?";
+        String deleteTempUserQuery = "DELETE FROM user WHERE ID_User = ?";
+
+        int managerId = getManagerIdByUserId(tempUserId);
+
+        try (Connection conn = MyDataBase.getInstance().getCnx()) {
+            conn.setAutoCommit(false);
+
+            // Update subordinates of the temporary user to the new user
+            try (PreparedStatement updateSubStmt = conn.prepareStatement(updateSubordinatesQuery)) {
+                updateSubStmt.setInt(1, realUserId);
+                updateSubStmt.setInt(2, tempUserId);
+                updateSubStmt.executeUpdate();
+            }
+
+            // Update the new user's manager to the temporary user's manager
+            try (PreparedStatement updateUserStmt = conn.prepareStatement(updateUserManagerQuery)) {
+                updateUserStmt.setInt(1, managerId);
+                updateUserStmt.setInt(2, realUserId);
+                updateUserStmt.executeUpdate();
+            }
+
+            // Delete the temporary user
+            try (PreparedStatement deleteStmt = conn.prepareStatement(deleteTempUserQuery)) {
+                deleteStmt.setInt(1, tempUserId);
+                deleteStmt.executeUpdate();
+            }
+
+            conn.commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public int getManagerIdByUserId(int userId) {
+        int managerId = 0;
+        String query = "SELECT ID_Manager FROM user WHERE ID_User = ?";
+
+        try (Connection conn = MyDataBase.getInstance().getCnx();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                managerId = rs.getInt("ID_Manager");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return managerId;
+    }
+
+
+
 }

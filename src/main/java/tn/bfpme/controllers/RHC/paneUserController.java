@@ -786,6 +786,7 @@ public class paneUserController implements Initializable {
             Departement selectedDepartement = departListView.getSelectionModel().getSelectedItem();
             Role selectedRole = roleListView.getSelectionModel().getSelectedItem();
             boolean isUpdated = false;
+
             try {
                 if (selectedRole != null && selectedDepartement != null) {
                     System.out.println("Updating role and department for user: " + selectedUser);
@@ -800,7 +801,16 @@ public class paneUserController implements Initializable {
                     usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedUser.getIdRole(), selectedDepartement.getIdDepartement());
                     isUpdated = true;
                 }
+
                 if (isUpdated) {
+                    // Find the temporary user that should be replaced
+                    int tempUserId = usersubordinateService.findTemporaryUser(selectedUser.getIdUser());
+
+                    if (tempUserId > 0) {
+                        // Replace temporary user with the real user
+                        usersubordinateService.replaceTemporaryUser(selectedUser.getIdUser(), tempUserId);
+                    }
+
                     loadUsers3();
                     affectationlabel.setText("Modification effectuée");
                     resetAffectationTab();
@@ -824,12 +834,23 @@ public class paneUserController implements Initializable {
     }
 
 
+
     @FXML
     private void handleRemoveUserAssignment() {
         Integer userId = selectedUser.getIdUser();
 
         if (userId != null) {
             try {
+                // Get the manager ID of the user being deleted
+                int managerId = usersubordinateService.getManagerIdByUserId(userId);
+
+                // Generate a temporary user to replace the user being deleted
+                int tempUserId = usersubordinateService.generateTemporaryUser(managerId);
+
+                // Update subordinates of the user being deleted to the temporary user
+                usersubordinateService.updateSubordinates(userId, tempUserId);
+
+                // Remove the user
                 usersubordinateService.removeUserAssignment(userId);
                 affectationlabel.setText("Rôle et département supprimés.");
                 loadUsers3();
@@ -845,6 +866,7 @@ public class paneUserController implements Initializable {
             showError("Veuillez sélectionner un utilisateur pour supprimer l'affectation.");
         }
     }
+
 
     public Integer getSelectedUserId() {
         return selectedUser != null ? selectedUser.getIdUser() : null;

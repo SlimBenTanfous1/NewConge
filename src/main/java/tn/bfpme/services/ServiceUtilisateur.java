@@ -1396,7 +1396,7 @@ public class ServiceUtilisateur implements IUtilisateur {
     }
 
     // Helper method to check if a user exists by ID
-    private boolean isUserExists(int userId) throws SQLException {
+    boolean isUserExists(int userId) throws SQLException {
         ensureConnection();
         String query = "SELECT 1 FROM user WHERE ID_User = ?";
         try (PreparedStatement statement = cnx.prepareStatement(query)) {
@@ -1573,6 +1573,7 @@ public class ServiceUtilisateur implements IUtilisateur {
             e.printStackTrace();
         }
     }
+
 
 
 
