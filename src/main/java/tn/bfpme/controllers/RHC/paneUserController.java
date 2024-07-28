@@ -410,7 +410,6 @@ public class paneUserController implements Initializable {
         List<User> userList = userService.getAllUsers();
         users = FXCollections.observableArrayList(userList);
         filteredData = new FilteredList<>(users, p -> true);
-
         int column = 0;
         int row = 0;
         try {
