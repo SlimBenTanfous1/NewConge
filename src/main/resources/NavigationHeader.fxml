@@ -31,65 +31,35 @@
                   <String fx:value="RobotoBold" />
                </styleClass>
             </Button>
-            <Button fx:id="admin_interface" mnemonicParsing="false" onAction="#admin_interfacebtn" prefHeight="38.0" prefWidth="67.0" text="Admin">
+            <Button fx:id="admin_interface" mnemonicParsing="false" onAction="#admin_interfacebtn" prefHeight="38.0" prefWidth="67.0" styleClass="btn-secondary" text="Admin">
                <font>
                   <Font size="14.0" />
                </font>
-               <styleClass>
-                  <String fx:value="btn-secondary" />
-                  <String fx:value="FontSize-15" />
-                  <String fx:value="RobotoBold" />
-               </styleClass>
             </Button>
-            <Button fx:id="btnRH" mnemonicParsing="false" onAction="#RH_Interface" prefHeight="38.0" prefWidth="49.0" text="RH">
+            <Button fx:id="btnRH" mnemonicParsing="false" onAction="#RH_Interface" prefHeight="38.0" prefWidth="49.0" styleClass="btn-secondary" text="RH">
                <font>
                   <Font size="14.0" />
                </font>
-               <styleClass>
-                  <String fx:value="btn-secondary" />
-                  <String fx:value="FontSize-15" />
-                  <String fx:value="RobotoBold" />
-               </styleClass>
             </Button>
-            <Button mnemonicParsing="false" onAction="#ListeEmployés" prefHeight="35.0" prefWidth="104.0" text="Mon équipe">
+            <Button mnemonicParsing="false" onAction="#ListeEmployés" prefHeight="35.0" prefWidth="104.0" styleClass="btn-secondary" text="Mon équipe">
                <font>
                   <Font size="14.0" />
                </font>
-               <styleClass>
-                  <String fx:value="btn-secondary" />
-                  <String fx:value="RobotoBold" />
-                  <String fx:value="FontSize-15" />
-               </styleClass>
             </Button>
-            <Button mnemonicParsing="false" onAction="#Demander" prefHeight="38.0" prefWidth="151.0" text="Demande de congé">
+            <Button mnemonicParsing="false" onAction="#Demander" prefHeight="38.0" prefWidth="151.0" styleClass="btn-secondary" text="Demande de congé">
                <font>
                   <Font size="14.0" />
                </font>
-               <styleClass>
-                  <String fx:value="btn-secondary" />
-                  <String fx:value="FontSize-15" />
-                  <String fx:value="RobotoBold" />
-               </styleClass>
             </Button>
-            <Button fx:id="btnListe" mnemonicParsing="false" onAction="#ListeDesDemandes" prefHeight="38.0" prefWidth="234.0" text="Liste des demandes de congés">
+            <Button fx:id="btnListe" mnemonicParsing="false" onAction="#ListeDesDemandes" prefHeight="38.0" prefWidth="234.0" styleClass="btn-secondary" text="Liste des demandes de congés">
                <font>
                   <Font size="14.0" />
                </font>
-               <styleClass>
-                  <String fx:value="btn-secondary" />
-                  <String fx:value="FontSize-15" />
-                  <String fx:value="RobotoBold" />
-               </styleClass>
             </Button>
-            <Button mnemonicParsing="false" onAction="#Historique" prefHeight="38.0" prefWidth="223.0" text="Historique de mes demandes">
+            <Button mnemonicParsing="false" onAction="#Historique" prefHeight="38.0" prefWidth="223.0" styleClass="btn-secondary" text="Historique de mes demandes">
                <font>
                   <Font size="14.0" />
                </font>
-               <styleClass>
-                  <String fx:value="btn-secondary" />
-                  <String fx:value="FontSize-15" />
-                  <String fx:value="RobotoBold" />
-               </styleClass>
             </Button>
             <HBox alignment="CENTER" prefHeight="63.0" prefWidth="123.0" spacing="11.0">
                <children>

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.String?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
@@ -19,21 +18,12 @@
             </GridPane>
                </content>
             </ScrollPane>
-            <Button layoutX="192.0" layoutY="11.0" mnemonicParsing="false" onAction="#EffacerTout" prefHeight="25.0" prefWidth="102.0" text="Effacer tout">
-               <styleClass>
-                  <String fx:value="btn-secondary" />
-                  <String fx:value="FontSize-12" />
-                  <String fx:value="RobotoRegular" />
-               </styleClass></Button>
+            <Button layoutX="192.0" layoutY="11.0" mnemonicParsing="false" onAction="#EffacerTout" prefHeight="25.0" prefWidth="102.0" styleClass="btn-secondary" text="Effacer tout" />
             <Separator layoutY="45.0" prefHeight="0.0" prefWidth="308.0" styleClass="separator1" />
             <Label layoutX="14.0" layoutY="11.0" prefHeight="25.0" prefWidth="130.0" text="Notifications" textFill="WHITE">
                <font>
                   <Font name="Roboto Regular" size="17.0" />
                </font>
-               <styleClass>
-                  <String fx:value="FontSize-17" />
-                  <String fx:value="RobotoBoldItalic" />
-               </styleClass>
             </Label>
          </children>
       </Pane>

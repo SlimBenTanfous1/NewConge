@@ -43,12 +43,7 @@
       <TextField fx:id="PeriodeJourTF" layoutX="676.0" layoutY="351.0" prefHeight="17.0" prefWidth="147.0" visible="false" />
       <HBox alignment="CENTER_LEFT" layoutX="754.0" layoutY="364.0" prefHeight="29.0" prefWidth="278.0" spacing="10.0" AnchorPane.rightAnchor="87.0">
          <children>
-            <Label prefHeight="17.0" prefWidth="79.0" text="Recherche:">
-               <styleClass>
-                  <String fx:value="FontSize-15" />
-                  <String fx:value="RobotoMediumItalic" />
-               </styleClass>
-            </Label>
+            <Label prefHeight="17.0" prefWidth="79.0" text="Recherche:" />
             <TextField fx:id="RechercheSol" onAction="#Recherche_Solde" />
             <Button fx:id="btnRemoveFilter" mnemonicParsing="false" onAction="#removeFilter" styleClass="btn-primary" text="X" />
          </children>
@@ -79,61 +74,41 @@
                </rowConstraints>
                <children>
                   <Label text="Designation :">
-                     <styleClass>
-                        <String fx:value="FontSize-15" />
-                        <String fx:value="RobotoMediumItalic" />
-                     </styleClass>
                      <GridPane.margin>
                         <Insets left="20.0" />
                      </GridPane.margin>
                   </Label>
                   <TextField fx:id="Designation_Solde" prefHeight="17.0" prefWidth="147.0" GridPane.columnIndex="1" />
                   <Label text="Pas : " GridPane.rowIndex="1">
-                     <styleClass>
-                        <String fx:value="FontSize-15" />
-                        <String fx:value="RobotoMediumItalic" />
-                     </styleClass>
                      <GridPane.margin>
                         <Insets left="20.0" />
                      </GridPane.margin>
                   </Label>
                   <TextField fx:id="Pas_Solde" prefHeight="29.0" prefWidth="251.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                   <Label text="Fichier:" GridPane.rowIndex="4">
-                     <styleClass>
-                        <String fx:value="FontSize-15" />
-                        <String fx:value="RobotoMediumItalic" />
-                     </styleClass>
                      <GridPane.margin>
                         <Insets left="20.0" />
                      </GridPane.margin>
                   </Label>
                   <Label text="Limite:" GridPane.rowIndex="3">
-                     <styleClass>
-                        <String fx:value="FontSize-15" />
-                        <String fx:value="RobotoMediumItalic" />
-                     </styleClass>
                      <GridPane.margin>
                         <Insets left="20.0" />
                      </GridPane.margin>
                   </Label>
                   <Label text="Periode:" GridPane.rowIndex="2">
-                     <styleClass>
-                        <String fx:value="FontSize-15" />
-                        <String fx:value="RobotoMediumItalic" />
-                     </styleClass>
                      <GridPane.margin>
                         <Insets left="20.0" />
                      </GridPane.margin>
                   </Label>
                   <HBox maxHeight="20.0" maxWidth="260.0" prefHeight="12.0" prefWidth="260.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                      <children>
-                        <RadioButton fx:id="fileOuiRadioButton" mnemonicParsing="false" prefHeight="17.0" prefWidth="134.0" styleClass="FontSize-15" text="Oui">
+                        <RadioButton fx:id="fileOuiRadioButton" mnemonicParsing="false" prefHeight="17.0" prefWidth="134.0" text="Oui">
                            <toggleGroup>
                               <ToggleGroup fx:id="fileToggleGroup" />
                            </toggleGroup>
                         </RadioButton>
                         <Separator orientation="VERTICAL" prefHeight="200.0" styleClass="seperator" />
-                        <RadioButton fx:id="fileNonRadioButton" mnemonicParsing="false" prefHeight="20.0" prefWidth="126.0" styleClass="FontSize-15" text="Non" toggleGroup="$fileToggleGroup" />
+                        <RadioButton fx:id="fileNonRadioButton" mnemonicParsing="false" prefHeight="20.0" prefWidth="126.0" text="Non" toggleGroup="$fileToggleGroup" />
                      </children>
                   </HBox>
                   <VBox prefHeight="94.0" prefWidth="289.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
@@ -179,22 +154,12 @@
 
       <HBox fx:id="HEnrgBox" alignment="CENTER" disable="true" layoutX="646.0" layoutY="238.0" spacing="14.0" AnchorPane.leftAnchor="646.0" AnchorPane.rightAnchor="91.0">
          <children>
-            <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#Cancel" prefHeight="32.0" prefWidth="87.0" text="Annuler">
-               <styleClass>
-                  <String fx:value="FontSize-14" />
-                  <String fx:value="btn-refuser" />
-               </styleClass>
-            </Button>
-            <Button fx:id="btnSave" mnemonicParsing="false" onAction="#SaveButton" prefHeight="32.0" prefWidth="152.0" text="Enregistrer">
-               <styleClass>
-                  <String fx:value="FontSize-14" />
-                  <String fx:value="btn-approver" />
-               </styleClass>
-            </Button>
+            <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#Cancel" prefHeight="32.0" prefWidth="87.0" styleClass="btn-refuser" text="Annuler" />
+            <Button fx:id="btnSave" mnemonicParsing="false" onAction="#SaveButton" prefHeight="32.0" prefWidth="152.0" styleClass="btn-approver" text="Enregistrer" />
          </children>
       </HBox>
 
-      <Label alignment="TOP_CENTER" layoutX="453.0" layoutY="21.0" styleClass="RobotoBoldItalic" text="Gestion des Congés" AnchorPane.leftAnchor="453.0" AnchorPane.rightAnchor="451.0" AnchorPane.topAnchor="21.0">
+      <Label alignment="TOP_CENTER" layoutX="453.0" layoutY="21.0" text="Gestion des Congés" AnchorPane.leftAnchor="453.0" AnchorPane.rightAnchor="451.0" AnchorPane.topAnchor="21.0">
          <font>
             <Font size="24.0" />
          </font>

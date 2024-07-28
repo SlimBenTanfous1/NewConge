@@ -20,10 +20,6 @@
                <font>
                   <Font name="Roboto Bold" size="17.0" />
                </font>
-               <styleClass>
-                  <String fx:value="FontSize-17" />
-                  <String fx:value="RobotoBold" />
-               </styleClass>
             </Label>
             <HBox>
                <children>
@@ -40,18 +36,8 @@
             </HBox>
          </children>
       </VBox>
-      <Label fx:id="cardrole" alignment="CENTER" layoutX="383.0" layoutY="17.0" prefHeight="28.0" prefWidth="159.0" text="Role" AnchorPane.leftAnchor="382.0" AnchorPane.rightAnchor="493.0">
-         <styleClass>
-            <String fx:value="FontSize-12" />
-            <String fx:value="RobotoRegular" />
-         </styleClass>
-      </Label>
-      <Label fx:id="carddepart" alignment="CENTER" layoutX="663.0" layoutY="17.0" prefHeight="28.0" prefWidth="186.0" text="Departement" AnchorPane.leftAnchor="663.0" AnchorPane.rightAnchor="185.0">
-         <styleClass>
-            <String fx:value="FontSize-12" />
-            <String fx:value="RobotoRegular" />
-         </styleClass>
-      </Label>
+      <Label fx:id="cardrole" alignment="CENTER" layoutX="383.0" layoutY="17.0" prefHeight="28.0" prefWidth="159.0" text="Role" AnchorPane.leftAnchor="382.0" AnchorPane.rightAnchor="493.0" />
+      <Label fx:id="carddepart" alignment="CENTER" layoutX="663.0" layoutY="17.0" prefHeight="28.0" prefWidth="186.0" text="Departement" AnchorPane.leftAnchor="663.0" AnchorPane.rightAnchor="185.0" />
       <HBox fx:id="HBoxBtns" layoutX="932.0" layoutY="14.0" prefHeight="32.0" prefWidth="100.0" AnchorPane.rightAnchor="3.0">
          <children>
             <Button mnemonicParsing="false" onAction="#ModifierUser" styleClass="settingsButton">

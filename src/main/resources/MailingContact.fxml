@@ -38,6 +38,11 @@
                </font>
             </Label>
             <TextField fx:id="mail_dest" layoutX="146.0" layoutY="63.0" prefHeight="29.0" prefWidth="271.0" promptText="Nom et Prenom  OU  E-mail" />
+            <Label layoutX="32.0" layoutY="140.0" prefHeight="28.0" prefWidth="95.0" text="Message :">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
          </children>
       </Pane>
    </children>

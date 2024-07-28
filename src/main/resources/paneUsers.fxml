@@ -93,7 +93,6 @@
                                        <children>
                                           <Button fx:id="Enregistrer" mnemonicParsing="false" onAction="#Enregistrer_user" prefHeight="56.0" prefWidth="100.0" text="Enregistrer">
                                              <styleClass>
-                                                <String fx:value="FontSize-14" />
                                                 <String fx:value="btn-secondary" />
                                                 <String fx:value="btn-approver" />
                                              </styleClass>
@@ -101,7 +100,6 @@
                                           <Separator orientation="VERTICAL" prefHeight="56.0" prefWidth="38.0" styleClass="seperator" />
                                           <Button fx:id="Annuler" mnemonicParsing="false" onAction="#Annuler_user" prefHeight="56.0" prefWidth="100.0" text="Annuler">
                                              <styleClass>
-                                                <String fx:value="FontSize-14" />
                                                 <String fx:value="btn-secondary" />
                                                 <String fx:value="btn-refuser" />
                                              </styleClass>
@@ -149,21 +147,13 @@
                            <children>
                               <HBox alignment="CENTER_LEFT" spacing="21.0">
                                  <children>
-                                    <Label text="Exporter en Excel:">
-                                       <styleClass>
-                                          <String fx:value="FontSize-13" />
-                                          <String fx:value="RobotoBoldItalic" />
-                                       </styleClass></Label>
+                                    <Label text="Exporter en Excel:" />
                                     <Button fx:id="ExporterExcelButton" mnemonicParsing="false" onAction="#ExporterExcel" styleClass="btn-primary" text="Exporter" />
                                  </children>
                               </HBox>
                               <HBox alignment="CENTER_LEFT" spacing="7.0">
                                  <children>
-                                    <Label prefHeight="17.0" prefWidth="88.0" text="Trier par rôle:">
-                                       <styleClass>
-                                          <String fx:value="FontSize-13" />
-                                          <String fx:value="RobotoBoldItalic" />
-                                       </styleClass></Label>
+                                    <Label prefHeight="17.0" prefWidth="88.0" text="Trier par rôle:" />
                                     <Pane>
                                        <children>
                                           <ComboBox fx:id="RoleComboFilter" onAction="#filterByRoleCB" prefWidth="150.0" promptText="Roles" />
@@ -174,41 +164,17 @@
                               </HBox>
                               <HBox alignment="CENTER_LEFT" prefHeight="31.0" prefWidth="306.0" spacing="20.0">
                                  <children>
-                                    <Label text="Recherche:">
-                                       <styleClass>
-                                          <String fx:value="FontSize-13" />
-                                          <String fx:value="RobotoBoldItalic" />
-                                       </styleClass></Label>
+                                    <Label text="Recherche:" />
                                     <TextField fx:id="RechercheBarUser" onAction="#RechercheBarUser" />
                                     <Button fx:id="removeFilterButton" mnemonicParsing="false" onAction="#removeFilters" styleClass="btn-primary" text="X" />
                                  </children>
                               </HBox>
                            </children>
                         </HBox>
-                        <Label layoutX="133.0" layoutY="70.0" minWidth="96.0" prefHeight="19.0" prefWidth="96.0" text="Utillisateur" AnchorPane.leftAnchor="133.0">
-                           <styleClass>
-                              <String fx:value="FontSize-15" />
-                              <String fx:value="RobotoBold" />
-                           </styleClass>
-                        </Label>
-                        <Label alignment="CENTER" layoutX="465.0" layoutY="70.0" maxWidth="66.0" minWidth="66.0" prefHeight="19.0" prefWidth="66.0" text="Role" AnchorPane.leftAnchor="465.0" AnchorPane.rightAnchor="588.0">
-                           <styleClass>
-                              <String fx:value="FontSize-15" />
-                              <String fx:value="RobotoBold" />
-                           </styleClass>
-                        </Label>
-                        <Label alignment="CENTER" layoutX="758.0" layoutY="70.0" maxWidth="104.0" minWidth="104.0" prefHeight="19.0" prefWidth="104.0" text="Departement" AnchorPane.leftAnchor="758.0" AnchorPane.rightAnchor="257.0">
-                           <styleClass>
-                              <String fx:value="FontSize-15" />
-                              <String fx:value="RobotoBold" />
-                           </styleClass>
-                        </Label>
-                        <Label alignment="CENTER" layoutX="1004.0" layoutY="70.0" maxWidth="62.0" minWidth="62.0" prefHeight="19.0" prefWidth="62.0" text="Action" AnchorPane.rightAnchor="62.0">
-                           <styleClass>
-                              <String fx:value="FontSize-15" />
-                              <String fx:value="RobotoBold" />
-                           </styleClass>
-                        </Label>
+                        <Label layoutX="133.0" layoutY="70.0" minWidth="96.0" prefHeight="19.0" prefWidth="96.0" text="Utillisateur" AnchorPane.leftAnchor="133.0" />
+                        <Label alignment="CENTER" layoutX="465.0" layoutY="70.0" maxWidth="66.0" minWidth="66.0" prefHeight="19.0" prefWidth="66.0" text="Role" AnchorPane.leftAnchor="465.0" AnchorPane.rightAnchor="588.0" />
+                        <Label alignment="CENTER" layoutX="758.0" layoutY="70.0" maxWidth="104.0" minWidth="104.0" prefHeight="19.0" prefWidth="104.0" text="Departement" AnchorPane.leftAnchor="758.0" AnchorPane.rightAnchor="257.0" />
+                        <Label alignment="CENTER" layoutX="1004.0" layoutY="70.0" maxWidth="62.0" minWidth="62.0" prefHeight="19.0" prefWidth="62.0" text="Action" AnchorPane.rightAnchor="62.0" />
                      </children>
                   </AnchorPane>
                </content>
@@ -221,12 +187,7 @@
                            <children>
                               <VBox alignment="CENTER" prefHeight="486.0" prefWidth="280.0" spacing="10.0">
                                  <children>
-                                    <Label text="Employés">
-                                       <styleClass>
-                                          <String fx:value="FontSize-21" />
-                                          <String fx:value="RobotoBoldItalic" />
-                                       </styleClass>
-                                    </Label>
+                                    <Label text="Employés" />
                                     <Pane>
                                        <children>
                                           <TextField fx:id="User_field" layoutY="3.0" onKeyReleased="#User_Recherche" prefHeight="29.0" prefWidth="280.0" />
@@ -246,12 +207,7 @@
                               </VBox>
                               <VBox alignment="CENTER" spacing="10.0">
                                  <children>
-                                    <Label text="Rôles">
-                                       <styleClass>
-                                          <String fx:value="FontSize-21" />
-                                          <String fx:value="RobotoBoldItalic" />
-                                       </styleClass>
-                                    </Label>
+                                    <Label text="Rôles" />
                                     <Pane>
                                        <children>
                                           <TextField fx:id="Role_field" layoutY="3.0" onKeyReleased="#Role_Recherche" prefHeight="29.0" prefWidth="280.0" />
@@ -271,12 +227,7 @@
                               </VBox>
                               <VBox alignment="CENTER" spacing="10.0">
                                  <children>
-                                    <Label text="Départements">
-                                       <styleClass>
-                                          <String fx:value="FontSize-21" />
-                                          <String fx:value="RobotoBoldItalic" />
-                                       </styleClass>
-                                    </Label>
+                                    <Label text="Départements" />
                                     <Pane>
                                        <children>
                                           <TextField fx:id="Depart_field" layoutY="3.0" onKeyReleased="#Depart_Recherche" prefHeight="29.0" prefWidth="280.0" />
@@ -298,21 +249,9 @@
                         </HBox>
                         <HBox alignment="CENTER" layoutX="420.0" layoutY="591.0" prefHeight="57.0" prefWidth="280.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="420.0" AnchorPane.rightAnchor="419.0">
                            <children>
-                              <Button mnemonicParsing="false" onAction="#handleEditUser" prefHeight="73.0" prefWidth="130.0" text="Affecter">
-                                 <styleClass>
-                                    <String fx:value="btn-primary" />
-                                    <String fx:value="FontSize-16" />
-                                    <String fx:value="RobotoBoldItalic" />
-                                 </styleClass>
-                              </Button>
+                              <Button mnemonicParsing="false" onAction="#handleEditUser" prefHeight="73.0" prefWidth="130.0" styleClass="btn-primary" text="Affecter" />
                               <Separator orientation="VERTICAL" prefHeight="57.0" prefWidth="19.0" styleClass="seperator" />
-                              <Button mnemonicParsing="false" onAction="#handleRemoveUserAssignment" prefHeight="73.0" prefWidth="130.0" text="Supprimer">
-                                 <styleClass>
-                                    <String fx:value="btn-primary" />
-                                    <String fx:value="FontSize-16" />
-                                    <String fx:value="RobotoBoldItalic" />
-                                 </styleClass>
-                              </Button>
+                              <Button mnemonicParsing="false" onAction="#handleRemoveUserAssignment" prefHeight="73.0" prefWidth="130.0" styleClass="btn-primary" text="Supprimer" />
                            </children>
                         </HBox>
                         <Label fx:id="affectationlabel" layoutX="395.0" layoutY="14.0" prefHeight="18.0" prefWidth="329.0">
@@ -331,12 +270,7 @@
                      <children>
                         <HBox alignment="CENTER" layoutX="373.0" layoutY="37.0" prefWidth="374.0" AnchorPane.leftAnchor="373.0" AnchorPane.rightAnchor="372.0" AnchorPane.topAnchor="37.0">
                            <children>
-                              <Label minWidth="158.0" prefHeight="25.0" prefWidth="158.0" text="Liste des Hiérarchies:">
-                                 <styleClass>
-                                    <String fx:value="FontSize-15" />
-                                    <String fx:value="RobotoBoldItalic" />
-                                 </styleClass>
-                              </Label>
+                              <Label minWidth="158.0" prefHeight="25.0" prefWidth="158.0" text="Liste des Hiérarchies:" />
                               <ComboBox fx:id="hierarCombo" onAction="#SelecHierar" prefHeight="31.0" prefWidth="323.0" />
                            </children>
                         </HBox>
@@ -353,12 +287,7 @@
                                  </columns>
                               </TreeTableView>
                               <TextField fx:id="searchFieldUser" layoutX="656.0" layoutY="31.0" onAction="#rechercheUser1" prefHeight="29.0" prefWidth="279.0" promptText="Recherche..." AnchorPane.rightAnchor="91.0" />
-                              <Label layoutX="91.0" layoutY="33.0" prefHeight="25.0" prefWidth="248.0" text="Hiérarchie des employés" AnchorPane.leftAnchor="91.0" AnchorPane.topAnchor="33.0">
-                                 <styleClass>
-                                    <String fx:value="FontSize-18" />
-                                    <String fx:value="RobotoBoldItalic" />
-                                 </styleClass>
-                              </Label>
+                              <Label layoutX="91.0" layoutY="33.0" prefHeight="25.0" prefWidth="248.0" text="Hiérarchie des employés" AnchorPane.leftAnchor="91.0" AnchorPane.topAnchor="33.0" />
                            </children>
                         </AnchorPane>
                         <Pane fx:id="DepartPane1" layoutX="48.0" layoutY="85.0" prefHeight="567.0" prefWidth="1025.0" visible="false">

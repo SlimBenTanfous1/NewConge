@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.String?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TableColumn?>
@@ -22,10 +21,6 @@
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
-               <styleClass>
-                  <String fx:value="RobotoBoldItalic" />
-                  <String fx:value="FontSize-14" />
-               </styleClass>
             </Label>
             <AnchorPane layoutY="37.0" maxHeight="1.7976931348623157E308" prefHeight="227.0" prefWidth="609.0" style="-fx-border-color: white;" styleClass="pane1" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="37.0">
                <children>
@@ -45,73 +40,41 @@
                            <font>
                               <Font name="System Bold" size="14.0" />
                            </font>
-                           <styleClass>
-                              <String fx:value="RobotoBoldItalic" />
-                              <String fx:value="FontSize-14" />
-                           </styleClass>
                         </Label>
                         <Label prefHeight="17.0" prefWidth="74.0" text="E-mail : " GridPane.rowIndex="1">
                            <font>
                               <Font name="System Bold" size="14.0" />
                            </font>
-                           <styleClass>
-                              <String fx:value="RobotoBoldItalic" />
-                              <String fx:value="FontSize-14" />
-                           </styleClass>
                         </Label>
                         <Label fx:id="CU_nomprenom" prefHeight="36.0" prefWidth="356.0" text="Ala Moussa" GridPane.columnIndex="1">
                            <font>
                               <Font name="Roboto Regular" size="14.0" />
                            </font>
-                           <styleClass>
-                              <String fx:value="FontSize-14" />
-                              <String fx:value="RobotoRegular" />
-                           </styleClass>
                         </Label>
                         <Label prefHeight="17.0" prefWidth="165.0" text="Département :" GridPane.rowIndex="2">
                            <font>
                               <Font name="System Bold" size="14.0" />
                            </font>
-                           <styleClass>
-                              <String fx:value="RobotoBoldItalic" />
-                              <String fx:value="FontSize-14" />
-                           </styleClass>
                         </Label>
                         <Label prefHeight="17.0" prefWidth="165.0" text="Rôle : " GridPane.rowIndex="3">
                            <font>
                               <Font name="System Bold" size="14.0" />
                            </font>
-                           <styleClass>
-                              <String fx:value="RobotoBoldItalic" />
-                              <String fx:value="FontSize-14" />
-                           </styleClass>
                         </Label>
                         <Label fx:id="CU_dep" prefHeight="36.0" prefWidth="356.0" text="Dep. Sécutié" GridPane.columnIndex="1" GridPane.rowIndex="2">
                            <font>
                               <Font name="Roboto Regular" size="14.0" />
                            </font>
-                           <styleClass>
-                              <String fx:value="FontSize-14" />
-                              <String fx:value="RobotoRegular" />
-                           </styleClass>
                         </Label>
                         <Label fx:id="CU_email" prefHeight="36.0" prefWidth="356.0" text="alamousssa1@gmail.com" GridPane.columnIndex="1" GridPane.rowIndex="1">
                            <font>
                               <Font name="Roboto Regular" size="14.0" />
                            </font>
-                           <styleClass>
-                              <String fx:value="FontSize-14" />
-                              <String fx:value="RobotoRegular" />
-                           </styleClass>
                         </Label>
                         <Label fx:id="CU_role" prefHeight="36.0" prefWidth="356.0" text="Employé" GridPane.columnIndex="1" GridPane.rowIndex="3">
                            <font>
                               <Font name="Roboto Regular" size="14.0" />
                            </font>
-                           <styleClass>
-                              <String fx:value="FontSize-14" />
-                              <String fx:value="RobotoRegular" />
-                           </styleClass>
                         </Label>
                      </children>
                   </GridPane>
@@ -126,10 +89,6 @@
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
-               <styleClass>
-                  <String fx:value="RobotoBoldItalic" />
-                  <String fx:value="FontSize-14" />
-               </styleClass>
             </Label>
             <AnchorPane layoutY="348.0" maxHeight="300.0" maxWidth="800.0" prefHeight="235.0" prefWidth="614.0" style="-fx-border-color: white;" styleClass="pane1" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="348.0">
                <children>
@@ -156,10 +115,6 @@
                <font>
                   <Font name="Roboto Italic" size="16.0" />
                </font>
-               <styleClass>
-                  <String fx:value="FontSize-16" />
-                  <String fx:value="RobotoBold" />
-               </styleClass>
             </Label>
          </children>
       </AnchorPane>
