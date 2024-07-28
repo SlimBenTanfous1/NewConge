@@ -69,7 +69,7 @@ public class DemandeDepController implements Initializable {
         labelType.setText(conge.getDesignation());
         CongeDays = (int) ChronoUnit.DAYS.between(conge.getDateDebut(), conge.getDateFin());
         labelJours.setText(String.valueOf(CongeDays) + " Jours");
-        if (this.conge.getFile().isBlank()) {
+        if (this.conge.getFile()==null) {
             DocFichHBOX.setVisible(false);
         }
         if (serviceUser.getManagerIdByUserId2(conge.getIdUser()) == SessionManager.getInstance().getUser().getIdUser()) {

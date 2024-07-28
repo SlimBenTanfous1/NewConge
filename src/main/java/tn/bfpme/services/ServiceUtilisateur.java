@@ -47,7 +47,6 @@ public class ServiceUtilisateur implements IUtilisateur {
         return users;
     }
 
-
     public UserConge AfficherEnAttente() {
         List<User> users = new ArrayList<>();
         List<Conge> conges = new ArrayList<>();
@@ -61,7 +60,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User " +
                 ") " +
                 "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, " +
-                "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file, typeconge.Designation, typeconge.Pas, typeconge.PeriodeJ, typeconge.PeriodeM, typeconge.PeriodeA, typeconge.File " +
+                "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file, typeconge.Designation, typeconge.Pas, typeconge.Periode, typeconge.File " +
                 "FROM user " +
                 "JOIN conge ON user.ID_User = conge.ID_User " +
                 "JOIN typeconge ON conge.TypeConge = typeconge.ID_TypeConge " +
@@ -86,11 +85,9 @@ public class ServiceUtilisateur implements IUtilisateur {
                 user.setEmail(rs.getString("Email"));
                 user.setImage(rs.getString("Image"));
                 user.setIdDepartement(rs.getInt("ID_Departement"));
-                // Add idSolde field handling if necessary
                 if (!users.contains(user)) {
                     users.add(user);
                 }
-
                 Conge conge = new Conge();
                 conge.setIdConge(rs.getInt("ID_Conge"));
                 conge.setDateDebut(rs.getDate("DateDebut").toLocalDate());
@@ -236,7 +233,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User " +
                 ") " +
                 "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, " +
-                "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file, typeconge.Designation, typeconge.Pas, typeconge.PeriodeJ, typeconge.PeriodeM, typeconge.PeriodeA, typeconge.File " +
+                "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file, typeconge.Designation, typeconge.Pas, typeconge.Periode, typeconge.File " +
                 "FROM user " +
                 "JOIN conge ON user.ID_User = conge.ID_User " +
                 "JOIN typeconge ON conge.TypeConge = typeconge.ID_TypeConge " +
@@ -304,7 +301,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User " +
                 ") " +
                 "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, " +
-                "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file, typeconge.Designation, typeconge.Pas, typeconge.PeriodeJ, typeconge.PeriodeM, typeconge.PeriodeA, typeconge.File " +
+                "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file, typeconge.Designation, typeconge.Pas, typeconge.Periode, typeconge.File " +
                 "FROM user " +
                 "JOIN conge ON user.ID_User = conge.ID_User " +
                 "JOIN typeconge ON conge.TypeConge = typeconge.ID_TypeConge " +
@@ -356,7 +353,6 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
         return new UserConge(users, conges);
     }
-
 
     public User getChef() {
         User chef = null;
@@ -454,7 +450,7 @@ public class ServiceUtilisateur implements IUtilisateur {
     }
 
     public int getManagerIdByUserId(int userId) {
-        int managerId = Integer.parseInt(null);
+        int managerId = 0;
         String query = "SELECT ID_Manager FROM user WHERE ID_User = ?";
 
         try {
@@ -509,10 +505,6 @@ public class ServiceUtilisateur implements IUtilisateur {
 
         return users;
     }
-
-
-
-
 
     @Override
     public void Add(User user) {
@@ -601,7 +593,7 @@ public class ServiceUtilisateur implements IUtilisateur {
     @Override
     public List<User> ShowUnder() {
         List<User> users = new ArrayList<>();
-        int currentUserId = SessionManager.getInstance().getUser().getIdUser(); // Assuming SessionManager manages the current user's session
+        int currentUserId = SessionManager.getInstance().getUser().getIdUser();
         String sql = "WITH RECURSIVE Subordinates AS (" +
                 "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.MDP, u.Image, u.ID_Departement, u.ID_Manager, ur.ID_Role " +
                 "FROM user u " +
@@ -625,7 +617,7 @@ public class ServiceUtilisateur implements IUtilisateur {
             }
             PreparedStatement ps = cnx.prepareStatement(sql);
             ps.setInt(1, currentUserId);
-            ps.setInt(2, currentUserId); // Exclude current user
+            ps.setInt(2, currentUserId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 User user = new User();
@@ -645,6 +637,7 @@ public class ServiceUtilisateur implements IUtilisateur {
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
+        System.out.println(users);
         return users;
     }
 

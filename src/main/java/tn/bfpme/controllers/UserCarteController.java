@@ -42,10 +42,10 @@ public class UserCarteController {
             }
         }
         nomprenom_card.setText(user.getPrenom() + " " + user.getNom());
-        email_card.setText(user.getEmail());
+        email_card.setText("Email: "+user.getEmail());
         periode_card.setText("De    " + conge.getDateDebut() + "   →   " + conge.getDateFin());
-        statut_card.setText(String.valueOf(conge.getStatut()));
-        type_card.setText(String.valueOf(conge.getDesignation()));
+        statut_card.setText("Statut: "+conge.getStatut());
+        type_card.setText("Type: "+conge.getDesignation());
         UserCard.setStyle("-fx-border-radius: 5px; -fx-border-color: #808080;");
     }
 
