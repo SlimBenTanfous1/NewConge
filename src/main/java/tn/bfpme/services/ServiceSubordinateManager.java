@@ -29,6 +29,7 @@ public class ServiceSubordinateManager {
             cnx = MyDataBase.getInstance().getCnx();
         }
     }
+
     public List<User> getAllUsers() throws SQLException {
         return userService.getAllUsers();
     }
@@ -42,7 +43,6 @@ public class ServiceSubordinateManager {
     public Role getRoleByUserId(int userId) throws SQLException {
         return userService.getRoleByUserId(userId);
     }
-
 
     // Assign role and department to a user and find a manager
     public void assignRoleAndDepartment(int userId, int roleId, int departementId) throws SQLException {
@@ -149,10 +149,10 @@ public class ServiceSubordinateManager {
             userService.removeUserRole(userId);
 
             // Set department to NULL in user table
-            userService.updateUserDepartment(userId, 0);
+            userService.updateUserDepartment(userId, null);
 
             // Set manager to NULL in user table
-            userService.updateUserManager(userId, 0);
+            userService.updateUserManager(userId, null);
 
             // Reassign subordinates' managers to NULL
             userService.updateSubordinatesManager(userId);
@@ -165,7 +165,7 @@ public class ServiceSubordinateManager {
     private void reassignSubordinatesToNewManager(int userId, int roleId, int departementId) throws SQLException {
         List<User> subordinates = userService.getUsersWithoutManager();
         for (User subordinate : subordinates) {
-            if (subordinate.getIdDepartement() == departementId && subordinate.getIdRole() == roleId) {
+            if (subordinate.getIdDepartement() == departementId) {
                 userService.updateUserManager(subordinate.getIdUser(), userId);
             }
         }
