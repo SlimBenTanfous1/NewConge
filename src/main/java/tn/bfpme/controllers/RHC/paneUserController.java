@@ -824,6 +824,7 @@ public class paneUserController implements Initializable {
         }
     }
 
+
     @FXML
     private void handleRemoveUserAssignment() {
         Integer userId = selectedUser.getIdUser();
