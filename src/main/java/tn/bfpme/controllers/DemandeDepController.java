@@ -185,16 +185,6 @@ public class DemandeDepController implements Initializable {
                 Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
                 stage.setX((screenBounds.getWidth() - stage.getWidth()) / 2);
                 stage.setY((screenBounds.getHeight() - stage.getHeight()) / 2);
-
-                /*Stage newStage = new Stage();
-                StageManager.addStage("MailingDemande", newStage);
-                Scene scene = new Scene(root);
-                newStage.setScene(scene);
-                newStage.setTitle("Mailing de Demande");
-                newStage.show();
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.err.println("Failed to load the MailingDemande.fxml");*/
             } catch (Exception e) {
                 e.printStackTrace();
                 System.err.println("An unexpected error occurred");

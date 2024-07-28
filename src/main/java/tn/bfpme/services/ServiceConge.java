@@ -193,8 +193,6 @@ public class ServiceConge implements IConge<Conge> {
         }
     }
 
-
-
     @Override
     public void deleteConge(Conge conge) {
         try {

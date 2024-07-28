@@ -169,17 +169,6 @@ public class MailingDemandeController implements Initializable {
             Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
             stage.setX((screenBounds.getWidth() - stage.getWidth()) / 2);
             stage.setY((screenBounds.getHeight() - stage.getHeight()) / 2);
-
-
-
-            /*StageManager.closeAllStages();
-            Stage demandeDepListeStage = new Stage();
-            Scene scene = new Scene(root);
-            demandeDepListeStage.setScene(scene);
-            demandeDepListeStage.setTitle("Mailing de Demande");
-            demandeDepListeStage.show();
-            StageManager.addStage("DemandeDepListe", demandeDepListeStage);*/
-
         } catch (IOException e) {
             e.printStackTrace();
         }
