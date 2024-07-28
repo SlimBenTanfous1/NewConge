@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.String?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
@@ -18,7 +17,7 @@
    <children>
       <AnchorPane layoutX="28.0" layoutY="131.0" styleClass="pane1" AnchorPane.bottomAnchor="22.0" AnchorPane.leftAnchor="28.0" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="131.0">
          <children>
-            <ScrollPane fitToHeight="true" fitToWidth="true" layoutX="10.0"  layoutY="148.0" pannable="true" prefHeight="515.0" prefWidth="1259.0" style="-fx-border-color: #112349; -fx-border-width: 0 1 1 1;" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="148.0">
+            <ScrollPane fitToHeight="true" fitToWidth="true" layoutX="10.0" layoutY="148.0" pannable="true" prefHeight="515.0" prefWidth="1259.0" style="-fx-border-color: #112349; -fx-border-width: 0 1 1 1;" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="148.0">
                <content>
                   <GridPane fx:id="congeContainer" alignment="TOP_CENTER">
                      <columnConstraints>
@@ -54,14 +53,10 @@
                                     </ImageView>
                                  </graphic>
                               </Button>
-                              <Label prefHeight="28.0" prefWidth="78.0" text="Type">
+                              <Label prefHeight="28.0" prefWidth="78.0" styleClass="RobotoBold" text="Type">
                                  <font>
                                     <Font size="16.0" />
                                  </font>
-                                 <styleClass>
-                                    <String fx:value="FontSize-18" />
-                                    <String fx:value="RobotoBold" />
-                                 </styleClass>
                               </Label>
                            </children>
                         </HBox>
@@ -76,14 +71,10 @@
                                     </ImageView>
                                  </graphic>
                               </Button>
-                              <Label text="Date du Début">
+                              <Label styleClass="RobotoBold" text="Date du Début">
                                  <font>
                                     <Font size="18.0" />
                                  </font>
-                                 <styleClass>
-                                    <String fx:value="FontSize-18" />
-                                    <String fx:value="RobotoBold" />
-                                 </styleClass>
                               </Label>
                            </children>
                         </HBox>
@@ -98,14 +89,10 @@
                                     </ImageView>
                                  </graphic>
                               </Button>
-                              <Label prefHeight="27.0" prefWidth="117.0" text="Date de Fin">
+                              <Label prefHeight="27.0" prefWidth="117.0" styleClass="RobotoBold" text="Date de Fin">
                                  <font>
                                     <Font size="18.0" />
                                  </font>
-                                 <styleClass>
-                                    <String fx:value="FontSize-18" />
-                                    <String fx:value="RobotoBold" />
-                                 </styleClass>
                               </Label>
                            </children>
                         </HBox>
@@ -120,14 +107,10 @@
                                     </ImageView>
                                  </graphic>
                               </Button>
-                              <Label text="Description">
+                              <Label styleClass="RobotoBold" text="Description">
                                  <font>
                                     <Font size="18.0" />
                                  </font>
-                                 <styleClass>
-                                    <String fx:value="FontSize-18" />
-                                    <String fx:value="RobotoBold" />
-                                 </styleClass>
                               </Label>
                            </children>
                         </HBox>
@@ -142,27 +125,19 @@
                                     </ImageView>
                                  </graphic>
                               </Button>
-                              <Label prefHeight="25.0" prefWidth="52.0" text="Statut">
+                              <Label prefHeight="25.0" prefWidth="52.0" styleClass="RobotoBold" text="Statut">
                                  <font>
                                     <Font size="18.0" />
                                  </font>
-                                 <styleClass>
-                                    <String fx:value="FontSize-18" />
-                                    <String fx:value="RobotoBold" />
-                                 </styleClass>
                               </Label>
                            </children>
                         </HBox>
                         <HBox alignment="CENTER" prefHeight="23.0" prefWidth="1259.0" GridPane.columnIndex="5">
                            <children>
-                              <Label text="Actions">
+                              <Label styleClass="RobotoBold" text="Actions">
                                  <font>
                                     <Font size="18.0" />
                                  </font>
-                                 <styleClass>
-                                    <String fx:value="FontSize-18" />
-                                    <String fx:value="RobotoBold" />
-                                 </styleClass>
                               </Label>
                            </children>
                         </HBox>
@@ -172,12 +147,7 @@
             </AnchorPane>
             <HBox alignment="CENTER" layoutX="487.0" layoutY="30.0" minHeight="28.0" minWidth="304.0" prefHeight="28.0" prefWidth="304.0" AnchorPane.leftAnchor="487.0" AnchorPane.rightAnchor="486.0">
                <children>
-                  <TextField fx:id="Recherche_conge" onKeyPressed="#Recherche" prefHeight="28.0" prefWidth="404.0" promptText="Recherche">
-                     <styleClass>
-                        <String fx:value="FontSize-13" />
-                        <String fx:value="RobotoRegular" />
-                     </styleClass>
-                  </TextField>
+                  <TextField fx:id="Recherche_conge" onKeyPressed="#Recherche" prefHeight="28.0" prefWidth="404.0" promptText="Recherche" />
                </children>
             </HBox>
          </children>

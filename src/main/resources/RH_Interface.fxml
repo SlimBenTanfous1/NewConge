@@ -21,8 +21,7 @@
                      </font>
                      <styleClass>
                         <String fx:value="btn-primary" />
-                        <String fx:value="FontSize-15" />
-                        <String fx:value="RobotoBold" />
+                        <String fx:value="RobotoMedium" />
                      </styleClass>
                   </Button>
                   <Separator prefHeight="10.0" prefWidth="200.0" />
@@ -32,8 +31,7 @@
                      </font>
                      <styleClass>
                         <String fx:value="btn-primary" />
-                        <String fx:value="FontSize-15" />
-                        <String fx:value="RobotoBold" />
+                        <String fx:value="RobotoMedium" />
                      </styleClass>
                   </Button>
                   <Separator prefHeight="10.0" prefWidth="200.0" />
@@ -43,8 +41,7 @@
                      </font>
                      <styleClass>
                         <String fx:value="btn-primary" />
-                        <String fx:value="FontSize-15" />
-                        <String fx:value="RobotoBold" />
+                        <String fx:value="RobotoMedium" />
                      </styleClass>
                   </Button>
                   <Separator prefHeight="10.0" prefWidth="200.0" />
@@ -54,8 +51,7 @@
                      </font>
                      <styleClass>
                         <String fx:value="btn-primary" />
-                        <String fx:value="FontSize-15" />
-                        <String fx:value="RobotoBold" />
+                        <String fx:value="RobotoMedium" />
                      </styleClass>
                   </Button>
                   <Separator prefHeight="10.0" prefWidth="200.0" />
@@ -65,18 +61,12 @@
                      </font>
                      <styleClass>
                         <String fx:value="btn-primary" />
-                        <String fx:value="FontSize-15" />
-                        <String fx:value="RobotoBold" />
+                        <String fx:value="RobotoMedium" />
                      </styleClass>
                   </Button>
                </children>
             </VBox>
-            <Label layoutX="46.0" layoutY="120.0" text="Les gestions :" AnchorPane.leftAnchor="46.0" AnchorPane.rightAnchor="36.0" AnchorPane.topAnchor="120.0">
-               <styleClass>
-                  <String fx:value="FontSize-21" />
-                  <String fx:value="RobotoBoldItalic" />
-               </styleClass>
-            </Label>
+            <Label layoutX="46.0" layoutY="100.0" styleClass="RobotoBlackItalic" text="Les gestions :" AnchorPane.leftAnchor="46.0" AnchorPane.rightAnchor="36.0" AnchorPane.topAnchor="100.0" />
          </children>
       </AnchorPane>
    </children>

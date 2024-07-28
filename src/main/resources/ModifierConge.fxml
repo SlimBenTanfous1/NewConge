@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="524.0" prefWidth="426.0" styleClass="grad-bg" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.ModifierCongeController">
+<AnchorPane fx:id="MainAnchorPane" prefHeight="524.0" prefWidth="426.0" styleClass="grad-bg" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.ModifierCongeController">
     <children>
         <Pane prefHeight="93.0" prefWidth="426.0" styleClass="pane-clr">
             <children>
@@ -27,19 +27,9 @@
                 </ImageView>
             <HBox layoutX="197.0" layoutY="27.0" prefHeight="40.0" prefWidth="186.0">
                <children>
-                  <Button mnemonicParsing="false" onAction="#modifier_conge" prefHeight="43.0" prefWidth="91.0" text="Modifier">
-                     <styleClass>
-                        <String fx:value="btn-secondary" />
-                        <String fx:value="FontSize-14" />
-                        <String fx:value="RobotoBold" />
-                     </styleClass></Button>
+                  <Button mnemonicParsing="false" onAction="#modifier_conge" prefHeight="43.0" prefWidth="91.0" styleClass="btn-secondary" text="Modifier" />
                   <Separator maxHeight="42.0" minHeight="1.0" orientation="VERTICAL" prefHeight="42.0" prefWidth="29.0" styleClass="seperator" HBox.hgrow="NEVER" />
-                  <Button mnemonicParsing="false" onAction="#annuler_conge" prefHeight="43.0" prefWidth="91.0" text="Annuler">
-                     <styleClass>
-                        <String fx:value="btn-secondary" />
-                        <String fx:value="FontSize-14" />
-                        <String fx:value="RobotoBold" />
-                     </styleClass></Button>
+                  <Button mnemonicParsing="false" onAction="#annuler_conge" prefHeight="43.0" prefWidth="91.0" styleClass="btn-secondary" text="Annuler" />
                </children>
             </HBox>
             </children>
@@ -61,28 +51,16 @@
                      <font>
                         <Font size="16.0" />
                      </font>
-                     <styleClass>
-                        <String fx:value="FontSize-16" />
-                        <String fx:value="RobotoBoldItalic" />
-                     </styleClass>
                   </Label>
                   <Label text="Date de Fin" GridPane.rowIndex="1">
                      <font>
                         <Font size="16.0" />
                      </font>
-                     <styleClass>
-                        <String fx:value="FontSize-16" />
-                        <String fx:value="RobotoBoldItalic" />
-                     </styleClass>
                   </Label>
                   <Label text="Description" GridPane.rowIndex="2">
                      <font>
                         <Font size="16.0" />
                      </font>
-                     <styleClass>
-                        <String fx:value="FontSize-16" />
-                        <String fx:value="RobotoBoldItalic" />
-                     </styleClass>
                   </Label>
                   <DatePicker fx:id="modif_datedeb" prefHeight="40.0" prefWidth="210.0" GridPane.columnIndex="1">
                      <styleClass>

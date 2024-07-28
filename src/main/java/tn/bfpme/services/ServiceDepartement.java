@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ServiceDepartement {
+    private static Connection cnx = MyDataBase.getInstance().getCnx();
 
     public static Departement getDepartmentById(int idDepartement) {
         Departement departement = null;
@@ -187,5 +188,32 @@ public class ServiceDepartement {
             e.printStackTrace();
         }
     }
+    // Get department by ID
+    public Departement getDepartementById(int departementId) throws SQLException {
+        String query = "SELECT * FROM departement WHERE ID_Departement = ?";
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+            PreparedStatement statement = cnx.prepareStatement(query);
+            statement.setInt(1, departementId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return extractDepartementFromResultSet(resultSet);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
 
+    private Departement extractDepartementFromResultSet(ResultSet resultSet) throws SQLException {
+        Departement departement = new Departement();
+        departement.setIdDepartement(resultSet.getInt("ID_Departement"));
+        departement.setNom(resultSet.getString("nom"));
+        departement.setDescription(resultSet.getString("description"));
+        departement.setParentDept(resultSet.getInt("Parent_Dept"));
+        departement.setLevel(resultSet.getInt("Level"));
+        return departement;
+    }
 }

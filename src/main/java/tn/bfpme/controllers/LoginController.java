@@ -1,8 +1,10 @@
 package tn.bfpme.controllers;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -11,19 +13,25 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import tn.bfpme.models.User;
+import tn.bfpme.utils.FontResizer;
 import tn.bfpme.utils.MyDataBase;
 import tn.bfpme.utils.SessionManager;
 import tn.bfpme.utils.StageManager;
 
 import java.io.IOException;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ResourceBundle;
 
-public class LoginController {
+public class LoginController implements Initializable {
+    @FXML
+    private AnchorPane MainAnchorPane;
     @FXML
     private TextField LoginEmail;
     @FXML
@@ -40,9 +48,11 @@ public class LoginController {
     private Image showPasswordImage;
     private Image hidePasswordImage;
 
-
-    @FXML
-    void initialize()   {
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        String style = "-fx-background-color: transparent; -fx-border-color: transparent transparent #eab53f transparent; -fx-border-width: 0 0 1 0; -fx-padding: 0 0 3 0;";
+        LoginEmail.setStyle(style);
+        LoginMDP.setStyle(style);
 
         // Load the images
         showPasswordImage = new Image(getClass().getResourceAsStream("/assets/imgs/hide.png"));
@@ -67,20 +77,6 @@ public class LoginController {
                 toggleIcon.setImage(hidePasswordImage);
             }
         });
-
-        // Sync the password fields
-        LoginMDP.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!showPasswordField.isVisible()) {
-                showPasswordField.setText(newValue);
-            }
-        });
-
-        showPasswordField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (showPasswordField.isVisible()) {
-                LoginMDP.setText(newValue);
-            }
-        });
-
     }
 
     @FXML
@@ -194,4 +190,6 @@ void Login(ActionEvent event) {
         StageManager.addStage("Profile", stage);
 
     }
+
+
 }

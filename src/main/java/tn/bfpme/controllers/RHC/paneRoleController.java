@@ -1,5 +1,6 @@
 package tn.bfpme.controllers.RHC;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -7,11 +8,14 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import tn.bfpme.models.Departement;
 import tn.bfpme.models.Role;
 import tn.bfpme.services.ServiceRole;
+import tn.bfpme.utils.FontResizer;
 
 import java.net.URL;
 import java.util.*;
@@ -19,6 +23,8 @@ import java.util.*;
 public class paneRoleController implements Initializable {
     @FXML
     private TextArea roleDescriptionField;
+    @FXML
+    private AnchorPane RolePane;
     @FXML
     private ListView<Role> roleListView;
     @FXML
@@ -46,6 +52,12 @@ public class paneRoleController implements Initializable {
                 btnModifier.setDisable(false);
                 btnSupprimer.setDisable(false);
             }
+        });
+        Platform.runLater(() -> {
+            Stage stage = (Stage) RolePane.getScene().getWindow();
+            stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(RolePane, stage.getWidth(), stage.getHeight()));
+            stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(RolePane, stage.getWidth(), stage.getHeight()));
+            FontResizer.resizeFonts(RolePane, stage.getWidth(), stage.getHeight());
         });
         fieldsDisable(true);
         btnCRUDHbox.setVisible(true);

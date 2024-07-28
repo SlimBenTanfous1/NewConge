@@ -1,5 +1,6 @@
 package tn.bfpme.controllers;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -23,6 +24,7 @@ import tn.bfpme.services.ServiceConge;
 import tn.bfpme.services.ServiceNotification;
 import tn.bfpme.services.ServiceTypeConge;
 import tn.bfpme.services.ServiceUtilisateur;
+import tn.bfpme.utils.FontResizer;
 import tn.bfpme.utils.MyDataBase;
 import tn.bfpme.utils.SessionManager;
 import tn.bfpme.utils.StageManager;
@@ -85,6 +87,14 @@ public class DemandeCongeController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Platform.runLater(() -> {
+            Stage stage = FontResizer.getStageFromNode(MainAnchorPane);
+            if (stage != null) {
+                stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
+                stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
+                FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight());
+            }
+        });
         List<TypeConge> typeConges = serviceTypeConge.getAllTypeConge();
         if (typeConges != null && !typeConges.isEmpty()) {
             ObservableList<TypeConge> observableTypeConges = FXCollections.observableArrayList(typeConges);

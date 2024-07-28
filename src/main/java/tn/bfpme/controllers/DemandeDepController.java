@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -11,12 +12,14 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import tn.bfpme.models.Conge;
 import tn.bfpme.models.Statut;
 import tn.bfpme.models.TypeConge;
 import tn.bfpme.models.User;
 import tn.bfpme.services.ServiceConge;
+import tn.bfpme.services.ServiceNotification;
 import tn.bfpme.services.ServiceUtilisateur;
 import tn.bfpme.utils.Mails;
 import tn.bfpme.utils.MyDataBase;
@@ -51,6 +54,7 @@ public class DemandeDepController implements Initializable {
     private HBox DocFichHBOX;
     @FXML
     private HBox HBoxAppRef;
+
     Connection cnx = MyDataBase.getInstance().getCnx();
     private Conge conge;
     private User user;
@@ -59,6 +63,8 @@ public class DemandeDepController implements Initializable {
     String to, Subject, MessageText;
     private final ServiceConge serviceConge = new ServiceConge();
     private final ServiceUtilisateur serviceUser = new ServiceUtilisateur();
+    private final ServiceNotification serviceNotif = new ServiceNotification();
+
     public void setData(Conge conge, User user) {
         this.conge = conge;
         this.user = user;
@@ -69,7 +75,7 @@ public class DemandeDepController implements Initializable {
         labelType.setText(conge.getDesignation());
         CongeDays = (int) ChronoUnit.DAYS.between(conge.getDateDebut(), conge.getDateFin());
         labelJours.setText(String.valueOf(CongeDays) + " Jours");
-        if (this.conge.getFile().isBlank()) {
+        if (this.conge.getFile() == null) {
             DocFichHBOX.setVisible(false);
         }
         if (serviceUser.getManagerIdByUserId2(conge.getIdUser()) == SessionManager.getInstance().getUser().getIdUser()) {
@@ -85,6 +91,7 @@ public class DemandeDepController implements Initializable {
         endDate = String.valueOf(conge.getDateFin());
         to = user.getEmail();
     }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         User manager = SessionManager.getInstance().getUser();
@@ -122,7 +129,7 @@ public class DemandeDepController implements Initializable {
         alert.getButtonTypes().setAll(Oui, Non);
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == Oui) {
-            String Subject = "Approbation de Demande de Congé";
+            String Subject = "Approvation de Demande de Congé";
             String NotifContent = "";
             String MessageText = Mails.generateApprobationDemande(employeeName, startDate, endDate, managerName, managerRole);
             //xMails.sendEmail(to, Subject, MessageText); //Mailing
@@ -150,7 +157,6 @@ public class DemandeDepController implements Initializable {
             this.conge.setStatut(Statut.Approuvé);
             serviceConge.updateUserSolde(this.user.getIdUser(), conge.getTypeConge().getIdTypeConge(), congeDays);
             serviceConge.updateStatutConge(this.conge.getIdConge(), Statut.Approuvé);
-            //serviceConge.updateBalance(userId, IDTYPE, currentBalance - daysBetween);
         }
     }
 
@@ -163,23 +169,22 @@ public class DemandeDepController implements Initializable {
         ButtonType Non = new ButtonType("Non");
         alert.getButtonTypes().setAll(Oui, Non);
         Optional<ButtonType> result = alert.showAndWait();
-
         if (result.isPresent() && result.get() == Oui) {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/MailingDemande.fxml"));
                 Parent root = loader.load();
                 MailingDemandeController controller = loader.getController();
                 controller.setData(conge, user);
-                StageManager.closeAllStages();
-                Stage newStage = new Stage();
-                StageManager.addStage("MailingDemande", newStage);
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 Scene scene = new Scene(root);
-                newStage.setScene(scene);
-                newStage.setTitle("Mailing de Demande");
-                newStage.show();
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.err.println("Failed to load the MailingDemande.fxml");
+                stage.setScene(scene);
+                stage.setTitle("Mailing de Demande");
+                StageManager.closeAllStages();
+                stage.show();
+                StageManager.addStage("Mailing de Demande", stage);
+                Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+                stage.setX((screenBounds.getWidth() - stage.getWidth()) / 2);
+                stage.setY((screenBounds.getHeight() - stage.getHeight()) / 2);
             } catch (Exception e) {
                 e.printStackTrace();
                 System.err.println("An unexpected error occurred");

@@ -1,8 +1,10 @@
 package tn.bfpme.controllers;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -17,14 +19,17 @@ import tn.bfpme.controllers.RHC.RHController;
 import tn.bfpme.controllers.RHC.paneUserController;
 import tn.bfpme.models.User;
 import tn.bfpme.services.ServiceUtilisateur;
+import tn.bfpme.utils.FontResizer;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 
-public class UserCardController {
+public class UserCardController implements Initializable {
     @FXML
     private Pane Card;
     @FXML
@@ -44,7 +49,17 @@ public class UserCardController {
     int uid;
     String unom, uprenom, uemail, umdp, urole, udepart, updp;
     double SAnn, SExp, SMala, SMater;
-
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        Platform.runLater(() -> {
+            Stage stage = FontResizer.getStageFromNode(Card); // Replace rootAnchorPane with your actual root element
+            if (stage != null) {
+                stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(Card, stage.getWidth(), stage.getHeight())); // Replace rootAnchorPane with your actual root element
+                stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(Card, stage.getWidth(), stage.getHeight())); // Replace rootAnchorPane with your actual root element
+                FontResizer.resizeFonts(Card, stage.getWidth(), stage.getHeight()); // Replace rootAnchorPane with your actual root element
+            }
+        });
+    }
     public void setData(User user, String roleName, String departmentName) {
         String imagePath = user.getImage();
         if (imagePath != null) {

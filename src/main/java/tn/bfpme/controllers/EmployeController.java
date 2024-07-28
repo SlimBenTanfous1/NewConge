@@ -1,15 +1,17 @@
 package tn.bfpme.controllers;
 
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
@@ -24,8 +26,8 @@ import tn.bfpme.services.ServiceConge;
 import tn.bfpme.services.ServiceUserSolde;
 import tn.bfpme.utils.MyDataBase;
 import tn.bfpme.utils.SessionManager;
+import tn.bfpme.utils.FontResizer;
 
-import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -65,7 +67,6 @@ public class EmployeController implements Initializable {
     @FXML
     private HBox soldeHBox;
 
-    private Connection cnx;
     private final ServiceConge serviceConge = new ServiceConge();
     private final ServiceUserSolde serviceUserSolde = new ServiceUserSolde();
 
@@ -85,6 +86,12 @@ public class EmployeController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Platform.runLater(() -> {
+            Stage stage = (Stage) MainAnchorPane.getScene().getWindow();
+            stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
+            stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
+            FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight());
+        });
     }
 
     private void fetchUserConges() {
@@ -185,6 +192,7 @@ public class EmployeController implements Initializable {
 
         return pane;
     }
+
     @FXML
     private void navigateToScene(ActionEvent actionEvent, String fxmlFile, String title) {
         try {
@@ -194,14 +202,9 @@ public class EmployeController implements Initializable {
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.setTitle(title);
-
-            // Ensure the stage is maximized
-            stage.setMaximized(true);
-
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 }

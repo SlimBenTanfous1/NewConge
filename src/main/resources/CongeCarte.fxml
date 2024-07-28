@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.String?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tooltip?>
@@ -18,64 +17,64 @@
       <GridPane alignment="CENTER" style="-fx-border-width: 0 1 0 0; -fx-border-color: #808080;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <columnConstraints>
             <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" maxWidth="121.0" minWidth="10.0" prefWidth="121.0" />
-            <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="177.0" minWidth="10.0" prefWidth="163.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="180.0" minWidth="163.0" prefWidth="163.0" />
             <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="224.0" minWidth="10.0" prefWidth="200.0" />
-            <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="429.0" minWidth="10.0" prefWidth="359.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="359.0" minWidth="10.0" prefWidth="359.0" />
             <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="281.0" minWidth="10.0" prefWidth="158.0" />
             <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" maxWidth="261.0" minWidth="10.0" prefWidth="184.0" />
          </columnConstraints>
          <rowConstraints>
-            <RowConstraints minHeight="10.0" vgrow="ALWAYS" />
+            <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="ALWAYS" />
          </rowConstraints>
          <children>
-            <Label fx:id="cardType" alignment="CENTER" contentDisplay="CENTER" prefHeight="75.0" prefWidth="123.0" text="Type" textAlignment="CENTER">
-               <font>
-                  <Font size="15.0" />
-               </font>
-               <styleClass>
-                  <String fx:value="FontSize-15" />
-                  <String fx:value="RobotoRegular" />
-               </styleClass>
-            </Label>
-            <Label fx:id="cardDatedeb" alignment="CENTER" contentDisplay="CENTER" prefHeight="77.0" text="DateDeb" GridPane.columnIndex="1">
-               <font>
-                  <Font size="15.0" />
-               </font>
-               <styleClass>
-                  <String fx:value="FontSize-15" />
-                  <String fx:value="RobotoRegular" />
-               </styleClass>
-            </Label>
-            <Label fx:id="cardDatefin" alignment="CENTER" prefHeight="77.0" text="DateFin" GridPane.columnIndex="2">
-               <font>
-                  <Font size="15.0" />
-               </font>
-               <styleClass>
-                  <String fx:value="FontSize-15" />
-                  <String fx:value="RobotoRegular" />
-               </styleClass>
-            </Label>
-            <Label fx:id="cardDescription" alignment="CENTER" prefHeight="77.0" text="Description" GridPane.columnIndex="3">
-               <font>
-                  <Font size="15.0" />
-               </font>
-               <tooltip>
-                  <Tooltip fx:id="tooltip_desc" autoFix="false" consumeAutoHidingEvents="false" maxHeight="100.0" maxWidth="100.0" text="Tooltip" textAlignment="CENTER" wrapText="true" />
-               </tooltip>
-               <styleClass>
-                  <String fx:value="FontSize-15" />
-                  <String fx:value="RobotoRegular" />
-               </styleClass>
-            </Label>
-            <Label fx:id="cardStatus" alignment="CENTER" maxWidth="205.0" minWidth="102.0" prefHeight="75.0" prefWidth="139.0" text="Statut" GridPane.columnIndex="4">
-               <font>
-                  <Font size="15.0" />
-               </font>
-               <styleClass>
-                  <String fx:value="FontSize-15" />
-                  <String fx:value="RobotoRegular" />
-               </styleClass>
-            </Label>
+            <HBox alignment="CENTER_LEFT">
+               <children>
+                  <Label fx:id="cardType" alignment="CENTER" contentDisplay="CENTER" prefHeight="75.0" prefWidth="83.0" styleClass="RobotoRegular" text="Type" textAlignment="CENTER">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                  </Label>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" GridPane.columnIndex="1">
+               <children>
+                  <Label fx:id="cardDatedeb" alignment="CENTER" contentDisplay="CENTER" prefHeight="77.0" styleClass="RobotoRegular" text="DateDeb">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                  </Label>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" GridPane.columnIndex="2">
+               <children>
+                  <Label fx:id="cardDatefin" alignment="CENTER" prefHeight="77.0" styleClass="RobotoRegular" text="DateFin">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                  </Label>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" GridPane.columnIndex="3">
+               <children>
+                  <Label fx:id="cardDescription" alignment="CENTER" prefHeight="77.0" styleClass="RobotoRegular" text="Description">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                     <tooltip>
+                        <Tooltip fx:id="tooltip_desc" autoFix="false" consumeAutoHidingEvents="false" maxHeight="100.0" maxWidth="100.0" text="Tooltip" textAlignment="CENTER" wrapText="true" />
+                     </tooltip>
+                  </Label>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" GridPane.columnIndex="4">
+               <children>
+                  <Label fx:id="cardStatus" alignment="CENTER" maxWidth="205.0" minWidth="102.0" prefHeight="75.0" prefWidth="139.0" styleClass="RobotoRegular" text="Statut">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                  </Label>
+               </children>
+            </HBox>
             <HBox alignment="CENTER_RIGHT" prefHeight="75.0" prefWidth="142.0" GridPane.columnIndex="5">
                <children>
                   <Button fx:id="btnDelete" disable="true" mnemonicParsing="false" onAction="#suppConge" prefHeight="34.0" prefWidth="34.0" styleClass="settingsButton">

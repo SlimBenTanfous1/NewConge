@@ -19,7 +19,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="726.0" prefWidth="1119.0" styleClass="grad-bg" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.RHC.AttributionSoldeController">
+<AnchorPane fx:id="MainAnchorPane" prefHeight="726.0" prefWidth="1119.0" styleClass="grad-bg" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.RHC.AttributionSoldeController">
    <children>
       <HBox alignment="CENTER" layoutX="655.0" layoutY="144.0" AnchorPane.leftAnchor="655.0" AnchorPane.rightAnchor="30.0">
          <children>
@@ -30,7 +30,6 @@
                <styleClass>
                   <String fx:value="paneRoundedCornders" />
                   <String fx:value="RobotoBoldItalic" />
-                  <String fx:value="FontSize-17" />
                </styleClass>
             </Label>
          </children>
@@ -43,17 +42,12 @@
       <TextField fx:id="PeriodeJourTF" layoutX="676.0" layoutY="351.0" prefHeight="17.0" prefWidth="147.0" visible="false" />
       <HBox alignment="CENTER_LEFT" layoutX="754.0" layoutY="364.0" prefHeight="29.0" prefWidth="278.0" spacing="10.0" AnchorPane.rightAnchor="87.0">
          <children>
-            <Label prefHeight="17.0" prefWidth="79.0" text="Recherche:">
-               <styleClass>
-                  <String fx:value="FontSize-15" />
-                  <String fx:value="RobotoMediumItalic" />
-               </styleClass>
-            </Label>
-            <TextField fx:id="RechercheSol" onAction="#Recherche_Solde" text="Recherche..." />
+            <Label prefHeight="17.0" prefWidth="79.0" styleClass="RobotoBoldItalic" text="Recherche:" />
+            <TextField fx:id="RechercheSol" onAction="#Recherche_Solde" />
             <Button fx:id="btnRemoveFilter" mnemonicParsing="false" onAction="#removeFilter" styleClass="btn-primary" text="X" />
          </children>
       </HBox>
-      <TableView fx:id="Table_TypeConge" layoutX="248.0" layoutY="411.0" prefHeight="256.0" prefWidth="673.0" AnchorPane.bottomAnchor="59.0" AnchorPane.leftAnchor="248.0" AnchorPane.rightAnchor="198.0" AnchorPane.topAnchor="411.0">
+      <TableView fx:id="Table_TypeConge" layoutX="86.0" layoutY="411.0" prefHeight="256.0" prefWidth="948.0" AnchorPane.bottomAnchor="59.0" AnchorPane.leftAnchor="86.0" AnchorPane.rightAnchor="85.0" AnchorPane.topAnchor="411.0">
          <columns>
             <TableColumn fx:id="colDesignation" prefWidth="116.0" text="Designation" />
             <TableColumn fx:id="colPas" prefWidth="85.0" text="Pas" />
@@ -78,62 +72,42 @@
                   <RowConstraints maxHeight="74.0" minHeight="10.0" prefHeight="51.0" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
-                  <Label text="Désignation:">
-                     <styleClass>
-                        <String fx:value="FontSize-15" />
-                        <String fx:value="RobotoMediumItalic" />
-                     </styleClass>
+                  <Label styleClass="RobotoRegular" text="Designation :">
                      <GridPane.margin>
                         <Insets left="20.0" />
                      </GridPane.margin>
                   </Label>
-                  <TextField fx:id="Designation_Solde" prefHeight="17.0" prefWidth="147.0" text="Désignation..." GridPane.columnIndex="1" />
-                  <Label text="Pas : " GridPane.rowIndex="1">
-                     <styleClass>
-                        <String fx:value="FontSize-15" />
-                        <String fx:value="RobotoMediumItalic" />
-                     </styleClass>
+                  <TextField fx:id="Designation_Solde" prefHeight="17.0" prefWidth="147.0" GridPane.columnIndex="1" />
+                  <Label styleClass="RobotoRegular" text="Pas : " GridPane.rowIndex="1">
                      <GridPane.margin>
                         <Insets left="20.0" />
                      </GridPane.margin>
                   </Label>
-                  <TextField fx:id="Pas_Solde" prefHeight="29.0" prefWidth="251.0" text="Pas..." GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                  <Label text="Fichier:" GridPane.rowIndex="4">
-                     <styleClass>
-                        <String fx:value="FontSize-15" />
-                        <String fx:value="RobotoMediumItalic" />
-                     </styleClass>
+                  <TextField fx:id="Pas_Solde" prefHeight="29.0" prefWidth="251.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <Label styleClass="RobotoRegular" text="Fichier:" GridPane.rowIndex="4">
                      <GridPane.margin>
                         <Insets left="20.0" />
                      </GridPane.margin>
                   </Label>
-                  <Label text="Limite:" GridPane.rowIndex="3">
-                     <styleClass>
-                        <String fx:value="FontSize-15" />
-                        <String fx:value="RobotoMediumItalic" />
-                     </styleClass>
+                  <Label styleClass="RobotoRegular" text="Limite:" GridPane.rowIndex="3">
                      <GridPane.margin>
                         <Insets left="20.0" />
                      </GridPane.margin>
                   </Label>
-                  <Label text="Période:" GridPane.rowIndex="2">
-                     <styleClass>
-                        <String fx:value="FontSize-15" />
-                        <String fx:value="RobotoMediumItalic" />
-                     </styleClass>
+                  <Label styleClass="RobotoRegular" text="Periode:" GridPane.rowIndex="2">
                      <GridPane.margin>
                         <Insets left="20.0" />
                      </GridPane.margin>
                   </Label>
                   <HBox maxHeight="20.0" maxWidth="260.0" prefHeight="12.0" prefWidth="260.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                      <children>
-                        <RadioButton fx:id="fileOuiRadioButton" mnemonicParsing="false" prefHeight="17.0" prefWidth="134.0" styleClass="FontSize-15" text="Oui">
+                        <RadioButton fx:id="fileOuiRadioButton" mnemonicParsing="false" prefHeight="17.0" prefWidth="134.0" text="Oui">
                            <toggleGroup>
                               <ToggleGroup fx:id="fileToggleGroup" />
                            </toggleGroup>
                         </RadioButton>
                         <Separator orientation="VERTICAL" prefHeight="200.0" styleClass="seperator" />
-                        <RadioButton fx:id="fileNonRadioButton" mnemonicParsing="false" prefHeight="20.0" prefWidth="126.0" styleClass="FontSize-15" text="Non" toggleGroup="$fileToggleGroup" />
+                        <RadioButton fx:id="fileNonRadioButton" mnemonicParsing="false" prefHeight="20.0" prefWidth="126.0" text="Non" toggleGroup="$fileToggleGroup" />
                      </children>
                   </HBox>
                   <VBox prefHeight="94.0" prefWidth="289.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
@@ -143,7 +117,7 @@
                         <Label fx:id="periodlabel" prefHeight="24.0" prefWidth="289.0" styleClass="FontSize-15" />
                      </children>
                   </VBox>
-                  <TextField fx:id="Limite_Solde" text="Limite..." GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <TextField fx:id="Limite_Solde" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                </children>
                <styleClass>
                   <String fx:value="paneRoundedCornders" />
@@ -157,22 +131,34 @@
       </HBox>
       <HBox fx:id="Hfirst" alignment="CENTER" layoutX="655.0" layoutY="231.0" prefHeight="46.0" prefWidth="382.0" AnchorPane.leftAnchor="655.0" AnchorPane.rightAnchor="82.0">
          <children>
-            <Button fx:id="Ajout_Solde" mnemonicParsing="false" onAction="#AjouterTypeButton" prefHeight="44.0" prefWidth="123.0" styleClass="btn-primary" text="Ajouter">
+            <Button fx:id="Ajout_Solde" mnemonicParsing="false" onAction="#AjouterTypeButton" prefHeight="44.0" prefWidth="123.0" text="Ajouter">
                <font>
                   <Font size="16.0" />
                </font>
+               <styleClass>
+                  <String fx:value="btn-primary" />
+                  <String fx:value="RobotoBold" />
+               </styleClass>
             </Button>
             <Separator orientation="VERTICAL" prefHeight="41.0" prefWidth="2.0" styleClass="seperator" />
-            <Button fx:id="Modifier_Solde" mnemonicParsing="false" onAction="#ModifierTypeButton" prefHeight="44.0" prefWidth="123.0" styleClass="btn-primary" text="Modifier">
+            <Button fx:id="Modifier_Solde" mnemonicParsing="false" onAction="#ModifierTypeButton" prefHeight="44.0" prefWidth="123.0" text="Modifier">
                <font>
                   <Font size="16.0" />
                </font>
+               <styleClass>
+                  <String fx:value="btn-primary" />
+                  <String fx:value="RobotoBold" />
+               </styleClass>
             </Button>
             <Separator orientation="VERTICAL" prefHeight="200.0" styleClass="seperator" />
-            <Button fx:id="Supprimer_Solde" mnemonicParsing="false" onAction="#SupprimerTypeButton" prefHeight="44.0" prefWidth="123.0" styleClass="btn-primary" text="Supprimer">
+            <Button fx:id="Supprimer_Solde" mnemonicParsing="false" onAction="#SupprimerTypeButton" prefHeight="44.0" prefWidth="123.0" text="Supprimer">
                <font>
                   <Font size="16.0" />
                </font>
+               <styleClass>
+                  <String fx:value="btn-primary" />
+                  <String fx:value="RobotoBold" />
+               </styleClass>
             </Button>
          </children>
       </HBox>
@@ -181,20 +167,18 @@
          <children>
             <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#Cancel" prefHeight="32.0" prefWidth="87.0" text="Annuler">
                <styleClass>
-                  <String fx:value="FontSize-14" />
                   <String fx:value="btn-refuser" />
-               </styleClass>
-            </Button>
+                  <String fx:value="RobotoBold" />
+               </styleClass></Button>
             <Button fx:id="btnSave" mnemonicParsing="false" onAction="#SaveButton" prefHeight="32.0" prefWidth="152.0" text="Enregistrer">
                <styleClass>
-                  <String fx:value="FontSize-14" />
                   <String fx:value="btn-approver" />
-               </styleClass>
-            </Button>
+                  <String fx:value="RobotoBold" />
+               </styleClass></Button>
          </children>
       </HBox>
 
-      <Label alignment="TOP_CENTER" layoutX="453.0" layoutY="21.0" styleClass="RobotoBoldItalic" text="Gestion des Congés" AnchorPane.leftAnchor="453.0" AnchorPane.rightAnchor="451.0" AnchorPane.topAnchor="21.0">
+      <Label alignment="TOP_CENTER" layoutX="453.0" layoutY="21.0" styleClass="RobotoBold" text="Gestion des Congés" AnchorPane.leftAnchor="453.0" AnchorPane.rightAnchor="451.0" AnchorPane.topAnchor="21.0">
          <font>
             <Font size="24.0" />
          </font>

@@ -4,14 +4,15 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
+import javafx.stage.Stage;
 import tn.bfpme.models.User;
 import tn.bfpme.services.ServiceUtilisateur;
+import tn.bfpme.utils.FontResizer;
 import tn.bfpme.utils.MyDataBase;
+import javafx.application.Platform;
 
 import java.io.IOException;
 import java.net.URL;
@@ -19,17 +20,15 @@ import java.sql.Connection;
 import java.util.List;
 import java.util.ResourceBundle;
 
-
 public class ListeEmployésController implements Initializable {
-
     @FXML
     private AnchorPane MainAnchorPane;
-
     @FXML
     private TextField Recherche_conge;
-
     @FXML
     private GridPane UserContainer;
+    @FXML
+    private ScrollPane scrollPane;
 
     ServiceUtilisateur UserS = new ServiceUtilisateur();
     Connection cnx = MyDataBase.getInstance().getCnx();
@@ -47,12 +46,23 @@ public class ListeEmployésController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        scrollPane.widthProperty().addListener((obs, oldVal, newVal) -> {
+            Platform.runLater(this::load);
+        });
+        Platform.runLater(() -> {
+            Stage stage = (Stage) MainAnchorPane.getScene().getWindow();
+            stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
+            stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
+            FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight());
+        });
     }
 
-    public void load(List<User> users) {
+    public void load() {
+        List<User> users = UserS.ShowUnder();
         UserContainer.getChildren().clear();
         int column = 0;
         int row = 0;
+        int columns = calculateNumberOfColumns();
         try {
             for (User user : users) {
                 FXMLLoader fxmlLoader = new FXMLLoader();
@@ -61,7 +71,7 @@ public class ListeEmployésController implements Initializable {
                 UserCardController cardC = fxmlLoader.getController();
                 cardC.HBoxBtns.setVisible(false);
                 cardC.setDataUser(user);
-                if (column == 3) {
+                if (column == columns) {
                     column = 0;
                     ++row;
                 }
@@ -73,10 +83,11 @@ public class ListeEmployésController implements Initializable {
         }
     }
 
-
-    public void load() {
-        List<User> users = UserS.ShowUnder();
-        load(users);
+    private int calculateNumberOfColumns() {
+        double scrollPaneWidth = scrollPane.getWidth();
+        double userCardWidth = 332; // Width of your UserCard.fxml
+        int columns = (int) (scrollPaneWidth / userCardWidth);
+        return Math.max(columns, 1); // Ensure at least one column
     }
 
     @FXML
@@ -85,6 +96,7 @@ public class ListeEmployésController implements Initializable {
         String recherche = Recherche_conge.getText();
         int column = 0;
         int row = 0;
+        int columns = calculateNumberOfColumns();
         try {
             for (User user : UserS.RechercheUnder(recherche)) {
                 FXMLLoader fxmlLoader = new FXMLLoader();
@@ -93,7 +105,7 @@ public class ListeEmployésController implements Initializable {
                 UserCardController cardC = fxmlLoader.getController();
                 cardC.HBoxBtns.setVisible(false);
                 cardC.setDataUser(user);
-                if (column == 3) {
+                if (column == columns) {
                     column = 0;
                     ++row;
                 }
@@ -105,6 +117,3 @@ public class ListeEmployésController implements Initializable {
         }
     }
 }
-
-
-
