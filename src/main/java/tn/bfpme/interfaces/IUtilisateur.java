@@ -43,11 +43,10 @@ public interface IUtilisateur {
 
     void assignRoleToUser(int userId, int roleId);
 
-    void updateUserRoleAndDepartment(int userId, int roleId, int departmentId) throws SQLException;
 
     void updateUserRole(int userId, int roleId);
 
-    void updateUserDepartment(int userId, int departmentId);
+
 
     User getUserById(int userId) throws SQLException;
 
