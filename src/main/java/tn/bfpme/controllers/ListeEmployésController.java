@@ -7,8 +7,10 @@ import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
+import javafx.stage.Stage;
 import tn.bfpme.models.User;
 import tn.bfpme.services.ServiceUtilisateur;
+import tn.bfpme.utils.FontResizer;
 import tn.bfpme.utils.MyDataBase;
 import javafx.application.Platform;
 
@@ -46,6 +48,12 @@ public class ListeEmployésController implements Initializable {
         }
         scrollPane.widthProperty().addListener((obs, oldVal, newVal) -> {
             Platform.runLater(this::load);
+        });
+        Platform.runLater(() -> {
+            Stage stage = (Stage) MainAnchorPane.getScene().getWindow();
+            stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
+            stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
+            FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight());
         });
     }
 

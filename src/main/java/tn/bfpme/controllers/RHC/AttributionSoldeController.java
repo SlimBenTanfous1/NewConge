@@ -1,5 +1,6 @@
 package tn.bfpme.controllers.RHC;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -9,11 +10,14 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 import tn.bfpme.models.TypeConge;
 import tn.bfpme.services.ServiceTypeConge;
 import tn.bfpme.services.ServiceUserSolde;
 import tn.bfpme.services.ServiceUtilisateur;
+import tn.bfpme.utils.FontResizer;
 import tn.bfpme.utils.MyDataBase;
 
 import java.net.URL;
@@ -26,7 +30,8 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class AttributionSoldeController implements Initializable {
-
+    @FXML
+    private AnchorPane MainAnchorPane;
     @FXML
     private TableView<TypeConge> Table_TypeConge;
     @FXML
@@ -76,7 +81,12 @@ public class AttributionSoldeController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         ComboPeriode.setItems(FXCollections.observableArrayList("Semestriel", "Trimestriel", "Annuel"));
-
+        Platform.runLater(() -> {
+            Stage stage = (Stage) MainAnchorPane.getScene().getWindow();
+            stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
+            stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
+            FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight());
+        });
         colDesignation.setCellValueFactory(new PropertyValueFactory<>("designation"));
         colPas.setCellValueFactory(new PropertyValueFactory<>("pas"));
         colLimite.setCellValueFactory(new PropertyValueFactory<>("limite"));

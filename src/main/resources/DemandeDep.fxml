@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
@@ -23,9 +24,17 @@
                 </ImageView>
             <HBox fx:id="HBoxAppRef" layoutX="197.0" layoutY="27.0" prefHeight="40.0" prefWidth="186.0">
                <children>
-                  <Button mnemonicParsing="false" onAction="#ApproverConge" prefHeight="43.0" prefWidth="91.0" styleClass="btn-approver" text="Approver" />
+                  <Button mnemonicParsing="false" onAction="#ApproverConge" prefHeight="43.0" prefWidth="91.0" text="Approver">
+                     <styleClass>
+                        <String fx:value="btn-approver" />
+                        <String fx:value="RobotoBold" />
+                     </styleClass></Button>
                   <Separator maxHeight="42.0" minHeight="1.0" orientation="VERTICAL" prefHeight="42.0" prefWidth="29.0" styleClass="seperator" HBox.hgrow="NEVER" />
-                  <Button mnemonicParsing="false" onAction="#RefuserConge" prefHeight="43.0" prefWidth="91.0" styleClass="btn-refuser" text="Refuser" />
+                  <Button mnemonicParsing="false" onAction="#RefuserConge" prefHeight="43.0" prefWidth="91.0" text="Refuser">
+                     <styleClass>
+                        <String fx:value="btn-refuser" />
+                        <String fx:value="RobotoBold" />
+                     </styleClass></Button>
                </children>
             </HBox>
             </children>
@@ -115,6 +124,10 @@
             <Font name="Roboto Bold Italic" size="15.0" />
          </font>
       </Label>
-      <Button layoutX="168.0" layoutY="487.0" mnemonicParsing="false" onAction="#retour" prefHeight="6.0" prefWidth="91.0" styleClass="btn-primary" text="Retour" />
+      <Button layoutX="168.0" layoutY="487.0" mnemonicParsing="false" onAction="#retour" prefHeight="6.0" prefWidth="91.0" text="Retour">
+         <styleClass>
+            <String fx:value="btn-primary" />
+            <String fx:value="RobotoBold" />
+         </styleClass></Button>
     </children>
 </AnchorPane>

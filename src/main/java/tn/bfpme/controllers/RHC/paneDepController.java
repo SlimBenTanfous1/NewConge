@@ -1,5 +1,6 @@
 package tn.bfpme.controllers.RHC;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -7,9 +8,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 import tn.bfpme.models.Departement;
 import tn.bfpme.services.ServiceDepartement;
 import javafx.scene.layout.*;
+import tn.bfpme.utils.FontResizer;
 
 import java.net.URL;
 import java.util.*;
@@ -19,6 +22,8 @@ public class paneDepController implements Initializable {
     private ListView<Departement> departementListView;
     @FXML
     private TextField deptNameField, deptDescriptionField;
+    @FXML
+    private AnchorPane DepartementPane;
     @FXML
     private ComboBox<Departement> parentDeptComboBox;
     @FXML
@@ -46,13 +51,16 @@ public class paneDepController implements Initializable {
                 Add.setDisable(true);
                 Update.setDisable(false);
                 Delete.setDisable(false);
-
-                // Clear and add the parent department hierarchy
                 comboBoxContainer.getChildren().clear();
                 addParentDepartmentComboBoxes(newValue);
             }
         });
-
+        Platform.runLater(() -> {
+            Stage stage = (Stage) DepartementPane.getScene().getWindow();
+            stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(DepartementPane, stage.getWidth(), stage.getHeight()));
+            stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(DepartementPane, stage.getWidth(), stage.getHeight()));
+            FontResizer.resizeFonts(DepartementPane, stage.getWidth(), stage.getHeight());
+        });
         parentDeptComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 comboBoxContainer.getChildren().clear();

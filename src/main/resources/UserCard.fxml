@@ -43,7 +43,7 @@
       </HBox>
       <VBox layoutX="135.0" layoutY="12.0" prefHeight="123.0" prefWidth="185.0">
          <children>
-                <Label fx:id="cardnameprename" prefHeight="35.0" prefWidth="176.0" text="Name Prename">
+                <Label fx:id="cardnameprename" prefHeight="35.0" prefWidth="176.0" styleClass="RobotoBold" text="Name Prename">
                     <font>
                         <Font name="Roboto Bold" size="18.0" />
                     </font>
@@ -51,17 +51,17 @@
                   <Insets />
                </VBox.margin>
                 </Label>
-                <Label fx:id="cardemail" prefHeight="40.0" prefWidth="177.0" text="Email">
+                <Label fx:id="cardemail" prefHeight="40.0" prefWidth="177.0" styleClass="RobotoRegular" text="Email">
                     <font>
                         <Font name="Roboto Bold" size="14.0" />
                     </font>
                 </Label>
-                <Label fx:id="cardrole" prefHeight="30.0" prefWidth="176.0" text="Role">
+                <Label fx:id="cardrole" prefHeight="30.0" prefWidth="176.0" styleClass="RobotoRegular" text="Role">
                     <font>
                         <Font name="Roboto Bold" size="14.0" />
                     </font>
                 </Label>
-                <Label fx:id="carddepart" prefHeight="41.0" prefWidth="177.0" text="Departement">
+                <Label fx:id="carddepart" prefHeight="41.0" prefWidth="177.0" styleClass="RobotoRegular" text="Departement">
                     <font>
                         <Font name="Roboto Bold" size="14.0" />
                     </font>

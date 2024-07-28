@@ -1,5 +1,6 @@
 package tn.bfpme.controllers;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.*;
 import javafx.scene.*;
@@ -9,23 +10,45 @@ import javafx.scene.layout.*;
 import javafx.stage.*;
 import tn.bfpme.models.Conge;
 import tn.bfpme.models.User;
+import tn.bfpme.utils.FontResizer;
 import tn.bfpme.utils.StageManager;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public class UserCarteController {
-    @FXML private Pane UserCard;
-    @FXML private Label email_card;
-    @FXML private Label nomprenom_card;
-    @FXML private ImageView pdp_card;
-    @FXML private Label periode_card;
-    @FXML private Label statut_card;
-    @FXML private Label type_card;
+public class UserCarteController implements Initializable {
+    @FXML
+    private Pane UserCard;
+    @FXML
+    private Label email_card;
+    @FXML
+    private Label nomprenom_card;
+    @FXML
+    private ImageView pdp_card;
+    @FXML
+    private Label periode_card;
+    @FXML
+    private Label statut_card;
+    @FXML
+    private Label type_card;
     private Conge conge;
     private User user;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        Platform.runLater(() -> {
+            Stage stage = FontResizer.getStageFromNode(UserCard); // Replace rootAnchorPane with your actual root element
+            if (stage != null) {
+                stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(UserCard, stage.getWidth(), stage.getHeight())); // Replace rootAnchorPane with your actual root element
+                stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(UserCard, stage.getWidth(), stage.getHeight())); // Replace rootAnchorPane with your actual root element
+                FontResizer.resizeFonts(UserCard, stage.getWidth(), stage.getHeight()); // Replace rootAnchorPane with your actual root element
+            }
+        });
+    }
 
     public void setData(Conge conge, User user) {
         this.conge = conge;
@@ -42,10 +65,10 @@ public class UserCarteController {
             }
         }
         nomprenom_card.setText(user.getPrenom() + " " + user.getNom());
-        email_card.setText("Email: "+user.getEmail());
+        email_card.setText("Email: " + user.getEmail());
         periode_card.setText("De    " + conge.getDateDebut() + "   →   " + conge.getDateFin());
-        statut_card.setText("Statut: "+conge.getStatut());
-        type_card.setText("Type: "+conge.getDesignation());
+        statut_card.setText("Statut: " + conge.getStatut());
+        type_card.setText("Type: " + conge.getDesignation());
         UserCard.setStyle("-fx-border-radius: 5px; -fx-border-color: #808080;");
     }
 

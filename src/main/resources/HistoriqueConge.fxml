@@ -53,7 +53,7 @@
                                     </ImageView>
                                  </graphic>
                               </Button>
-                              <Label prefHeight="28.0" prefWidth="78.0" text="Type">
+                              <Label prefHeight="28.0" prefWidth="78.0" styleClass="RobotoBold" text="Type">
                                  <font>
                                     <Font size="16.0" />
                                  </font>
@@ -71,7 +71,7 @@
                                     </ImageView>
                                  </graphic>
                               </Button>
-                              <Label text="Date du Début">
+                              <Label styleClass="RobotoBold" text="Date du Début">
                                  <font>
                                     <Font size="18.0" />
                                  </font>
@@ -89,7 +89,7 @@
                                     </ImageView>
                                  </graphic>
                               </Button>
-                              <Label prefHeight="27.0" prefWidth="117.0" text="Date de Fin">
+                              <Label prefHeight="27.0" prefWidth="117.0" styleClass="RobotoBold" text="Date de Fin">
                                  <font>
                                     <Font size="18.0" />
                                  </font>
@@ -107,7 +107,7 @@
                                     </ImageView>
                                  </graphic>
                               </Button>
-                              <Label text="Description">
+                              <Label styleClass="RobotoBold" text="Description">
                                  <font>
                                     <Font size="18.0" />
                                  </font>
@@ -125,7 +125,7 @@
                                     </ImageView>
                                  </graphic>
                               </Button>
-                              <Label prefHeight="25.0" prefWidth="52.0" text="Statut">
+                              <Label prefHeight="25.0" prefWidth="52.0" styleClass="RobotoBold" text="Statut">
                                  <font>
                                     <Font size="18.0" />
                                  </font>
@@ -134,7 +134,7 @@
                         </HBox>
                         <HBox alignment="CENTER" prefHeight="23.0" prefWidth="1259.0" GridPane.columnIndex="5">
                            <children>
-                              <Label text="Actions">
+                              <Label styleClass="RobotoBold" text="Actions">
                                  <font>
                                     <Font size="18.0" />
                                  </font>

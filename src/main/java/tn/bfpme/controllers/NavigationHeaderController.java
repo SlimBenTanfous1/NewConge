@@ -1,5 +1,6 @@
 package tn.bfpme.controllers;
 
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 
@@ -14,16 +15,20 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import tn.bfpme.utils.FontResizer;
 import tn.bfpme.utils.SessionManager;
 import tn.bfpme.utils.StageManager;
 
 public class NavigationHeaderController implements Initializable {
     @FXML
     private Pane NavPane;
+    @FXML
+    private AnchorPane NavHeaderPane;
 
     @FXML
     private Button NotifBtn;

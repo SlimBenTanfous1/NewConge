@@ -27,6 +27,7 @@ import tn.bfpme.models.User;
 import tn.bfpme.services.ServiceConge;
 import tn.bfpme.services.ServiceEmailTemp;
 import tn.bfpme.services.ServiceNotification;
+import tn.bfpme.utils.FontResizer;
 import tn.bfpme.utils.SessionManager;
 import tn.bfpme.utils.StageManager;
 
@@ -58,7 +59,12 @@ public class MailingDemandeController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // Add listener to the ComboBox in the initialize method
         raison_mail.getSelectionModel().selectedItemProperty().addListener(this::onRaisonSelected);
-
+        Platform.runLater(() -> {
+            Stage stage = (Stage) MainAnchorPane.getScene().getWindow();
+            stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
+            stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
+            FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight());
+        });
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/NavigationHeader.fxml"));
             AnchorPane departementPane = loader.load();

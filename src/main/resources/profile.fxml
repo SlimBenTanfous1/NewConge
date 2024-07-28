@@ -17,7 +17,7 @@
    <children>
       <AnchorPane layoutX="117.0" layoutY="145.0" maxHeight="800.0" maxWidth="1200.0" prefHeight="589.0" prefWidth="619.0" AnchorPane.bottomAnchor="96.0" AnchorPane.leftAnchor="117.0" AnchorPane.rightAnchor="604.0" AnchorPane.topAnchor="145.0">
          <children>
-            <Label layoutX="1.0" prefHeight="36.0" prefWidth="316.0" text="Mes informations :" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="0.0">
+            <Label layoutX="1.0" prefHeight="36.0" prefWidth="316.0" styleClass="RobotoBold" text="Mes informations :" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="0.0">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
@@ -36,12 +36,12 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <children>
-                        <Label prefHeight="17.0" prefWidth="165.0" text="Nom et Prénom :">
+                        <Label prefHeight="17.0" prefWidth="165.0" styleClass="RobotoBold" text="Nom et Prénom :">
                            <font>
                               <Font name="System Bold" size="14.0" />
                            </font>
                         </Label>
-                        <Label prefHeight="17.0" prefWidth="74.0" text="E-mail : " GridPane.rowIndex="1">
+                        <Label prefHeight="17.0" prefWidth="74.0" styleClass="RobotoBold" text="E-mail : " GridPane.rowIndex="1">
                            <font>
                               <Font name="System Bold" size="14.0" />
                            </font>
@@ -51,12 +51,12 @@
                               <Font name="Roboto Regular" size="14.0" />
                            </font>
                         </Label>
-                        <Label prefHeight="17.0" prefWidth="165.0" text="Département :" GridPane.rowIndex="2">
+                        <Label prefHeight="17.0" prefWidth="165.0" styleClass="RobotoBold" text="Département :" GridPane.rowIndex="2">
                            <font>
                               <Font name="System Bold" size="14.0" />
                            </font>
                         </Label>
-                        <Label prefHeight="17.0" prefWidth="165.0" text="Rôle : " GridPane.rowIndex="3">
+                        <Label prefHeight="17.0" prefWidth="165.0" styleClass="RobotoBold" text="Rôle : " GridPane.rowIndex="3">
                            <font>
                               <Font name="System Bold" size="14.0" />
                            </font>
@@ -85,7 +85,7 @@
                   </ImageView>
                </children>
             </AnchorPane>
-            <Label layoutX="1.0" layoutY="307.0" prefHeight="36.0" prefWidth="316.0" text="Solde restant :">
+            <Label layoutX="1.0" layoutY="307.0" prefHeight="36.0" prefWidth="316.0" styleClass="RobotoBold" text="Solde restant :">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
@@ -111,7 +111,7 @@
                   <TableColumn fx:id="TableDF" prefWidth="126.0" text="Date Fin" />
                </columns>
             </TableView>
-            <Label alignment="CENTER" layoutX="32.0" layoutY="8.0" prefHeight="36.0" prefWidth="356.0" text="Historique des congés" AnchorPane.topAnchor="2.0">
+            <Label alignment="CENTER" layoutX="32.0" layoutY="8.0" prefHeight="36.0" prefWidth="356.0" styleClass="RobotoBlackItalic" text="Historique des congés" AnchorPane.topAnchor="2.0">
                <font>
                   <Font name="Roboto Italic" size="16.0" />
                </font>

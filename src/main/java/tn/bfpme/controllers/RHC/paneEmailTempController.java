@@ -1,5 +1,6 @@
 package tn.bfpme.controllers.RHC;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -10,12 +11,15 @@ import javafx.scene.control.*;
 import javafx.scene.input.InputMethodEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 import tn.bfpme.models.EmailsTemplates;
 import tn.bfpme.models.Role;
 import tn.bfpme.models.User;
 import tn.bfpme.services.ServiceEmailTemp;
 import tn.bfpme.services.ServiceRole;
+import tn.bfpme.utils.FontResizer;
 
 import java.net.URL;
 import java.util.List;
@@ -26,6 +30,8 @@ import java.util.stream.Collectors;
 public class paneEmailTempController implements Initializable {
     @FXML
     private TextArea MessageTF;
+    @FXML
+    private AnchorPane MainAnchorPane;
     @FXML
     private ListView<EmailsTemplates> ObjListView;
     @FXML
@@ -59,6 +65,12 @@ public class paneEmailTempController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Load();
+        Platform.runLater(() -> {
+            Stage stage = (Stage) MainAnchorPane.getScene().getWindow();
+            stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
+            stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
+            FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight());
+        });
         RechercheTemp.setDisable(false);
         RechercheTemp.setText("");
         MessageTF.setDisable(true);

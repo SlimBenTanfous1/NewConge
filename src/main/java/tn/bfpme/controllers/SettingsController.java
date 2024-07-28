@@ -11,9 +11,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import tn.bfpme.utils.FontResizer;
 import tn.bfpme.utils.SessionManager;
 import tn.bfpme.utils.StageManager;
 
@@ -25,20 +27,19 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class SettingsController implements Initializable {
-
     @FXML
     private Label User_name;
-
+    @FXML
+    private Pane SettingsCard;
     @FXML
     private ImageView User_pdp;
-
     @FXML
     private Label User_role;
 
     @FXML
     public void initialize(URL location, ResourceBundle resources) {
         try {
-            User_name.setText(SessionManager.getInstance().getUser().getNom()+" "+SessionManager.getInstance().getUser().getPrenom());
+            User_name.setText(SessionManager.getInstance().getUser().getNom() + " " + SessionManager.getInstance().getUser().getPrenom());
             User_role.setText(String.valueOf(SessionManager.getInstance().getUserRoleName()));
             String imagePath = SessionManager.getInstance().getUser().getImage();
 
@@ -69,6 +70,14 @@ public class SettingsController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        Platform.runLater(() -> {
+            Stage stage = FontResizer.getStageFromNode(SettingsCard); // Replace rootAnchorPane with your actual root element
+            if (stage != null) {
+                stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(SettingsCard, stage.getWidth(), stage.getHeight())); // Replace rootAnchorPane with your actual root element
+                stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(SettingsCard, stage.getWidth(), stage.getHeight())); // Replace rootAnchorPane with your actual root element
+                FontResizer.resizeFonts(SettingsCard, stage.getWidth(), stage.getHeight()); // Replace rootAnchorPane with your actual root element
+            }
+        });
     }
 
     @FXML
@@ -115,8 +124,6 @@ public class SettingsController implements Initializable {
             e.printStackTrace();
         }
     }
-
-
 
 
     @FXML

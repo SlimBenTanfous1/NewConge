@@ -35,13 +35,21 @@
             </TextArea>
             <HBox alignment="CENTER" layoutX="466.0" layoutY="590.0" prefHeight="75.0" prefWidth="346.0" spacing="104.0" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="466.0" AnchorPane.rightAnchor="465.0">
                <children>
-                  <Button mnemonicParsing="false" onAction="#Envoyer_mail" prefHeight="44.0" prefWidth="99.0" styleClass="btn-primary" text="Envoyer" />
-                  <Button mnemonicParsing="false" onAction="#Annuler_mail" prefHeight="44.0" prefWidth="99.0" styleClass="btn-primary" text="Annuler" />
+                  <Button mnemonicParsing="false" onAction="#Envoyer_mail" prefHeight="44.0" prefWidth="99.0" text="Envoyer">
+                     <styleClass>
+                        <String fx:value="btn-primary" />
+                        <String fx:value="RobotoBold" />
+                     </styleClass></Button>
+                  <Button mnemonicParsing="false" onAction="#Annuler_mail" prefHeight="44.0" prefWidth="99.0" text="Annuler">
+                     <styleClass>
+                        <String fx:value="btn-primary" />
+                        <String fx:value="RobotoBold" />
+                     </styleClass></Button>
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT" layoutX="34.0" layoutY="85.0" prefHeight="30.0" prefWidth="531.0" AnchorPane.leftAnchor="34.0" AnchorPane.topAnchor="85.0">
                <children>
-                  <Label prefHeight="19.0" prefWidth="140.0" text="Destinataire :" />
+                  <Label prefHeight="19.0" prefWidth="140.0" styleClass="RobotoRegular" text="Destinataire :" />
                   <Label fx:id="mail_dest" disable="true" prefHeight="28.0" prefWidth="378.0">
                      <styleClass>
                         <String fx:value="text-area" />
@@ -53,7 +61,7 @@
             </HBox>
             <HBox alignment="CENTER_LEFT" layoutX="32.0" layoutY="120.0" prefHeight="34.0" prefWidth="1162.0" AnchorPane.leftAnchor="32.0" AnchorPane.topAnchor="120.0">
                <children>
-                  <Label prefHeight="19.0" prefWidth="153.0" text="Object :" />
+                  <Label prefHeight="19.0" prefWidth="153.0" styleClass="RobotoRegular" text="Object :" />
                   <TextField fx:id="mail_obj" prefHeight="30.0" prefWidth="1030.0">
                      <styleClass>
                         <String fx:value="FontSize-14" />
@@ -62,7 +70,7 @@
                   </TextField>
                </children>
             </HBox>
-            <Label layoutX="32.0" layoutY="159.0" prefHeight="19.0" prefWidth="91.0" text="Message :" AnchorPane.leftAnchor="32.0" AnchorPane.topAnchor="159.0" />
+            <Label layoutX="32.0" layoutY="159.0" prefHeight="19.0" prefWidth="91.0" styleClass="RobotoRegular" text="Message :" AnchorPane.leftAnchor="32.0" AnchorPane.topAnchor="159.0" />
          </children>
       </AnchorPane>
    </children>

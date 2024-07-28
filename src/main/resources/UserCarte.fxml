@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.ImageView?>
@@ -13,32 +14,36 @@
       <ImageView fx:id="pdp_card" fitHeight="50.0" fitWidth="50.0" layoutX="22.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="9.0" AnchorPane.leftAnchor="22.0" AnchorPane.topAnchor="10.0" />
       <VBox layoutX="119.0" layoutY="9.0" maxHeight="53.0" prefHeight="53.0" prefWidth="237.0" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="119.0" AnchorPane.topAnchor="9.0">
          <children>
-            <Label fx:id="nomprenom_card" contentDisplay="CENTER" prefHeight="28.0" prefWidth="228.0" text="Ala Moussa">
+            <Label fx:id="nomprenom_card" contentDisplay="CENTER" prefHeight="28.0" prefWidth="228.0" styleClass="RobotoBold" text="Ala Moussa">
                <font>
                   <Font name="Roboto Bold" size="17.0" />
                </font>
             </Label>
-            <Label fx:id="email_card" contentDisplay="CENTER" prefHeight="28.0" prefWidth="228.0" text="Email">
+            <Label fx:id="email_card" contentDisplay="CENTER" prefHeight="28.0" prefWidth="228.0" styleClass="RobotoItalic" text="Email">
                <font>
                   <Font name="Roboto Italic" size="13.0" />
                </font>
             </Label>
          </children>
       </VBox>
-      <Button layoutX="1101.0" layoutY="18.0" mnemonicParsing="false" onAction="#AfficherDemande" prefHeight="35.0" prefWidth="119.0" styleClass="btn-primary" text="Afficher Demande" AnchorPane.bottomAnchor="18.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="17.0" />
+      <Button layoutX="1101.0" layoutY="19.0" mnemonicParsing="false" onAction="#AfficherDemande" prefHeight="34.0" prefWidth="160.0" text="Afficher Demande" AnchorPane.bottomAnchor="19.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="18.0">
+         <styleClass>
+            <String fx:value="btn-primary" />
+            <String fx:value="RobotoRegular" />
+         </styleClass></Button>
       <HBox alignment="CENTER" layoutX="313.0" layoutY="22.0" AnchorPane.bottomAnchor="21.0" AnchorPane.leftAnchor="313.0" AnchorPane.rightAnchor="761.0" AnchorPane.topAnchor="21.0">
          <children>
-            <Label fx:id="type_card" alignment="CENTER" maxWidth="159.0" minWidth="159.0" prefHeight="28.0" prefWidth="159.0" text="Type" />
+            <Label fx:id="type_card" alignment="CENTER" maxWidth="159.0" minWidth="159.0" prefHeight="28.0" prefWidth="159.0" styleClass="RobotoRegular" text="Type" />
          </children>
       </HBox>
       <HBox alignment="CENTER" layoutX="522.0" layoutY="22.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="522.0" AnchorPane.rightAnchor="525.0" AnchorPane.topAnchor="22.0">
          <children>
-            <Label fx:id="statut_card" alignment="CENTER" maxWidth="186.0" minWidth="186.0" prefHeight="28.0" prefWidth="186.0" text="Statut" />
+            <Label fx:id="statut_card" alignment="CENTER" maxWidth="186.0" minWidth="186.0" prefHeight="28.0" prefWidth="186.0" styleClass="RobotoRegular" text="Statut" />
          </children>
       </HBox>
       <HBox alignment="CENTER" layoutX="756.0" layoutY="23.0" prefHeight="27.0" prefWidth="200.0" AnchorPane.bottomAnchor="22.0" AnchorPane.leftAnchor="755.0" AnchorPane.rightAnchor="279.0" AnchorPane.topAnchor="22.0">
          <children>
-            <Label fx:id="periode_card" alignment="CENTER" contentDisplay="CENTER" maxWidth="200.0" minWidth="200.0" prefHeight="27.0" prefWidth="200.0" text="Periode" />
+            <Label fx:id="periode_card" alignment="CENTER" contentDisplay="CENTER" maxWidth="200.0" minWidth="200.0" prefHeight="27.0" prefWidth="200.0" styleClass="RobotoRegular" text="Periode" />
          </children>
       </HBox>
    </children>

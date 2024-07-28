@@ -19,14 +19,14 @@
          <children>
             <VBox layoutX="54.0" layoutY="42.0" prefHeight="477.0" prefWidth="315.0" spacing="10.0" AnchorPane.bottomAnchor="77.0" AnchorPane.leftAnchor="54.0" AnchorPane.topAnchor="42.0">
                <children>
-                        <Label alignment="TOP_CENTER" prefHeight="23.0" prefWidth="313.0" text="Liste des départements" />
+                        <Label alignment="TOP_CENTER" prefHeight="23.0" prefWidth="313.0" styleClass="RobotoBoldItalic" text="Liste des départements" />
                         <ListView fx:id="departementListView" disable="true" prefHeight="727.0" prefWidth="315.0" />
                </children>
             </VBox>
                   <TextField fx:id="deptNameField" disable="true" layoutX="582.0" layoutY="82.0" prefHeight="29.0" prefWidth="281.0" AnchorPane.leftAnchor="583.0" AnchorPane.rightAnchor="117.0" />
                   <TextField fx:id="deptDescriptionField" alignment="TOP_LEFT" disable="true" layoutX="582.0" layoutY="157.0" prefHeight="104.0" prefWidth="281.0" AnchorPane.leftAnchor="582.0" AnchorPane.rightAnchor="116.0" />
-                  <Label layoutX="582.0" layoutY="61.0" text="Abbrevation :" AnchorPane.leftAnchor="582.0" AnchorPane.topAnchor="61.0" />
-                  <Label layoutX="582.0" layoutY="135.0" text="Nom departement :" AnchorPane.leftAnchor="583.0" AnchorPane.topAnchor="135.0" />
+                  <Label layoutX="582.0" layoutY="61.0" styleClass="RobotoItalic" text="Abbrevation :" AnchorPane.leftAnchor="582.0" AnchorPane.topAnchor="61.0" />
+                  <Label layoutX="582.0" layoutY="135.0" styleClass="RobotoItalic" text="Nom departement :" AnchorPane.leftAnchor="583.0" AnchorPane.topAnchor="135.0" />
             <HBox layoutX="584.0" layoutY="317.0" minHeight="167.0" minWidth="281.0" prefHeight="167.0" prefWidth="291.0" AnchorPane.leftAnchor="583.0" AnchorPane.rightAnchor="107.0" AnchorPane.topAnchor="316.0">
                <children>
                   <ScrollPane prefHeight="167.0" prefWidth="307.0">
@@ -43,31 +43,33 @@
             </HBox>
                   <HBox fx:id="Hfirst" alignment="CENTER" disable="true" layoutX="582.0" layoutY="507.0" prefHeight="38.0" prefWidth="281.0" spacing="10">
                      <children>
-                        <Button fx:id="Add" alignment="CENTER" disable="true" onAction="#handleAddDepartment" prefHeight="41.0" prefWidth="87.0" styleClass="btn-primary" text="Ajouter" />
-                        <Button fx:id="Update" alignment="CENTER" disable="true" onAction="#handleEditDepartment" prefHeight="41.0" prefWidth="87.0" styleClass="btn-primary" text="Modifier" />
-                        <Button fx:id="Delete" alignment="CENTER" disable="true" onAction="#handleDeleteDepartment" prefHeight="41.0" prefWidth="87.0" styleClass="btn-primary" text="Supprimer" />
+                        <Button fx:id="Add" alignment="CENTER" disable="true" onAction="#handleAddDepartment" prefHeight="41.0" prefWidth="87.0" text="Ajouter">
+                     <styleClass>
+                        <String fx:value="btn-primary" />
+                        <String fx:value="RobotoBold" />
+                     </styleClass></Button>
+                        <Button fx:id="Update" alignment="CENTER" disable="true" onAction="#handleEditDepartment" prefHeight="41.0" prefWidth="87.0" text="Modifier">
+                     <styleClass>
+                        <String fx:value="btn-primary" />
+                        <String fx:value="RobotoBold" />
+                     </styleClass></Button>
+                        <Button fx:id="Delete" alignment="CENTER" disable="true" onAction="#handleDeleteDepartment" prefHeight="41.0" prefWidth="87.0" text="Supprimer">
+                     <styleClass>
+                        <String fx:value="btn-primary" />
+                        <String fx:value="RobotoBold" />
+                     </styleClass></Button>
                      </children>
                   </HBox>
             <HBox fx:id="Hsecond" disable="true" layoutX="614.0" layoutY="507.0" prefHeight="38.0" prefWidth="218.0" visible="false">
                <children>
-                  <Button fx:id="Enregistrer" disable="true" mnemonicParsing="false" onAction="#EnregistrerDepart" prefHeight="38.0" prefWidth="95.0" text="Enregistrer">
-                     <styleClass>
-                        <String fx:value="btn-secondary" />
-                        <String fx:value="btn-approver" />
-                     </styleClass>
-                  </Button>
+                  <Button fx:id="Enregistrer" disable="true" mnemonicParsing="false" onAction="#EnregistrerDepart" prefHeight="38.0" prefWidth="95.0" styleClass="RobotoBold" text="Enregistrer" />
                   <Separator orientation="VERTICAL" prefHeight="38.0" prefWidth="27.0" styleClass="seperator" />
-                  <Button fx:id="Annuler" disable="true" mnemonicParsing="false" onAction="#AnuulerDepart" prefHeight="38.0" prefWidth="95.0" text="Annuler">
-                     <styleClass>
-                        <String fx:value="btn-secondary" />
-                        <String fx:value="btn-refuser" />
-                     </styleClass>
-                  </Button>
+                  <Button fx:id="Annuler" disable="true" mnemonicParsing="false" onAction="#AnuulerDepart" prefHeight="38.0" prefWidth="95.0" styleClass="RobotoBold" text="Annuler" />
                </children>
             </HBox>
          </children>
       </AnchorPane>
-            <Label alignment="TOP_CENTER" layoutX="415.0" layoutY="21.0" prefHeight="29.0" prefWidth="289.0" text="Gestion des Départements" AnchorPane.leftAnchor="415.0" AnchorPane.rightAnchor="415.0" AnchorPane.topAnchor="21.0">
+            <Label alignment="TOP_CENTER" layoutX="415.0" layoutY="21.0" prefHeight="29.0" prefWidth="289.0" styleClass="RobotoBold" text="Gestion des Départements" AnchorPane.leftAnchor="415.0" AnchorPane.rightAnchor="415.0" AnchorPane.topAnchor="21.0">
                <font>
                   <Font size="24.0" />
                </font>

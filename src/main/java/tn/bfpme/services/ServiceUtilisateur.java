@@ -789,7 +789,6 @@ public class ServiceUtilisateur implements IUtilisateur {
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
-        System.out.println(users);
         return users;
     }
 

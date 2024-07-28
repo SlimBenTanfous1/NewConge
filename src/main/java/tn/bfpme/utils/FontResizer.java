@@ -15,17 +15,22 @@ import javafx.stage.Window;
 public class FontResizer {
 
     public static void resizeFonts(Node node, double width, double height) {
-        double fontSize = Math.min(width, height) / 50; // Adjust the divisor for desired scaling
-        fontSize = Math.max(14, Math.min(fontSize, 20)); // Limiting font size to be between 14 and 20
+        double fontSize = Math.min(width, height) / 50;
+        double fontSize2 = Math.min(width, height) / 50;
+        fontSize = Math.max(14, Math.min(fontSize, 18));
+        fontSize2 = Math.max(13, Math.min(fontSize2, 16));
 
         if (node instanceof Label) {
-            ((Label) node).setFont(new Font(fontSize));
+            Label label = (Label) node;
+            label.setStyle("-fx-font-size: " + fontSize + "px;");
         } else if (node instanceof TextField) {
             ((TextField) node).setStyle("-fx-font-size: " + fontSize + "px;");
         } else if (node instanceof TextArea) {
             ((TextArea) node).setStyle("-fx-font-size: " + fontSize + "px;");
         } else if (node instanceof ComboBox) {
             ((ComboBox<?>) node).setStyle("-fx-font-size: " + fontSize + "px;");
+        } else if (node instanceof Button) {
+            ((Button) node).setStyle("-fx-font-size: " + (fontSize - 2) + "px;");
         }
 
         if (node instanceof Pane) {

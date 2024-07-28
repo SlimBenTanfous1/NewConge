@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.String?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tooltip?>
@@ -30,69 +29,49 @@
          <children>
             <HBox alignment="CENTER_LEFT">
                <children>
-                  <Label fx:id="cardType" alignment="CENTER" contentDisplay="CENTER" prefHeight="75.0" prefWidth="83.0" text="Type" textAlignment="CENTER">
+                  <Label fx:id="cardType" alignment="CENTER" contentDisplay="CENTER" prefHeight="75.0" prefWidth="83.0" styleClass="RobotoRegular" text="Type" textAlignment="CENTER">
                      <font>
                         <Font size="15.0" />
                      </font>
-                     <styleClass>
-                        <String fx:value="FontSize-15" />
-                        <String fx:value="RobotoRegular" />
-                     </styleClass>
                   </Label>
                </children>
             </HBox>
             <HBox alignment="CENTER" GridPane.columnIndex="1">
                <children>
-                  <Label fx:id="cardDatedeb" alignment="CENTER" contentDisplay="CENTER" prefHeight="77.0" text="DateDeb">
+                  <Label fx:id="cardDatedeb" alignment="CENTER" contentDisplay="CENTER" prefHeight="77.0" styleClass="RobotoRegular" text="DateDeb">
                      <font>
                         <Font size="15.0" />
                      </font>
-                     <styleClass>
-                        <String fx:value="FontSize-15" />
-                        <String fx:value="RobotoRegular" />
-                     </styleClass>
                   </Label>
                </children>
             </HBox>
             <HBox alignment="CENTER" GridPane.columnIndex="2">
                <children>
-                  <Label fx:id="cardDatefin" alignment="CENTER" prefHeight="77.0" text="DateFin">
+                  <Label fx:id="cardDatefin" alignment="CENTER" prefHeight="77.0" styleClass="RobotoRegular" text="DateFin">
                      <font>
                         <Font size="15.0" />
                      </font>
-                     <styleClass>
-                        <String fx:value="FontSize-15" />
-                        <String fx:value="RobotoRegular" />
-                     </styleClass>
                   </Label>
                </children>
             </HBox>
             <HBox alignment="CENTER" GridPane.columnIndex="3">
                <children>
-                  <Label fx:id="cardDescription" alignment="CENTER" prefHeight="77.0" text="Description">
+                  <Label fx:id="cardDescription" alignment="CENTER" prefHeight="77.0" styleClass="RobotoRegular" text="Description">
                      <font>
                         <Font size="15.0" />
                      </font>
                      <tooltip>
                         <Tooltip fx:id="tooltip_desc" autoFix="false" consumeAutoHidingEvents="false" maxHeight="100.0" maxWidth="100.0" text="Tooltip" textAlignment="CENTER" wrapText="true" />
                      </tooltip>
-                     <styleClass>
-                        <String fx:value="FontSize-15" />
-                        <String fx:value="RobotoRegular" />
-                     </styleClass>
                   </Label>
                </children>
             </HBox>
             <HBox alignment="CENTER" GridPane.columnIndex="4">
                <children>
-                  <Label fx:id="cardStatus" alignment="CENTER" maxWidth="205.0" minWidth="102.0" prefHeight="75.0" prefWidth="139.0" text="Statut">
+                  <Label fx:id="cardStatus" alignment="CENTER" maxWidth="205.0" minWidth="102.0" prefHeight="75.0" prefWidth="139.0" styleClass="RobotoRegular" text="Statut">
                      <font>
                         <Font size="15.0" />
                      </font>
-                     <styleClass>
-                        <String fx:value="FontSize-15" />
-                        <String fx:value="RobotoRegular" />
-                     </styleClass>
                   </Label>
                </children>
             </HBox>
