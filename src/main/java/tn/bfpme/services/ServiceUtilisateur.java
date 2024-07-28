@@ -144,12 +144,114 @@ public class ServiceUtilisateur implements IUtilisateur {
 
     @Override
     public UserConge TriType() {
-        return null;
+        List<User> users = new ArrayList<>();
+        List<Conge> conges = new ArrayList<>();
+        String query = "WITH RECURSIVE Subordinates AS (" +
+                "SELECT ID_User, Nom, Prenom, Email, Image, ID_Departement " +
+                "FROM user " +
+                "WHERE ID_User = ? " +
+                "UNION ALL " +
+                "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.Image, u.ID_Departement " +
+                "FROM user u " +
+                "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User " +
+                ") " +
+                "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, " +
+                "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file " +
+                "FROM user " +
+                "JOIN conge ON user.ID_User = conge.ID_User " +
+                "WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ? ORDER BY conge.TypeConge";
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+            PreparedStatement ps = cnx.prepareStatement(query);
+            int currentUserId = SessionManager.getInstance().getUser().getIdUser();
+            ps.setInt(1, currentUserId);
+            ps.setInt(2, currentUserId);
+            ps.setString(3, String.valueOf(Statut.En_Attente));
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                User user = new User();
+                user.setIdUser(rs.getInt("ID_User"));
+                user.setNom(rs.getString("Nom"));
+                user.setPrenom(rs.getString("Prenom"));
+                user.setEmail(rs.getString("Email"));
+                user.setImage(rs.getString("Image"));
+                user.setIdDepartement(rs.getInt("ID_Departement"));
+                if (!users.contains(user)) {
+                    users.add(user);
+                }
+                Conge conge = new Conge();
+                conge.setIdConge(rs.getInt("ID_Conge"));
+                conge.setDateDebut(rs.getDate("DateDebut").toLocalDate());
+                conge.setDateFin(rs.getDate("DateFin").toLocalDate());
+                //conge.setTypeConge(TypeConge.valueOf(rs.getString("TypeConge")));
+                conge.setStatut(Statut.valueOf(rs.getString("Statut")));
+                conge.setDescription(rs.getString("description"));
+                conge.setFile(rs.getString("file"));
+                conge.setIdUser(rs.getInt("ID_User"));
+                conges.add(conge);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return new UserConge(users, conges);
     }
 
     @Override
     public UserConge TriNom() {
-        return null;
+        List<User> users = new ArrayList<>();
+        List<Conge> conges = new ArrayList<>();
+        String query = "WITH RECURSIVE Subordinates AS (" +
+                "SELECT ID_User, Nom, Prenom, Email, Image, ID_Departement " +
+                "FROM user " +
+                "WHERE ID_User = ? " +
+                "UNION ALL " +
+                "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.Image, u.ID_Departement " +
+                "FROM user u " +
+                "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User " +
+                ") " +
+                "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, " +
+                "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file " +
+                "FROM user " +
+                "JOIN conge ON user.ID_User = conge.ID_User " +
+                "WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ? ORDER BY user.Nom ";
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+            PreparedStatement ps = cnx.prepareStatement(query);
+            int currentUserId = SessionManager.getInstance().getUser().getIdUser();
+            ps.setInt(1, currentUserId);
+            ps.setInt(2, currentUserId);
+            ps.setString(3, String.valueOf(Statut.En_Attente));
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                User user = new User();
+                user.setIdUser(rs.getInt("ID_User"));
+                user.setNom(rs.getString("Nom"));
+                user.setPrenom(rs.getString("Prenom"));
+                user.setEmail(rs.getString("Email"));
+                user.setImage(rs.getString("Image"));
+                user.setIdDepartement(rs.getInt("ID_Departement"));
+                if (!users.contains(user)) {
+                    users.add(user);
+                }
+                Conge conge = new Conge();
+                conge.setIdConge(rs.getInt("ID_Conge"));
+                conge.setDateDebut(rs.getDate("DateDebut").toLocalDate());
+                conge.setDateFin(rs.getDate("DateFin").toLocalDate());
+                //conge.setTypeConge(TypeConge.valueOf(rs.getString("TypeConge")));
+                conge.setStatut(Statut.valueOf(rs.getString("Statut")));
+                conge.setDescription(rs.getString("description"));
+                conge.setFile(rs.getString("file"));
+                conge.setIdUser(rs.getInt("ID_User"));
+                conges.add(conge);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return new UserConge(users, conges);
     }
 
     @Override
@@ -246,7 +348,58 @@ public class ServiceUtilisateur implements IUtilisateur {
 
     @Override
     public UserConge TriDateFin() {
-        return null;
+        List<User> users = new ArrayList<>();
+        List<Conge> conges = new ArrayList<>();
+        String query = "WITH RECURSIVE Subordinates AS (" +
+                "SELECT ID_User, Nom, Prenom, Email, Image, ID_Departement " +
+                "FROM user " +
+                "WHERE ID_User = ? " +
+                "UNION ALL " +
+                "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.Image, u.ID_Departement " +
+                "FROM user u " +
+                "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User " +
+                ") " +
+                "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, " +
+                "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file " +
+                "FROM user " +
+                "JOIN conge ON user.ID_User = conge.ID_User " +
+                "WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ? ORDER BY conge.DateFin";
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+            PreparedStatement ps = cnx.prepareStatement(query);
+            int currentUserId = SessionManager.getInstance().getUser().getIdUser();
+            ps.setInt(1, currentUserId);
+            ps.setInt(2, currentUserId);
+            ps.setString(3, String.valueOf(Statut.En_Attente));
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                User user = new User();
+                user.setIdUser(rs.getInt("ID_User"));
+                user.setNom(rs.getString("Nom"));
+                user.setPrenom(rs.getString("Prenom"));
+                user.setEmail(rs.getString("Email"));
+                user.setImage(rs.getString("Image"));
+                user.setIdDepartement(rs.getInt("ID_Departement"));
+                if (!users.contains(user)) {
+                    users.add(user);
+                }
+                Conge conge = new Conge();
+                conge.setIdConge(rs.getInt("ID_Conge"));
+                conge.setDateDebut(rs.getDate("DateDebut").toLocalDate());
+                conge.setDateFin(rs.getDate("DateFin").toLocalDate());
+                //conge.setTypeConge(TypeConge.valueOf(rs.getString("TypeConge")));
+                conge.setStatut(Statut.valueOf(rs.getString("Statut")));
+                conge.setDescription(rs.getString("description"));
+                conge.setFile(rs.getString("file"));
+                conge.setIdUser(rs.getInt("ID_User"));
+                conges.add(conge);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return new UserConge(users, conges);
     }
 
     @Override
