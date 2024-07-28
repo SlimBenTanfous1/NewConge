@@ -174,9 +174,11 @@ public class paneUserController implements Initializable {
     public FilteredList<Role> filteredRoles;
     private final ServiceDepartement depService = new ServiceDepartement();
     private final ServiceUtilisateur userService = new ServiceUtilisateur();
+    private final ServiceRole roleService = new ServiceRole();
+
+    private final ServiceSubordinateManager usersubordinateService = new ServiceSubordinateManager(userService, roleService, depService);
     private final ServiceUserSolde serviceUserSolde = new ServiceUserSolde();
     private final ServiceTypeConge serviceTypeConge = new ServiceTypeConge();
-    private final ServiceRole roleService = new ServiceRole();
     private ObservableList<User> users;
 
     private ChangeListener<User> userSelectionListener = (observable, oldValue, newValue) -> {
@@ -542,7 +544,7 @@ public class paneUserController implements Initializable {
 
     public void loadUsers3() {
         try {
-            List<User> userList = userService.getAllUsers();
+            List<User> userList = usersubordinateService.getAllUsers();
             Map<Integer, User> userMap = userList.stream().collect(Collectors.toMap(User::getIdUser, user -> user));
 
             // Update the manager name, department, and role for each user
@@ -554,15 +556,15 @@ public class paneUserController implements Initializable {
                     user.setManagerName("Il n'y a pas de manager");
                 }
 
-                Departement department = userService.getDepartmentByUserId(user.getIdUser());
+                Departement department = usersubordinateService.getDepartmentByUserId(user.getIdUser());
                 if (department != null) {
                     user.setDepartementNom(department.getNom());
                 } else {
                     user.setDepartementNom("sans département");
                 }
 
-                Role role = userService.getRoleByUserId(user.getIdUser());
-                if (role != null) { 
+                Role role = usersubordinateService.getRoleByUserId(user.getIdUser());
+                if (role != null) {
                     user.setRoleNom(role.getNom());
                 } else {
                     user.setRoleNom("sans rôle");
@@ -609,6 +611,7 @@ public class paneUserController implements Initializable {
             e.printStackTrace();
         }
     }
+
 
 
     private void loadRoles3() {
@@ -790,19 +793,19 @@ public class paneUserController implements Initializable {
             try {
                 if (selectedRole != null && selectedDepartement != null) {
                     System.out.println("Updating role and department for user: " + selectedUser);
-                    userService.updateUserRoleAndDepartment(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedDepartement.getIdDepartement());
+                    usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedDepartement.getIdDepartement());
                     isUpdated = true;
                 } else if (selectedRole != null) {
                     System.out.println("Updating role for user: " + selectedUser);
-                    userService.updateUserRoleAndDepartment(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedUser.getIdDepartement());
+                    usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedUser.getIdDepartement());
                     isUpdated = true;
                 } else if (selectedDepartement != null) {
                     System.out.println("Updating department for user: " + selectedUser);
-                    userService.updateUserRoleAndDepartment(selectedUser.getIdUser(), selectedUser.getIdRole(), selectedDepartement.getIdDepartement());
+                    usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedUser.getIdRole(), selectedDepartement.getIdDepartement());
                     isUpdated = true;
                 }
                 if (isUpdated) {
-                    loadUsers();
+                    loadUsers3();
                     affectationlabel.setText("Modification effectuée");
                     resetAffectationTab();
                 } else {
@@ -822,20 +825,17 @@ public class paneUserController implements Initializable {
         } else {
             showError("Veuillez sélectionner un utilisateur à modifier.");
         }
-        loadUsers3();
     }
-
 
     @FXML
     private void handleRemoveUserAssignment() {
-        Integer userId = getSelectedUserId();
+        Integer userId = selectedUser.getIdUser();
 
         if (userId != null) {
             try {
-                userService.removeUserRoleAndDepartment(userId);
+                usersubordinateService.removeUserAssignment(userId);
                 affectationlabel.setText("Rôle et département supprimés.");
-
-                loadUsers();
+                loadUsers3();
                 resetAffectationTab(); // Reset the tab after deletion
             } catch (SQLException e) {
                 showError("Une erreur s'est produite lors de la suppression de l'affectation de l'utilisateur : " + e.getMessage());
@@ -847,14 +847,7 @@ public class paneUserController implements Initializable {
         } else {
             showError("Veuillez sélectionner un utilisateur pour supprimer l'affectation.");
         }
-        loadUsers3();
     }
-
-
-
-
-
-
 
     public Integer getSelectedUserId() {
         return selectedUser != null ? selectedUser.getIdUser() : null;
