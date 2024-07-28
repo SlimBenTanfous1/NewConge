@@ -11,6 +11,7 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class ServiceUtilisateur implements IUtilisateur {
@@ -1492,22 +1493,80 @@ public class ServiceUtilisateur implements IUtilisateur {
         return user;
     }
 
-    public void assignUserToRole(int newUserId, int replacingUserId) {
+    public void assignUserToRole(int newUserId, int tempUserId) {
+        int managerId = getManagerIdByUserId(tempUserId);
+
         Connection conn = MyDataBase.getInstance().getCnx();
 
         try {
-            // Update subordinates to the new user
+            // Update subordinates of the temporary user to the new user
             String updateSubordinatesQuery = "UPDATE user SET ID_Manager = ? WHERE ID_Manager = ?";
             try (PreparedStatement updateSubStmt = conn.prepareStatement(updateSubordinatesQuery)) {
                 updateSubStmt.setInt(1, newUserId);
-                updateSubStmt.setInt(2, replacingUserId);
+                updateSubStmt.setInt(2, tempUserId);
                 updateSubStmt.executeUpdate();
             }
 
-            // Delete the default user
+            // Update the new user's manager to the temporary user's manager
+            String updateUserManagerQuery = "UPDATE user SET ID_Manager = ? WHERE ID_User = ?";
+            try (PreparedStatement updateUserStmt = conn.prepareStatement(updateUserManagerQuery)) {
+                updateUserStmt.setInt(1, managerId);
+                updateUserStmt.setInt(2, newUserId);
+                updateUserStmt.executeUpdate();
+            }
+
+            // Delete the temporary user
+            String deleteTempUserQuery = "DELETE FROM user WHERE ID_User = ?";
+            try (PreparedStatement deleteStmt = conn.prepareStatement(deleteTempUserQuery)) {
+                deleteStmt.setInt(1, tempUserId);
+                deleteStmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public int generateTemporaryUser(int managerId) {
+        String insertQuery = "INSERT INTO user (Nom, Prenom, Email, MDP, Image, ID_Departement, ID_Manager, Creation_Date, idSolde) " +
+                "VALUES ('Pas d\'utilisateur', '(En Attente)', ?, 'defaultPassword', NULL, NULL, ?, CURDATE(), NULL)";
+        String email = "default_" + UUID.randomUUID().toString() + "@bpfme.com";
+
+        try (Connection conn = MyDataBase.getInstance().getCnx();
+             PreparedStatement stmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, email);
+            stmt.setInt(2, managerId);
+            stmt.executeUpdate();
+
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1; // Handle this appropriately in your code
+    }
+    public void deleteUserAndReplaceWithTemporary(int userId) {
+        int managerId = getManagerIdByUserId(userId);
+
+        Connection conn = MyDataBase.getInstance().getCnx();
+
+        try {
+            // Generate a temporary user to replace the user being deleted
+            int tempUserId = generateTemporaryUser(managerId);
+
+            // Update subordinates of the user being deleted to the temporary user
+            String updateSubordinatesQuery = "UPDATE user SET ID_Manager = ? WHERE ID_Manager = ?";
+            try (PreparedStatement updateSubStmt = conn.prepareStatement(updateSubordinatesQuery)) {
+                updateSubStmt.setInt(1, tempUserId);
+                updateSubStmt.setInt(2, userId);
+                updateSubStmt.executeUpdate();
+            }
+
+            // Delete the user
             String deleteUserQuery = "DELETE FROM user WHERE ID_User = ?";
             try (PreparedStatement deleteStmt = conn.prepareStatement(deleteUserQuery)) {
-                deleteStmt.setInt(1, replacingUserId);
+                deleteStmt.setInt(1, userId);
                 deleteStmt.executeUpdate();
             }
         } catch (SQLException e) {
@@ -1515,7 +1574,10 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
     }
 
-    public void ensureDefaultUserExists() {
+
+
+
+   /* public void ensureDefaultUserExists() {
         String query = "INSERT INTO user (Nom, Prenom, Email, MDP, Image, ID_Departement, ID_Manager, Creation_Date, idSolde) " +
                 "VALUES ('Pas d\'utilisateur', '(En Attente)', 'default@company.com', 'defaultPassword', 'attente', NULL, NULL, CURDATE(), NULL) " +
                 "ON DUPLICATE KEY UPDATE Email = VALUES(Email)";
@@ -1525,7 +1587,7 @@ public class ServiceUtilisateur implements IUtilisateur {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
 
 
