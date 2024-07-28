@@ -1181,8 +1181,6 @@ public class ServiceUtilisateur implements IUtilisateur {
     }
 
 
-
-
     private Integer findManagerByRoleAndDepartment(int roleId, int departmentId) throws SQLException {
         // Define the query to find the suitable manager based on role and department hierarchy
         String query = "SELECT u.ID_User " +
@@ -1281,6 +1279,11 @@ public class ServiceUtilisateur implements IUtilisateur {
             ex.printStackTrace();
         }
         return userList;
+    }
+
+    @Override
+    public void updateUserRoleAndDepartment(int userId, int roleId, int departmentId) throws SQLException {
+
     }
 
     public Departement getDepartmentByUserId(int userId) {

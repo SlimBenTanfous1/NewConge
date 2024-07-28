@@ -50,6 +50,8 @@ public interface IUtilisateur {
 
     User getUserById(int userId) throws SQLException;
 
+    void updateUserDepartment(int userId, int departmentId);
+
     void Add(User user);
 
     void Update(User user);
