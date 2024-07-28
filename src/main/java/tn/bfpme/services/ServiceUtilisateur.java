@@ -1346,10 +1346,6 @@ public class ServiceUtilisateur implements IUtilisateur {
         return null;
     }
 
-    @Override
-    public void updateUserDepartment(int userId, int departmentId) {
-        
-    }
 
     public List<User> getUsersByDepartementId(int departementId) throws SQLException {
         ensureConnection();
