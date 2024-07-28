@@ -157,9 +157,7 @@ public class NavigationHeaderController implements Initializable {
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.setTitle(title);
-
             //stage.setMaximized(true);
-
             stage.show();
             StageManager.addStage(title, stage);
         } catch (IOException e) {
