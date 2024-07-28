@@ -1181,6 +1181,8 @@ public class ServiceUtilisateur implements IUtilisateur {
     }
 
 
+
+
     private Integer findManagerByRoleAndDepartment(int roleId, int departmentId) throws SQLException {
         // Define the query to find the suitable manager based on role and department hierarchy
         String query = "SELECT u.ID_User " +
@@ -1324,21 +1326,63 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
     }
 
-    public void updateUserRoleAndDepartment(int userId, int roleId, int departementId) throws SQLException {
-        ensureConnection();
-        String query = "UPDATE user_role SET ID_Role = ? WHERE ID_User = ?";
+    public void updateSubordinatesManager(int managerId) throws SQLException {
+        String query = "UPDATE user SET ID_Manager = NULL WHERE ID_Manager = ?";
         try (PreparedStatement statement = cnx.prepareStatement(query)) {
-            statement.setInt(1, roleId);
-            statement.setInt(2, userId);
+            statement.setInt(1, managerId);
             statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error updating subordinates' manager: " + e.getMessage(), e);
         }
+    }
 
-        query = "UPDATE user SET ID_Departement = ? WHERE ID_User = ?";
-        try (PreparedStatement statement = cnx.prepareStatement(query)) {
-            statement.setInt(1, departementId);
-            statement.setInt(2, userId);
-            statement.executeUpdate();
+    public User getUserById(int userId) throws SQLException {
+        String query = "SELECT * FROM user WHERE ID_User = ?";
+        try {
+            ensureConnection();
+            PreparedStatement statement = cnx.prepareStatement(query);
+            statement.setInt(1, userId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return extractUserFromResultSet(resultSet);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving user by ID: " + e.getMessage(), e);
         }
+        return null;
+    }
+
+    public List<User> getUsersByDepartementId(int departementId) throws SQLException {
+        List<User> users = new ArrayList<>();
+        String query = "SELECT * FROM user WHERE ID_Departement = ?";
+        try {
+            ensureConnection();
+            PreparedStatement statement = cnx.prepareStatement(query);
+            statement.setInt(1, departementId);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                users.add(extractUserFromResultSet(resultSet));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving users by department ID: " + e.getMessage(), e);
+        }
+        return users;
+    }
+
+    public User getUserByRole(String roleName) throws SQLException {
+        String query = "SELECT u.* FROM user u JOIN user_role ur ON u.ID_User = ur.ID_User JOIN role r ON ur.ID_Role = r.ID_Role WHERE r.nom = ?";
+        try {
+            ensureConnection();
+            PreparedStatement statement = cnx.prepareStatement(query);
+            statement.setString(1, roleName);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return extractUserFromResultSet(resultSet);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving user by role name: " + e.getMessage(), e);
+        }
+        return null;
     }
 
     public void updateUserManager(int userId, int managerId) throws SQLException {
@@ -1348,61 +1392,81 @@ public class ServiceUtilisateur implements IUtilisateur {
             statement.setInt(1, managerId);
             statement.setInt(2, userId);
             statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error updating user manager: " + e.getMessage(), e);
         }
-    }
-
-    public User getUserById(int userId) throws SQLException {
-        ensureConnection();
-        String query = "SELECT * FROM user WHERE ID_User = ?";
-        try (PreparedStatement statement = cnx.prepareStatement(query)) {
-            statement.setInt(1, userId);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return extractUserFromResultSet(resultSet);
-            }
-        }
-        return null;
-    }
-
-    public List<User> getUsersByDepartementId(int departementId) throws SQLException {
-        ensureConnection();
-        List<User> users = new ArrayList<>();
-        String query = "SELECT * FROM user WHERE ID_Departement = ?";
-        try (PreparedStatement statement = cnx.prepareStatement(query)) {
-            statement.setInt(1, departementId);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                users.add(extractUserFromResultSet(resultSet));
-            }
-        }
-        return users;
-    }
-
-    public User getUserByRole(String roleName) throws SQLException {
-        ensureConnection();
-        String query = "SELECT u.* FROM user u JOIN user_role ur ON u.ID_User = ur.ID_User JOIN role r ON ur.ID_Role = r.ID_Role WHERE r.nom = ?";
-        try (PreparedStatement statement = cnx.prepareStatement(query)) {
-            statement.setString(1, roleName);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return extractUserFromResultSet(resultSet);
-            }
-        }
-        return null;
     }
 
     public List<User> getSubordinates(int managerId) throws SQLException {
-        ensureConnection();
         List<User> users = new ArrayList<>();
         String query = "SELECT * FROM user WHERE ID_Manager = ?";
-        try (PreparedStatement statement = cnx.prepareStatement(query)) {
+        try {
+            ensureConnection();
+            PreparedStatement statement = cnx.prepareStatement(query);
             statement.setInt(1, managerId);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 users.add(extractUserFromResultSet(resultSet));
             }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving subordinates by manager ID: " + e.getMessage(), e);
         }
         return users;
+    }
+
+    public List<User> getUsersWithoutManager() throws SQLException {
+        List<User> users = new ArrayList<>();
+        String query = "SELECT * FROM user WHERE ID_Manager IS NULL";
+        try {
+            ensureConnection();
+            PreparedStatement statement = cnx.prepareStatement(query);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                users.add(extractUserFromResultSet(resultSet));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving users without a manager: " + e.getMessage(), e);
+        }
+        return users;
+    }
+
+    public void updateUserDepartment(int userId, Integer departmentId) throws SQLException {
+        ensureConnection();
+        String query = "UPDATE user SET ID_Departement = ? WHERE ID_User = ?";
+        try (PreparedStatement statement = cnx.prepareStatement(query)) {
+            if (departmentId == null) {
+                statement.setNull(1, java.sql.Types.INTEGER);
+            } else {
+                statement.setInt(1, departmentId);
+            }
+            statement.setInt(2, userId);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error updating user department: " + e.getMessage(), e);
+        }
+    }
+
+    public void addUserRole(int userId, int roleId) throws SQLException {
+        ensureConnection();
+        String query = "INSERT INTO user_role (ID_User, ID_Role) VALUES (?, ?)";
+        try (PreparedStatement statement = cnx.prepareStatement(query)) {
+            statement.setInt(1, userId);
+            statement.setInt(2, roleId);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error adding user role: " + e.getMessage(), e);
+        }
+    }
+
+    public void removeUserRole(int userId) throws SQLException {
+        ensureConnection();
+        String query = "DELETE FROM user_role WHERE ID_User = ?";
+        try (PreparedStatement statement = cnx.prepareStatement(query)) {
+            statement.setInt(1, userId);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error removing user role: " + e.getMessage(), e);
+        }
     }
 
     private User extractUserFromResultSet(ResultSet resultSet) throws SQLException {
@@ -1412,31 +1476,11 @@ public class ServiceUtilisateur implements IUtilisateur {
         user.setPrenom(resultSet.getString("prenom"));
         user.setEmail(resultSet.getString("email"));
         user.setMdp(resultSet.getString("MDP"));
-        user.setDepartementNom(resultSet.getString("ID_Departement"));
+        user.setImage(resultSet.getString("image"));
+        user.setCreationDate(resultSet.getDate("Creation_Date") != null ? resultSet.getDate("Creation_Date").toLocalDate() : null);
         user.setIdManager(resultSet.getInt("ID_Manager"));
+        user.setIdDepartement(resultSet.getInt("ID_Departement"));
+        user.setID_UserSolde(resultSet.getInt("idSolde"));
         return user;
     }
-
-    private Departement extractDepartementFromResultSet(ResultSet resultSet) throws SQLException {
-        Departement departement = new Departement();
-        departement.setIdDepartement(resultSet.getInt("ID_Departement"));
-        departement.setNom(resultSet.getString("nom"));
-        departement.setDescription(resultSet.getString("description"));
-        departement.setParentDept(resultSet.getInt("Parent_Dept"));
-        departement.setLevel(resultSet.getInt("Level"));
-        return departement;
-    }
-
-    private Role extractRoleFromResultSet(ResultSet resultSet) throws SQLException {
-        Role role = new Role();
-        role.setIdRole(resultSet.getInt("ID_Role"));
-        role.setNom(resultSet.getString("nom"));
-        role.setDescription(resultSet.getString("description"));
-        role.setLevel(resultSet.getInt("Level"));
-        return role;
-    }
-
-
 }
-
-

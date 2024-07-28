@@ -21,7 +21,6 @@ public interface IUtilisateur {
     UserConge AfficherApprove();
     UserConge AfficherReject();
 
-
     List<User> RechrecheRH(String recherche);
 
     List<User> getUsersByDepartment(String departement);
@@ -31,7 +30,6 @@ public interface IUtilisateur {
     void updateUserRoleAndDepartment(int userId, int roleId, int departmentId) throws SQLException;
 
 
-    User getUserById(int userId) throws SQLException;
 
     void updateUser(User user);
 
@@ -41,9 +39,16 @@ public interface IUtilisateur {
 
     void deleteUser(int idUser);
 
+    //void assignUserToDepartmentAndRole(int idUser, int idDepartement, int idRole) throws SQLException;
+
+    void assignRoleToUser(int userId, int roleId);
+
+
     void updateUserRole(int userId, int roleId);
 
-    void updateUserDepartment(int userId, int departmentId);
+
+
+    User getUserById(int userId) throws SQLException;
 
     void Add(User user);
 
