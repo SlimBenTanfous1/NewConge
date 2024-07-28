@@ -3,12 +3,14 @@ package tn.bfpme.controllers.RHC;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
+import javafx.scene.layout.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
@@ -23,10 +25,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.lang.ObjectUtils;
@@ -34,6 +32,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import tn.bfpme.models.*;
 import tn.bfpme.services.*;
+import tn.bfpme.utils.FontResizer;
 import tn.bfpme.utils.MyDataBase;
 import tn.bfpme.utils.SessionManager;
 
@@ -143,7 +142,7 @@ public class paneUserController implements Initializable {
     @FXML
     private Label affectationlabel;
     @FXML
-    public Pane UtilisateursPane;
+    public AnchorPane UtilisateursPane;
     @FXML
     public ListView<Departement> departListView;
     @FXML
@@ -200,8 +199,12 @@ public class paneUserController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        System.out.println("Initializing paneUserController..."); // Debugging
-        loadUsers();
+        Platform.runLater(() -> {
+            Stage stage = (Stage) UtilisateursPane.getScene().getWindow();
+            stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(UtilisateursPane, stage.getWidth(), stage.getHeight()));
+            stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(UtilisateursPane, stage.getWidth(), stage.getHeight()));
+            FontResizer.resizeFonts(UtilisateursPane, stage.getWidth(), stage.getHeight());
+        });        loadUsers();
         loadUsers1();
         loadUsers3();
         loadDepartments1();
@@ -368,6 +371,7 @@ public class paneUserController implements Initializable {
             CongeVbox.getChildren().add(soldeRow);
         }
     }
+
     private List<UserSolde> getSoldeCongeByUserId(int userId) {
         List<UserSolde> soldeCongeList = new ArrayList<>();
         String query = "SELECT us.*, tc.Designation FROM user_solde us " +
@@ -393,6 +397,7 @@ public class paneUserController implements Initializable {
         }
         return soldeCongeList;
     }
+
     @FXML
     void SelecHierar(ActionEvent event) {
         if (hierarCombo.getValue().equals("Utilisateurs")) {
@@ -781,6 +786,7 @@ public class paneUserController implements Initializable {
                     role.getDescription().toLowerCase().contains(lowerCaseFilter);
         });
     }
+
     @FXML
     private void handleEditUser() {
         if (selectedUser != null) {
@@ -1180,6 +1186,7 @@ public class paneUserController implements Initializable {
             exportToExcel(users, String.valueOf(file));
         }
     }
+
     private void exportToExcel(List<User> users, String fileName) {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Utilisateurs");
@@ -1191,7 +1198,7 @@ public class paneUserController implements Initializable {
         headerRow.createCell(2).setCellValue("Prénom");
         headerRow.createCell(3).setCellValue("Email");
         headerRow.createCell(4).setCellValue("Mot de Passe");
-       // headerRow.createCell(5).setCellValue("Image");
+        // headerRow.createCell(5).setCellValue("Image");
         headerRow.createCell(5).setCellValue("Département");
         headerRow.createCell(6).setCellValue("Rôle");
         int rowNum = 1;

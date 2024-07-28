@@ -10,11 +10,14 @@ public class StageManager {
     private static final Map<String, Stage> stageMap = Collections.synchronizedMap(new HashMap<>());
     private static final String ICON_PATH = "/assets/imgs/logo_bfpme.png";
     private static final Image ICON_IMAGE = new Image(StageManager.class.getResourceAsStream(ICON_PATH));
-    private static double lastStageWidth = 1340; // Default width
-    private static double lastStageHeight = 830; // Default height
+    private static final double MIN_WIDTH = 1340; // Minimum width
+    private static final double MIN_HEIGHT = 830; // Minimum height
+    private static double lastStageWidth = MIN_WIDTH; // Default width
+    private static double lastStageHeight = MIN_HEIGHT; // Default height
 
     public static void addStage(Stage stage) {
         setStageSize(stage);
+        setStageMinSize(stage);
         stages.add(stage);
         addSizeListeners(stage);
         updateLastStageSize(stage);
@@ -22,12 +25,12 @@ public class StageManager {
 
     public static void addStage(String name, Stage stage) {
         setStageSize(stage);
+        setStageMinSize(stage);
         stage.getIcons().add(ICON_IMAGE);
         stageMap.put(name, stage);
         stages.add(stage);
         addSizeListeners(stage);
         updateLastStageSize(stage);
-        
     }
 
     public static void removeStage(Stage stage) {
@@ -56,9 +59,15 @@ public class StageManager {
         stages.clear();
         stageMap.clear();
     }
+
     private static void setStageSize(Stage stage) {
         stage.setWidth(lastStageWidth);
         stage.setHeight(lastStageHeight);
+    }
+
+    private static void setStageMinSize(Stage stage) {
+        stage.setMinWidth(MIN_WIDTH);
+        stage.setMinHeight(MIN_HEIGHT);
     }
 
     private static void updateLastStageSize(Stage stage) {
@@ -75,5 +84,4 @@ public class StageManager {
             lastStageHeight = newVal.doubleValue();
         });
     }
-
 }

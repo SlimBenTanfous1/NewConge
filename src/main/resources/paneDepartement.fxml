@@ -41,19 +41,19 @@
                         <ComboBox fx:id="parentDeptComboBox" disable="true" prefHeight="31.0" prefWidth="443.0" promptText="Selectionner departement parent" />
                </children>
             </HBox>
-                  <HBox fx:id="Hfirst" alignment="CENTER" disable="true" layoutX="582.0" layoutY="507.0" prefHeight="38.0" prefWidth="281.0" spacing="10">
+                  <HBox fx:id="Hfirst" alignment="CENTER" disable="true" layoutX="548.0" layoutY="507.0" prefHeight="38.0" prefWidth="361.0" spacing="10">
                      <children>
-                        <Button fx:id="Add" alignment="CENTER" disable="true" onAction="#handleAddDepartment" prefHeight="41.0" prefWidth="87.0" text="Ajouter">
+                        <Button fx:id="Add" alignment="CENTER" disable="true" onAction="#handleAddDepartment" prefHeight="41.0" prefWidth="100.0" text="Ajouter">
                      <styleClass>
                         <String fx:value="btn-primary" />
                         <String fx:value="RobotoBold" />
                      </styleClass></Button>
-                        <Button fx:id="Update" alignment="CENTER" disable="true" onAction="#handleEditDepartment" prefHeight="41.0" prefWidth="87.0" text="Modifier">
+                        <Button fx:id="Update" alignment="CENTER" disable="true" onAction="#handleEditDepartment" prefHeight="41.0" prefWidth="100.0" text="Modifier">
                      <styleClass>
                         <String fx:value="btn-primary" />
                         <String fx:value="RobotoBold" />
                      </styleClass></Button>
-                        <Button fx:id="Delete" alignment="CENTER" disable="true" onAction="#handleDeleteDepartment" prefHeight="41.0" prefWidth="87.0" text="Supprimer">
+                        <Button fx:id="Delete" alignment="CENTER" disable="true" onAction="#handleDeleteDepartment" prefHeight="41.0" prefWidth="100.0" text="Supprimer">
                      <styleClass>
                         <String fx:value="btn-primary" />
                         <String fx:value="RobotoBold" />
