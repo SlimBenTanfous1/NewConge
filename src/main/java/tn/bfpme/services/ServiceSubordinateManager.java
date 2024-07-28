@@ -29,6 +29,7 @@ public class ServiceSubordinateManager {
             cnx = MyDataBase.getInstance().getCnx();
         }
     }
+
     public List<User> getAllUsers() throws SQLException {
         return userService.getAllUsers();
     }
@@ -43,27 +44,44 @@ public class ServiceSubordinateManager {
         return userService.getRoleByUserId(userId);
     }
 
-
     // Assign role and department to a user and find a manager
     public void assignRoleAndDepartment(int userId, int roleId, int departementId) throws SQLException {
         // Ensure connection
         ensureConnection();
 
         // Update user's department
-        userService.updateUserDepartment(userId, departementId);
+        String updateDepartmentQuery = "UPDATE user SET ID_Departement = ? WHERE ID_User = ?";
+        try (PreparedStatement statement = cnx.prepareStatement(updateDepartmentQuery)) {
+            statement.setInt(1, departementId);
+            statement.setInt(2, userId);
+            statement.executeUpdate();
+        }
 
         // Remove old roles
-        userService.removeUserRole(userId);
+        String deleteRoleQuery = "DELETE FROM user_role WHERE ID_User = ?";
+        try (PreparedStatement statement = cnx.prepareStatement(deleteRoleQuery)) {
+            statement.setInt(1, userId);
+            statement.executeUpdate();
+        }
 
         // Assign new role
-        userService.addUserRole(userId, roleId);
+        String insertRoleQuery = "INSERT INTO user_role (ID_User, ID_Role) VALUES (?, ?)";
+        try (PreparedStatement statement = cnx.prepareStatement(insertRoleQuery)) {
+            statement.setInt(1, userId);
+            statement.setInt(2, roleId);
+            statement.executeUpdate();
+        }
 
-        // Find and assign manager
-        int managerId = findManager(userId, roleId, departementId);
-        userService.updateUserManager(userId, managerId);
-
-        // Reassign subordinates to the new manager
-        reassignSubordinatesToNewManager(userId, roleId, departementId);
+        // Handle special cases where manager should be null
+        Role userRole = roleService.getRoleById(roleId);
+        Departement userDept = departementService.getDepartementById(departementId);
+        if (userRole != null && ("DG".equals(userRole.getNom()) || (userDept != null && "Direction Générale".equals(userDept.getNom())))) {
+            userService.updateUserManager(userId, null);
+        } else {
+            // Find and assign manager
+            int managerId = findManager(userId, roleId, departementId);
+            userService.updateUserManager(userId, managerId);
+        }
     }
 
     // Find manager for a user based on hierarchy rules
@@ -149,10 +167,10 @@ public class ServiceSubordinateManager {
             userService.removeUserRole(userId);
 
             // Set department to NULL in user table
-            userService.updateUserDepartment(userId, 0);
+            userService.updateUserDepartment(userId, null);
 
             // Set manager to NULL in user table
-            userService.updateUserManager(userId, 0);
+            userService.updateUserManager(userId, null);
 
             // Reassign subordinates' managers to NULL
             userService.updateSubordinatesManager(userId);
@@ -165,7 +183,7 @@ public class ServiceSubordinateManager {
     private void reassignSubordinatesToNewManager(int userId, int roleId, int departementId) throws SQLException {
         List<User> subordinates = userService.getUsersWithoutManager();
         for (User subordinate : subordinates) {
-            if (subordinate.getIdDepartement() == departementId && subordinate.getIdRole() == roleId) {
+            if (subordinate.getIdDepartement() == departementId) {
                 userService.updateUserManager(subordinate.getIdUser(), userId);
             }
         }

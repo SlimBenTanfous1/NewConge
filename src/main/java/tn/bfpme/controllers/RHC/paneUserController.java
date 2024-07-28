@@ -482,7 +482,6 @@ public class paneUserController implements Initializable {
         });
     }
 
-
     private void loadDepartments1() {
         List<Departement> departmentList = depService.getAllDepartments();
         ObservableList<Departement> departments = FXCollections.observableArrayList(departmentList);
@@ -610,8 +609,6 @@ public class paneUserController implements Initializable {
             e.printStackTrace();
         }
     }
-
-
 
     private void loadRoles3() {
         List<Role> roleList = roleService.getAllRoles();
