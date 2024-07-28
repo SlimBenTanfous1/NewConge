@@ -7,6 +7,7 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
@@ -15,28 +16,23 @@
    <children>
       <AnchorPane layoutX="9.0" layoutY="131.0" prefHeight="677.0" prefWidth="1320.0" styleClass="pane1" AnchorPane.bottomAnchor="22.0" AnchorPane.leftAnchor="9.0" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="131.0">
          <children>
-            <ScrollPane layoutX="9.0" layoutY="65.0" prefHeight="601.0" prefWidth="1302.0" AnchorPane.bottomAnchor="11.0" AnchorPane.leftAnchor="9.0" AnchorPane.rightAnchor="9.0" AnchorPane.topAnchor="65.0">
+            <ScrollPane fitToHeight="true" fitToWidth="true" layoutX="9.0" layoutY="102.0" pannable="true" prefHeight="564.0" prefWidth="1302.0" AnchorPane.bottomAnchor="11.0" AnchorPane.leftAnchor="9.0" AnchorPane.rightAnchor="9.0" AnchorPane.topAnchor="102.0">
                <content>
                   <GridPane fx:id="DemandesContainer" prefHeight="0.0" prefWidth="0.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="ALWAYS" />
+                        <ColumnConstraints hgrow="ALWAYS" />
+                     </columnConstraints>
                   </GridPane>
                </content>
             </ScrollPane>
-            <TextField fx:id="Recherche_demande" layoutX="989.0" layoutY="19.0" onKeyPressed="#Recherche" prefHeight="28.0" prefWidth="304.0" promptText="Recherche" AnchorPane.rightAnchor="27.0">
-               <styleClass>
-                  <String fx:value="RobotoRegular" />
-                  <String fx:value="FontSize-13" />
-               </styleClass>
-            </TextField>
-            <HBox alignment="CENTER" layoutX="22.0" layoutY="11.0" prefHeight="51.0" prefWidth="261.0">
+            <TextField fx:id="Recherche_demande" layoutX="989.0" layoutY="19.0" onKeyPressed="#Recherche" prefHeight="28.0" prefWidth="304.0" promptText="Recherche" AnchorPane.rightAnchor="27.0" />
+            <HBox alignment="CENTER_LEFT" layoutX="22.0" layoutY="11.0" prefHeight="51.0" prefWidth="311.0">
                <children>
-                  <Label prefHeight="23.0" prefWidth="95.0" text="Trier par :">
+                  <Label prefHeight="23.0" prefWidth="95.0" styleClass="RobotoBoldItalic" text="Trier par :">
                      <font>
                         <Font name="Roboto Regular" size="18.0" />
                      </font>
-                     <styleClass>
-                        <String fx:value="FontSize-17" />
-                        <String fx:value="RobotoBoldItalic" />
-                     </styleClass>
                   </Label>
                   <ComboBox fx:id="comboTri" onAction="#TriPar" prefHeight="0.0" prefWidth="151.0" />
                </children>
@@ -50,7 +46,6 @@
                      <styleClass>
                         <String fx:value="btn-primary" />
                         <String fx:value="RobotoMedium" />
-                        <String fx:value="FontSize-13" />
                      </styleClass>
                   </Button>
                   <Button mnemonicParsing="false" onAction="#LesRejetes" prefHeight="25.0" prefWidth="141.0" text="Rejetée">
@@ -60,7 +55,6 @@
                      <styleClass>
                         <String fx:value="btn-primary" />
                         <String fx:value="RobotoMedium" />
-                        <String fx:value="FontSize-13" />
                      </styleClass>
                   </Button>
                   <Button mnemonicParsing="false" onAction="#LesEnAttente" prefHeight="25.0" prefWidth="141.0" text="En attente">
@@ -70,7 +64,6 @@
                      <styleClass>
                         <String fx:value="btn-primary" />
                         <String fx:value="RobotoMedium" />
-                        <String fx:value="FontSize-13" />
                      </styleClass>
                   </Button>
                </children>

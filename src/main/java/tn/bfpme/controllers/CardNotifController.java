@@ -1,5 +1,6 @@
 package tn.bfpme.controllers;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,6 +17,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import tn.bfpme.models.Notification;
 import tn.bfpme.services.ServiceNotification;
+import tn.bfpme.utils.FontResizer;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -64,7 +66,12 @@ public class CardNotifController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
+        Platform.runLater(() -> {
+            Stage stage = (Stage) Card.getScene().getWindow();
+            stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(Card, stage.getWidth(), stage.getHeight()));
+            stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(Card, stage.getWidth(), stage.getHeight()));
+            FontResizer.resizeFonts(Card, stage.getWidth(), stage.getHeight());
+        });
     }
 
     @FXML

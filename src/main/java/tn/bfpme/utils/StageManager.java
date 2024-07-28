@@ -27,6 +27,7 @@ public class StageManager {
         stages.add(stage);
         addSizeListeners(stage);
         updateLastStageSize(stage);
+        
     }
 
     public static void removeStage(Stage stage) {

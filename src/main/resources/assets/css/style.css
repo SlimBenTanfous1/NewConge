@@ -99,51 +99,83 @@
 /* FONTS DESIGNS */
 .RobotoBlack{
     -fx-font-family: "Roboto Black";
+    -fx-font-size: 14px; /* Default size */
+
 }
 .RobotoBlackItalic{
     -fx-font-family: "Roboto Black Italic";
+    -fx-font-size: 14px; /* Default size */
+
 }
 .RobotoBlackCondenseda{
     -fx-font-family: "Roboto Black Condensed";
+    -fx-font-size: 14px; /* Default size */
+
 }
 .RobotoBold{
     -fx-font-family: "Roboto Bold";
+    -fx-font-size: 14px; /* Default size */
+
 }
 .RobotoBoldItalic{
     -fx-font-family: "Roboto Bold Italic";
+    -fx-font-size: 14px; /* Default size */
+
 }
 .RobotoBoldCondensedItalic{
     -fx-font-family: "Roboto Bold Condensed Italic";
+    -fx-font-size: 14px; /* Default size */
+
 }
 .RobotoCondensed{
     -fx-font-family: "Roboto Condensed";
+    -fx-font-size: 14px; /* Default size */
+
 }
 .RobotoCondensedItalic{
     -fx-font-family: "Roboto Condensed Italic";
+    -fx-font-size: 14px; /* Default size */
+
 }
 .RobotoItalic{
     -fx-font-family: "Roboto Italic";
+    -fx-font-size: 14px; /* Default size */
+
 }
 .RobotoLight{
     -fx-font-family: "Roboto Light";
+    -fx-font-size: 14px; /* Default size */
+
 }
 .RobotoLightItalic{
     -fx-font-family: "Roboto Light Italic";
+    -fx-font-size: 14px; /* Default size */
+
 }
 .RobotoMedium{
     -fx-font-family: "Roboto Medium";
+    -fx-font-size: 14px; /* Default size */
+
 }
 .RobotoMediumItalic{
     -fx-font-family: "Roboto Medium Italic";
+    -fx-font-size: 14px; /* Default size */
+
 }
 .RobotoRegular{
     -fx-font-family: "Roboto Regular";
+    -fx-font-size: 14px; /* Default size */
+
 }
 .RobotoThin{
     -fx-font-family: "Roboto Thin";
+    -fx-font-size: 14px; /* Default size */
+
 }
 .RobotoThinItalic{
     -fx-font-family: "Roboto Thin Italic";
+    -fx-font-size: 14px; /* Default size */
+
 }
 
 /* FONTS SIZES DESIGN */

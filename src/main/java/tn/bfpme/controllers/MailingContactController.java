@@ -1,5 +1,6 @@
 package tn.bfpme.controllers;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +15,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import tn.bfpme.models.User;
 import tn.bfpme.services.ServiceUtilisateur;
+import tn.bfpme.utils.FontResizer;
 import tn.bfpme.utils.Mails;
 import tn.bfpme.utils.SessionManager;
 import tn.bfpme.utils.StageManager;
@@ -54,6 +56,12 @@ public class MailingContactController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Platform.runLater(() -> {
+            Stage stage = (Stage) MainAnchorPane.getScene().getWindow();
+            stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
+            stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
+            FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight());
+        });
         User manager = SessionManager.getInstance().getUser();
         String role = SessionManager.getInstance().getUserRoleName();
         String departement = SessionManager.getInstance().getUserDepartmentName();

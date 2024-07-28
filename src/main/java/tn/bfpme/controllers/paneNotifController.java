@@ -1,5 +1,6 @@
 package tn.bfpme.controllers;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,8 +10,10 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.stage.Stage;
 import tn.bfpme.models.Notification;
 import tn.bfpme.services.ServiceNotification;
+import tn.bfpme.utils.FontResizer;
 
 import java.io.IOException;
 import java.net.URL;
@@ -19,6 +22,8 @@ import java.util.ResourceBundle;
 public class paneNotifController implements Initializable {
     @FXML
     private GridPane NotifContainer;
+    @FXML
+    private Pane NotifPane;
     private final ServiceNotification ServiceNotif = new ServiceNotification();
 
     @Override
