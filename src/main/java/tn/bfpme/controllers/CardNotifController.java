@@ -66,12 +66,7 @@ public class CardNotifController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        Platform.runLater(() -> {
-            Stage stage = (Stage) Card.getScene().getWindow();
-            stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(Card, stage.getWidth(), stage.getHeight()));
-            stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(Card, stage.getWidth(), stage.getHeight()));
-            FontResizer.resizeFonts(Card, stage.getWidth(), stage.getHeight());
-        });
+
     }
 
     @FXML

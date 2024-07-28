@@ -14,10 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import tn.bfpme.models.Conge;
-import tn.bfpme.models.Statut;
-import tn.bfpme.models.TypeConge;
-import tn.bfpme.models.User;
+import tn.bfpme.models.*;
 import tn.bfpme.services.ServiceConge;
 import tn.bfpme.services.ServiceNotification;
 import tn.bfpme.services.ServiceUtilisateur;
@@ -64,7 +61,10 @@ public class DemandeDepController implements Initializable {
     private final ServiceConge serviceConge = new ServiceConge();
     private final ServiceUtilisateur serviceUser = new ServiceUtilisateur();
     private final ServiceNotification serviceNotif = new ServiceNotification();
-
+    UserConge enAtt = serviceUser.AfficherEnAttente();
+    UserConge app = serviceUser.AfficherApprove();
+    UserConge reg = serviceUser.AfficherReject();
+    DemandeDepListeController controller;
     public void setData(Conge conge, User user) {
         this.conge = conge;
         this.user = user;
@@ -136,7 +136,7 @@ public class DemandeDepController implements Initializable {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/DemandeDepListe.fxml"));
                 Parent root = loader.load();
-                DemandeDepListeController controller = loader.getController();
+                controller = loader.getController();
                 StageManager.closeAllStages();
                 Stage demandeDepListeStage = new Stage();
                 Scene scene = new Scene(root);
@@ -144,6 +144,9 @@ public class DemandeDepController implements Initializable {
                 demandeDepListeStage.setTitle("Mailing de Demande");
                 demandeDepListeStage.show();
                 StageManager.addStage("DemandeDepListe", demandeDepListeStage);
+                Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+                demandeDepListeStage.setX((screenBounds.getWidth() - demandeDepListeStage.getWidth()) / 2);
+                demandeDepListeStage.setY((screenBounds.getHeight() - demandeDepListeStage.getHeight()) / 2);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -157,6 +160,11 @@ public class DemandeDepController implements Initializable {
             this.conge.setStatut(Statut.Approuvé);
             serviceConge.updateUserSolde(this.user.getIdUser(), conge.getTypeConge().getIdTypeConge(), congeDays);
             serviceConge.updateStatutConge(this.conge.getIdConge(), Statut.Approuvé);
+            String NotifSubject = "Votre Demande de congé " + this.conge.getDesignation() + " a été approuvé.";
+            String messageText =  "Votre Demande de congé " + this.conge.getDesignation() + " du "+ this.conge.getDateDebut() +" jusqu'au "+ this.conge.getDateFin() +"  a été approuvé.";
+            serviceNotif.NewNotification(user.getIdUser(), NotifSubject, 1, messageText);
+            controller.setData(enAtt, app, reg);
+
         }
     }
 
