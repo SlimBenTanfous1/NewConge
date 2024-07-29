@@ -16,6 +16,7 @@ public class ServiceSubordinateManager {
     private ServiceRole roleService;
     private ServiceDepartement departementService;
     private static Connection cnx = MyDataBase.getInstance().getCnx();
+
     public ServiceSubordinateManager(ServiceRole roleService, ServiceDepartement departementService) {
         this.roleService = roleService;
         this.departementService = departementService;
@@ -208,41 +209,38 @@ public class ServiceSubordinateManager {
             throw new RuntimeException("Could not determine role or department level for the new manager.");
         }
 
-        // Recursive CTE to find all subordinates within the department hierarchy
+        // Query to find all immediate subordinates within the department and role hierarchy
         String query = "WITH RECURSIVE dept_hierarchy AS (" +
                 "    SELECT ID_Departement, Parent_Dept FROM departement WHERE ID_Departement = ? " +
                 "    UNION ALL " +
                 "    SELECT d.ID_Departement, d.Parent_Dept FROM departement d " +
                 "    JOIN dept_hierarchy dh ON dh.ID_Departement = d.Parent_Dept " +
                 "), " +
-                "subordinate_users AS (" +
+                "immediate_subordinates AS (" +
                 "    SELECT u.ID_User, r.Level as roleLevel, d.Level as deptLevel " +
                 "    FROM user u " +
                 "    JOIN user_role ur ON u.ID_User = ur.ID_User " +
                 "    JOIN role r ON ur.ID_Role = r.ID_Role " +
                 "    JOIN dept_hierarchy dh ON u.ID_Departement = dh.ID_Departement " +
                 "    JOIN departement d ON u.ID_Departement = d.ID_Departement " +
-                "    WHERE r.Level > ? AND d.Level > ? " +
+                "    WHERE r.Level = ? AND d.Level = ? " +
                 ") " +
-                "SELECT ID_User FROM subordinate_users";
+                "SELECT ID_User FROM immediate_subordinates";
 
         try (PreparedStatement statement = cnx.prepareStatement(query)) {
             statement.setInt(1, newManagerDeptId);
-            statement.setInt(2, newManagerRoleLevel);
-            statement.setInt(3, newManagerDeptLevel);
+            statement.setInt(2, newManagerRoleLevel + 1);
+            statement.setInt(3, newManagerDeptLevel + 1);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 int subordinateId = resultSet.getInt("ID_User");
                 updateUserManager(subordinateId, newManagerId);
-                System.out.println("Reassigned subordinate with ID: " + subordinateId + " to new manager with ID: " + newManagerId);
+                System.out.println("Reassigned immediate subordinate with ID: " + subordinateId + " to new manager with ID: " + newManagerId);
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error reassigning subordinates: " + e.getMessage(), e);
         }
     }
-
-
-
 
     public void assignRoleAndDepartment(int userId, int roleId, int departmentId) throws SQLException {
         ensureConnection();
