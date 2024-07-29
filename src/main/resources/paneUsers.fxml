@@ -253,7 +253,7 @@
                               </VBox>
                            </children>
                         </HBox>
-                        <HBox alignment="CENTER" layoutX="420.0" layoutY="591.0" prefHeight="57.0" prefWidth="280.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="420.0" AnchorPane.rightAnchor="419.0">
+                        <HBox fx:id="Hfirst2" alignment="CENTER" layoutX="420.0" layoutY="591.0" prefHeight="57.0" prefWidth="280.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="420.0" AnchorPane.rightAnchor="419.0">
                            <children>
                               <Button fx:id="handleedit2" mnemonicParsing="false" onAction="#handleEditUser" prefHeight="73.0" prefWidth="130.0" text="Affecter">
                                  <styleClass>
