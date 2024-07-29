@@ -53,12 +53,6 @@ public class paneRoleController implements Initializable {
                 btnSupprimer.setDisable(false);
             }
         });
-        Platform.runLater(() -> {
-            Stage stage = (Stage) RolePane.getScene().getWindow();
-            stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(RolePane, stage.getWidth(), stage.getHeight()));
-            stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(RolePane, stage.getWidth(), stage.getHeight()));
-            FontResizer.resizeFonts(RolePane, stage.getWidth(), stage.getHeight());
-        });
         fieldsDisable(true);
         btnCRUDHbox.setVisible(true);
         btnModifier.setDisable(true);
