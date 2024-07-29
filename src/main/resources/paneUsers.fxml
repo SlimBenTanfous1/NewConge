@@ -307,7 +307,7 @@
                               <ComboBox fx:id="hierarCombo" onAction="#SelecHierar" prefHeight="31.0" prefWidth="323.0" />
                            </children>
                         </HBox>
-                        <AnchorPane layoutX="48.0" layoutY="103.0" prefHeight="559.0" prefWidth="1026.0" AnchorPane.bottomAnchor="26.0" AnchorPane.leftAnchor="48.0" AnchorPane.rightAnchor="45.0" AnchorPane.topAnchor="103.0">
+                        <AnchorPane fx:id="UserPane1" layoutX="48.0" layoutY="103.0" prefHeight="559.0" prefWidth="1026.0" AnchorPane.bottomAnchor="26.0" AnchorPane.leftAnchor="48.0" AnchorPane.rightAnchor="45.0" AnchorPane.topAnchor="103.0">
                            <children>
                               <TreeTableView fx:id="userTable" layoutX="91.0" layoutY="85.0" prefHeight="447.0" prefWidth="844.0" AnchorPane.bottomAnchor="27.0" AnchorPane.leftAnchor="91.0" AnchorPane.rightAnchor="91.0" AnchorPane.topAnchor="85.0">
                                  <columns>

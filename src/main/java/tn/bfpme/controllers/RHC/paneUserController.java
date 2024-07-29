@@ -208,12 +208,12 @@ public class paneUserController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        Platform.runLater(() -> {
+        /*Platform.runLater(() -> {
             Stage stage = (Stage) UtilisateursPane.getScene().getWindow();
             stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(UtilisateursPane, stage.getWidth(), stage.getHeight()));
             stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(UtilisateursPane, stage.getWidth(), stage.getHeight()));
             FontResizer.resizeFonts(UtilisateursPane, stage.getWidth(), stage.getHeight());
-        });
+        });*/
         reset2();
         loadUsers();
         loadUsers1();
