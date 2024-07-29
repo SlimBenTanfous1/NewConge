@@ -274,7 +274,7 @@
                               <String fx:value="RobotoMediumItalic" />
                            </styleClass>
                         </Label>
-                        <HBox fx:id="Hfirst2" layoutX="441.0" layoutY="592.0" prefHeight="56.0" prefWidth="238.0">
+                        <HBox fx:id="Hfirst2" alignment="CENTER" layoutX="441.0" layoutY="592.0" prefHeight="56.0" prefWidth="238.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="441.0" AnchorPane.rightAnchor="440.0">
                            <children>
                               <Button fx:id="Enregistrer2" mnemonicParsing="false" onAction="#Enregistrer_user2" prefHeight="56.0" prefWidth="100.0" text="Enregistrer">
                                  <styleClass>
@@ -301,13 +301,13 @@
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" styleClass="grad-bg">
                      <children>
-                        <HBox alignment="CENTER" layoutX="373.0" layoutY="37.0" prefWidth="374.0" AnchorPane.leftAnchor="373.0" AnchorPane.rightAnchor="372.0" AnchorPane.topAnchor="37.0">
+                        <HBox alignment="CENTER" layoutX="340.0" layoutY="37.0" prefHeight="31.0" prefWidth="442.0" AnchorPane.leftAnchor="340.0" AnchorPane.rightAnchor="337.0" AnchorPane.topAnchor="37.0">
                            <children>
-                              <Label minWidth="158.0" prefHeight="25.0" prefWidth="158.0" styleClass="RobotoBoldItalic" text="Liste des Hiérarchies:" />
+                              <Label minWidth="158.0" prefHeight="25.0" prefWidth="245.0" styleClass="RobotoBoldItalic" text="Liste des Hiérarchies:" />
                               <ComboBox fx:id="hierarCombo" onAction="#SelecHierar" prefHeight="31.0" prefWidth="323.0" />
                            </children>
                         </HBox>
-                        <AnchorPane fx:id="UserPane1" layoutX="48.0" layoutY="103.0" prefHeight="559.0" prefWidth="1026.0" AnchorPane.bottomAnchor="26.0" AnchorPane.leftAnchor="48.0" AnchorPane.rightAnchor="45.0" AnchorPane.topAnchor="103.0">
+                        <AnchorPane fx:id="UserPane1" layoutX="48.0" layoutY="103.0" prefHeight="559.0" prefWidth="1026.0" styleClass="pane1" AnchorPane.bottomAnchor="26.0" AnchorPane.leftAnchor="48.0" AnchorPane.rightAnchor="45.0" AnchorPane.topAnchor="103.0">
                            <children>
                               <TreeTableView fx:id="userTable" layoutX="91.0" layoutY="85.0" prefHeight="447.0" prefWidth="844.0" AnchorPane.bottomAnchor="27.0" AnchorPane.leftAnchor="91.0" AnchorPane.rightAnchor="91.0" AnchorPane.topAnchor="85.0">
                                  <columns>
@@ -323,9 +323,9 @@
                               <Label layoutX="91.0" layoutY="33.0" prefHeight="25.0" prefWidth="248.0" styleClass="RobotoBold" text="Hiérarchie des employés" AnchorPane.leftAnchor="91.0" AnchorPane.topAnchor="33.0" />
                            </children>
                         </AnchorPane>
-                        <Pane fx:id="DepartPane1" layoutX="48.0" layoutY="85.0" prefHeight="567.0" prefWidth="1025.0" visible="false">
+                        <AnchorPane fx:id="DepartPane1" layoutX="48.0" layoutY="85.0" prefHeight="567.0" prefWidth="1025.0" styleClass="pane1" visible="false" AnchorPane.bottomAnchor="36.0" AnchorPane.leftAnchor="48.0" AnchorPane.rightAnchor="46.0" AnchorPane.topAnchor="85.0">
                            <children>
-                              <TreeTableView fx:id="deptTable" layoutX="91.0" layoutY="85.0" prefHeight="447.0" prefWidth="844.0">
+                              <TreeTableView fx:id="deptTable" layoutX="91.0" layoutY="85.0" prefHeight="447.0" prefWidth="844.0" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="91.0" AnchorPane.rightAnchor="90.0" AnchorPane.topAnchor="85.0">
                                  <columns>
                                     <TreeTableColumn fx:id="idDapartementColumn" prefWidth="75.0" text="ID" />
                                     <TreeTableColumn fx:id="nomDeptColumn" prefWidth="177.0" text="Nom" />
@@ -333,15 +333,15 @@
                                     <TreeTableColumn fx:id="DeptparColumn" prefWidth="227.0" text="Département Parent" />
                                  </columns>
                               </TreeTableView>
-                              <TextField fx:id="searchFieldDept" layoutX="656.0" layoutY="31.0" onAction="#rechercheDept1" prefHeight="29.0" prefWidth="279.0" promptText="Recherche" />
-                              <Label layoutX="91.0" layoutY="33.0" prefHeight="25.0" prefWidth="248.0" text="Hierarchie des Départements">
+                              <TextField fx:id="searchFieldDept" layoutX="656.0" layoutY="31.0" onAction="#rechercheDept1" prefHeight="29.0" prefWidth="279.0" promptText="Recherche" AnchorPane.rightAnchor="90.0" AnchorPane.topAnchor="31.0" />
+                              <Label layoutX="91.0" layoutY="33.0" prefHeight="25.0" prefWidth="248.0" text="Hierarchie des Départements" AnchorPane.leftAnchor="91.0" AnchorPane.topAnchor="33.0">
                                  <styleClass>
                                     <String fx:value="FontSize-18" />
                                     <String fx:value="RobotoBoldItalic" />
                                  </styleClass>
                               </Label>
                            </children>
-                        </Pane>
+                        </AnchorPane>
                         <Pane fx:id="RolePane1" layoutX="48.0" layoutY="85.0" prefHeight="567.0" prefWidth="1025.0" visible="false">
                            <children>
                               <TreeTableView fx:id="roleTable" layoutX="91.0" layoutY="85.0" prefHeight="447.0" prefWidth="844.0">
