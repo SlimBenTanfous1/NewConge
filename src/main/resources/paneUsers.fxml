@@ -253,7 +253,7 @@
                               </VBox>
                            </children>
                         </HBox>
-                        <HBox fx:id="Hfirst2" alignment="CENTER" layoutX="420.0" layoutY="591.0" prefHeight="57.0" prefWidth="280.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="420.0" AnchorPane.rightAnchor="419.0">
+                        <HBox fx:id="hsecond2" alignment="CENTER" layoutX="420.0" layoutY="591.0" prefHeight="57.0" prefWidth="280.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="420.0" AnchorPane.rightAnchor="419.0">
                            <children>
                               <Button fx:id="handleedit2" mnemonicParsing="false" onAction="#handleEditUser" prefHeight="73.0" prefWidth="130.0" text="Affecter">
                                  <styleClass>
@@ -274,7 +274,7 @@
                               <String fx:value="RobotoMediumItalic" />
                            </styleClass>
                         </Label>
-                        <HBox fx:id="hsecond2" layoutX="441.0" layoutY="592.0" prefHeight="56.0" prefWidth="238.0">
+                        <HBox fx:id="Hfirst2" layoutX="441.0" layoutY="592.0" prefHeight="56.0" prefWidth="238.0">
                            <children>
                               <Button fx:id="Enregistrer2" mnemonicParsing="false" onAction="#Enregistrer_user2" prefHeight="56.0" prefWidth="100.0" text="Enregistrer">
                                  <styleClass>
