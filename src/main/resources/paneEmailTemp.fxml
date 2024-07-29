@@ -23,17 +23,17 @@
          <children>
             <HBox fx:id="Hfirst" alignment="CENTER" layoutX="303.0" layoutY="535.0" prefHeight="37.0" prefWidth="376.0" spacing="25.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="303.0" AnchorPane.rightAnchor="303.0">
                <children>
-                  <Button fx:id="Add" mnemonicParsing="false" onAction="#AjouterTemp" prefHeight="41.0" prefWidth="87.0" text="Ajouter">
+                  <Button fx:id="Add" mnemonicParsing="false" onAction="#AjouterTemp" prefHeight="41.0" prefWidth="100.0" text="Ajouter">
                      <styleClass>
                         <String fx:value="btn-primary" />
                         <String fx:value="RobotoBold" />
                      </styleClass></Button>
-                  <Button fx:id="Update" mnemonicParsing="false" onAction="#ModifierTemp" prefHeight="41.0" prefWidth="87.0" text="Modifier">
+                  <Button fx:id="Update" mnemonicParsing="false" onAction="#ModifierTemp" prefHeight="41.0" prefWidth="100.0" text="Modifier">
                      <styleClass>
                         <String fx:value="btn-primary" />
                         <String fx:value="RobotoBold" />
                      </styleClass></Button>
-                  <Button fx:id="Delete" mnemonicParsing="false" onAction="#SupprimerTemp" prefHeight="41.0" prefWidth="87.0" text="Supprimer">
+                  <Button fx:id="Delete" mnemonicParsing="false" onAction="#SupprimerTemp" prefHeight="41.0" prefWidth="100.0" text="Supprimer">
                      <styleClass>
                         <String fx:value="btn-primary" />
                         <String fx:value="RobotoBold" />

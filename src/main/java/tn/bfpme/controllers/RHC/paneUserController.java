@@ -3,6 +3,7 @@ package tn.bfpme.controllers.RHC;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
+import javafx.scene.layout.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.mindrot.jbcrypt.BCrypt;
@@ -34,6 +35,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import tn.bfpme.models.*;
 import tn.bfpme.services.*;
+import tn.bfpme.utils.FontResizer;
 import tn.bfpme.utils.MyDataBase;
 import tn.bfpme.utils.SessionManager;
 
@@ -144,7 +146,7 @@ public class paneUserController implements Initializable {
     @FXML
     private Label affectationlabel;
     @FXML
-    public Pane UtilisateursPane;
+    public AnchorPane UtilisateursPane;
     @FXML
     public ListView<Departement> departListView;
     @FXML
@@ -210,8 +212,13 @@ public class paneUserController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        Platform.runLater(() -> {
+            Stage stage = (Stage) UtilisateursPane.getScene().getWindow();
+            stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(UtilisateursPane, stage.getWidth(), stage.getHeight()));
+            stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(UtilisateursPane, stage.getWidth(), stage.getHeight()));
+            FontResizer.resizeFonts(UtilisateursPane, stage.getWidth(), stage.getHeight());
+        });
         reset2();
-        System.out.println("Initializing paneUserController..."); // Debugging
         loadUsers();
         loadUsers1();
         loadUsers3();
@@ -870,6 +877,31 @@ public class paneUserController implements Initializable {
         } else {
             showError("Veuillez sélectionner un utilisateur à modifier.");
         }
+    }
+
+    @FXML
+    private void handleRemoveUserAssignment() {
+        Integer userId = selectedUser.getIdUser();
+        if (userId != null) {
+            try {
+                usersubordinateService.removeRoleAndDepartment(userId);
+                affectationlabel.setText("Rôle et département supprimés.");
+                loadUsers3();
+                resetAffectationTab(); // Reset the tab after deletion
+            } catch (Exception e) {
+                e.printStackTrace();
+                showError("Une erreur s'est produite : " + e.getMessage());
+            }
+        } else {
+            showError("Veuillez sélectionner un utilisateur pour supprimer l'affectation.");
+        }
+    }
+
+
+
+    @FXML
+    void Enregistrer_user2(ActionEvent event) {
+
     }
     @FXML
     void Annuler_user2(ActionEvent event) {

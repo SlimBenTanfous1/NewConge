@@ -178,18 +178,13 @@ void Login(ActionEvent event) {
     private void navigateToProfile(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/profile.fxml"));
         Parent root = loader.load();
-
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Profile");
         //stage.setMaximized(true);
         stage.show();
-        stage.toFront(); // Bring the stage to the front
-        System.out.println("Setting stage to maximized in navigateToProfile");
+        stage.toFront();
         StageManager.addStage("Profile", stage);
-
     }
-
-
 }
