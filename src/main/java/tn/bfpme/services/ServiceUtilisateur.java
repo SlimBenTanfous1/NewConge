@@ -255,6 +255,81 @@ public class ServiceUtilisateur implements IUtilisateur {
         return new UserConge(users, conges);
     }
 
+    public UserConge RechercheUserCongeEnAtt(String searchCriteria) {
+        List<User> users = new ArrayList<>();
+        List<Conge> conges = new ArrayList<>();
+        String query = "WITH RECURSIVE Subordinates AS (" +
+                "SELECT ID_User, Nom, Prenom, Email, Image, ID_Departement " +
+                "FROM user " +
+                "WHERE ID_User = ? " +
+                "UNION ALL " +
+                "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.Image, u.ID_Departement " +
+                "FROM user u " +
+                "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User " +
+                ") " +
+                "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, " +
+                "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file " +
+                "FROM user " +
+                "JOIN conge ON user.ID_User = conge.ID_User " +
+                "WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) " +
+                "AND conge.Statut = ? ";
+
+        // Append search criteria to the query
+        if (searchCriteria != null && !searchCriteria.isEmpty()) {
+            query += "AND (user.Nom LIKE ? OR user.Prenom LIKE ? OR user.Email LIKE ? " +
+                    "OR conge.TypeConge LIKE ? OR conge.DateDebut = ? OR conge.DateFin = ?) ";
+        }
+
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+            PreparedStatement ps = cnx.prepareStatement(query);
+            int currentUserId = SessionManager.getInstance().getUser().getIdUser();
+            ps.setInt(1, currentUserId);
+            ps.setInt(2, currentUserId);
+            ps.setString(3, String.valueOf(Statut.En_Attente));
+
+            // Set search criteria parameters if provided
+            if (searchCriteria != null && !searchCriteria.isEmpty()) {
+                String likeCriteria = "%" + searchCriteria + "%";
+                ps.setString(4, likeCriteria);
+                ps.setString(5, likeCriteria);
+                ps.setString(6, likeCriteria);
+                ps.setString(7, likeCriteria);
+                ps.setString(8, searchCriteria); // Assuming searchCriteria is in 'yyyy-MM-dd' format for date comparison
+                ps.setString(9, searchCriteria); // Assuming searchCriteria is in 'yyyy-MM-dd' format for date comparison
+            }
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                User user = new User();
+                user.setIdUser(rs.getInt("ID_User"));
+                user.setNom(rs.getString("Nom"));
+                user.setPrenom(rs.getString("Prenom"));
+                user.setEmail(rs.getString("Email"));
+                user.setImage(rs.getString("Image"));
+                user.setIdDepartement(rs.getInt("ID_Departement"));
+                if (!users.contains(user)) {
+                    users.add(user);
+                }
+                Conge conge = new Conge();
+                conge.setIdConge(rs.getInt("ID_Conge"));
+                conge.setDateDebut(rs.getDate("DateDebut").toLocalDate());
+                conge.setDateFin(rs.getDate("DateFin").toLocalDate());
+                //conge.setTypeConge(TypeConge.valueOf(rs.getString("TypeConge")));
+                conge.setStatut(Statut.valueOf(rs.getString("Statut")));
+                conge.setDescription(rs.getString("description"));
+                conge.setFile(rs.getString("file"));
+                conge.setIdUser(rs.getInt("ID_User"));
+                conges.add(conge);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return new UserConge(users, conges);
+    }
+
+
     @Override
     public UserConge TriPrenom() {
         List<User> users = new ArrayList<>();
@@ -262,29 +337,48 @@ public class ServiceUtilisateur implements IUtilisateur {
         String query = "WITH RECURSIVE Subordinates AS (" +
                 "SELECT ID_User, Nom, Prenom, Email, Image, ID_Departement " +
                 "FROM user " +
-                "WHERE ID_Manager = ? " +
-                "UNION " +
+                "WHERE ID_User = ? " +
+                "UNION ALL " +
                 "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.Image, u.ID_Departement " +
                 "FROM user u " +
-                "INNER JOIN Subordinates s ON s.ID_User = u.ID_Manager) " +
-                "SELECT * FROM Subordinates ORDER BY Prenom";
+                "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User " +
+                ") " +
+                "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, " +
+                "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file " +
+                "FROM user " +
+                "JOIN conge ON user.ID_User = conge.ID_User " +
+                "WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ? ORDER BY user.Prenom";
         try {
-            PreparedStatement st = cnx.prepareStatement(query);
-            st.setInt(1, SessionManager.getInstance().getUser().getIdUser());
-            ResultSet rs = st.executeQuery();
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+            PreparedStatement ps = cnx.prepareStatement(query);
+            int currentUserId = SessionManager.getInstance().getUser().getIdUser();
+            ps.setInt(1, currentUserId);
+            ps.setInt(2, currentUserId);
+            ps.setString(3, String.valueOf(Statut.En_Attente));
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                User user = new User(
-                        rs.getInt("ID_User"),
-                        rs.getString("Nom"),
-                        rs.getString("Prenom"),
-                        rs.getString("Email"),
-                        rs.getString("MDP"),
-                        rs.getString("Image"),
-                        rs.getInt("ID_Departement"),
-                        rs.getInt("ID_Manager"),
-                        rs.getDate("Creation_Date").toLocalDate()
-                );
-                users.add(user);
+                User user = new User();
+                user.setIdUser(rs.getInt("ID_User"));
+                user.setNom(rs.getString("Nom"));
+                user.setPrenom(rs.getString("Prenom"));
+                user.setEmail(rs.getString("Email"));
+                user.setImage(rs.getString("Image"));
+                user.setIdDepartement(rs.getInt("ID_Departement"));
+                if (!users.contains(user)) {
+                    users.add(user);
+                }
+                Conge conge = new Conge();
+                conge.setIdConge(rs.getInt("ID_Conge"));
+                conge.setDateDebut(rs.getDate("DateDebut").toLocalDate());
+                conge.setDateFin(rs.getDate("DateFin").toLocalDate());
+                //conge.setTypeConge(TypeConge.valueOf(rs.getString("TypeConge")));
+                conge.setStatut(Statut.valueOf(rs.getString("Statut")));
+                conge.setDescription(rs.getString("description"));
+                conge.setFile(rs.getString("file"));
+                conge.setIdUser(rs.getInt("ID_User"));
+                conges.add(conge);
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -826,25 +920,6 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
     }
 
-
-    @Override
-    public void updateUserRole(int userId, int roleId) {
-        String query = "UPDATE user_role SET ID_Role=? WHERE ID_User=?";
-        try {
-            if (cnx == null || cnx.isClosed()) {
-                cnx = MyDataBase.getInstance().getCnx();
-            }
-            PreparedStatement pst = cnx.prepareStatement(query);
-            pst.setInt(1, roleId);
-            pst.setInt(2, userId);
-            pst.executeUpdate();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-
-
     @Override
     public void Add(User user) {
         String query = "INSERT INTO user (`Nom`, `Prenom`, `Email`, `MDP`, `Image`, `ID_Departement`, `ID_Manager`, `Creation_Date`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -1168,9 +1243,6 @@ public class ServiceUtilisateur implements IUtilisateur {
         return -1; // Or handle appropriately if 'Employee' role doesn't exist
     }
 
-
-
-
     private Integer findManagerByRoleAndDepartment(int roleId, int departmentId) throws SQLException {
         // Define the query to find the suitable manager based on role and department hierarchy
         String query = "SELECT u.ID_User " +
@@ -1311,35 +1383,27 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
         return null;
     }
-
-    //------------------------------- Hierarchie ---------------------------//*
-
-
     private void ensureConnection() throws SQLException {
         if (cnx == null || cnx.isClosed()) {
             cnx = MyDataBase.getInstance().getCnx();
         }
     }
-
-    public void updateSubordinatesManager(int managerId) throws SQLException {
-        ensureConnection();
-        String query = "UPDATE user SET ID_Manager = NULL WHERE ID_Manager = ?";
-        try (PreparedStatement statement = cnx.prepareStatement(query)) {
-            statement.setInt(1, managerId);
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("Error updating subordinates' manager: " + e.getMessage(), e);
-        }
-    }
-
     public User getUserById(int userId) throws SQLException {
         ensureConnection();
-        String query = "SELECT * FROM user WHERE ID_User = ?";
+        String query = "SELECT u.*, d.nom AS departementNom, r.nom AS roleNom " +
+                "FROM user u " +
+                "LEFT JOIN departement d ON u.ID_Departement = d.ID_Departement " +
+                "LEFT JOIN user_role ur ON u.ID_User = ur.ID_User " +
+                "LEFT JOIN role r ON ur.ID_Role = r.ID_Role " +
+                "WHERE u.ID_User = ?";
         try (PreparedStatement statement = cnx.prepareStatement(query)) {
             statement.setInt(1, userId);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                return extractUserFromResultSet(resultSet);
+                User user = extractUserFromResultSet(resultSet);
+                user.setDepartementNom(resultSet.getString("departementNom"));
+                user.setRoleNom(resultSet.getString("roleNom"));
+                return user;
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error retrieving user by ID: " + e.getMessage(), e);
@@ -1347,136 +1411,6 @@ public class ServiceUtilisateur implements IUtilisateur {
         return null;
     }
 
-
-    public List<User> getUsersByDepartementId(int departementId) throws SQLException {
-        ensureConnection();
-        List<User> users = new ArrayList<>();
-        String query = "SELECT * FROM user WHERE ID_Departement = ?";
-        try (PreparedStatement statement = cnx.prepareStatement(query)) {
-            statement.setInt(1, departementId);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                users.add(extractUserFromResultSet(resultSet));
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving users by department ID: " + e.getMessage(), e);
-        }
-        return users;
-    }
-
-    public User getUserByRole(String roleName) throws SQLException {
-        ensureConnection();
-        String query = "SELECT u.* FROM user u JOIN user_role ur ON u.ID_User = ur.ID_User JOIN role r ON ur.ID_Role = r.ID_Role WHERE r.nom = ?";
-        try (PreparedStatement statement = cnx.prepareStatement(query)) {
-            statement.setString(1, roleName);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return extractUserFromResultSet(resultSet);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving user by role name: " + e.getMessage(), e);
-        }
-        return null;
-    }
-
-    public void updateUserManager(int userId, Integer managerId) throws SQLException {
-        ensureConnection();
-        String query = "UPDATE user SET ID_Manager = ? WHERE ID_User = ?";
-        try (PreparedStatement statement = cnx.prepareStatement(query)) {
-            if (managerId == null || !isUserExists(managerId)) {
-                statement.setNull(1, java.sql.Types.INTEGER);
-            } else {
-                statement.setInt(1, managerId);
-            }
-            statement.setInt(2, userId);
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("Error updating user manager: " + e.getMessage(), e);
-        }
-    }
-
-    // Helper method to check if a user exists by ID
-    boolean isUserExists(int userId) throws SQLException {
-        ensureConnection();
-        String query = "SELECT 1 FROM user WHERE ID_User = ?";
-        try (PreparedStatement statement = cnx.prepareStatement(query)) {
-            statement.setInt(1, userId);
-            ResultSet resultSet = statement.executeQuery();
-            return resultSet.next();
-        } catch (SQLException e) {
-            throw new RuntimeException("Error checking if user exists: " + e.getMessage(), e);
-        }
-    }
-
-    public List<User> getSubordinates(int managerId) throws SQLException {
-        ensureConnection();
-        List<User> users = new ArrayList<>();
-        String query = "SELECT * FROM user WHERE ID_Manager = ?";
-        try (PreparedStatement statement = cnx.prepareStatement(query)) {
-            statement.setInt(1, managerId);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                users.add(extractUserFromResultSet(resultSet));
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving subordinates by manager ID: " + e.getMessage(), e);
-        }
-        return users;
-    }
-
-    public List<User> getUsersWithoutManager() throws SQLException {
-        ensureConnection();
-        List<User> users = new ArrayList<>();
-        String query = "SELECT * FROM user WHERE ID_Manager IS NULL";
-        try (PreparedStatement statement = cnx.prepareStatement(query)) {
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                users.add(extractUserFromResultSet(resultSet));
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving users without a manager: " + e.getMessage(), e);
-        }
-        return users;
-    }
-
-    public void updateUserDepartment(int userId, Integer departmentId) throws SQLException {
-        ensureConnection();
-        String query = "UPDATE user SET ID_Departement = ? WHERE ID_User = ?";
-        try (PreparedStatement statement = cnx.prepareStatement(query)) {
-            if (departmentId == null) {
-                statement.setNull(1, java.sql.Types.INTEGER);
-            } else {
-                statement.setInt(1, departmentId);
-            }
-            statement.setInt(2, userId);
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("Error updating user department: " + e.getMessage(), e);
-        }
-    }
-
-    public void addUserRole(int userId, int roleId) throws SQLException {
-        ensureConnection();
-        String query = "INSERT INTO user_role (ID_User, ID_Role) VALUES (?, ?)";
-        try (PreparedStatement statement = cnx.prepareStatement(query)) {
-            statement.setInt(1, userId);
-            statement.setInt(2, roleId);
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("Error adding user role: " + e.getMessage(), e);
-        }
-    }
-
-    public void removeUserRole(int userId) throws SQLException {
-        ensureConnection();
-        String query = "DELETE FROM user_role WHERE ID_User = ?";
-        try (PreparedStatement statement = cnx.prepareStatement(query)) {
-            statement.setInt(1, userId);
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("Error removing user role: " + e.getMessage(), e);
-        }
-    }
 
     private User extractUserFromResultSet(ResultSet resultSet) throws SQLException {
         User user = new User();
@@ -1490,107 +1424,10 @@ public class ServiceUtilisateur implements IUtilisateur {
         user.setIdManager(resultSet.getInt("ID_Manager"));
         user.setIdDepartement(resultSet.getInt("ID_Departement"));
         user.setID_UserSolde(resultSet.getInt("idSolde"));
+        user.setDepartementNom(resultSet.getString("departementNom"));
+        user.setRoleNom(resultSet.getString("roleNom"));
         return user;
     }
-
-    public void assignUserToRole(int newUserId, int tempUserId) {
-        int managerId = getManagerIdByUserId(tempUserId);
-
-        Connection conn = MyDataBase.getInstance().getCnx();
-
-        try {
-            // Update subordinates of the temporary user to the new user
-            String updateSubordinatesQuery = "UPDATE user SET ID_Manager = ? WHERE ID_Manager = ?";
-            try (PreparedStatement updateSubStmt = conn.prepareStatement(updateSubordinatesQuery)) {
-                updateSubStmt.setInt(1, newUserId);
-                updateSubStmt.setInt(2, tempUserId);
-                updateSubStmt.executeUpdate();
-            }
-
-            // Update the new user's manager to the temporary user's manager
-            String updateUserManagerQuery = "UPDATE user SET ID_Manager = ? WHERE ID_User = ?";
-            try (PreparedStatement updateUserStmt = conn.prepareStatement(updateUserManagerQuery)) {
-                updateUserStmt.setInt(1, managerId);
-                updateUserStmt.setInt(2, newUserId);
-                updateUserStmt.executeUpdate();
-            }
-
-            // Delete the temporary user
-            String deleteTempUserQuery = "DELETE FROM user WHERE ID_User = ?";
-            try (PreparedStatement deleteStmt = conn.prepareStatement(deleteTempUserQuery)) {
-                deleteStmt.setInt(1, tempUserId);
-                deleteStmt.executeUpdate();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-    public int generateTemporaryUser(int managerId) {
-        String insertQuery = "INSERT INTO user (Nom, Prenom, Email, MDP, Image, ID_Departement, ID_Manager, Creation_Date, idSolde) " +
-                "VALUES ('Pas d\'utilisateur', '(En Attente)', ?, 'defaultPassword', NULL, NULL, ?, CURDATE(), NULL)";
-        String email = "default_" + UUID.randomUUID().toString() + "@bpfme.com";
-
-        try (Connection conn = MyDataBase.getInstance().getCnx();
-             PreparedStatement stmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setString(1, email);
-            stmt.setInt(2, managerId);
-            stmt.executeUpdate();
-
-            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    return generatedKeys.getInt(1);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return -1; // Handle this appropriately in your code
-    }
-    public void deleteUserAndReplaceWithTemporary(int userId) {
-        int managerId = getManagerIdByUserId(userId);
-
-        Connection conn = MyDataBase.getInstance().getCnx();
-
-        try {
-            // Generate a temporary user to replace the user being deleted
-            int tempUserId = generateTemporaryUser(managerId);
-
-            // Update subordinates of the user being deleted to the temporary user
-            String updateSubordinatesQuery = "UPDATE user SET ID_Manager = ? WHERE ID_Manager = ?";
-            try (PreparedStatement updateSubStmt = conn.prepareStatement(updateSubordinatesQuery)) {
-                updateSubStmt.setInt(1, tempUserId);
-                updateSubStmt.setInt(2, userId);
-                updateSubStmt.executeUpdate();
-            }
-
-            // Delete the user
-            String deleteUserQuery = "DELETE FROM user WHERE ID_User = ?";
-            try (PreparedStatement deleteStmt = conn.prepareStatement(deleteUserQuery)) {
-                deleteStmt.setInt(1, userId);
-                deleteStmt.executeUpdate();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-
-
-
-   /* public void ensureDefaultUserExists() {
-        String query = "INSERT INTO user (Nom, Prenom, Email, MDP, Image, ID_Departement, ID_Manager, Creation_Date, idSolde) " +
-                "VALUES ('Pas d\'utilisateur', '(En Attente)', 'default@company.com', 'defaultPassword', 'attente', NULL, NULL, CURDATE(), NULL) " +
-                "ON DUPLICATE KEY UPDATE Email = VALUES(Email)";
-        try (Connection conn = MyDataBase.getInstance().getCnx();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }*/
-
-
 
 
 }

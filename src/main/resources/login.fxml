@@ -7,14 +7,68 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane fx:id="MainAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="830.0" prefWidth="1340.0" styleClass="grad-bg" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.LoginController">
     <children>
-        <HBox alignment="CENTER_RIGHT" layoutX="670.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="670.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-            <children>
-                <AnchorPane prefHeight="2000.0" prefWidth="900.0" styleClass="pane-clr">
+      <GridPane prefHeight="830.0" prefWidth="1340.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <columnConstraints>
+          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <AnchorPane>
+               <children>
+                      <AnchorPane layoutX="20.0" layoutY="23.0" prefHeight="785.0" prefWidth="630.0" styleClass="pane1" AnchorPane.bottomAnchor="22.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="23.0">
+                          <children>
+                              <HBox layoutX="196.0" layoutY="351.0" prefHeight="28.0" prefWidth="235.0" AnchorPane.leftAnchor="196.0" AnchorPane.rightAnchor="171.0">
+                                  <children>
+                                      <TextField fx:id="LoginEmail" prefHeight="28.0" prefWidth="526.0" promptText="email" style="-fx-background-color: transparent; -fx-border-color: transparent transparent #eab53f transparent; -fx-border-width: 0 0 1 0; -fx-padding: 0 0 3 0;" text="999" />
+                                  </children>
+                              </HBox>
+                              <HBox layoutX="196.0" layoutY="400.0" prefHeight="28.0" prefWidth="274.0" AnchorPane.leftAnchor="196.0" AnchorPane.rightAnchor="132.0">
+                                  <children>
+                                      <PasswordField fx:id="LoginMDP" onAction="#Login" prefHeight="28.0" prefWidth="476.0" promptText="mdp" style="-fx-background-color: transparent; -fx-border-color: transparent transparent #eab53f transparent; -fx-border-width: 0 0 1 0; -fx-padding: 0 0 3 0;" text="999" />
+                                      <TextField fx:id="showPasswordField" managed="false" prefHeight="28.0" prefWidth="476.0" promptText="mdp" style="-fx-background-color: transparent; -fx-border-color: transparent transparent #eab53f transparent; -fx-border-width: 0 0 1 0; -fx-padding: 0 0 3 0;" visible="false" />
+                                      <Button fx:id="toggleButton" layoutX="470.0" layoutY="0.0" prefHeight="28.0" prefWidth="50.0" style="-fx-background-color: transparent;">
+                                          <graphic>
+                                              <ImageView fx:id="toggleIcon" fitHeight="20.0" fitWidth="20.0" />
+                                          </graphic>
+                                      </Button>
+                                  </children>
+                              </HBox>
+                              <HBox alignment="CENTER" layoutX="197.0" layoutY="462.0" AnchorPane.leftAnchor="197.0" AnchorPane.rightAnchor="211.0">
+                                  <children>
+                                      <Button mnemonicParsing="false" onAction="#Login" prefHeight="25.0" prefWidth="194.0" styleClass="btn-primary" text="Se Connecter" />
+                                  </children>
+                              </HBox>
+                              <Label layoutX="72.0" layoutY="357.0" text="E-mail :">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                              <Label layoutX="61.0" layoutY="409.0" text="Mot de Passe :">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                              <Label alignment="CENTER" layoutX="171.0" layoutY="80.0" prefHeight="54.0" prefWidth="286.0" text="Page de Connexion" AnchorPane.leftAnchor="171.0" AnchorPane.rightAnchor="145.0" AnchorPane.topAnchor="80.0">
+                                  <font>
+                                      <Font size="24.0" />
+                                  </font>
+                              </Label>
+                          </children>
+                      </AnchorPane>
+               </children>
+            </AnchorPane>
+                <AnchorPane prefHeight="2000.0" prefWidth="900.0" styleClass="pane-clr" GridPane.columnIndex="1">
                     <children>
                         <HBox alignment="CENTER" layoutX="174.0" layoutY="252.0" AnchorPane.bottomAnchor="256.0" AnchorPane.leftAnchor="174.0" AnchorPane.rightAnchor="174.0" AnchorPane.topAnchor="252.0">
                             <children>
@@ -27,49 +81,7 @@
                         </HBox>
                     </children>
                 </AnchorPane>
-            </children>
-        </HBox>
-        <HBox alignment="CENTER_LEFT" layoutX="28.0" layoutY="26.0" AnchorPane.bottomAnchor="23.0" AnchorPane.leftAnchor="28.0" AnchorPane.rightAnchor="710.0" AnchorPane.topAnchor="26.0">
-            <children>
-                <AnchorPane prefHeight="781.0" prefWidth="950.0" styleClass="pane1">
-                    <children>
-                        <HBox layoutX="196.0" layoutY="351.0" prefHeight="28.0" prefWidth="235.0" AnchorPane.leftAnchor="196.0" AnchorPane.rightAnchor="171.0">
-                            <children>
-                                <TextField fx:id="LoginEmail" prefHeight="28.0" prefWidth="526.0" promptText="email" style="-fx-background-color: transparent; -fx-border-color: transparent transparent #eab53f transparent; -fx-border-width: 0 0 1 0; -fx-padding: 0 0 3 0;" text="999" />
-                            </children>
-                        </HBox>
-                        <HBox layoutX="196.0" layoutY="400.0" prefHeight="28.0" prefWidth="274.0" AnchorPane.leftAnchor="196.0" AnchorPane.rightAnchor="132.0">
-                            <children>
-                                <PasswordField fx:id="LoginMDP" onAction="#Login" prefHeight="28.0" prefWidth="476.0" promptText="mdp" style="-fx-background-color: transparent; -fx-border-color: transparent transparent #eab53f transparent; -fx-border-width: 0 0 1 0; -fx-padding: 0 0 3 0;" text="999" />
-                                <TextField fx:id="showPasswordField" managed="false" prefHeight="28.0" prefWidth="476.0" promptText="mdp" style="-fx-background-color: transparent; -fx-border-color: transparent transparent #eab53f transparent; -fx-border-width: 0 0 1 0; -fx-padding: 0 0 3 0;" visible="false" />
-                                <Button fx:id="toggleButton" layoutX="470.0" layoutY="0.0" prefHeight="28.0" prefWidth="50.0" style="-fx-background-color: transparent;">
-                                    <graphic>
-                                        <ImageView fx:id="toggleIcon" fitHeight="20.0" fitWidth="20.0" />
-                                    </graphic>
-                                </Button>
-                            </children>
-                        </HBox>
-                        <HBox alignment="CENTER" layoutX="197.0" layoutY="462.0" AnchorPane.leftAnchor="197.0" AnchorPane.rightAnchor="211.0">
-                            <children>
-                                <Button mnemonicParsing="false" onAction="#Login" prefHeight="25.0" prefWidth="194.0" styleClass="btn-primary" text="Se Connecter" />
-                            </children>
-                        </HBox>
-                        <Label layoutX="72.0" layoutY="357.0" text="E-mail :">
-                     <font>
-                        <Font size="18.0" />
-                     </font></Label>
-                        <Label layoutX="61.0" layoutY="409.0" text="Mot de Passe :">
-                     <font>
-                        <Font size="18.0" />
-                     </font></Label>
-                        <Label alignment="CENTER" layoutX="171.0" layoutY="80.0" prefHeight="54.0" prefWidth="286.0" text="Page de Connexion" AnchorPane.leftAnchor="171.0" AnchorPane.rightAnchor="145.0" AnchorPane.topAnchor="80.0">
-                            <font>
-                                <Font size="24.0" />
-                            </font>
-                        </Label>
-                    </children>
-                </AnchorPane>
-            </children>
-        </HBox>
+         </children>
+      </GridPane>
     </children>
 </AnchorPane>
