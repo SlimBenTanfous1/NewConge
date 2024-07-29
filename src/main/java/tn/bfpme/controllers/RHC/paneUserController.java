@@ -223,14 +223,17 @@ public class paneUserController implements Initializable {
         loadDepartments1();
         setupSearch();
         setupSearch1();
+
         TabAffectationid.setOnSelectionChanged(event -> {
             if (TabAffectationid.isSelected()) {
                 resetAffectationTab();
             }
         });
 
+        // Initialize images for sorting icons
         TriAZ = new Image(getClass().getResourceAsStream("/assets/imgs/AZ.png"));
         TriZA = new Image(getClass().getResourceAsStream("/assets/imgs/ZA.png"));
+
         toggleIcon.setImage(TriAZ);
         toggleIconDep.setImage(TriAZ);
         toggleIconR.setImage(TriAZ);
@@ -326,10 +329,6 @@ public class paneUserController implements Initializable {
         CongeVbox.setPadding(new Insets(10, 0, 10, 0));
         CongeVbox.setSpacing(10);
     }
-
-
-
-
 
     private void filterTree(String searchText) {
         if (searchText == null || searchText.isEmpty()) {
@@ -1026,6 +1025,7 @@ public class paneUserController implements Initializable {
             Departement selectedDepartement = departListView.getSelectionModel().getSelectedItem();
             Role selectedRole = roleListView.getSelectionModel().getSelectedItem();
             boolean isUpdated = false;
+            int oldManagerId = selectedUser.getIdUser();
             try {
                 if (selectedRole != null && selectedDepartement != null) {
                     System.out.println("Updating role and department for user: " + selectedUser);
@@ -1040,7 +1040,15 @@ public class paneUserController implements Initializable {
                     usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedUser.getIdRole(), selectedDepartement.getIdDepartement());
                     isUpdated = true;
                 }
+
                 if (isUpdated) {
+                    // Check if the selected user had subordinates and reassign them to the new manager
+                    int newManagerId = selectedUser.getIdUser(); // Assuming the new manager is the same selectedUser after update
+                    if (oldManagerId != newManagerId) {
+                        usersubordinateService.reassignEmployeesToNewManager(oldManagerId, newManagerId);
+                        System.out.println("Reassigned employees from old manager to new manager.");
+                    }
+
                     loadUsers3();
                     affectationlabel.setText("Modification effectuée");
                     resetAffectationTab();
@@ -1056,6 +1064,7 @@ public class paneUserController implements Initializable {
         }
         reset2();
     }
+
 
 
 
@@ -1655,4 +1664,6 @@ public class paneUserController implements Initializable {
         }
         isAscending1 = !isAscending1;
     }
+
+
 }

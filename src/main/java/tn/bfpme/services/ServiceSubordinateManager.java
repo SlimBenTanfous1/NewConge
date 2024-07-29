@@ -542,4 +542,15 @@ public class ServiceSubordinateManager {
         }
         return false;
     }
+
+    public void reassignEmployeesToNewManager(int oldManagerId, int newManagerId) throws SQLException {
+        String query = "UPDATE user SET ID_Manager = ? WHERE ID_Manager = ?";
+        try (Connection cnx = MyDataBase.getInstance().getCnx();
+             PreparedStatement statement = cnx.prepareStatement(query)) {
+            statement.setInt(1, newManagerId);
+            statement.setInt(2, oldManagerId);
+            statement.executeUpdate();
+        }
+    }
+
 }

@@ -307,15 +307,62 @@ public class ServiceRole {
     }
 
     public void deleteRole(int idRole) {
-        String query = "DELETE FROM role WHERE ID_Role = ?";
-        try (Connection cnx = MyDataBase.getInstance().getCnx();
-             PreparedStatement pstmt = cnx.prepareStatement(query)) {
-            pstmt.setInt(1, idRole);
-            pstmt.executeUpdate();
+        Connection cnx = null;
+        try {
+            cnx = MyDataBase.getInstance().getCnx();
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+
+            // Begin transaction
+            cnx.setAutoCommit(false);
+
+            // Delete from rolehierarchie where ID_RoleP or ID_RoleC
+            String deleteRoleHierarchyQuery = "DELETE FROM rolehierarchie WHERE ID_RoleP = ? OR ID_RoleC = ?";
+            try (PreparedStatement deleteRoleHierarchyStmt = cnx.prepareStatement(deleteRoleHierarchyQuery)) {
+                deleteRoleHierarchyStmt.setInt(1, idRole);
+                deleteRoleHierarchyStmt.setInt(2, idRole);
+                deleteRoleHierarchyStmt.executeUpdate();
+            }
+
+            // Delete user roles associated with the role
+            String deleteUserRoleQuery = "DELETE FROM user_role WHERE ID_Role = ?";
+            try (PreparedStatement deleteUserRoleStmt = cnx.prepareStatement(deleteUserRoleQuery)) {
+                deleteUserRoleStmt.setInt(1, idRole);
+                deleteUserRoleStmt.executeUpdate();
+            }
+
+            // Delete the role
+            String deleteRoleQuery = "DELETE FROM role WHERE ID_Role = ?";
+            try (PreparedStatement deleteStmt = cnx.prepareStatement(deleteRoleQuery)) {
+                deleteStmt.setInt(1, idRole);
+                deleteStmt.executeUpdate();
+            }
+
+            // Commit transaction
+            cnx.commit();
         } catch (SQLException e) {
             e.printStackTrace();
+            try {
+                if (cnx != null) {
+                    cnx.rollback();
+                }
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
+        } finally {
+            try {
+                if (cnx != null) {
+                    cnx.setAutoCommit(true);
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }
     }
+
+
+
 
     public List<RoleHierarchie> getAllRoleHierarchies() {
         List<RoleHierarchie> roleHierarchies = new ArrayList<>();
