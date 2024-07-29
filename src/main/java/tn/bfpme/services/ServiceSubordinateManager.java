@@ -209,6 +209,7 @@ public class ServiceSubordinateManager {
     }
 
 
+
     // Method to update user role
     public void updateUserRole(int userId, Integer roleId) throws SQLException {
         ensureConnection();
@@ -376,9 +377,43 @@ public class ServiceSubordinateManager {
         // Update subordinates' managers if a new manager is assigned to the same role and department
         updateSubordinateManagers(userId, departmentId);
 
-        // Reassign users without a manager
-        reassignUsersWithoutManager(userId);
+        // Reassign users without a manager and those with "Directeur" role or in "Direction Générale" department
+        reassignUsersToDG(userId, roleId, departmentId);
     }
+
+    // Reassign users without a manager to DG
+    public void reassignUsersToDG(int newManagerId, int roleId, int departmentId) throws SQLException {
+        ensureConnection();
+
+        // Fetch the new manager's role and department details
+        User newManager = getUserById(newManagerId);
+        if (newManager == null) {
+            System.out.println("Invalid role or department for new manager ID: " + newManagerId);
+            return;
+        }
+
+        System.out.println("Reassigning users to DG with new manager ID: " + newManagerId);
+
+        // Fetch users without a manager or with role "Directeur" or in "Direction Générale"
+        String query = "SELECT u.* FROM user u " +
+                "JOIN user_role ur ON u.ID_User = ur.ID_User " +
+                "JOIN role r ON ur.ID_Role = r.ID_Role " +
+                "JOIN departement d ON u.ID_Departement = d.ID_Departement " +
+                "WHERE u.ID_Manager IS NULL " +
+                "OR r.nom = 'Directeur' " +
+                "OR d.nom = 'Direction Générale'";
+        try (PreparedStatement statement = cnx.prepareStatement(query)) {
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                int userId = resultSet.getInt("ID_User");
+                updateUserManager(userId, newManagerId);
+                System.out.println("Reassigned user ID: " + userId + " to manager ID: " + newManagerId);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error reassigning users to DG: " + e.getMessage(), e);
+        }
+    }
+
 
 
     // Refined findManager method for completeness
