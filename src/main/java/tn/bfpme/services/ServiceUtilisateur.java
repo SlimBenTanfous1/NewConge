@@ -51,19 +51,21 @@ public class ServiceUtilisateur implements IUtilisateur {
         List<Conge> conges = new ArrayList<>();
         String query = "WITH RECURSIVE Subordinates AS (" +
                 "SELECT ID_User, Nom, Prenom, Email, Image, ID_Departement " +
-                "FROM user " +
+                "FROM `user` " +
                 "WHERE ID_User = ? " +
                 "UNION ALL " +
                 "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.Image, u.ID_Departement " +
-                "FROM user u " +
+                "FROM `user` u " +
                 "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User " +
                 ") " +
                 "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, " +
-                "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file, typeconge.Designation, typeconge.Pas, typeconge.Periode, typeconge.File AS tcF" +
-                "FROM user " +
+                "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file, " +
+                "typeconge.Designation, typeconge.Pas, typeconge.Periode, typeconge.File AS tcF " +
+                "FROM `user` " +
                 "JOIN conge ON user.ID_User = conge.ID_User " +
                 "JOIN typeconge ON conge.TypeConge = typeconge.ID_TypeConge " +
-                "WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ?";
+                "WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) " +
+                "AND conge.Statut = ?";
 
         try {
             if (cnx == null || cnx.isClosed()) {
@@ -84,7 +86,6 @@ public class ServiceUtilisateur implements IUtilisateur {
                 user.setEmail(rs.getString("Email"));
                 user.setImage(rs.getString("Image"));
                 user.setIdDepartement(rs.getInt("ID_Departement"));
-                // Add idSolde field handling if necessary
                 if (!users.contains(user)) {
                     users.add(user);
                 }
@@ -112,6 +113,7 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
         return new UserConge(users, conges);
     }
+
 
     @Override
     public UserConge TriType() {
