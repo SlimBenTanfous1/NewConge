@@ -165,7 +165,7 @@ public class paneUserController implements Initializable {
     private Pane UserPane1;
 
     @FXML
-    public Button removeFilterButton, adduserbtn,toggleButton,toggleButtonRole,toggleButtonDep;
+    public Button removeFilterButton, adduserbtn,toggleButton,toggleButtonR,toggleButtonDep;
 
     @FXML
     private Tab TabAffectationid;
@@ -207,7 +207,7 @@ public class paneUserController implements Initializable {
     private Image TriAZ;
     private Image TriZA;
     @FXML
-    private ImageView toggleIcon,toggleIconDep,toggleIconRole;
+    private ImageView toggleIcon,toggleIconDep,toggleIconR;
     private boolean isAscending1 = true;
     private boolean isAscending2 = true;
     private boolean isAscending3 = true;
@@ -236,14 +236,16 @@ public class paneUserController implements Initializable {
         TriZA = new Image(getClass().getResourceAsStream("/assets/imgs/ZA.png"));
         toggleIcon.setImage(TriAZ);
         toggleIconDep.setImage(TriAZ);
-        toggleIconRole.setImage(TriAZ);
-        toggleButton.setOnAction(event -> {
+        toggleIconR.setImage(TriAZ);
+        toggleButtonR.setOnAction(event -> {
             if (isAscending1) {
-                loadTri(userService.TriUsersASC());
-                toggleIcon.setImage(TriZA);
+                System.out.println("test");
+                loadTri(userService.TriUserRolesASC());
+                toggleIconR.setImage(TriZA);
             } else {
-                loadTri(userService.TriUsersDESC());
-                toggleIcon.setImage(TriAZ);
+                System.out.println("test2");
+                loadTri(userService.TriUserRolesDESC());
+                toggleIconR.setImage(TriAZ);
             }
             isAscending1 = !isAscending1;
         });
@@ -257,18 +259,17 @@ public class paneUserController implements Initializable {
             }
             isAscending2 = !isAscending2;
         });
-        toggleButtonRole.setOnAction(event -> {
+        toggleButton.setOnAction(event -> {
             if (isAscending3) {
-                System.out.println("test");
-                loadTri(userService.TriUserRolesASC());
-                toggleIconRole.setImage(TriZA);
+                loadTri(userService.TriUsersASC());
+                toggleIcon.setImage(TriZA);
             } else {
-                System.out.println("test2");
-                loadTri(userService.TriUserRolesDESC());
-                toggleIconRole.setImage(TriAZ);
+                loadTri(userService.TriUsersDESC());
+                toggleIcon.setImage(TriAZ);
             }
             isAscending3 = !isAscending3;
         });
+
         loadRolesIntoComboBox();
         setupRemoveFilterButton();
         setupRoleSearchBar();
@@ -869,6 +870,7 @@ public class paneUserController implements Initializable {
                     role.getDescription().toLowerCase().contains(lowerCaseFilter);
         });
     }
+
     @FXML
     private void handleEditUser() {
         userListView.setDisable(false);
@@ -885,9 +887,6 @@ public class paneUserController implements Initializable {
         Hfirst2.setDisable(false);
 
     }
-
-
-
 
     @FXML
     private void handleRemoveUserAssignment() {
@@ -917,8 +916,6 @@ public class paneUserController implements Initializable {
         }
         reset2();
     }
-
-
 
     @FXML
     void Enregistrer_user2(ActionEvent event) {
@@ -956,8 +953,6 @@ public class paneUserController implements Initializable {
         }
         reset2();
     }
-
-
 
     @FXML
     void Annuler_user2(ActionEvent event) {
@@ -1177,6 +1172,7 @@ public class paneUserController implements Initializable {
                 CardUserRHController cardController = fxmlLoader.getController();
                 Departement department = depService.getDepartmentById(user.getIdDepartement());
                 Role role = roleService.getRoleByUserId(user.getIdUser());
+                userBox.prefWidthProperty().bind(UserContainers.widthProperty()/*.divide(2).subtract(20)*/);
                 String departmentName = department != null ? department.getNom() : "N/A";
                 String roleName = role != null ? role.getNom() : "N/A";
                 cardController.setData(user, roleName, departmentName);

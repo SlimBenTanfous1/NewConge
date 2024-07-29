@@ -187,12 +187,12 @@
                               </Button>
                            </children>
                         </HBox>
-                        <HBox alignment="CENTER" layoutX="458.0" layoutY="63.0" prefHeight="33.0" prefWidth="170.0" AnchorPane.leftAnchor="458.0" AnchorPane.rightAnchor="491.0">
+                        <HBox alignment="CENTER" layoutX="458.0" layoutY="63.0" prefWidth="170.0" AnchorPane.leftAnchor="458.0" AnchorPane.rightAnchor="554.0">
                            <children>
                               <Label alignment="CENTER" maxWidth="66.0" minWidth="66.0" prefHeight="19.0" prefWidth="66.0" styleClass="RobotoBold" text="Role" />
-                              <Button fx:id="toggleButtonRole" prefHeight="30.0" prefWidth="30.0" styleClass="settingsButton">
+                              <Button fx:id="toggleButtonR" prefHeight="30.0" prefWidth="30.0" styleClass="settingsButton">
                                  <graphic>
-                                    <ImageView fx:id="toggleIconRole" fitHeight="23.0" fitWidth="23.0" />
+                                    <ImageView fx:id="toggleIconR" fitHeight="23.0" fitWidth="23.0" />
                                  </graphic>
                               </Button>
                            </children>
