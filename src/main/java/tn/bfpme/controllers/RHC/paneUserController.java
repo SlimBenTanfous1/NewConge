@@ -56,6 +56,7 @@ import java.util.stream.Collectors;
 
 public class paneUserController implements Initializable {
     public int state = 0;
+    public int state1=0;
     @FXML
     private TextField Depart_field;
     @FXML
@@ -198,8 +199,18 @@ public class paneUserController implements Initializable {
     @FXML
     public Button upload;
 
+
+    @FXML
+    private Button Annuler2,handleremove2,handleedit2,Enregistrer2;
+
+    @FXML
+    private HBox Hfirst2,hsecond2;
+
+
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        reset2();
         System.out.println("Initializing paneUserController..."); // Debugging
         loadUsers();
         loadUsers1();
@@ -840,6 +851,34 @@ public class paneUserController implements Initializable {
     }
 
 
+
+    @FXML
+    void Enregistrer_user2(ActionEvent event) {
+
+    }
+    @FXML
+    void Annuler_user2(ActionEvent event) {
+        reset2();
+
+    }
+
+    void reset2(){
+        userListView.setDisable(false);
+        roleListView.setDisable(false);
+        departListView.setDisable(false);
+        User_field.setDisable(false);
+        User_field.setText("");
+        Role_field.setDisable(false);
+        Role_field.setText("");
+        Depart_field.setDisable(false);
+        Depart_field.setText("");
+        hsecond2.setVisible(true);
+        hsecond2.setDisable(false);
+        handleedit2.setDisable(false);
+        handleremove2.setDisable(true);
+        Hfirst2.setVisible(false);
+        Hfirst2.setDisable(true);
+    }
 
 
     public Integer getSelectedUserId() {
