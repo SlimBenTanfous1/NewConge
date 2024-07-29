@@ -10,7 +10,6 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
@@ -223,14 +222,17 @@ public class paneUserController implements Initializable {
         loadDepartments1();
         setupSearch();
         setupSearch1();
+
         TabAffectationid.setOnSelectionChanged(event -> {
             if (TabAffectationid.isSelected()) {
                 resetAffectationTab();
             }
         });
 
+        // Initialize images for sorting icons
         TriAZ = new Image(getClass().getResourceAsStream("/assets/imgs/AZ.png"));
         TriZA = new Image(getClass().getResourceAsStream("/assets/imgs/ZA.png"));
+
         toggleIcon.setImage(TriAZ);
         toggleIconDep.setImage(TriAZ);
         toggleIconR.setImage(TriAZ);
@@ -625,6 +627,7 @@ public class paneUserController implements Initializable {
             e.printStackTrace();
         }
     }
+
 
 
     private void handleRoleSelection(Role selectedRole) {

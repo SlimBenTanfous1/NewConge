@@ -179,15 +179,53 @@ public class ServiceDepartement {
     }
 
     public void deleteDepartment(int id) {
-        String query = "DELETE FROM departement WHERE ID_Departement = ?";
-        try (Connection cnx = MyDataBase.getInstance().getCnx();
-             PreparedStatement pstmt = cnx.prepareStatement(query)) {
-            pstmt.setInt(1, id);
-            pstmt.executeUpdate();
+        Connection cnx = null;
+        try {
+            cnx = MyDataBase.getInstance().getCnx();
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+
+            // Begin transaction
+            cnx.setAutoCommit(false);
+
+            // Delete users associated with the department
+            String deleteUserDeptQuery = "DELETE FROM user WHERE ID_Departement = ?";
+            try (PreparedStatement deleteUserDeptStmt = cnx.prepareStatement(deleteUserDeptQuery)) {
+                deleteUserDeptStmt.setInt(1, id);
+                deleteUserDeptStmt.executeUpdate();
+            }
+
+            // Delete the department
+            String deleteDepartmentQuery = "DELETE FROM departement WHERE ID_Departement = ?";
+            try (PreparedStatement deleteStmt = cnx.prepareStatement(deleteDepartmentQuery)) {
+                deleteStmt.setInt(1, id);
+                deleteStmt.executeUpdate();
+            }
+
+            // Commit transaction
+            cnx.commit();
         } catch (SQLException e) {
             e.printStackTrace();
+            try {
+                if (cnx != null) {
+                    cnx.rollback();
+                }
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
+        } finally {
+            try {
+                if (cnx != null) {
+                    cnx.setAutoCommit(true);
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }
     }
+
+
 
     // Get department by ID
     private void ensureConnection() throws SQLException {
