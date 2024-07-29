@@ -944,11 +944,21 @@ public class paneUserController implements Initializable {
             try {
                 if (selectedRole != null && selectedDepartement != null) {
                     System.out.println("Updating role and department for user: " + selectedUser);
-                    usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedDepartement.getIdDepartement());
+                    if ("DG".equals(selectedRole.getNom())) {
+                        usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedDepartement.getIdDepartement());
+                        usersubordinateService.updateUserManager(selectedUser.getIdUser(), null); // Set DG's manager to null
+                    } else {
+                        usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedDepartement.getIdDepartement());
+                    }
                     isUpdated = true;
                 } else if (selectedRole != null) {
                     System.out.println("Updating role for user: " + selectedUser);
-                    usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedUser.getIdDepartement());
+                    if ("DG".equals(selectedRole.getNom())) {
+                        usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedUser.getIdDepartement());
+                        usersubordinateService.updateUserManager(selectedUser.getIdUser(), null); // Set DG's manager to null
+                    } else {
+                        usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedUser.getIdDepartement());
+                    }
                     isUpdated = true;
                 } else if (selectedDepartement != null) {
                     System.out.println("Updating department for user: " + selectedUser);
@@ -971,6 +981,7 @@ public class paneUserController implements Initializable {
         }
         reset2();
     }
+
 
 
 
