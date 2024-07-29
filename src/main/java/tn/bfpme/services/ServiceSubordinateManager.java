@@ -186,6 +186,12 @@ public class ServiceSubordinateManager {
 
     // Method to update user manager
     public void updateUserManager(int userId, Integer managerId) throws SQLException {
+        // Ensure DG's manager is always null
+        Role userRole = getRoleByUserId2(userId);
+        if (userRole != null && "DG".equals(userRole.getNom())) {
+            managerId = null;
+        }
+
         String query = "UPDATE user SET ID_Manager = ? WHERE ID_User = ?";
         try (PreparedStatement statement = cnx.prepareStatement(query)) {
             if (managerId == null) {
@@ -201,6 +207,8 @@ public class ServiceSubordinateManager {
             throw new RuntimeException("Error updating user manager: " + e.getMessage(), e);
         }
     }
+
+
 
     // Method to update user role
     public void updateUserRole(int userId, Integer roleId) throws SQLException {
@@ -274,6 +282,28 @@ public class ServiceSubordinateManager {
         }
     }
 
+    // Method to reassign subordinates to a new manager
+    public void reassignSubordinatesToNewManager(int userId, int roleId, int departementId) throws SQLException {
+        List<User> subordinates = getUsersWithoutManager();
+        for (User subordinate : subordinates) {
+            if (subordinate.getIdDepartement() == departementId && subordinate.getIdRole() == roleId) {
+                updateUserManager(subordinate.getIdUser(), userId);
+            }
+        }
+    }
+
+    // Method to reassign managers for all users
+    public void reassignManagersForAllUsers() throws SQLException {
+        List<User> allUsers = getAllUsers();
+        for (User user : allUsers) {
+            if (user.getIdManager() == 0) {
+                int managerId = findManager(user.getIdUser(), user.getIdRole(), user.getIdDepartement());
+                if (managerId != user.getIdUser()) {
+                    updateUserManager(user.getIdUser(), managerId);
+                }
+            }
+        }
+    }
 
     // Method to reassign users without a manager
     public void reassignUsersWithoutManager(int newManagerId) throws SQLException {
@@ -324,26 +354,67 @@ public class ServiceSubordinateManager {
         ensureConnection();
         System.out.println("Assigning role and department for user ID: " + userId);
 
+        // Check for duplicate role and department
+        if (isDuplicateRoleAndDepartment(userId, roleId, departmentId)) {
+            System.out.println("Un autre utilisateur a déjà ce rôle et ce département.");
+            throw new RuntimeException("Erreur: Un autre utilisateur a déjà ce rôle et ce département.");
+        }
+
         // Update user's role and department
         updateUserRole(userId, roleId);
         updateUserDepartment(userId, departmentId);
 
         // Find the appropriate manager
         Integer managerId = findManager(userId, roleId, departmentId);
-        if (managerId != null) {
-            // Update user's manager
+
+        // If the user is DG, set the manager to null
+        if (managerId != null && !managerId.equals(userId)) {
             updateUserManager(userId, managerId);
         } else {
-            // If no manager found, set manager to null (DG case or no suitable manager)
             updateUserManager(userId, null);
         }
 
         // Update subordinates' managers if a new manager is assigned to the same role and department
         updateSubordinateManagers(userId, departmentId);
 
-        // Reassign users without a manager
-        reassignUsersWithoutManager(userId);
+        // Reassign users without a manager and those with "Directeur" role or in "Direction Générale" department
+        reassignUsersToDG(userId, roleId, departmentId);
     }
+
+    // Reassign users without a manager to DG
+    public void reassignUsersToDG(int newManagerId, int roleId, int departmentId) throws SQLException {
+        ensureConnection();
+
+        // Fetch the new manager's role and department details
+        User newManager = getUserById(newManagerId);
+        if (newManager == null) {
+            System.out.println("Invalid role or department for new manager ID: " + newManagerId);
+            return;
+        }
+
+        System.out.println("Reassigning users to DG with new manager ID: " + newManagerId);
+
+        // Fetch users without a manager or with role "Directeur" or in "Direction Générale"
+        String query = "SELECT u.* FROM user u " +
+                "JOIN user_role ur ON u.ID_User = ur.ID_User " +
+                "JOIN role r ON ur.ID_Role = r.ID_Role " +
+                "JOIN departement d ON u.ID_Departement = d.ID_Departement " +
+                "WHERE u.ID_Manager IS NULL " +
+                "OR r.nom = 'Directeur' " +
+                "OR d.nom = 'Direction Générale'";
+        try (PreparedStatement statement = cnx.prepareStatement(query)) {
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                int userId = resultSet.getInt("ID_User");
+                updateUserManager(userId, newManagerId);
+                System.out.println("Reassigned user ID: " + userId + " to manager ID: " + newManagerId);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error reassigning users to DG: " + e.getMessage(), e);
+        }
+    }
+
+
 
     // Refined findManager method for completeness
     private Integer findManager(int userId, int roleId, int departmentId) throws SQLException {
@@ -467,5 +538,22 @@ public class ServiceSubordinateManager {
             throw new RuntimeException("Error retrieving role by user ID: " + e.getMessage(), e);
         }
         return null;
+    }
+    private boolean isDuplicateRoleAndDepartment(int userId, int roleId, int departmentId) throws SQLException {
+        String query = "SELECT COUNT(*) AS count FROM user u " +
+                "JOIN user_role ur ON u.ID_User = ur.ID_User " +
+                "WHERE ur.ID_Role = ? AND u.ID_Departement = ? AND u.ID_User != ?";
+        try (PreparedStatement statement = cnx.prepareStatement(query)) {
+            statement.setInt(1, roleId);
+            statement.setInt(2, departmentId);
+            statement.setInt(3, userId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next() && resultSet.getInt("count") > 0) {
+                return true;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error checking for duplicate role and department: " + e.getMessage(), e);
+        }
+        return false;
     }
 }

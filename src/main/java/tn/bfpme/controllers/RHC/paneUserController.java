@@ -257,7 +257,7 @@ public class paneUserController implements Initializable {
             }
             isAscending2 = !isAscending2;
         });
-        toggleButton.setOnAction(event -> {
+        toggleButtonR.setOnAction(event -> {
             if (isAscending3) {
                 loadTri(userService.TriUsersASC());
                 toggleIcon.setImage(TriZA);
@@ -1021,11 +1021,21 @@ public class paneUserController implements Initializable {
             try {
                 if (selectedRole != null && selectedDepartement != null) {
                     System.out.println("Updating role and department for user: " + selectedUser);
-                    usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedDepartement.getIdDepartement());
+                    if ("DG".equals(selectedRole.getNom())) {
+                        usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedDepartement.getIdDepartement());
+                        usersubordinateService.updateUserManager(selectedUser.getIdUser(), null); // Set DG's manager to null
+                    } else {
+                        usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedDepartement.getIdDepartement());
+                    }
                     isUpdated = true;
                 } else if (selectedRole != null) {
                     System.out.println("Updating role for user: " + selectedUser);
-                    usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedUser.getIdDepartement());
+                    if ("DG".equals(selectedRole.getNom())) {
+                        usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedUser.getIdDepartement());
+                        usersubordinateService.updateUserManager(selectedUser.getIdUser(), null); // Set DG's manager to null
+                    } else {
+                        usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedUser.getIdDepartement());
+                    }
                     isUpdated = true;
                 } else if (selectedDepartement != null) {
                     System.out.println("Updating department for user: " + selectedUser);
@@ -1052,7 +1062,6 @@ public class paneUserController implements Initializable {
     @FXML
     void Annuler_user2(ActionEvent event) {
         reset2();
-
     }
 
     void reset2(){
@@ -1267,7 +1276,6 @@ public class paneUserController implements Initializable {
                 CardUserRHController cardController = fxmlLoader.getController();
                 Departement department = depService.getDepartmentById(user.getIdDepartement());
                 Role role = roleService.getRoleByUserId(user.getIdUser());
-                userBox.prefWidthProperty().bind(UserContainers.widthProperty()/*.divide(2).subtract(20)*/);
                 String departmentName = department != null ? department.getNom() : "N/A";
                 String roleName = role != null ? role.getNom() : "N/A";
                 cardController.setData(user, roleName, departmentName);
