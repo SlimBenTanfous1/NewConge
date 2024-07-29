@@ -33,11 +33,8 @@ public interface IUtilisateur {
 
     void updateUser(User user);
 
-    List<User> getAllUsersInfo();
 
-    void addUser(String nom, String prenom, String email, String mdp, String image, int idDepartement, int idRole);
 
-    void deleteUser(int idUser);
 
 
 
@@ -48,18 +45,11 @@ public interface IUtilisateur {
     void Update(User user);
 
 
-    List<User> Show();
 
-    void Delete(User user) throws SQLException;
 
     void DeleteByID(int id);
 
 
-    List<User> SortDepart();
-
-    List<User> SortRole();
-
-    List<User> searchUsers(String query);
 
     List<User> search(String query);
 
