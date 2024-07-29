@@ -310,6 +310,7 @@ public class paneUserController implements Initializable {
         } else {
             System.out.println("Selected user is null"); // Debugging
         }
+
     }
 
     public void populateSoldeFields(User user) {
@@ -805,14 +806,11 @@ public class paneUserController implements Initializable {
         roleListView.setDisable(false);
         departListView.setDisable(false);
         User_field.setDisable(false);
-        User_field.setText("");
         Role_field.setDisable(false);
-        Role_field.setText("");
         Depart_field.setDisable(false);
-        Depart_field.setText("");
-        hsecond2.setVisible(true);
-        hsecond2.setDisable(false);
-        handleedit2.setDisable(false);
+        hsecond2.setVisible(false);
+        hsecond2.setDisable(true);
+        handleedit2.setDisable(true);
         handleremove2.setDisable(true);
         Hfirst2.setVisible(true);
         Hfirst2.setDisable(false);
@@ -824,21 +822,31 @@ public class paneUserController implements Initializable {
 
     @FXML
     private void handleRemoveUserAssignment() {
-        Integer userId = selectedUser.getIdUser();
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Êtes vous sûrs?");
+        alert.setHeaderText("Êtes-vous certain de vouloir supprimer ce role/département ?");
+        ButtonType Oui = new ButtonType("Oui");
+        ButtonType Non = new ButtonType("Non");
+        alert.getButtonTypes().setAll(Oui, Non);
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == Oui) {
+            Integer userId = selectedUser.getIdUser();
 
-        if (userId != null) {
-            try {
-                usersubordinateService.removeRoleAndDepartment(userId);
-                affectationlabel.setText("Rôle et département supprimés.");
-                loadUsers3();
-                resetAffectationTab(); // Reset the tab after deletion
-            } catch (Exception e) {
-                e.printStackTrace();
-                showError("Une erreur s'est produite : " + e.getMessage());
+            if (userId != null) {
+               try {
+                    usersubordinateService.removeRoleAndDepartment(userId);
+                    affectationlabel.setText("Rôle et département supprimés.");
+                    loadUsers3();
+                    resetAffectationTab(); // Reset the tab after deletion
+               } catch (Exception e) {
+                    e.printStackTrace();
+                    showError("Une erreur s'est produite : " + e.getMessage());
+               }
+            } else {
+                showError("Veuillez sélectionner un utilisateur pour supprimer l'affectation.");
             }
-        } else {
-            showError("Veuillez sélectionner un utilisateur pour supprimer l'affectation.");
         }
+        reset2();
     }
 
 
@@ -877,6 +885,7 @@ public class paneUserController implements Initializable {
         } else {
             showError("Veuillez sélectionner un utilisateur à modifier.");
         }
+        reset2();
     }
 
 
@@ -891,6 +900,9 @@ public class paneUserController implements Initializable {
         userListView.setDisable(false);
         roleListView.setDisable(false);
         departListView.setDisable(false);
+        userListView.getSelectionModel().clearSelection();
+        roleListView.getSelectionModel().clearSelection();
+        departListView.getSelectionModel().clearSelection();
         User_field.setDisable(false);
         User_field.setText("");
         Role_field.setDisable(false);
@@ -900,7 +912,7 @@ public class paneUserController implements Initializable {
         hsecond2.setVisible(true);
         hsecond2.setDisable(false);
         handleedit2.setDisable(false);
-        handleremove2.setDisable(true);
+        handleremove2.setDisable(false);
         Hfirst2.setVisible(false);
         Hfirst2.setDisable(true);
     }
