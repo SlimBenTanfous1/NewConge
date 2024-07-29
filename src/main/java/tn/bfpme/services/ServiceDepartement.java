@@ -188,21 +188,33 @@ public class ServiceDepartement {
             e.printStackTrace();
         }
     }
+
     // Get department by ID
-    public Departement getDepartementById(int departementId) throws SQLException {
+    private void ensureConnection() throws SQLException {
+        if (cnx == null || cnx.isClosed()) {
+            cnx = MyDataBase.getInstance().getCnx();
+        }
+    }
+
+    public Departement getDepartementById(int departmentId) throws SQLException {
+        ensureConnection();
         String query = "SELECT * FROM departement WHERE ID_Departement = ?";
-        try {
-            if (cnx == null || cnx.isClosed()) {
-                cnx = MyDataBase.getInstance().getCnx();
-            }
-            PreparedStatement statement = cnx.prepareStatement(query);
-            statement.setInt(1, departementId);
+        try (PreparedStatement statement = cnx.prepareStatement(query)) {
+            statement.setInt(1, departmentId);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                return extractDepartementFromResultSet(resultSet);
+                Departement departement = new Departement();
+                departement.setIdDepartement(resultSet.getInt("ID_Departement"));
+                departement.setNom(resultSet.getString("nom"));
+                departement.setDescription(resultSet.getString("description"));
+                departement.setParentDept(resultSet.getInt("Parent_Dept"));
+                departement.setLevel(resultSet.getInt("Level"));
+                return departement;
+            } else {
+                System.out.println("No department found for department ID: " + departmentId);
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error retrieving department by ID: " + e.getMessage(), e);
         }
         return null;
     }
@@ -216,4 +228,33 @@ public class ServiceDepartement {
         departement.setLevel(resultSet.getInt("Level"));
         return departement;
     }
+    public Departement getDepartmentByUserId2(int userId) throws SQLException {
+        ensureConnection();
+        System.out.println("Retrieving department for user ID: " + userId);
+        String query = "SELECT d.* FROM departement d " +
+                "JOIN user u ON d.ID_Departement = u.ID_Departement " +
+                "WHERE u.ID_User = ?";
+        try (PreparedStatement statement = cnx.prepareStatement(query)) {
+            statement.setInt(1, userId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                Departement departement = new Departement();
+                departement.setIdDepartement(resultSet.getInt("ID_Departement"));
+                departement.setNom(resultSet.getString("nom"));
+                departement.setDescription(resultSet.getString("description"));
+                departement.setParentDept(resultSet.getInt("Parent_Dept"));
+                departement.setLevel(resultSet.getInt("Level"));
+                System.out.println("Retrieved department: " + departement.getNom() + " for user ID: " + userId);
+                return departement;
+            } else {
+                System.out.println("No department found for user ID: " + userId);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving department by user ID: " + e.getMessage(), e);
+        }
+        return null;
+    }
+
+
+
 }

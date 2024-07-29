@@ -39,16 +39,8 @@ public interface IUtilisateur {
 
     void deleteUser(int idUser);
 
-    //void assignUserToDepartmentAndRole(int idUser, int idDepartement, int idRole) throws SQLException;
-
-    void assignRoleToUser(int userId, int roleId);
 
 
-    void updateUserRole(int userId, int roleId);
-
-
-
-    User getUserById(int userId) throws SQLException;
 
 
     void Add(User user);

@@ -62,6 +62,33 @@ public class ServiceRole {
         }
         return role;
     }
+    private void ensureConnection() throws SQLException {
+        if (cnx == null || cnx.isClosed()) {
+            cnx = MyDataBase.getInstance().getCnx();
+        }
+    }
+
+    public Role getRoleById1(int roleId) throws SQLException {
+        ensureConnection();
+        String query = "SELECT * FROM role WHERE ID_Role = ?";
+        try (PreparedStatement statement = cnx.prepareStatement(query)) {
+            statement.setInt(1, roleId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                Role role = new Role();
+                role.setIdRole(resultSet.getInt("ID_Role"));
+                role.setNom(resultSet.getString("nom"));
+                role.setDescription(resultSet.getString("description"));
+                role.setLevel(resultSet.getInt("Level"));
+                return role;
+            } else {
+                System.out.println("No role found for role ID: " + roleId);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving role by ID: " + e.getMessage(), e);
+        }
+        return null;
+    }
 
     public static List<Role> getChildRoles(int parentRoleId) {
         List<Role> childRoles = new ArrayList<>();
@@ -404,6 +431,34 @@ public class ServiceRole {
         }
 
     }
+    public Role getRoleByUserId2(int userId) throws SQLException {
+        ensureConnection();
+        System.out.println("Retrieving role for user ID: " + userId);
+        String query = "SELECT r.* FROM role r " +
+                "JOIN user_role ur ON r.ID_Role = ur.ID_Role " +
+                "WHERE ur.ID_User = ?";
+        try (PreparedStatement statement = cnx.prepareStatement(query)) {
+            statement.setInt(1, userId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                Role role = new Role();
+                role.setIdRole(resultSet.getInt("ID_Role"));
+                role.setNom(resultSet.getString("nom"));
+                role.setDescription(resultSet.getString("description"));
+                role.setLevel(resultSet.getInt("Level"));
+                System.out.println("Retrieved role: " + role.getNom() + " for user ID: " + userId);
+                return role;
+            } else {
+                System.out.println("No role found for user ID: " + userId);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving role by user ID: " + e.getMessage(), e);
+        }
+        return null;
+    }
+
+
+
 
 
     public List<Role> getRoleParents2(int childRoleId) {
@@ -427,23 +482,6 @@ public class ServiceRole {
             e.printStackTrace();
         }
         return parents;
-    }
-    public Role getRoleById1(int roleId) throws SQLException {
-        String query = "SELECT * FROM role WHERE ID_Role = ?";
-        try {
-            if (cnx == null || cnx.isClosed()) {
-            cnx = MyDataBase.getInstance().getCnx();
-            }
-            PreparedStatement statement = cnx.prepareStatement(query);
-            statement.setInt(1, roleId);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return extractRoleFromResultSet(resultSet);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return null;
     }
 
     private Role extractRoleFromResultSet(ResultSet resultSet) throws SQLException {
