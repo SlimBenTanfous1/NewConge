@@ -1401,6 +1401,141 @@ public class ServiceUtilisateur implements IUtilisateur {
         return userList;
     }
 
+    public List<User> TriUserDepASC() {
+        List<User> userList = new ArrayList<>();
+        String sql = "SELECT u.*, d.nom AS department_name " +
+                "FROM user u " +
+                "JOIN departement d ON u.ID_Departement = d.ID_Departement " +
+                "ORDER BY d.nom ASC";
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+            PreparedStatement ps = cnx.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                User user = new User(
+                        rs.getInt("ID_User"),
+                        rs.getString("Nom"),
+                        rs.getString("Prenom"),
+                        rs.getString("Email"),
+                        rs.getString("MDP"),
+                        rs.getString("Image"),
+                        rs.getDate("Creation_Date") != null ? rs.getDate("Creation_Date").toLocalDate() : null,
+                        rs.getInt("ID_Departement"),
+                        rs.getInt("ID_Manager"),
+                        rs.getInt("idSolde")
+                );
+                userList.add(user);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return userList;
+    }
+    public List<User> TriUserDepDESC() {
+        List<User> userList = new ArrayList<>();
+        String sql = "SELECT u.*, d.nom AS department_name " +
+                "FROM user u " +
+                "JOIN departement d ON u.ID_Departement = d.ID_Departement " +
+                "ORDER BY d.nom DESC";
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+            PreparedStatement ps = cnx.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                User user = new User(
+                        rs.getInt("ID_User"),
+                        rs.getString("Nom"),
+                        rs.getString("Prenom"),
+                        rs.getString("Email"),
+                        rs.getString("MDP"),
+                        rs.getString("Image"),
+                        rs.getDate("Creation_Date") != null ? rs.getDate("Creation_Date").toLocalDate() : null,
+                        rs.getInt("ID_Departement"),
+                        rs.getInt("ID_Manager"),
+                        rs.getInt("idSolde")
+                );
+                userList.add(user);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return userList;
+    }
+
+    public List<User> TriUserRolesASC() {
+
+        List<User> userList = new ArrayList<>();
+        String sql = "SELECT u.*, r.nom AS role_name " +
+                "FROM user u " +
+                "JOIN user_role ur ON u.ID_User = ur.ID_User " +
+                "JOIN role r ON ur.ID_Role = r.ID_Role " +
+                "ORDER BY r.nom ASC";
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+            PreparedStatement ps = cnx.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                User user = new User(
+                        rs.getInt("ID_User"),
+                        rs.getString("Nom"),
+                        rs.getString("Prenom"),
+                        rs.getString("Email"),
+                        rs.getString("MDP"),
+                        rs.getString("Image"),
+                        rs.getDate("Creation_Date") != null ? rs.getDate("Creation_Date").toLocalDate() : null,
+                        rs.getInt("ID_Departement"),
+                        rs.getInt("ID_Manager"),
+                        rs.getInt("idSolde")
+                );
+                userList.add(user);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return userList;
+    }
+    public List<User> TriUserRolesDESC() {
+        List<User> userList = new ArrayList<>();
+        String sql = "SELECT u.*, r.nom AS role_name " +
+                "FROM user u " +
+                "JOIN user_role ur ON u.ID_User = ur.ID_User " +
+                "JOIN role r ON ur.ID_Role = r.ID_Role " +
+                "ORDER BY r.nom DESC";
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+            PreparedStatement ps = cnx.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                User user = new User(
+                        rs.getInt("ID_User"),
+                        rs.getString("Nom"),
+                        rs.getString("Prenom"),
+                        rs.getString("Email"),
+                        rs.getString("MDP"),
+                        rs.getString("Image"),
+                        rs.getDate("Creation_Date") != null ? rs.getDate("Creation_Date").toLocalDate() : null,
+                        rs.getInt("ID_Departement"),
+                        rs.getInt("ID_Manager"),
+                        rs.getInt("idSolde")
+                );
+                userList.add(user);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return userList;
+    }
+
+
+
     @Override
     public void updateUserRoleAndDepartment(int userId, int roleId, int departmentId) throws SQLException {
 
