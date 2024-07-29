@@ -138,10 +138,6 @@ public class paneUserController implements Initializable {
     private Button modifier_user, saveButton;
     @FXML
     private Pane paneSoldeUsers;
-    private TreeItem<User> originalRoot;
-    private TreeItem<Departement> originalDeptRoot;
-
-
 
     @FXML
     public GridPane UserContainers;
@@ -171,8 +167,6 @@ public class paneUserController implements Initializable {
 
     @FXML
     private Tab TabAffectationid;
-    @FXML
-    private TreeView<User> userTreeView;
 
 
     public User selectedUser;
@@ -235,15 +229,13 @@ public class paneUserController implements Initializable {
         toggleIcon.setImage(TriAZ);
         toggleIconDep.setImage(TriAZ);
         toggleIconR.setImage(TriAZ);
-        toggleButtonR.setOnAction(event -> {
+        toggleButton.setOnAction(event -> {
             if (isAscending1) {
-                System.out.println("test");
-                loadTri(userService.TriUserRolesASC());
-                toggleIconR.setImage(TriZA);
+                loadTri(userService.TriUsersASC());
+                toggleIcon.setImage(TriZA);
             } else {
-                System.out.println("test2");
-                loadTri(userService.TriUserRolesDESC());
-                toggleIconR.setImage(TriAZ);
+                loadTri(userService.TriUsersDESC());
+                toggleIcon.setImage(TriAZ);
             }
             isAscending1 = !isAscending1;
         });
@@ -259,15 +251,16 @@ public class paneUserController implements Initializable {
         });
         toggleButtonR.setOnAction(event -> {
             if (isAscending3) {
-                loadTri(userService.TriUsersASC());
-                toggleIcon.setImage(TriZA);
+                System.out.println("test");
+                loadTri(userService.TriUserRolesASC());
+                toggleIconR.setImage(TriZA);
             } else {
-                loadTri(userService.TriUsersDESC());
-                toggleIcon.setImage(TriAZ);
+                System.out.println("test2");
+                loadTri(userService.TriUserRolesDESC());
+                toggleIconR.setImage(TriAZ);
             }
             isAscending3 = !isAscending3;
         });
-
         loadRolesIntoComboBox();
         setupRemoveFilterButton();
         setupRoleSearchBar();
@@ -306,13 +299,7 @@ public class paneUserController implements Initializable {
 
         // Set the custom row factory for the TreeTableView
         userTable.setRowFactory(tv -> new ColoredTreeRow());
-
-        // Store the original root
-        originalRoot = userTable.getRoot();
-
-        // Add listener for dynamic search
-        searchFieldUser.textProperty().addListener((observable, oldValue, newValue) -> filterTree(newValue));
-        searchFieldDept.textProperty().addListener((observable, oldValue, newValue) -> filterDeptTree(newValue)); // Add this line
+        deptTable.setRowFactory(tv -> new ColoredTreeRowDepartment()); // Apply department highlighting
 
         // Clear solde fields initially
         clearSoldeFields();
@@ -320,40 +307,7 @@ public class paneUserController implements Initializable {
         CongeVbox.setSpacing(10);
     }
 
-    private void filterTree(String searchText) {
-        if (searchText == null || searchText.isEmpty()) {
-            userTable.setRoot(originalRoot); // Reset to the original root when the search text is empty
-            return;
-        }
 
-        TreeItem<User> filteredRoot = filterTreeItem(originalRoot, searchText.toLowerCase());
-        userTable.setRoot(filteredRoot);
-    }
-
-    // Recursive method to filter the tree based on the search text
-    private TreeItem<User> filterTreeItem(TreeItem<User> item, String searchText) {
-        if (item == null) {
-            return null;
-        }
-
-        boolean matches = item.getValue().getNom().toLowerCase().contains(searchText) ||
-                item.getValue().getPrenom().toLowerCase().contains(searchText) ||
-                item.getValue().getEmail().toLowerCase().contains(searchText);
-
-        TreeItem<User> filteredItem = new TreeItem<>(item.getValue());
-        for (TreeItem<User> child : item.getChildren()) {
-            TreeItem<User> filteredChild = filterTreeItem(child, searchText);
-            if (filteredChild != null) {
-                filteredItem.getChildren().add(filteredChild);
-            }
-        }
-
-        if (matches || !filteredItem.getChildren().isEmpty()) {
-            return filteredItem;
-        } else {
-            return null;
-        }
-    }
 
 
     private void handleUserSelection(User selectedUser) {
@@ -510,52 +464,14 @@ public class paneUserController implements Initializable {
             RolePane1.setVisible(false);
             DepartPane1.setVisible(false);
             userTable.setRowFactory(tv -> new ColoredTreeRow()); // Apply user highlighting
-            searchFieldUser.textProperty().addListener((observable, oldValue, newValue) -> filterTree(newValue)); // Ensure user search is applied
-
         }
         if (hierarCombo.getValue().equals("Départements")) {
             UserPane1.setVisible(false);
             DepartPane1.setVisible(true);
             RolePane1.setVisible(false);
             deptTable.setRowFactory(tv -> new ColoredTreeRowDepartment()); // Apply department highlighting
-            searchFieldDept.textProperty().addListener((observable, oldValue, newValue) -> filterDeptTree(newValue)); // Ensure department search is applied
-
         }
     }
-    private void filterDeptTree(String searchText) {
-        if (searchText == null || searchText.isEmpty()) {
-            deptTable.setRoot(originalDeptRoot); // Reset to the original root when the search text is empty
-            return;
-        }
-
-        TreeItem<Departement> filteredRoot = filterDeptTreeItem(originalDeptRoot, searchText.toLowerCase());
-        deptTable.setRoot(filteredRoot);
-    }
-
-    // Recursive method to filter the tree based on the search text
-    private TreeItem<Departement> filterDeptTreeItem(TreeItem<Departement> item, String searchText) {
-        if (item == null) {
-            return null;
-        }
-
-        boolean matches = item.getValue().getNom().toLowerCase().contains(searchText) ||
-                item.getValue().getDescription().toLowerCase().contains(searchText);
-
-        TreeItem<Departement> filteredItem = new TreeItem<>(item.getValue());
-        for (TreeItem<Departement> child : item.getChildren()) {
-            TreeItem<Departement> filteredChild = filterDeptTreeItem(child, searchText);
-            if (filteredChild != null) {
-                filteredItem.getChildren().add(filteredChild);
-            }
-        }
-
-        if (matches || !filteredItem.getChildren().isEmpty()) {
-            return filteredItem;
-        } else {
-            return null;
-        }
-    }
-
 
     private void loadUsers() {
         UserContainers.getChildren().clear();
@@ -667,36 +583,31 @@ public class paneUserController implements Initializable {
     private void loadDepartments1() {
         List<Departement> departmentList = depService.getAllDepartments();
         ObservableList<Departement> departments = FXCollections.observableArrayList(departmentList);
-
-        originalDeptRoot = new TreeItem<>(new Departement(0, "Sans dep.Parent", "", 0)); // Store the original root
-        originalDeptRoot.setExpanded(true);
-
-        Map<Integer, TreeItem<Departement>> departMap = new HashMap<>();
-        departMap.put(0, originalDeptRoot);
-
-        for (Departement departement : departments) {
-            TreeItem<Departement> item = new TreeItem<>(departement);
-            departMap.put(departement.getIdDepartement(), item);
-
-            TreeItem<Departement> parentItem = departMap.getOrDefault(departement.getParentDept(), originalDeptRoot);
-            parentItem.getChildren().add(item);
-        }
-
-        for (Departement departement : departments) {
-            TreeItem<Departement> item = departMap.get(departement.getIdDepartement());
-            TreeItem<Departement> parentItem = departMap.get(departement.getParentDept());
-            if (parentItem != null && parentItem.getValue() != null) {
-                departement.setParentDeptName(parentItem.getValue().getNom());
+        filteredDepartments = new FilteredList<>(departments, p -> true);
+        departListView.setItems(filteredDepartments);
+        departListView.setCellFactory(param -> new ListCell<Departement>() {
+            @Override
+            protected void updateItem(Departement item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item.getNom());
+                }
             }
-        }
+        });
 
-        deptTable.setRoot(originalDeptRoot);
-        deptTable.setShowRoot(false);
-
-        idDapartementColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("idDepartement"));
-        nomDeptColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("nom"));
-        DescriptionDeptColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("description"));
-        DeptparColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("parentDeptName"));
+        departListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            Platform.runLater(() -> {
+                if (newValue != null) {
+                    Depart_field.setText(newValue.getNom());
+                } else {
+                    // Clear selection if newValue is null
+                    Depart_field.clear();
+                    departListView.getSelectionModel().clearSelection();
+                }
+            });
+        });
     }
 
     private void loadRole1s() {
@@ -931,13 +842,15 @@ public class paneUserController implements Initializable {
     @FXML
     void rechercheUser1(ActionEvent event) {
         String searchText = searchFieldUser.getText().trim();
-        if (searchText == null || searchText.isEmpty()) {
-            userTable.setRoot(originalRoot); // Reset to the original root when the search text is empty
-            return;
-        }
-
-        TreeItem<User> filteredRoot = filterTreeItem(originalRoot, searchText.toLowerCase());
-        userTable.setRoot(filteredRoot);
+        filteredData.setPredicate(user -> {
+            if (searchText == null || searchText.isEmpty()) {
+                return true;
+            }
+            String lowerCaseFilter = searchText.toLowerCase();
+            return user.getNom().toLowerCase().contains(lowerCaseFilter) ||
+                    user.getPrenom().toLowerCase().contains(lowerCaseFilter) ||
+                    user.getEmail().toLowerCase().contains(lowerCaseFilter);
+        });
     }
 
     @FXML
@@ -965,7 +878,6 @@ public class paneUserController implements Initializable {
                     role.getDescription().toLowerCase().contains(lowerCaseFilter);
         });
     }
-
     @FXML
     private void handleEditUser() {
         userListView.setDisable(false);
@@ -983,6 +895,9 @@ public class paneUserController implements Initializable {
 
     }
 
+
+
+
     @FXML
     private void handleRemoveUserAssignment() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -996,21 +911,23 @@ public class paneUserController implements Initializable {
             Integer userId = selectedUser.getIdUser();
 
             if (userId != null) {
-               try {
+                try {
                     usersubordinateService.removeRoleAndDepartment(userId);
                     affectationlabel.setText("Rôle et département supprimés.");
                     loadUsers3();
                     resetAffectationTab(); // Reset the tab after deletion
-               } catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                     showError("Une erreur s'est produite : " + e.getMessage());
-               }
+                }
             } else {
                 showError("Veuillez sélectionner un utilisateur pour supprimer l'affectation.");
             }
         }
         reset2();
     }
+
+
 
     @FXML
     void Enregistrer_user2(ActionEvent event) {
@@ -1059,9 +976,13 @@ public class paneUserController implements Initializable {
         reset2();
     }
 
+
+
+
     @FXML
     void Annuler_user2(ActionEvent event) {
         reset2();
+
     }
 
     void reset2(){
@@ -1430,7 +1351,7 @@ public class paneUserController implements Initializable {
         headerRow.createCell(2).setCellValue("Prénom");
         headerRow.createCell(3).setCellValue("Email");
         headerRow.createCell(4).setCellValue("Mot de Passe");
-       // headerRow.createCell(5).setCellValue("Image");
+        // headerRow.createCell(5).setCellValue("Image");
         headerRow.createCell(5).setCellValue("Département");
         headerRow.createCell(6).setCellValue("Rôle");
         int rowNum = 1;
