@@ -210,12 +210,6 @@ public class paneUserController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        /*Platform.runLater(() -> {
-            Stage stage = (Stage) UtilisateursPane.getScene().getWindow();
-            stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(UtilisateursPane, stage.getWidth(), stage.getHeight()));
-            stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(UtilisateursPane, stage.getWidth(), stage.getHeight()));
-            FontResizer.resizeFonts(UtilisateursPane, stage.getWidth(), stage.getHeight());
-        });*/
         reset2();
         loadUsers();
         loadUsers1();
@@ -279,12 +273,14 @@ public class paneUserController implements Initializable {
 
         // Set the custom row factory for the TreeTableView
         userTable.setRowFactory(tv -> new ColoredTreeRow());
+        deptTable.setRowFactory(tv -> new ColoredTreeRowDepartment()); // Apply department highlighting
 
         // Clear solde fields initially
         clearSoldeFields();
         CongeVbox.setPadding(new Insets(10, 0, 10, 0));
         CongeVbox.setSpacing(10);
     }
+
 
 
 
@@ -441,11 +437,13 @@ public class paneUserController implements Initializable {
             UserPane1.setVisible(true);
             RolePane1.setVisible(false);
             DepartPane1.setVisible(false);
+            userTable.setRowFactory(tv -> new ColoredTreeRow()); // Apply user highlighting
         }
         if (hierarCombo.getValue().equals("Départements")) {
             UserPane1.setVisible(false);
             DepartPane1.setVisible(true);
             RolePane1.setVisible(false);
+            deptTable.setRowFactory(tv -> new ColoredTreeRowDepartment()); // Apply department highlighting
         }
     }
 
