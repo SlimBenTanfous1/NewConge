@@ -10,7 +10,6 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
@@ -25,6 +24,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.lang.ObjectUtils;
@@ -175,7 +178,7 @@ public class paneUserController implements Initializable {
     private final ServiceUtilisateur userService = new ServiceUtilisateur();
     private final ServiceRole roleService = new ServiceRole();
 
-    private final ServiceSubordinateManager usersubordinateService = new ServiceSubordinateManager(userService, roleService, depService);
+    private final ServiceSubordinateManager usersubordinateService = new ServiceSubordinateManager(roleService, depService);
     private final ServiceUserSolde serviceUserSolde = new ServiceUserSolde();
     private final ServiceTypeConge serviceTypeConge = new ServiceTypeConge();
     private ObservableList<User> users;
@@ -548,7 +551,7 @@ public class paneUserController implements Initializable {
 
     public void loadUsers3() {
         try {
-            List<User> userList = usersubordinateService.getAllUsers();
+            List<User> userList = userService.getAllUsers();
             Map<Integer, User> userMap = userList.stream().collect(Collectors.toMap(User::getIdUser, user -> user));
 
             // Update the manager name, department, and role for each user
@@ -560,14 +563,14 @@ public class paneUserController implements Initializable {
                     user.setManagerName("Il n'y a pas de manager");
                 }
 
-                Departement department = usersubordinateService.getDepartmentByUserId(user.getIdUser());
+                Departement department = userService.getDepartmentByUserId(user.getIdUser());
                 if (department != null) {
                     user.setDepartementNom(department.getNom());
                 } else {
                     user.setDepartementNom("sans département");
                 }
 
-                Role role = usersubordinateService.getRoleByUserId(user.getIdUser());
+                Role role = userService.getRoleByUserId(user.getIdUser());
                 if (role != null) {
                     user.setRoleNom(role.getNom());
                 } else {
@@ -808,28 +811,12 @@ public class paneUserController implements Initializable {
                     usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedUser.getIdRole(), selectedDepartement.getIdDepartement());
                     isUpdated = true;
                 }
-
                 if (isUpdated) {
-                    // Find the temporary user that should be replaced
-                    int tempUserId = usersubordinateService.findTemporaryUser(selectedUser.getIdUser());
-
-                    if (tempUserId > 0) {
-                        // Replace temporary user with the real user
-                        usersubordinateService.replaceTemporaryUser(selectedUser.getIdUser(), tempUserId);
-                    }
-
                     loadUsers3();
                     affectationlabel.setText("Modification effectuée");
                     resetAffectationTab();
                 } else {
                     showError("Veuillez sélectionner un rôle et/ou un département à attribuer.");
-                }
-            } catch (SQLException e) {
-                if (e.getMessage().contains("Invalid role-department relationship")) {
-                    showError("La relation rôle-département n'est pas valide.");
-                } else {
-                    e.printStackTrace();
-                    showError("Une erreur s'est produite lors de la mise à jour de l'utilisateur : " + e.getMessage());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -840,30 +827,16 @@ public class paneUserController implements Initializable {
         }
     }
 
-
     @FXML
     private void handleRemoveUserAssignment() {
         Integer userId = selectedUser.getIdUser();
 
         if (userId != null) {
             try {
-                // Get the manager ID of the user being deleted
-                int managerId = usersubordinateService.getManagerIdByUserId(userId);
-
-                // Generate a temporary user to replace the user being deleted
-                int tempUserId = usersubordinateService.generateTemporaryUser(managerId);
-
-                // Update subordinates of the user being deleted to the temporary user
-                usersubordinateService.updateSubordinates(userId, tempUserId);
-
-                // Remove the user
-                usersubordinateService.removeUserAssignment(userId);
+                usersubordinateService.removeRoleAndDepartment(userId);
                 affectationlabel.setText("Rôle et département supprimés.");
                 loadUsers3();
                 resetAffectationTab(); // Reset the tab after deletion
-            } catch (SQLException e) {
-                showError("Une erreur s'est produite lors de la suppression de l'affectation de l'utilisateur : " + e.getMessage());
-                e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
                 showError("Une erreur s'est produite : " + e.getMessage());
@@ -876,6 +849,7 @@ public class paneUserController implements Initializable {
     public Integer getSelectedUserId() {
         return selectedUser != null ? selectedUser.getIdUser() : null;
     }
+
 
     protected void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -998,8 +972,7 @@ public class paneUserController implements Initializable {
                 Pane userBox = fxmlLoader.load();
                 CardUserRHController cardController = fxmlLoader.getController();
                 Departement department = depService.getDepartmentById(user.getIdDepartement());
-                Role role = roleService.getRoleByUserId(user.getIdUser());
-                userBox.prefWidthProperty().bind(UserContainers.widthProperty()/*.divide(2).subtract(20)*/);
+                Role role = new ServiceRole().getRoleByUserId(user.getIdUser());
                 String departmentName = department != null ? department.getNom() : "N/A";
                 String roleName = role != null ? role.getNom() : "N/A";
                 cardController.setData(user, roleName, departmentName);
@@ -1063,7 +1036,6 @@ public class paneUserController implements Initializable {
                 CardUserRHController cardController = fxmlLoader.getController();
                 Departement department = depService.getDepartmentById(user.getIdDepartement());
                 Role role = roleService.getRoleByUserId(user.getIdUser());
-                userBox.prefWidthProperty().bind(UserContainers.widthProperty()/*.divide(2).subtract(20)*/);
                 String departmentName = department != null ? department.getNom() : "N/A";
                 String roleName = role != null ? role.getNom() : "N/A";
                 cardController.setData(user, roleName, departmentName);
@@ -1081,7 +1053,7 @@ public class paneUserController implements Initializable {
 
     @FXML
     void removeFilters(ActionEvent event) {
-        RechercheBarUser.clear();
+
     }
 
     private void setupRemoveFilterButton() {
@@ -1219,7 +1191,7 @@ public class paneUserController implements Initializable {
         headerRow.createCell(2).setCellValue("Prénom");
         headerRow.createCell(3).setCellValue("Email");
         headerRow.createCell(4).setCellValue("Mot de Passe");
-        // headerRow.createCell(5).setCellValue("Image");
+       // headerRow.createCell(5).setCellValue("Image");
         headerRow.createCell(5).setCellValue("Département");
         headerRow.createCell(6).setCellValue("Rôle");
         int rowNum = 1;
