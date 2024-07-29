@@ -1015,7 +1015,6 @@ public class paneUserController implements Initializable {
         reset2();
     }
 
-
     @FXML
     void Enregistrer_user2(ActionEvent event) {
         if (selectedUser != null) {

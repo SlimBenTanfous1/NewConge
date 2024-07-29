@@ -18,7 +18,6 @@ public class ServiceSubordinateManager {
 
     private static Connection cnx = MyDataBase.getInstance().getCnx();
 
-    // Constructor
     public ServiceSubordinateManager(ServiceRole roleService, ServiceDepartement departementService) {
         this.roleService = roleService;
         this.departementService = departementService;
@@ -30,7 +29,6 @@ public class ServiceSubordinateManager {
         }
     }
 
-    // Update user's role and department and assign the appropriate manager
     public User getUserById(int userId) throws SQLException {
         ensureConnection();
         String query = "SELECT u.*, d.nom AS departementNom, r.nom AS roleNom, r.ID_Role, r.Level AS roleLevel, d.ID_Departement, d.Level AS deptLevel, d.Parent_Dept " +
@@ -73,17 +71,14 @@ public class ServiceSubordinateManager {
         return user;
     }
 
-    // Find manager by hierarchy
     private Integer findManagerByHierarchy(int userId, int roleId, int departmentId) throws SQLException {
         ensureConnection();
         Role userRole = getRoleByUserId2(userId);
         Departement userDept = getDepartmentByUserId2(userId);
         if (userRole == null || userDept == null) {
-            System.out.println("Invalid role or department for user ID: " + userId);
             return null;
         }
         if ("Employe".equals(userRole.getNom())) {
-            // Special case for Employe role
             String query = "SELECT u.ID_User FROM user_role ur JOIN user u ON ur.ID_User = u.ID_User " +
                     "JOIN role r ON ur.ID_Role = r.ID_Role " +
                     "WHERE u.ID_Departement = ? AND r.nom != 'Employe' " +
@@ -93,14 +88,12 @@ public class ServiceSubordinateManager {
                 ResultSet resultSet = statement.executeQuery();
                 if (resultSet.next()) {
                     int managerId = resultSet.getInt("ID_User");
-                    System.out.println("Found manager in the same department with different role: " + managerId);
                     return managerId;
                 }
             } catch (SQLException e) {
                 throw new RuntimeException("Error finding manager: " + e.getMessage(), e);
             }
         } else {
-            // General case for other roles
             String query = "SELECT u.ID_User FROM user_role ur JOIN user u ON ur.ID_User = u.ID_User " +
                     "JOIN role r ON ur.ID_Role = r.ID_Role " +
                     "WHERE u.ID_Departement = ? AND r.Level < (SELECT Level FROM role WHERE ID_Role = ?) " +
@@ -111,13 +104,11 @@ public class ServiceSubordinateManager {
                 ResultSet resultSet = statement.executeQuery();
                 if (resultSet.next()) {
                     int managerId = resultSet.getInt("ID_User");
-                    System.out.println("Found manager in the same department with higher level: " + managerId);
                     return managerId;
                 }
             } catch (SQLException e) {
                 throw new RuntimeException("Error finding manager: " + e.getMessage(), e);
             }
-
             query = "WITH RECURSIVE dept_hierarchy AS (" +
                     "SELECT ID_Departement, Parent_Dept FROM departement WHERE ID_Departement = ? " +
                     "UNION ALL " +
@@ -136,14 +127,12 @@ public class ServiceSubordinateManager {
                 ResultSet resultSet = statement.executeQuery();
                 if (resultSet.next()) {
                     int managerId = resultSet.getInt("ID_User");
-                    System.out.println("Found manager in parent department with higher role level, Manager ID: " + managerId);
                     return managerId;
                 }
             } catch (SQLException e) {
                 throw new RuntimeException("Error finding manager: " + e.getMessage(), e);
             }
         }
-
         String query = "SELECT u.ID_User FROM user_role ur " +
                 "JOIN user u ON ur.ID_User = u.ID_User " +
                 "WHERE ur.ID_Role = (SELECT ID_Role FROM role WHERE nom = 'DG')";
@@ -151,18 +140,14 @@ public class ServiceSubordinateManager {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 int managerId = resultSet.getInt("ID_User");
-                System.out.println("Defaulting to DG manager: " + managerId);
                 return managerId;
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error finding manager: " + e.getMessage(), e);
         }
-
-        System.out.println("No manager found for user ID: " + userId);
         return null;
     }
 
-    // Update subordinates' managers if a new manager is assigned to the same role and department
     private void updateSubordinateManagers(int managerId, int departmentId) throws SQLException {
         String query = "SELECT u.ID_User FROM user u WHERE u.ID_Departement = ? AND u.ID_Manager IS NULL";
         try (PreparedStatement statement = cnx.prepareStatement(query)) {
@@ -177,16 +162,13 @@ public class ServiceSubordinateManager {
         }
     }
 
-    // Method to update user manager
     public void updateUserManager(int userId, Integer managerId) throws SQLException {
         String query = "UPDATE user SET ID_Manager = ? WHERE ID_User = ?";
         try (PreparedStatement statement = cnx.prepareStatement(query)) {
             if (managerId == null) {
                 statement.setNull(1, java.sql.Types.INTEGER);
-                System.out.println("Manager ID is null for user ID: " + userId + ". Setting manager to null.");
             } else {
                 statement.setInt(1, managerId);
-                System.out.println("Setting manager ID: " + managerId + " for user ID: " + userId);
             }
             statement.setInt(2, userId);
             statement.executeUpdate();
@@ -195,7 +177,6 @@ public class ServiceSubordinateManager {
         }
     }
 
-    // Method to update user role
     public void updateUserRole(int userId, Integer roleId) throws SQLException {
         ensureConnection();
         if (roleId != null) {
@@ -230,29 +211,16 @@ public class ServiceSubordinateManager {
             }
             statement.setInt(2, userId);
             statement.executeUpdate();
-            System.out.println("Updated department for user ID: " + userId + " to department ID: " + departmentId);
         } catch (SQLException e) {
             throw new RuntimeException("Error updating user department: " + e.getMessage(), e);
         }
     }
 
-    // Method to remove user's role, department, and manager, and set their subordinates' managers to null
     public void removeRoleAndDepartment(int userId) throws SQLException {
-        System.out.println("Removing role, department, and manager for user ID: " + userId);
-
-        // Remove user's role
         updateUserRole(userId, null);
-        System.out.println("Role removed for user ID: " + userId);
-
-        // Remove user's department
         updateUserDepartment(userId, null);
-        System.out.println("Department removed for user ID: " + userId);
-
-        // Remove user's manager
         updateUserManager(userId, null);
-        System.out.println("Manager removed for user ID: " + userId);
 
-        // Find subordinates and set their managers to null
         String query = "SELECT ID_User FROM user WHERE ID_Manager = ?";
         try (PreparedStatement statement = cnx.prepareStatement(query)) {
             statement.setInt(1, userId);
@@ -260,24 +228,53 @@ public class ServiceSubordinateManager {
             while (resultSet.next()) {
                 int subordinateId = resultSet.getInt("ID_User");
                 updateUserManager(subordinateId, null);
-                System.out.println("Set manager to null for subordinate ID: " + subordinateId);
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error removing role and department: " + e.getMessage(), e);
         }
     }
 
-    // Method to reassign subordinates to a new manager
-    public void reassignSubordinatesToNewManager(int userId, int roleId, int departementId) throws SQLException {
-        List<User> subordinates = getUsersWithoutManager();
-        for (User subordinate : subordinates) {
-            if (subordinate.getIdDepartement() == departementId && subordinate.getIdRole() == roleId) {
-                updateUserManager(subordinate.getIdUser(), userId);
+    private void reassignSubordinatesToNewManager(int newManagerId, int roleId, int departmentId) throws SQLException {
+        ensureConnection();
+        String levelQuery = "SELECT r.Level AS roleLevel, d.Level AS deptLevel " +
+                "FROM role r, departement d " +
+                "WHERE r.ID_Role = ? AND d.ID_Departement = ?";
+        int newManagerRoleLevel = -1;
+        int newManagerDeptLevel = -1;
+        try (PreparedStatement levelStatement = cnx.prepareStatement(levelQuery)) {
+            levelStatement.setInt(1, roleId);
+            levelStatement.setInt(2, departmentId);
+            ResultSet levelResultSet = levelStatement.executeQuery();
+            if (levelResultSet.next()) {
+                newManagerRoleLevel = levelResultSet.getInt("roleLevel");
+                newManagerDeptLevel = levelResultSet.getInt("deptLevel");
             }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error getting new manager role and department level: " + e.getMessage(), e);
+        }
+        if (newManagerRoleLevel == -1 || newManagerDeptLevel == -1) {
+            throw new RuntimeException("Could not determine role or department level for the new manager.");
+        }
+        String query = "SELECT u.ID_User " +
+                "FROM user u " +
+                "JOIN user_role ur ON u.ID_User = ur.ID_User " +
+                "JOIN role r ON ur.ID_Role = r.ID_Role " +
+                "JOIN departement d ON u.ID_Departement = d.ID_Departement " +
+                "WHERE r.Level = ? AND d.Level = ?";
+        try (PreparedStatement statement = cnx.prepareStatement(query)) {
+            statement.setInt(1, newManagerRoleLevel + 1);
+            statement.setInt(2, newManagerDeptLevel + 1);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                int subordinateId = resultSet.getInt("ID_User");
+                updateUserManager(subordinateId, newManagerId);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error reassigning subordinates: " + e.getMessage(), e);
         }
     }
 
-    // Method to reassign managers for all users
+
     public void reassignManagersForAllUsers() throws SQLException {
         List<User> allUsers = getAllUsers();
         for (User user : allUsers) {
@@ -290,51 +287,31 @@ public class ServiceSubordinateManager {
         }
     }
 
-    // Method to reassign users without a manager
     public void reassignUsersWithoutManager(int newManagerId) throws SQLException {
         ensureConnection();
 
-        // Fetch the new manager's role and department details
         User newManager = getUserById(newManagerId);
         if (newManager == null) {
-            System.out.println("Invalid role or department for new manager ID: " + newManagerId);
             return;
         }
         Role newManagerRole = getRoleByUserId2(newManager.getIdUser());
         Departement newManagerDept = getDepartmentByUserId2(newManager.getIdUser());
 
-        System.out.println("Reassigning users without a manager to new manager ID: " + newManagerId);
-
-        // Fetch users without a manager
         List<User> usersWithoutManager = getUsersWithoutManager();
         for (User user : usersWithoutManager) {
             Role userRole = getRoleByUserId2(user.getIdUser());
             Departement userDept = getDepartmentByUserId2(user.getIdUser());
 
             if (userRole != null && userDept != null) {
-                System.out.println("Checking criteria for user ID: " + user.getIdUser());
-                System.out.println("User Role Level: " + userRole.getLevel());
-                System.out.println("New Manager Role Level: " + newManagerRole.getLevel());
-                System.out.println("User Dept Level: " + userDept.getLevel());
-                System.out.println("New Manager Dept Level: " + newManagerDept.getLevel());
-                System.out.println("User Dept Parent: " + userDept.getParentDept());
-                System.out.println("New Manager Dept ID: " + newManager.getIdDepartement());
-
                 if (userRole.getLevel() < newManagerRole.getLevel() &&
                         userDept.getLevel() > newManagerDept.getLevel() &&
                         userDept.getParentDept() == newManager.getIdDepartement()) {
                     updateUserManager(user.getIdUser(), newManagerId);
-                    System.out.println("Reassigned user ID: " + user.getIdUser() + " to manager ID: " + newManagerId);
-                } else {
-                    System.out.println("Skipping reassignment for user ID: " + user.getIdUser() + " due to not meeting criteria.");
                 }
-            } else {
-                System.out.println("Skipping reassignment for user ID: " + user.getIdUser() + " due to invalid role or department.");
             }
         }
     }
 
-    // Update the assignRoleAndDepartment method to call the reassignUsersWithoutManager method
     public void assignRoleAndDepartment(int userId, int roleId, int departmentId) throws SQLException {
         ensureConnection();
         System.out.println("Assigning role and department for user ID: " + userId);
@@ -369,15 +346,12 @@ public class ServiceSubordinateManager {
                 updateUserManager(userId, null);
             }
 
-            // Update subordinates' managers if a new manager is assigned to the same role and department
-            updateSubordinateManagers(userId, departmentId);
-
-            // Reassign users without a manager
-            reassignUsersWithoutManager(userId);
+            // Automatically set other users with lower level under the new assigned user
+            reassignSubordinatesToNewManager(userId, roleId, departmentId);
         }
     }
 
-    // Reassign all directors to report to DG
+
     private void reassignDirectorsToDG(int dgUserId) throws SQLException {
         String query = "SELECT u.ID_User FROM user u " +
                 "JOIN user_role ur ON u.ID_User = ur.ID_User " +
@@ -394,28 +368,15 @@ public class ServiceSubordinateManager {
         }
     }
 
-    // Refined findManager method for completeness
     private Integer findManager(int userId, int roleId, int departmentId) throws SQLException {
-        Role userRole = getRoleByUserId2(userId); // Correctly retrieve role by user ID
-        Departement userDept = getDepartmentByUserId2(userId); // Correctly retrieve department by user ID
-
-        // Debug statements
-        System.out.println("Finding manager for user ID: " + userId + ", role ID: " + roleId + ", department ID: " + departmentId);
-        System.out.println("User Role: " + (userRole != null ? userRole.getNom() : "null"));
-        System.out.println("User Department: " + (userDept != null ? userDept.getNom() : "null"));
-
-        // Check if user is DG or belongs to Direction Générale
+        Role userRole = getRoleByUserId2(userId);
+        Departement userDept = getDepartmentByUserId2(userId);
         if (userRole != null && "DG".equals(userRole.getNom())) {
-            System.out.println("User role is DG for user ID: " + userId);
-            return null; // DG role should not have a manager
+            return null;
         }
-
         if (userDept != null && "Direction Générale".equals(userDept.getNom())) {
-            System.out.println("User belongs to Direction Générale for user ID: " + userId);
-            return null; // Direction Générale should not have a manager
+            return null;
         }
-
-        // Find the manager based on role and department hierarchy
         return findManagerByHierarchy(userId, roleId, departmentId);
     }
 
@@ -441,7 +402,6 @@ public class ServiceSubordinateManager {
         return users;
     }
 
-    // Method to get users without a manager
     public List<User> getUsersWithoutManager() throws SQLException {
         ensureConnection();
         List<User> users = new ArrayList<>();
@@ -467,7 +427,6 @@ public class ServiceSubordinateManager {
 
     public Departement getDepartmentByUserId2(int userId) throws SQLException {
         ensureConnection();
-        System.out.println("Retrieving department for user ID: " + userId);
         String query = "SELECT d.* FROM departement d " +
                 "JOIN user u ON d.ID_Departement = u.ID_Departement " +
                 "WHERE u.ID_User = ?";
@@ -481,10 +440,7 @@ public class ServiceSubordinateManager {
                 departement.setDescription(resultSet.getString("description"));
                 departement.setParentDept(resultSet.getInt("Parent_Dept"));
                 departement.setLevel(resultSet.getInt("Level"));
-                System.out.println("Retrieved department: " + departement.getNom() + " for user ID: " + userId);
                 return departement;
-            } else {
-                System.out.println("No department found for user ID: " + userId);
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error retrieving department by user ID: " + e.getMessage(), e);
@@ -494,7 +450,6 @@ public class ServiceSubordinateManager {
 
     public Role getRoleByUserId2(int userId) throws SQLException {
         ensureConnection();
-        System.out.println("Retrieving role for user ID: " + userId);
         String query = "SELECT r.* FROM role r " +
                 "JOIN user_role ur ON r.ID_Role = ur.ID_Role " +
                 "WHERE ur.ID_User = ?";
@@ -507,10 +462,7 @@ public class ServiceSubordinateManager {
                 role.setNom(resultSet.getString("nom"));
                 role.setDescription(resultSet.getString("description"));
                 role.setLevel(resultSet.getInt("Level"));
-                System.out.println("Retrieved role: " + role.getNom() + " for user ID: " + userId);
                 return role;
-            } else {
-                System.out.println("No role found for user ID: " + userId);
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error retrieving role by user ID: " + e.getMessage(), e);
