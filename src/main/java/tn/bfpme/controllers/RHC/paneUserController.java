@@ -319,6 +319,7 @@ public class paneUserController implements Initializable {
         searchFieldUser.textProperty().addListener((observable, oldValue, newValue) -> filterTree(newValue));
         searchFieldDept.textProperty().addListener((observable, oldValue, newValue) -> filterDeptTree(newValue));
         //searchFieldRole.textProperty().addListener((observable, oldValue, newValue) -> filterRoleTree(newValue));
+        deptTable.setRowFactory(tv -> new ColoredTreeRowDepartment()); // Apply department highlighting
 
         // Clear solde fields initially
         clearSoldeFields();
@@ -528,8 +529,6 @@ public class paneUserController implements Initializable {
             DepartPane1.setVisible(true);
             RolePane1.setVisible(false);
             deptTable.setRowFactory(tv -> new ColoredTreeRowDepartment()); // Apply department highlighting
-            searchFieldDept.textProperty().addListener((observable, oldValue, newValue) -> filterDeptTree(newValue)); // Ensure department search is applied
-
         }
     }
     private void filterDeptTree(String searchText) {
@@ -565,7 +564,6 @@ public class paneUserController implements Initializable {
             return null;
         }
     }
-
 
     private void loadUsers() {
         UserContainers.getChildren().clear();
@@ -678,38 +676,32 @@ public class paneUserController implements Initializable {
     private void loadDepartments1() {
         List<Departement> departmentList = depService.getAllDepartments();
         ObservableList<Departement> departments = FXCollections.observableArrayList(departmentList);
-
-        originalDeptRoot = new TreeItem<>(new Departement(0, "Sans dep.Parent", "", 0)); // Store the original root
-        originalDeptRoot.setExpanded(true);
-
-        Map<Integer, TreeItem<Departement>> departMap = new HashMap<>();
-        departMap.put(0, originalDeptRoot);
-
-        for (Departement departement : departments) {
-            TreeItem<Departement> item = new TreeItem<>(departement);
-            departMap.put(departement.getIdDepartement(), item);
-
-            TreeItem<Departement> parentItem = departMap.getOrDefault(departement.getParentDept(), originalDeptRoot);
-            parentItem.getChildren().add(item);
-        }
-
-        for (Departement departement : departments) {
-            TreeItem<Departement> item = departMap.get(departement.getIdDepartement());
-            TreeItem<Departement> parentItem = departMap.get(departement.getParentDept());
-            if (parentItem != null && parentItem.getValue() != null) {
-                departement.setParentDeptName(parentItem.getValue().getNom());
+        filteredDepartments = new FilteredList<>(departments, p -> true);
+        departListView.setItems(filteredDepartments);
+        departListView.setCellFactory(param -> new ListCell<Departement>() {
+            @Override
+            protected void updateItem(Departement item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item.getNom());
+                }
             }
-        }
+        });
 
-        deptTable.setRoot(originalDeptRoot);
-        deptTable.setShowRoot(false);
-
-        idDapartementColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("idDepartement"));
-        nomDeptColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("nom"));
-        DescriptionDeptColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("description"));
-        DeptparColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("parentDeptName"));
+        departListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            Platform.runLater(() -> {
+                if (newValue != null) {
+                    Depart_field.setText(newValue.getNom());
+                } else {
+                    // Clear selection if newValue is null
+                    Depart_field.clear();
+                    departListView.getSelectionModel().clearSelection();
+                }
+            });
+        });
     }
-
 
     private void loadRole1s() {
         List<Role> roleList = roleService.getAllRoles();
@@ -784,8 +776,6 @@ public class paneUserController implements Initializable {
                 TreeItem<User> item = new TreeItem<>(user);
                 treeItemMap.put(user.getIdUser(), item);
             }
-
-            // Attach children to their respective parents
             for (User user : users) {
                 TreeItem<User> item = treeItemMap.get(user.getIdUser());
                 TreeItem<User> parentItem = treeItemMap.getOrDefault(user.getIdManager(), root);
@@ -943,17 +933,16 @@ public class paneUserController implements Initializable {
     @FXML
     void rechercheUser1(ActionEvent event) {
         String searchText = searchFieldUser.getText().trim();
-        if (searchText == null || searchText.isEmpty()) {
-            userTable.setRoot(originalRoot); // Reset to the original root when the search text is empty
-            return;
-        }
-
-        TreeItem<User> filteredRoot = filterTreeItem(originalRoot, searchText.toLowerCase());
-        userTable.setRoot(filteredRoot);
+        filteredData.setPredicate(user -> {
+            if (searchText == null || searchText.isEmpty()) {
+                return true;
+            }
+            String lowerCaseFilter = searchText.toLowerCase();
+            return user.getNom().toLowerCase().contains(lowerCaseFilter) ||
+                    user.getPrenom().toLowerCase().contains(lowerCaseFilter) ||
+                    user.getEmail().toLowerCase().contains(lowerCaseFilter);
+        });
     }
-
-
-
 
     @FXML
     void rechercheDept1(ActionEvent event) {
@@ -980,7 +969,6 @@ public class paneUserController implements Initializable {
                     role.getDescription().toLowerCase().contains(lowerCaseFilter);
         });
     }
-
     @FXML
     private void handleEditUser() {
         userListView.setDisable(false);
@@ -998,6 +986,9 @@ public class paneUserController implements Initializable {
 
     }
 
+
+
+
     @FXML
     private void handleRemoveUserAssignment() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -1011,21 +1002,23 @@ public class paneUserController implements Initializable {
             Integer userId = selectedUser.getIdUser();
 
             if (userId != null) {
-               try {
+                try {
                     usersubordinateService.removeRoleAndDepartment(userId);
                     affectationlabel.setText("Rôle et département supprimés.");
                     loadUsers3();
                     resetAffectationTab(); // Reset the tab after deletion
-               } catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                     showError("Une erreur s'est produite : " + e.getMessage());
-               }
+                }
             } else {
                 showError("Veuillez sélectionner un utilisateur pour supprimer l'affectation.");
             }
         }
         reset2();
     }
+
+
 
     @FXML
     void Enregistrer_user2(ActionEvent event) {
@@ -1063,6 +1056,11 @@ public class paneUserController implements Initializable {
         }
         reset2();
     }
+
+
+
+
+
 
     @FXML
     void Annuler_user2(ActionEvent event) {
@@ -1282,7 +1280,6 @@ public class paneUserController implements Initializable {
                 CardUserRHController cardController = fxmlLoader.getController();
                 Departement department = depService.getDepartmentById(user.getIdDepartement());
                 Role role = roleService.getRoleByUserId(user.getIdUser());
-                userBox.prefWidthProperty().bind(UserContainers.widthProperty()/*.divide(2).subtract(20)*/);
                 String departmentName = department != null ? department.getNom() : "N/A";
                 String roleName = role != null ? role.getNom() : "N/A";
                 cardController.setData(user, roleName, departmentName);
@@ -1437,7 +1434,7 @@ public class paneUserController implements Initializable {
         headerRow.createCell(2).setCellValue("Prénom");
         headerRow.createCell(3).setCellValue("Email");
         headerRow.createCell(4).setCellValue("Mot de Passe");
-       // headerRow.createCell(5).setCellValue("Image");
+        // headerRow.createCell(5).setCellValue("Image");
         headerRow.createCell(5).setCellValue("Département");
         headerRow.createCell(6).setCellValue("Rôle");
         int rowNum = 1;
