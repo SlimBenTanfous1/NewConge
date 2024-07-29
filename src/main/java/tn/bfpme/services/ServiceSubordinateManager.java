@@ -274,28 +274,6 @@ public class ServiceSubordinateManager {
         }
     }
 
-    // Method to reassign subordinates to a new manager
-    public void reassignSubordinatesToNewManager(int userId, int roleId, int departementId) throws SQLException {
-        List<User> subordinates = getUsersWithoutManager();
-        for (User subordinate : subordinates) {
-            if (subordinate.getIdDepartement() == departementId && subordinate.getIdRole() == roleId) {
-                updateUserManager(subordinate.getIdUser(), userId);
-            }
-        }
-    }
-
-    // Method to reassign managers for all users
-    public void reassignManagersForAllUsers() throws SQLException {
-        List<User> allUsers = getAllUsers();
-        for (User user : allUsers) {
-            if (user.getIdManager() == 0) {
-                int managerId = findManager(user.getIdUser(), user.getIdRole(), user.getIdDepartement());
-                if (managerId != user.getIdUser()) {
-                    updateUserManager(user.getIdUser(), managerId);
-                }
-            }
-        }
-    }
 
     // Method to reassign users without a manager
     public void reassignUsersWithoutManager(int newManagerId) throws SQLException {

@@ -17,13 +17,19 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import tn.bfpme.models.User;
+import tn.bfpme.services.ServiceSubordinateManager;
 import tn.bfpme.services.ServiceUtilisateur;
+import tn.bfpme.utils.MyDataBase;
 import tn.bfpme.utils.StageManager;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Optional;
 
 public class CardUserRHController {
@@ -42,7 +48,9 @@ public class CardUserRHController {
     @FXML
     private Label cardrole;
 
+    private static Connection cnx = MyDataBase.getInstance().getCnx();
     private final ServiceUtilisateur UserS = new ServiceUtilisateur();
+    private final ServiceSubordinateManager SSM = new ServiceSubordinateManager();
     int uid;
     String unom, uprenom, uemail, umdp, urole, udepart, updp;
 
@@ -143,6 +151,18 @@ public class CardUserRHController {
         alert.getButtonTypes().setAll(Oui, Non);
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == Oui) {
+            String query = "SELECT ID_User FROM user WHERE ID_Manager = ?";
+            try (PreparedStatement statement = cnx.prepareStatement(query)) {
+                statement.setInt(1, uid);
+                ResultSet resultSet = statement.executeQuery();
+                while (resultSet.next()) {
+                    int subordinateId = resultSet.getInt("ID_User");
+                    SSM.updateUserManager(subordinateId, null);
+                    System.out.println("Set manager to null for subordinate ID: " + subordinateId);
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException("Error removing role and department: " + e.getMessage(), e);
+            }
         UserS.DeleteByID(uid);
         ((GridPane) UserCard.getParent()).getChildren().remove(UserCard);
         }
