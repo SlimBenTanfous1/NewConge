@@ -810,8 +810,8 @@ public class paneUserController implements Initializable {
         hsecond2.setDisable(false);
         handleedit2.setDisable(false);
         handleremove2.setDisable(true);
-        Hfirst2.setVisible(false);
-        Hfirst2.setDisable(true);
+        Hfirst2.setVisible(true);
+        Hfirst2.setDisable(false);
 
     }
 
