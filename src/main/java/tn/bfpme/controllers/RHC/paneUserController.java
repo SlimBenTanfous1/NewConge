@@ -233,7 +233,6 @@ public class paneUserController implements Initializable {
         TriAZ = new Image(getClass().getResourceAsStream("/assets/imgs/AZ.png"));
         TriZA = new Image(getClass().getResourceAsStream("/assets/imgs/ZA.png"));
         toggleIcon.setImage(TriAZ);
-
         toggleButton.setOnAction(event -> {
             if (isAscending) {
                 loadTriUserDESC();
@@ -242,7 +241,7 @@ public class paneUserController implements Initializable {
                 loadTriUsersAZ();
                 toggleIcon.setImage(TriAZ);
             }
-            isAscending = !isAscending; // Toggle the flag
+            isAscending = !isAscending;
         });
         loadRolesIntoComboBox();
         setupRemoveFilterButton();
