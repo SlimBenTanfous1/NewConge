@@ -114,7 +114,6 @@ public class ServiceUtilisateur implements IUtilisateur {
         return new UserConge(users, conges);
     }
 
-
     @Override
     public UserConge TriType() {
         List<User> users = new ArrayList<>();
