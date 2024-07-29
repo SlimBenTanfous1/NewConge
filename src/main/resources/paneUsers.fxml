@@ -274,6 +274,25 @@
                               <String fx:value="RobotoMediumItalic" />
                            </styleClass>
                         </Label>
+                        <HBox fx:id="hsecond2" layoutX="441.0" layoutY="592.0" prefHeight="56.0" prefWidth="238.0">
+                           <children>
+                              <Button fx:id="Enregistrer2" mnemonicParsing="false" onAction="#Enregistrer_user2" prefHeight="56.0" prefWidth="100.0" text="Enregistrer">
+                                 <styleClass>
+                                    <String fx:value="btn-secondary" />
+                                    <String fx:value="btn-approver" />
+                                    <String fx:value="RobotoBold" />
+                                 </styleClass>
+                              </Button>
+                              <Separator orientation="VERTICAL" prefHeight="56.0" prefWidth="38.0" styleClass="seperator" />
+                              <Button fx:id="Annuler2" mnemonicParsing="false" onAction="#Annuler_user2" prefHeight="56.0" prefWidth="100.0" text="Annuler">
+                                 <styleClass>
+                                    <String fx:value="btn-secondary" />
+                                    <String fx:value="btn-refuser" />
+                                    <String fx:value="RobotoBold" />
+                                 </styleClass>
+                              </Button>
+                           </children>
+                        </HBox>
                      </children>
                   </AnchorPane>
                </content>
