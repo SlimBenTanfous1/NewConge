@@ -76,19 +76,12 @@ public class ServiceSubordinateManager {
     // Find manager by hierarchy
     private Integer findManagerByHierarchy(int userId, int roleId, int departmentId) throws SQLException {
         ensureConnection();
-        System.out.println("Finding manager by hierarchy for user ID: " + userId);
-
         Role userRole = getRoleByUserId2(userId);
         Departement userDept = getDepartmentByUserId2(userId);
-
         if (userRole == null || userDept == null) {
             System.out.println("Invalid role or department for user ID: " + userId);
             return null;
         }
-
-        System.out.println("User Role: " + userRole.getNom());
-        System.out.println("User Department: " + userDept.getNom());
-
         if ("Employe".equals(userRole.getNom())) {
             // Special case for Employe role
             String query = "SELECT u.ID_User FROM user_role ur JOIN user u ON ur.ID_User = u.ID_User " +

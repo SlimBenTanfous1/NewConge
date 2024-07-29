@@ -10,6 +10,7 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
@@ -56,7 +57,7 @@ import java.util.stream.Collectors;
 
 public class paneUserController implements Initializable {
     public int state = 0;
-    public int state1=0;
+    public int state1 = 0;
     @FXML
     private TextField Depart_field;
     @FXML
@@ -142,7 +143,6 @@ public class paneUserController implements Initializable {
     private TreeItem<Departement> originalDeptRoot;
 
 
-
     @FXML
     public GridPane UserContainers;
     @FXML
@@ -167,7 +167,7 @@ public class paneUserController implements Initializable {
     private Pane UserPane1;
 
     @FXML
-    public Button removeFilterButton, adduserbtn,toggleButton,toggleButtonR,toggleButtonDep;
+    public Button removeFilterButton, adduserbtn, toggleButton, toggleButtonR, toggleButtonDep;
 
     @FXML
     private Tab TabAffectationid;
@@ -203,13 +203,13 @@ public class paneUserController implements Initializable {
     @FXML
     public Button upload;
     @FXML
-    private Button Annuler2,handleremove2,handleedit2,Enregistrer2;
+    private Button Annuler2, handleremove2, handleedit2, Enregistrer2;
     @FXML
-    private HBox Hfirst2,hsecond2;
+    private HBox Hfirst2, hsecond2;
     private Image TriAZ;
     private Image TriZA;
     @FXML
-    private ImageView toggleIcon,toggleIconDep,toggleIconR;
+    private ImageView toggleIcon, toggleIconDep, toggleIconR;
     private boolean isAscending1 = true;
     private boolean isAscending2 = true;
     private boolean isAscending3 = true;
@@ -326,10 +326,6 @@ public class paneUserController implements Initializable {
         CongeVbox.setPadding(new Insets(10, 0, 10, 0));
         CongeVbox.setSpacing(10);
     }
-
-
-
-
 
     private void filterTree(String searchText) {
         if (searchText == null || searchText.isEmpty()) {
@@ -489,6 +485,7 @@ public class paneUserController implements Initializable {
             CongeVbox.getChildren().add(soldeRow);
         }
     }
+
     private List<UserSolde> getSoldeCongeByUserId(int userId) {
         List<UserSolde> soldeCongeList = new ArrayList<>();
         String query = "SELECT us.*, tc.Designation FROM user_solde us " +
@@ -514,6 +511,7 @@ public class paneUserController implements Initializable {
         }
         return soldeCongeList;
     }
+
     @FXML
     void SelecHierar(ActionEvent event) {
         if (hierarCombo.getValue().equals("Utilisateurs")) {
@@ -531,6 +529,7 @@ public class paneUserController implements Initializable {
             deptTable.setRowFactory(tv -> new ColoredTreeRowDepartment()); // Apply department highlighting
         }
     }
+
     private void filterDeptTree(String searchText) {
         if (searchText == null || searchText.isEmpty()) {
             deptTable.setRoot(originalDeptRoot); // Reset to the original root when the search text is empty
@@ -626,7 +625,6 @@ public class paneUserController implements Initializable {
             e.printStackTrace();
         }
     }
-
 
 
     private void handleRoleSelection(Role selectedRole) {
@@ -969,6 +967,7 @@ public class paneUserController implements Initializable {
                     role.getDescription().toLowerCase().contains(lowerCaseFilter);
         });
     }
+
     @FXML
     private void handleEditUser() {
         userListView.setDisable(false);
@@ -985,8 +984,6 @@ public class paneUserController implements Initializable {
         Hfirst2.setDisable(false);
 
     }
-
-
 
 
     @FXML
@@ -1017,7 +1014,6 @@ public class paneUserController implements Initializable {
         }
         reset2();
     }
-
 
 
     @FXML
@@ -1058,17 +1054,13 @@ public class paneUserController implements Initializable {
     }
 
 
-
-
-
-
     @FXML
     void Annuler_user2(ActionEvent event) {
         reset2();
 
     }
 
-    void reset2(){
+    void reset2() {
         userListView.setDisable(false);
         roleListView.setDisable(false);
         departListView.setDisable(false);
@@ -1423,6 +1415,7 @@ public class paneUserController implements Initializable {
             exportToExcel(users, String.valueOf(file));
         }
     }
+
     private void exportToExcel(List<User> users, String fileName) {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Utilisateurs");
