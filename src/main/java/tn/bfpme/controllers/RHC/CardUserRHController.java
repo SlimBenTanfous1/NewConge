@@ -17,6 +17,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import tn.bfpme.models.User;
+import tn.bfpme.services.ServiceDepartement;
+import tn.bfpme.services.ServiceRole;
 import tn.bfpme.services.ServiceSubordinateManager;
 import tn.bfpme.services.ServiceUtilisateur;
 import tn.bfpme.utils.MyDataBase;
@@ -50,7 +52,9 @@ public class CardUserRHController {
 
     private static Connection cnx = MyDataBase.getInstance().getCnx();
     private final ServiceUtilisateur UserS = new ServiceUtilisateur();
-    private final ServiceSubordinateManager SSM = new ServiceSubordinateManager();
+    private final ServiceDepartement depService = new ServiceDepartement();
+    private final ServiceRole roleService = new ServiceRole();
+    private final ServiceSubordinateManager SSM = new ServiceSubordinateManager(roleService, depService);
     int uid;
     String unom, uprenom, uemail, umdp, urole, udepart, updp;
 
