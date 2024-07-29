@@ -144,7 +144,7 @@ public class paneUserController implements Initializable {
     @FXML
     private Label affectationlabel;
     @FXML
-    public AnchorPane UtilisateursPane;
+    public Pane UtilisateursPane;
     @FXML
     public ListView<Departement> departListView;
     @FXML
@@ -163,7 +163,7 @@ public class paneUserController implements Initializable {
     private Pane UserPane1;
 
     @FXML
-    public Button removeFilterButton, adduserbtn;
+    public Button removeFilterButton, adduserbtn,toggleButton;
 
     @FXML
     private Tab TabAffectationid;
@@ -198,24 +198,25 @@ public class paneUserController implements Initializable {
     public HBox Hfirst;
     @FXML
     public Button upload;
-
-
     @FXML
     private Button Annuler2,handleremove2,handleedit2,Enregistrer2;
-
     @FXML
     private HBox Hfirst2,hsecond2;
-
-
+    private Image TriAZ;
+    private Image TriZA;
+    @FXML
+    private ImageView toggleIcon;
+    private boolean isAscending = true;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        Platform.runLater(() -> {
+        /*Platform.runLater(() -> {
             Stage stage = (Stage) UtilisateursPane.getScene().getWindow();
             stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(UtilisateursPane, stage.getWidth(), stage.getHeight()));
             stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(UtilisateursPane, stage.getWidth(), stage.getHeight()));
             FontResizer.resizeFonts(UtilisateursPane, stage.getWidth(), stage.getHeight());
-        });
+        });*/
+        reset2();
         loadUsers();
         loadUsers1();
         loadUsers3();
@@ -227,7 +228,19 @@ public class paneUserController implements Initializable {
                 resetAffectationTab();
             }
         });
-
+        TriAZ = new Image(getClass().getResourceAsStream("/assets/imgs/AZ.png"));
+        TriZA = new Image(getClass().getResourceAsStream("/assets/imgs/ZA.png"));
+        toggleIcon.setImage(TriAZ);
+        toggleButton.setOnAction(event -> {
+            if (isAscending) {
+                loadTriUserDESC();
+                toggleIcon.setImage(TriZA);
+            } else {
+                loadTriUsersAZ();
+                toggleIcon.setImage(TriAZ);
+            }
+            isAscending = !isAscending;
+        });
         loadRolesIntoComboBox();
         setupRemoveFilterButton();
         setupRoleSearchBar();
@@ -320,6 +333,7 @@ public class paneUserController implements Initializable {
         } else {
             System.out.println("Selected user is null"); // Debugging
         }
+
     }
 
     public void populateSoldeFields(User user) {
@@ -441,6 +455,67 @@ public class paneUserController implements Initializable {
         users = FXCollections.observableArrayList(userList);
         filteredData = new FilteredList<>(users, p -> true);
 
+        int column = 0;
+        int row = 0;
+        try {
+            for (User user : filteredData) {
+                FXMLLoader fxmlLoader = new FXMLLoader();
+                fxmlLoader.setLocation(getClass().getResource("/RH_User_Card.fxml"));
+                Pane userBox = fxmlLoader.load();
+                CardUserRHController cardController = fxmlLoader.getController();
+                Departement department = depService.getDepartmentById(user.getIdDepartement());
+                Role role = roleService.getRoleByUserId(user.getIdUser());
+                userBox.prefWidthProperty().bind(UserContainers.widthProperty()/*.divide(2).subtract(20)*/);
+                String departmentName = department != null ? department.getNom() : "N/A";
+                String roleName = role != null ? role.getNom() : "N/A";
+                cardController.setData(user, roleName, departmentName);
+                if (column == 1) {
+                    column = 0;
+                    row++;
+                }
+                UserContainers.add(userBox, column++, row);
+                GridPane.setMargin(userBox, new javafx.geometry.Insets(10));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadTriUsersAZ() {
+        UserContainers.getChildren().clear();
+        List<User> userList = userService.TriUsersASC();
+        users = FXCollections.observableArrayList(userList);
+        filteredData = new FilteredList<>(users, p -> true);
+        int column = 0;
+        int row = 0;
+        try {
+            for (User user : filteredData) {
+                FXMLLoader fxmlLoader = new FXMLLoader();
+                fxmlLoader.setLocation(getClass().getResource("/RH_User_Card.fxml"));
+                Pane userBox = fxmlLoader.load();
+                CardUserRHController cardController = fxmlLoader.getController();
+                Departement department = depService.getDepartmentById(user.getIdDepartement());
+                Role role = roleService.getRoleByUserId(user.getIdUser());
+                userBox.prefWidthProperty().bind(UserContainers.widthProperty()/*.divide(2).subtract(20)*/);
+                String departmentName = department != null ? department.getNom() : "N/A";
+                String roleName = role != null ? role.getNom() : "N/A";
+                cardController.setData(user, roleName, departmentName);
+                if (column == 1) {
+                    column = 0;
+                    row++;
+                }
+                UserContainers.add(userBox, column++, row);
+                GridPane.setMargin(userBox, new javafx.geometry.Insets(10));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private void loadTriUserDESC() {
+        UserContainers.getChildren().clear();
+        List<User> userList = userService.TriUsersDESC();
+        users = FXCollections.observableArrayList(userList);
+        filteredData = new FilteredList<>(users, p -> true);
         int column = 0;
         int row = 0;
         try {
@@ -815,14 +890,11 @@ public class paneUserController implements Initializable {
         roleListView.setDisable(false);
         departListView.setDisable(false);
         User_field.setDisable(false);
-        User_field.setText("");
         Role_field.setDisable(false);
-        Role_field.setText("");
         Depart_field.setDisable(false);
-        Depart_field.setText("");
-        hsecond2.setVisible(true);
-        hsecond2.setDisable(false);
-        handleedit2.setDisable(false);
+        hsecond2.setVisible(false);
+        hsecond2.setDisable(true);
+        handleedit2.setDisable(true);
         handleremove2.setDisable(true);
         Hfirst2.setVisible(true);
         Hfirst2.setDisable(false);
@@ -834,21 +906,31 @@ public class paneUserController implements Initializable {
 
     @FXML
     private void handleRemoveUserAssignment() {
-        Integer userId = selectedUser.getIdUser();
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Êtes vous sûrs?");
+        alert.setHeaderText("Êtes-vous certain de vouloir supprimer ce role/département ?");
+        ButtonType Oui = new ButtonType("Oui");
+        ButtonType Non = new ButtonType("Non");
+        alert.getButtonTypes().setAll(Oui, Non);
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == Oui) {
+            Integer userId = selectedUser.getIdUser();
 
-        if (userId != null) {
-            try {
-                usersubordinateService.removeRoleAndDepartment(userId);
-                affectationlabel.setText("Rôle et département supprimés.");
-                loadUsers3();
-                resetAffectationTab(); // Reset the tab after deletion
-            } catch (Exception e) {
-                e.printStackTrace();
-                showError("Une erreur s'est produite : " + e.getMessage());
+            if (userId != null) {
+               try {
+                    usersubordinateService.removeRoleAndDepartment(userId);
+                    affectationlabel.setText("Rôle et département supprimés.");
+                    loadUsers3();
+                    resetAffectationTab(); // Reset the tab after deletion
+               } catch (Exception e) {
+                    e.printStackTrace();
+                    showError("Une erreur s'est produite : " + e.getMessage());
+               }
+            } else {
+                showError("Veuillez sélectionner un utilisateur pour supprimer l'affectation.");
             }
-        } else {
-            showError("Veuillez sélectionner un utilisateur pour supprimer l'affectation.");
         }
+        reset2();
     }
 
 
@@ -887,6 +969,7 @@ public class paneUserController implements Initializable {
         } else {
             showError("Veuillez sélectionner un utilisateur à modifier.");
         }
+        reset2();
     }
 
 
@@ -901,6 +984,9 @@ public class paneUserController implements Initializable {
         userListView.setDisable(false);
         roleListView.setDisable(false);
         departListView.setDisable(false);
+        userListView.getSelectionModel().clearSelection();
+        roleListView.getSelectionModel().clearSelection();
+        departListView.getSelectionModel().clearSelection();
         User_field.setDisable(false);
         User_field.setText("");
         Role_field.setDisable(false);
@@ -910,7 +996,7 @@ public class paneUserController implements Initializable {
         hsecond2.setVisible(true);
         hsecond2.setDisable(false);
         handleedit2.setDisable(false);
-        handleremove2.setDisable(true);
+        handleremove2.setDisable(false);
         Hfirst2.setVisible(false);
         Hfirst2.setDisable(true);
     }
