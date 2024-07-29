@@ -683,8 +683,6 @@ public class paneUserController implements Initializable {
                 TreeItem<User> item = new TreeItem<>(user);
                 treeItemMap.put(user.getIdUser(), item);
             }
-
-            // Attach children to their respective parents
             for (User user : users) {
                 TreeItem<User> item = treeItemMap.get(user.getIdUser());
                 TreeItem<User> parentItem = treeItemMap.getOrDefault(user.getIdManager(), root);
