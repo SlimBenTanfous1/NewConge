@@ -46,36 +46,6 @@ public class ServiceUtilisateur implements IUtilisateur {
         return users;
     }
 
-    @Override
-    public List<User> afficherusers() {
-        List<User> userList = new ArrayList<>();
-        String sql = "SELECT * FROM user";
-
-        try {
-            PreparedStatement ps = cnx.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                User user = new User();
-                user.setIdUser(rs.getInt("ID_User"));
-                user.setNom(rs.getString("Nom"));
-                user.setPrenom(rs.getString("Prenom"));
-                user.setEmail(rs.getString("Email"));
-                user.setMdp(rs.getString("MDP"));
-                user.setImage(rs.getString("Image"));
-                Date creationDate = rs.getDate("Creation_Date");
-                if (creationDate != null) {
-                    user.setCreationDate(creationDate.toLocalDate());
-                }
-
-                userList.add(user);
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-
-        return userList;
-    }
-
     public UserConge AfficherEnAttente() {
         List<User> users = new ArrayList<>();
         List<Conge> conges = new ArrayList<>();
@@ -631,100 +601,6 @@ public class ServiceUtilisateur implements IUtilisateur {
         return new UserConge(users, conges);
     }
 
-    @Override
-    public List<User> RechrecheRH(String recherche) {
-        List<User> users = new ArrayList<>();
-        String sql = "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.Image, u.ID_Departement, tc.ID_TypeConge, tc.Designation, tc.Pas, tc.Periode, tc.File " +
-                "FROM `user` u " +
-                "LEFT JOIN `user_typeconge` utc ON u.ID_User = utc.ID_User " +
-                "LEFT JOIN `typeconge` tc ON utc.ID_TypeConge = tc.ID_TypeConge " +
-                "WHERE u.`ID_User` LIKE ? " +
-                "AND (u.`Nom` LIKE ? " +
-                "OR u.`Prenom` LIKE ? " +
-                "OR u.`Email` LIKE ? )";
-        try (PreparedStatement ste = cnx.prepareStatement(sql)) {
-            String searchPattern = "%" + recherche + "%";
-            ste.setString(1, "%" + SessionManager.getInstance().getUser().getIdUser() + "%");
-            ste.setString(2, searchPattern);
-            ste.setString(3, searchPattern);
-            ste.setString(4, searchPattern);
-            ResultSet rs = ste.executeQuery();
-            while (rs.next()) {
-                User user = new User();
-                user.setIdUser(rs.getInt("ID_User"));
-                user.setNom(rs.getString("Nom"));
-                user.setPrenom(rs.getString("Prenom"));
-                user.setEmail(rs.getString("Email"));
-                user.setImage(rs.getString("Image"));
-                user.setIdDepartement(rs.getInt("ID_Departement"));
-
-                TypeConge typeConge = new TypeConge();
-                // typeConge.setIdTypeConge(rs.getInt("ID_TypeConge"), totalSolde);
-                typeConge.setDesignation(rs.getString("Designation"));
-                typeConge.setPas(rs.getDouble("Pas"));
-                typeConge.setPeriode(rs.getString("Periode"));
-                typeConge.setFile(rs.getBoolean("File"));
-
-                user.addTypeConge(typeConge);
-
-                if (!users.contains(user)) {
-                    users.add(user);
-                }
-            }
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
-        return users;
-    }
-
-    public User getChef() {
-        User chef = null;
-        Connection cnx = MyDataBase.getInstance().getCnx(); // Assuming MyDataBase is your connection manager
-
-        // Get the current user's department ID and role ID
-        int currentDeptId = SessionManager.getInstance().getUser().getIdDepartement();
-        int currentRoleId = SessionManager.getInstance().getUserRole().getIdRole();
-
-        // Find parent roles of the current user's role
-        List<Integer> parentRoleIds = ServiceRole.getParentRoleIds(currentRoleId);
-        if (parentRoleIds.isEmpty()) {
-            return null;
-        }
-
-        // Create SQL query to find a user with one of the parent roles in the same department
-        String query = "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.Image, u.ID_Departement " +
-                "FROM user u " +
-                "JOIN user_role ur ON u.ID_User = ur.ID_User " +
-                "WHERE u.ID_Departement = ? AND ur.ID_Role IN (" +
-                parentRoleIds.stream().map(String::valueOf).collect(Collectors.joining(",")) +
-                ") LIMIT 1";
-
-        try {
-            PreparedStatement ps = cnx.prepareStatement(query);
-            ps.setInt(1, currentDeptId);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                chef = new User();
-                chef.setIdUser(rs.getInt("ID_User"));
-                chef.setNom(rs.getString("Nom"));
-                chef.setPrenom(rs.getString("Prenom"));
-                chef.setEmail(rs.getString("Email"));
-                chef.setImage(rs.getString("Image"));
-                chef.setIdDepartement(rs.getInt("ID_Departement"));
-
-                // Retrieve the TypeConge associated with the chef
-                List<TypeConge> typeConges = getTypeCongesByUserId(chef.getIdUser());
-                for (TypeConge typeConge : typeConges) {
-                    chef.addTypeConge(typeConge);
-                }
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-
-        return chef;
-    }
 
     private List<TypeConge> getTypeCongesByUserId(int userId) {
         List<TypeConge> typeConges = new ArrayList<>();
@@ -830,61 +706,6 @@ public class ServiceUtilisateur implements IUtilisateur {
     }
 
     @Override
-    public void updateUser(User user) {
-        String query = "UPDATE user SET Nom=?, Prenom=?, Email=?, MDP=?, Image=?, ID_Departement=?, ID_Manager=? WHERE ID_User=?";
-        try {
-            PreparedStatement pst = cnx.prepareStatement(query);
-            pst.setString(1, user.getNom());
-            pst.setString(2, user.getPrenom());
-            pst.setString(3, user.getEmail());
-            pst.setString(4, user.getMdp());
-            pst.setString(5, user.getImage());
-            pst.setInt(6, user.getIdDepartement());
-            pst.setInt(7, user.getIdManager());
-            pst.setInt(8, user.getIdUser());
-            pst.executeUpdate();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    @Override
-    public List<User> getAllUsersInfo() {
-        return getAllUsers();
-    }
-
-    @Override
-    public void addUser(String nom, String prenom, String email, String mdp, String image, int idDepartement, int idRole) {
-        String query = "INSERT INTO user (Nom, Prenom, Email, MDP, Image, ID_Departement, ID_Manager, Creation_Date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        try {
-            PreparedStatement pst = cnx.prepareStatement(query);
-            pst.setString(1, nom);
-            pst.setString(2, prenom);
-            pst.setString(3, email);
-            pst.setString(4, mdp);
-            pst.setString(5, image);
-            pst.setInt(6, idDepartement);
-            pst.setInt(7, idRole);
-            pst.setDate(8, Date.valueOf(LocalDate.now()));
-            pst.executeUpdate();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    @Override
-    public void deleteUser(int idUser) {
-        String query = "DELETE FROM user WHERE ID_User=?";
-        try {
-            PreparedStatement pst = cnx.prepareStatement(query);
-            pst.setInt(1, idUser);
-            pst.executeUpdate();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    @Override
     public void Add(User user) {
         String query = "INSERT INTO user (`Nom`, `Prenom`, `Email`, `MDP`, `Image`, `ID_Departement`, `ID_Manager`, `Creation_Date`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try {
@@ -946,23 +767,6 @@ public class ServiceUtilisateur implements IUtilisateur {
     }
 
     @Override
-    public List<User> Show() {
-        return getAllUsers();
-    }
-
-    @Override
-    public void Delete(User user) throws SQLException {
-        String query = "DELETE FROM user WHERE ID_User=?";
-        try {
-            PreparedStatement pst = cnx.prepareStatement(query);
-            pst.setInt(1, user.getIdUser());
-            pst.executeUpdate();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    @Override
     public void DeleteByID(int id) {
         String query = "DELETE FROM user WHERE ID_User=?";
         try {
@@ -975,21 +779,6 @@ public class ServiceUtilisateur implements IUtilisateur {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-    }
-
-    @Override
-    public List<User> SortDepart() {
-        return null;
-    }
-
-    @Override
-    public List<User> SortRole() {
-        return null;
-    }
-
-    @Override
-    public List<User> searchUsers(String query) {
-        return null;
     }
 
     @Override
@@ -1397,11 +1186,6 @@ public class ServiceUtilisateur implements IUtilisateur {
             ex.printStackTrace();
         }
         return userList;
-    }
-
-    @Override
-    public void updateUserRoleAndDepartment(int userId, int roleId, int departmentId) throws SQLException {
-
     }
 
     public Departement getDepartmentByUserId(int userId) {
