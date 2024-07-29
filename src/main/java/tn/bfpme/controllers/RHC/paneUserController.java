@@ -36,6 +36,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import tn.bfpme.models.*;
 import tn.bfpme.services.*;
 import tn.bfpme.utils.FontResizer;
+import tn.bfpme.utils.ColoredTreeCell;
 import tn.bfpme.utils.MyDataBase;
 import tn.bfpme.utils.SessionManager;
 
@@ -73,6 +74,7 @@ public class paneUserController implements Initializable {
     private TreeTableColumn<Role, Integer> RoleParColumn;
     @FXML
     private TreeTableColumn<Role, String> RoleFilsColumn;
+
 
     @FXML
     private TreeTableView<Departement> deptTable;
@@ -169,6 +171,8 @@ public class paneUserController implements Initializable {
 
     @FXML
     private Tab TabAffectationid;
+    @FXML
+    private TreeView<User> userTreeView;
 
 
     public User selectedUser;
@@ -269,6 +273,7 @@ public class paneUserController implements Initializable {
             }
             isAscending3 = !isAscending3;
         });
+
 
         loadRolesIntoComboBox();
         setupRemoveFilterButton();
