@@ -35,9 +35,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import tn.bfpme.models.*;
 import tn.bfpme.services.*;
-import tn.bfpme.utils.FontResizer;
-import tn.bfpme.utils.MyDataBase;
-import tn.bfpme.utils.SessionManager;
+import tn.bfpme.utils.*;
 
 import java.io.*;
 
@@ -218,7 +216,6 @@ public class paneUserController implements Initializable {
             stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(UtilisateursPane, stage.getWidth(), stage.getHeight()));
             FontResizer.resizeFonts(UtilisateursPane, stage.getWidth(), stage.getHeight());
         });
-        reset2();
         loadUsers();
         loadUsers1();
         loadUsers3();
@@ -259,11 +256,24 @@ public class paneUserController implements Initializable {
             }
         });
 
+        // Set the custom cell factory for each column
+        idUserColumn.setCellFactory(column -> new ColoredTreeCell());
+        prenomUserColumn.setCellFactory(column -> new ColoredTreeCell());
+        nomUserColumn.setCellFactory(column -> new ColoredTreeCell());
+        roleUserColumn.setCellFactory(column -> new ColoredTreeCell());
+        departUserColumn.setCellFactory(column -> new ColoredTreeCell());
+        managerUserColumn.setCellFactory(column -> new ColoredTreeCell());
+
+        // Set the custom row factory for the TreeTableView
+        userTable.setRowFactory(tv -> new ColoredTreeRow());
+
         // Clear solde fields initially
         clearSoldeFields();
         CongeVbox.setPadding(new Insets(10, 0, 10, 0));
         CongeVbox.setSpacing(10);
     }
+
+
 
     private void handleUserSelection(User selectedUser) {
         System.out.println("User selected: " + selectedUser); // Debugging
