@@ -879,30 +879,8 @@ public class paneUserController implements Initializable {
         }
     }
 
-    @FXML
-    private void handleRemoveUserAssignment() {
-        Integer userId = selectedUser.getIdUser();
-        if (userId != null) {
-            try {
-                usersubordinateService.removeRoleAndDepartment(userId);
-                affectationlabel.setText("Rôle et département supprimés.");
-                loadUsers3();
-                resetAffectationTab(); // Reset the tab after deletion
-            } catch (Exception e) {
-                e.printStackTrace();
-                showError("Une erreur s'est produite : " + e.getMessage());
-            }
-        } else {
-            showError("Veuillez sélectionner un utilisateur pour supprimer l'affectation.");
-        }
-    }
 
 
-
-    @FXML
-    void Enregistrer_user2(ActionEvent event) {
-
-    }
     @FXML
     void Annuler_user2(ActionEvent event) {
         reset2();
