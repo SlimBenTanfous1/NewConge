@@ -151,8 +151,6 @@ public class ServiceConge implements IConge<Conge> {
         }
     }
 
-
-
     @Override
     public void deleteCongeByID(int id) {
         try {
