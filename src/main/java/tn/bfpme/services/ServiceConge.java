@@ -5,6 +5,7 @@ import tn.bfpme.models.*;
 import tn.bfpme.models.Statut;
 import tn.bfpme.utils.MyDataBase;
 import tn.bfpme.utils.SessionManager;
+
 import java.sql.Connection;
 
 
@@ -14,41 +15,9 @@ import java.util.List;
 
 public class ServiceConge implements IConge<Conge> {
     private static Connection cnx;
-
-
     public ServiceConge() {
         cnx = MyDataBase.getInstance().getCnx();
     }
-
-    public static List<Conge> getCongesByUserId(int idUser) {
-        List<Conge> conges = new ArrayList<>();
-        String sql = "SELECT * FROM conge WHERE ID_User = ?";
-        try {
-            if (cnx == null || cnx.isClosed()) {
-                cnx = MyDataBase.getInstance().getCnx();
-            }
-            PreparedStatement stm = cnx.prepareStatement(sql);
-            stm.setInt(1, idUser);
-            ResultSet rs = stm.executeQuery();
-            while (rs.next()) {
-                Conge conge = new Conge();
-                conge.setIdConge(rs.getInt("ID_Conge"));
-                conge.setDateDebut(rs.getDate("DateDebut").toLocalDate());
-                conge.setDateFin(rs.getDate("DateFin").toLocalDate());
-                conge.setTypeConge(rs.getInt("TypeConge")); // Assuming TypeConge is int, you might need to adjust this
-                conge.setStatut(Statut.valueOf(rs.getString("Statut"))); // Assuming Statut is an enum
-                conge.setFile(rs.getString("file"));
-                conge.setDescription(rs.getString("description"));
-                conge.setIdUser(rs.getInt("ID_User"));
-                conge.setMessage(rs.getString("Message"));
-                conges.add(conge);
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        return conges;
-    }
-
 
     public String getCongeTypeName(int idType) {
         String query = "SELECT Designation FROM typeconge WHERE ID_TypeConge = ?";
@@ -67,6 +36,7 @@ public class ServiceConge implements IConge<Conge> {
         }
         return typeName;
     }
+
     public void AddConge(Conge conge) {
         String qry = "INSERT INTO `conge`(`DateDebut`, `DateFin`, `TypeConge`, `Statut`, `file`, `description`, `ID_User`) VALUES (?,?,?,?,?,?,?)";
         try {
@@ -86,7 +56,6 @@ public class ServiceConge implements IConge<Conge> {
             System.out.println(e.getMessage());
         }
     }
-
 
     @Override
     public List<Conge> afficher() {
@@ -144,18 +113,7 @@ public class ServiceConge implements IConge<Conge> {
             System.out.println(e.getMessage());
         }
     }
-    private void updateBalance(int userId, int typeCongeId, double newBalance) {
-        String query = "UPDATE user_Solde SET TotalSolde = ? WHERE ID_User = ? AND ID_TypeConge = ?";
-        try (Connection conn = MyDataBase.getInstance().getCnx();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setDouble(1, newBalance);
-            pstmt.setInt(2, userId);
-            pstmt.setInt(3, typeCongeId);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+
     @Override
     public void updateConge(Conge conge) {
         cnx = MyDataBase.getInstance().getCnx();
@@ -443,43 +401,4 @@ public class ServiceConge implements IConge<Conge> {
             System.out.println(ex.getMessage());
         }
     }
-
-    public String AfficherMessage(int id) {
-        String Message = "";
-        String sql = "SELECT `Message` FROM `conge` WHERE `ID_Conge`=? AND `Message` IS NOT NULL AND `Message` <> '' ";
-        try {
-            PreparedStatement stm = cnx.prepareStatement(sql);
-            stm.setInt(1, id);
-            ResultSet rs = stm.executeQuery(sql);
-            while (rs.next()) {
-                Message = rs.getString("Message");
-            }
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
-        return Message;
-    }
-
-    // New methods for leave request handling
-    public int getSupervisor(int userId) throws SQLException {
-        String sql = "SELECT ID_Manager FROM user WHERE ID_User = ?";
-        try (PreparedStatement stmt = cnx.prepareStatement(sql)) {
-            stmt.setInt(1, userId);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt("ID_Manager");
-            } else {
-                throw new SQLException("Manager not found for user ID: " + userId);
-            }
-        }
-    }
-
-    public void handleLeaveRequest(Conge conge) throws SQLException {
-        Add(conge);
-        int supervisorId = getSupervisor(conge.getIdUser());
-        ServiceNotification notificationService = new ServiceNotification();
-        notificationService.NewNotification(supervisorId, "New leave request", 0, "You have a new leave request to review.");
-    }
-
-
 }

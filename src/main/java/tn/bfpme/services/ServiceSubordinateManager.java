@@ -15,9 +15,7 @@ import java.util.List;
 public class ServiceSubordinateManager {
     private ServiceRole roleService;
     private ServiceDepartement departementService;
-
     private static Connection cnx = MyDataBase.getInstance().getCnx();
-
     public ServiceSubordinateManager(ServiceRole roleService, ServiceDepartement departementService) {
         this.roleService = roleService;
         this.departementService = departementService;
@@ -27,48 +25,6 @@ public class ServiceSubordinateManager {
         if (cnx == null || cnx.isClosed()) {
             cnx = MyDataBase.getInstance().getCnx();
         }
-    }
-
-    public User getUserById(int userId) throws SQLException {
-        ensureConnection();
-        String query = "SELECT u.*, d.nom AS departementNom, r.nom AS roleNom, r.ID_Role, r.Level AS roleLevel, d.ID_Departement, d.Level AS deptLevel, d.Parent_Dept " +
-                "FROM user u " +
-                "LEFT JOIN departement d ON u.ID_Departement = d.ID_Departement " +
-                "LEFT JOIN user_role ur ON u.ID_User = ur.ID_User " +
-                "LEFT JOIN role r ON ur.ID_Role = r.ID_Role " +
-                "WHERE u.ID_User = ?";
-        try (PreparedStatement statement = cnx.prepareStatement(query)) {
-            statement.setInt(1, userId);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                User user = extractUserFromResultSet(resultSet);
-                user.setDepartementNom(resultSet.getString("departementNom"));
-                user.setRoleNom(resultSet.getString("roleNom"));
-                user.setIdRole(resultSet.getInt("ID_Role"));
-                user.setIdDepartement(resultSet.getInt("ID_Departement"));
-                return user;
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving user by ID: " + e.getMessage(), e);
-        }
-        return null;
-    }
-
-    private User extractUserFromResultSet(ResultSet resultSet) throws SQLException {
-        User user = new User();
-        user.setIdUser(resultSet.getInt("ID_User"));
-        user.setNom(resultSet.getString("nom"));
-        user.setPrenom(resultSet.getString("prenom"));
-        user.setEmail(resultSet.getString("email"));
-        user.setMdp(resultSet.getString("MDP"));
-        user.setImage(resultSet.getString("image"));
-        user.setCreationDate(resultSet.getDate("Creation_Date") != null ? resultSet.getDate("Creation_Date").toLocalDate() : null);
-        user.setIdManager(resultSet.getInt("ID_Manager"));
-        user.setIdDepartement(resultSet.getInt("ID_Departement"));
-        user.setID_UserSolde(resultSet.getInt("idSolde"));
-        user.setDepartementNom(resultSet.getString("departementNom"));
-        user.setRoleNom(resultSet.getString("roleNom"));
-        return user;
     }
 
     private Integer findManagerByHierarchy(int userId, int roleId, int departmentId) throws SQLException {
@@ -146,20 +102,6 @@ public class ServiceSubordinateManager {
             throw new RuntimeException("Error finding manager: " + e.getMessage(), e);
         }
         return null;
-    }
-
-    private void updateSubordinateManagers(int managerId, int departmentId) throws SQLException {
-        String query = "SELECT u.ID_User FROM user u WHERE u.ID_Departement = ? AND u.ID_Manager IS NULL";
-        try (PreparedStatement statement = cnx.prepareStatement(query)) {
-            statement.setInt(1, departmentId);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                int subordinateId = resultSet.getInt("ID_User");
-                updateUserManager(subordinateId, managerId);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error updating subordinate managers: " + e.getMessage(), e);
-        }
     }
 
     public void updateUserManager(int userId, Integer managerId) throws SQLException {
@@ -274,44 +216,6 @@ public class ServiceSubordinateManager {
         }
     }
 
-
-    public void reassignManagersForAllUsers() throws SQLException {
-        List<User> allUsers = getAllUsers();
-        for (User user : allUsers) {
-            if (user.getIdManager() == 0) {
-                int managerId = findManager(user.getIdUser(), user.getIdRole(), user.getIdDepartement());
-                if (managerId != user.getIdUser()) {
-                    updateUserManager(user.getIdUser(), managerId);
-                }
-            }
-        }
-    }
-
-    public void reassignUsersWithoutManager(int newManagerId) throws SQLException {
-        ensureConnection();
-
-        User newManager = getUserById(newManagerId);
-        if (newManager == null) {
-            return;
-        }
-        Role newManagerRole = getRoleByUserId2(newManager.getIdUser());
-        Departement newManagerDept = getDepartmentByUserId2(newManager.getIdUser());
-
-        List<User> usersWithoutManager = getUsersWithoutManager();
-        for (User user : usersWithoutManager) {
-            Role userRole = getRoleByUserId2(user.getIdUser());
-            Departement userDept = getDepartmentByUserId2(user.getIdUser());
-
-            if (userRole != null && userDept != null) {
-                if (userRole.getLevel() < newManagerRole.getLevel() &&
-                        userDept.getLevel() > newManagerDept.getLevel() &&
-                        userDept.getParentDept() == newManager.getIdDepartement()) {
-                    updateUserManager(user.getIdUser(), newManagerId);
-                }
-            }
-        }
-    }
-
     public void assignRoleAndDepartment(int userId, int roleId, int departmentId) throws SQLException {
         ensureConnection();
         System.out.println("Assigning role and department for user ID: " + userId);
@@ -351,7 +255,6 @@ public class ServiceSubordinateManager {
         }
     }
 
-
     private void reassignDirectorsToDG(int dgUserId) throws SQLException {
         String query = "SELECT u.ID_User FROM user u " +
                 "JOIN user_role ur ON u.ID_User = ur.ID_User " +
@@ -378,51 +281,6 @@ public class ServiceSubordinateManager {
             return null;
         }
         return findManagerByHierarchy(userId, roleId, departmentId);
-    }
-
-    public List<User> getAllUsers() throws SQLException {
-        ensureConnection();
-        List<User> users = new ArrayList<>();
-        String query = "SELECT u.*, d.nom AS departementNom, r.nom AS roleNom " +
-                "FROM user u " +
-                "LEFT JOIN departement d ON u.ID_Departement = d.ID_Departement " +
-                "LEFT JOIN user_role ur ON u.ID_User = ur.ID_User " +
-                "LEFT JOIN role r ON ur.ID_Role = r.ID_Role";
-        try (PreparedStatement statement = cnx.prepareStatement(query)) {
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                User user = extractUserFromResultSet(resultSet);
-                user.setDepartementNom(resultSet.getString("departementNom"));
-                user.setRoleNom(resultSet.getString("roleNom"));
-                users.add(user);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving all users: " + e.getMessage(), e);
-        }
-        return users;
-    }
-
-    public List<User> getUsersWithoutManager() throws SQLException {
-        ensureConnection();
-        List<User> users = new ArrayList<>();
-        String query = "SELECT u.*, d.nom AS departementNom, r.nom AS roleNom " +
-                "FROM user u " +
-                "LEFT JOIN departement d ON u.ID_Departement = d.ID_Departement " +
-                "LEFT JOIN user_role ur ON u.ID_User = ur.ID_User " +
-                "LEFT JOIN role r ON ur.ID_Role = r.ID_Role " +
-                "WHERE u.ID_Manager IS NULL";
-        try (PreparedStatement statement = cnx.prepareStatement(query)) {
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                User user = extractUserFromResultSet(resultSet);
-                user.setDepartementNom(resultSet.getString("departementNom"));
-                user.setRoleNom(resultSet.getString("roleNom"));
-                users.add(user);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving users without a manager: " + e.getMessage(), e);
-        }
-        return users;
     }
 
     public Departement getDepartmentByUserId2(int userId) throws SQLException {
@@ -487,15 +345,4 @@ public class ServiceSubordinateManager {
         }
         return false;
     }
-
-    public void reassignEmployeesToNewManager(int oldManagerId, int newManagerId) throws SQLException {
-        String query = "UPDATE user SET ID_Manager = ? WHERE ID_Manager = ?";
-        try (Connection cnx = MyDataBase.getInstance().getCnx();
-             PreparedStatement statement = cnx.prepareStatement(query)) {
-            statement.setInt(1, newManagerId);
-            statement.setInt(2, oldManagerId);
-            statement.executeUpdate();
-        }
-    }
-
 }

@@ -10,7 +10,9 @@ import java.util.List;
 public class ServiceEmailTemp {
     private Connection cnx;
 
-    public ServiceEmailTemp() {this.cnx = MyDataBase.getInstance().getCnx();}
+    public ServiceEmailTemp() {
+        this.cnx = MyDataBase.getInstance().getCnx();
+    }
 
     public List<EmailsTemplates> getAllEmailsTemplates() {
         List<EmailsTemplates> emailstemps = new ArrayList<>();
@@ -44,7 +46,6 @@ public class ServiceEmailTemp {
         }
     }
 
-
     public void UpdateEmailTemp(int id, String object, String message) {
         String query = "UPDATE `email_templates` SET `object`=? ,`message`=? WHERE  `id_Email`=?";
         try (Connection cnx = MyDataBase.getInstance().getCnx();
@@ -57,6 +58,7 @@ public class ServiceEmailTemp {
             e.printStackTrace();
         }
     }
+
     public void DeleteEmailTelp(int id) {
         String query = "DELETE FROM `email_templates` WHERE `id_Email`= ?";
         try (Connection cnx = MyDataBase.getInstance().getCnx();

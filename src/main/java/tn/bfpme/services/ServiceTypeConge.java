@@ -11,7 +11,6 @@ import java.util.List;
 public class ServiceTypeConge {
     private Connection cnx;
 
-
     public ServiceTypeConge() {
         this.cnx = MyDataBase.getInstance().getCnx();
     }
@@ -34,17 +33,19 @@ public class ServiceTypeConge {
                         rs.getDouble("Limite"),
                         rs.getString("Periode")
 
-                        );
+                );
                 typeconges.add(type);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return typeconges;
-    }    public void AddTypeConge(String designation, double pas, boolean file, double limite, String periode) {
+    }
+
+    public void AddTypeConge(String designation, double pas, boolean file, double limite, String periode) {
         String query = "INSERT INTO typeconge (Designation, Pas, File,Limite, Periode) VALUES (?, ?, ?, ?, ?)";
         try (Connection connection = MyDataBase.getInstance().getCnx();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)){
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, designation);
             preparedStatement.setDouble(2, pas);
             preparedStatement.setBoolean(3, file);
@@ -72,7 +73,6 @@ public class ServiceTypeConge {
         return 0;
     }
 
-
     public int getSoldeCongeIdByDesignation(String designation) {
         String query = "SELECT ID_TypeConge FROM typeconge WHERE Designation = ?";
         try (Connection conn = MyDataBase.getInstance().getCnx();
@@ -87,6 +87,7 @@ public class ServiceTypeConge {
         }
         return 0;
     }
+
     public void updateTypeConge(int idSolde, String designation, double pas, boolean file, double limite, String periode) {
         String query = "UPDATE typeconge SET Designation = ?, Pas = ?, File = ?, Limite = ?, Periode = ? WHERE ID_TypeConge = ?";
 
@@ -110,7 +111,6 @@ public class ServiceTypeConge {
             e.printStackTrace();
         }
     }
-
 
     public void deleteTypeConge(int idSolde) {
         String query = "DELETE FROM typeconge WHERE ID_TypeConge = ?";

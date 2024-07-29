@@ -62,33 +62,6 @@ public class ServiceRole {
         }
         return role;
     }
-    private void ensureConnection() throws SQLException {
-        if (cnx == null || cnx.isClosed()) {
-            cnx = MyDataBase.getInstance().getCnx();
-        }
-    }
-
-    public Role getRoleById1(int roleId) throws SQLException {
-        ensureConnection();
-        String query = "SELECT * FROM role WHERE ID_Role = ?";
-        try (PreparedStatement statement = cnx.prepareStatement(query)) {
-            statement.setInt(1, roleId);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                Role role = new Role();
-                role.setIdRole(resultSet.getInt("ID_Role"));
-                role.setNom(resultSet.getString("nom"));
-                role.setDescription(resultSet.getString("description"));
-                role.setLevel(resultSet.getInt("Level"));
-                return role;
-            } else {
-                System.out.println("No role found for role ID: " + roleId);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving role by ID: " + e.getMessage(), e);
-        }
-        return null;
-    }
 
     public static List<Role> getChildRoles(int parentRoleId) {
         List<Role> childRoles = new ArrayList<>();
@@ -112,29 +85,6 @@ public class ServiceRole {
             e.printStackTrace();
         }
         return childRoles;
-    }
-
-    public Role getParentRole(int childRoleId) {
-        Role parentRole = null;
-        String query = "SELECT * FROM role r JOIN rolehierarchie rh ON r.ID_Role = rh.ID_RoleP WHERE rh.ID_RoleC = ?";
-        try {
-            if (cnx == null || cnx.isClosed()) {
-                cnx = MyDataBase.getInstance().getCnx();
-            }
-            PreparedStatement statement = cnx.prepareStatement(query);
-            statement.setInt(1, childRoleId);
-            ResultSet rs = statement.executeQuery();
-            if (rs.next()) {
-                parentRole = new Role(
-                        rs.getInt("ID_Role"),
-                        rs.getString("nom"),
-                        rs.getString("description")
-                );
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return parentRole;
     }
 
     public List<Role> getAllRoles() {
@@ -216,41 +166,6 @@ public class ServiceRole {
         return role;
     }
 
-    public static Role getRoleParents(int idRole) {
-        Role parentRole = null;
-        String sql = "SELECT r2.* FROM role r1 " +
-                "JOIN rolehierarchie rh ON r1.ID_Role = rh.ID_RoleC " +
-                "JOIN role r2 ON rh.ID_RoleP = r2.ID_Role " +
-                "WHERE r1.ID_Role = ?";
-        try (Connection cnx = MyDataBase.getInstance().getCnx();
-             PreparedStatement stmt = cnx.prepareStatement(sql)) {
-            stmt.setInt(1, idRole);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                parentRole = new Role(
-                        rs.getInt("ID_Role"),
-                        rs.getString("nom"),
-                        rs.getString("description")
-                );
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return parentRole;
-    }
-
-    public void addRole(Role role) {
-        String query = "INSERT INTO role (nom, description) VALUES (?, ?)";
-        try (Connection cnx = MyDataBase.getInstance().getCnx();
-             PreparedStatement pstmt = cnx.prepareStatement(query)) {
-            pstmt.setString(1, role.getNom());
-            pstmt.setString(2, role.getDescription());
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     public Role addRole2(String nom, String description, int level) {
         String insertQuery = "INSERT INTO role (nom, description,level) VALUES (?, ?,?)";
         String selectQuery = "SELECT * FROM role WHERE nom = ? AND description = ? AND level = ? ORDER BY ID_Role  DESC LIMIT 1"; // Assuming idRole is the primary key
@@ -271,7 +186,7 @@ public class ServiceRole {
                         String roleName = rs.getString("nom");
                         String roleDescription = rs.getString("description");
                         int levelRole = rs.getInt("level");
-                        return new Role(idRole, roleName, roleDescription,levelRole);
+                        return new Role(idRole, roleName, roleDescription, levelRole);
                     }
                 }
             }
@@ -293,6 +208,7 @@ public class ServiceRole {
             e.printStackTrace();
         }
     }
+
     public Role updateRole1(int idRole, int level) {
         String query = "UPDATE role SET level = ? WHERE ID_Role = ?";
         try (Connection cnx = MyDataBase.getInstance().getCnx();
@@ -361,71 +277,6 @@ public class ServiceRole {
         }
     }
 
-
-
-
-    public List<RoleHierarchie> getAllRoleHierarchies() {
-        List<RoleHierarchie> roleHierarchies = new ArrayList<>();
-        String query = "SELECT rh.ID_RoleH, rh.ID_RoleP, rh.ID_RoleC, rh.ID_Departement, rp.nom AS parentRoleName, rc.nom AS childRoleName " +
-                "FROM rolehierarchie rh " +
-                "JOIN role rp ON rh.ID_RoleP = rp.ID_Role " +
-                "JOIN role rc ON rh.ID_RoleC = rc.ID_Role";
-        try (Connection cnx = MyDataBase.getInstance().getCnx();
-             Statement stmt = cnx.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
-            while (rs.next()) {
-                RoleHierarchie roleHierarchie = new RoleHierarchie(
-                        rs.getInt("ID_RoleH"),
-                        rs.getInt("ID_RoleP"),
-                        rs.getInt("ID_RoleC"),
-                        rs.getInt("ID_Departement")
-                );
-                roleHierarchie.setParentRoleName(rs.getString("parentRoleName"));
-                roleHierarchie.setChildRoleName(rs.getString("childRoleName"));
-                roleHierarchies.add(roleHierarchie);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return roleHierarchies;
-    }
-
-    public void addRoleHierarchy(Role idP, Role idC) {
-        String query = "INSERT INTO rolehierarchie (ID_RoleP, ID_RoleC) VALUES (?, ?)";
-        try (Connection cnx = MyDataBase.getInstance().getCnx();
-             PreparedStatement pstmt = cnx.prepareStatement(query)) {
-            pstmt.setInt(1, idP.getIdRole());
-            pstmt.setInt(2, idC.getIdRole());
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void updateRoleHierarchy(int idRole, Role parent, Role child) {
-        String query = "UPDATE rolehierarchie SET ID_RoleP = ?, ID_RoleC = ? WHERE ID_RoleH = ?";
-        try (Connection cnx = MyDataBase.getInstance().getCnx();
-             PreparedStatement pstmt = cnx.prepareStatement(query)) {
-            pstmt.setInt(1, parent.getIdRole());
-            pstmt.setInt(2, child.getIdRole());
-            pstmt.setInt(3, idRole);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void deleteRoleHierarchy(int idRole) {
-        String query = "DELETE FROM rolehierarchie WHERE ID_RoleH = ?";
-        try (Connection cnx = MyDataBase.getInstance().getCnx();
-             PreparedStatement pstmt = cnx.prepareStatement(query)) {
-            pstmt.setInt(1, idRole);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     public List<Role> getParentRoles2(int roleId) {
         Connection cnx = MyDataBase.getInstance().getCnx();
         List<Role> roles = new ArrayList<>();
@@ -478,35 +329,6 @@ public class ServiceRole {
         }
 
     }
-    public Role getRoleByUserId2(int userId) throws SQLException {
-        ensureConnection();
-        System.out.println("Retrieving role for user ID: " + userId);
-        String query = "SELECT r.* FROM role r " +
-                "JOIN user_role ur ON r.ID_Role = ur.ID_Role " +
-                "WHERE ur.ID_User = ?";
-        try (PreparedStatement statement = cnx.prepareStatement(query)) {
-            statement.setInt(1, userId);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                Role role = new Role();
-                role.setIdRole(resultSet.getInt("ID_Role"));
-                role.setNom(resultSet.getString("nom"));
-                role.setDescription(resultSet.getString("description"));
-                role.setLevel(resultSet.getInt("Level"));
-                System.out.println("Retrieved role: " + role.getNom() + " for user ID: " + userId);
-                return role;
-            } else {
-                System.out.println("No role found for user ID: " + userId);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving role by user ID: " + e.getMessage(), e);
-        }
-        return null;
-    }
-
-
-
-
 
     public List<Role> getRoleParents2(int childRoleId) {
         List<Role> parents = new ArrayList<>();
@@ -529,14 +351,5 @@ public class ServiceRole {
             e.printStackTrace();
         }
         return parents;
-    }
-
-    private Role extractRoleFromResultSet(ResultSet resultSet) throws SQLException {
-        Role role = new Role();
-        role.setIdRole(resultSet.getInt("ID_Role"));
-        role.setNom(resultSet.getString("nom"));
-        role.setDescription(resultSet.getString("description"));
-        role.setLevel(resultSet.getInt("level"));
-        return role;
     }
 }

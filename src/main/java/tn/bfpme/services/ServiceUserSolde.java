@@ -9,9 +9,7 @@ import tn.bfpme.models.*;
 
 public class ServiceUserSolde {
     private static Connection cnx;
-    /*public ServiceUserSolde(Connection cnx) {
-        this.cnx = cnx;
-    }*/
+
     public ServiceUserSolde() {
         this.cnx = MyDataBase.getInstance().getCnx();
     }

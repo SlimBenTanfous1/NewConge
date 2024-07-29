@@ -44,6 +44,7 @@ public class ServiceNotification implements INotification {
         }
         return notifs;
     }
+
     public void NewNotification(int idUser, String NotifMsg, int Statut, String NotifContent) {
         String query = "INSERT INTO `notification`(`ID_User`, `NotfiMessage`, `Statut`, `NotifContent`) VALUES (?,?,?,?)";
         try {
@@ -74,6 +75,7 @@ public class ServiceNotification implements INotification {
             System.out.println(ex.getMessage());
         }
     }
+
     public void DeleteNotif(int id) {
         try {
             if (cnx == null || cnx.isClosed()) {
