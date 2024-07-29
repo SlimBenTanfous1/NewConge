@@ -139,6 +139,8 @@ public class paneUserController implements Initializable {
     @FXML
     private Pane paneSoldeUsers;
     private TreeItem<User> originalRoot;
+    private TreeItem<Departement> originalDeptRoot;
+
 
 
     @FXML
@@ -281,12 +283,14 @@ public class paneUserController implements Initializable {
 
         // Add listener for dynamic search
         searchFieldUser.textProperty().addListener((observable, oldValue, newValue) -> filterTree(newValue));
+        searchFieldDept.textProperty().addListener((observable, oldValue, newValue) -> filterDeptTree(newValue)); // Add this line
 
         // Clear solde fields initially
         clearSoldeFields();
         CongeVbox.setPadding(new Insets(10, 0, 10, 0));
         CongeVbox.setSpacing(10);
     }
+
     private void filterTree(String searchText) {
         if (searchText == null || searchText.isEmpty()) {
             userTable.setRoot(originalRoot); // Reset to the original root when the search text is empty
@@ -477,14 +481,52 @@ public class paneUserController implements Initializable {
             RolePane1.setVisible(false);
             DepartPane1.setVisible(false);
             userTable.setRowFactory(tv -> new ColoredTreeRow()); // Apply user highlighting
+            searchFieldUser.textProperty().addListener((observable, oldValue, newValue) -> filterTree(newValue)); // Ensure user search is applied
+
         }
         if (hierarCombo.getValue().equals("Départements")) {
             UserPane1.setVisible(false);
             DepartPane1.setVisible(true);
             RolePane1.setVisible(false);
             deptTable.setRowFactory(tv -> new ColoredTreeRowDepartment()); // Apply department highlighting
+            searchFieldDept.textProperty().addListener((observable, oldValue, newValue) -> filterDeptTree(newValue)); // Ensure department search is applied
+
         }
     }
+    private void filterDeptTree(String searchText) {
+        if (searchText == null || searchText.isEmpty()) {
+            deptTable.setRoot(originalDeptRoot); // Reset to the original root when the search text is empty
+            return;
+        }
+
+        TreeItem<Departement> filteredRoot = filterDeptTreeItem(originalDeptRoot, searchText.toLowerCase());
+        deptTable.setRoot(filteredRoot);
+    }
+
+    // Recursive method to filter the tree based on the search text
+    private TreeItem<Departement> filterDeptTreeItem(TreeItem<Departement> item, String searchText) {
+        if (item == null) {
+            return null;
+        }
+
+        boolean matches = item.getValue().getNom().toLowerCase().contains(searchText) ||
+                item.getValue().getDescription().toLowerCase().contains(searchText);
+
+        TreeItem<Departement> filteredItem = new TreeItem<>(item.getValue());
+        for (TreeItem<Departement> child : item.getChildren()) {
+            TreeItem<Departement> filteredChild = filterDeptTreeItem(child, searchText);
+            if (filteredChild != null) {
+                filteredItem.getChildren().add(filteredChild);
+            }
+        }
+
+        if (matches || !filteredItem.getChildren().isEmpty()) {
+            return filteredItem;
+        } else {
+            return null;
+        }
+    }
+
 
     private void loadUsers() {
         UserContainers.getChildren().clear();
@@ -626,32 +668,38 @@ public class paneUserController implements Initializable {
     private void loadDepartments1() {
         List<Departement> departmentList = depService.getAllDepartments();
         ObservableList<Departement> departments = FXCollections.observableArrayList(departmentList);
-        filteredDepartments = new FilteredList<>(departments, p -> true);
-        departListView.setItems(filteredDepartments);
-        departListView.setCellFactory(param -> new ListCell<Departement>() {
-            @Override
-            protected void updateItem(Departement item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(item.getNom());
-                }
-            }
-        });
 
-        departListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            Platform.runLater(() -> {
-                if (newValue != null) {
-                    Depart_field.setText(newValue.getNom());
-                } else {
-                    // Clear selection if newValue is null
-                    Depart_field.clear();
-                    departListView.getSelectionModel().clearSelection();
-                }
-            });
-        });
+        originalDeptRoot = new TreeItem<>(new Departement(0, "Sans dep.Parent", "", 0)); // Store the original root
+        originalDeptRoot.setExpanded(true);
+
+        Map<Integer, TreeItem<Departement>> departMap = new HashMap<>();
+        departMap.put(0, originalDeptRoot);
+
+        for (Departement departement : departments) {
+            TreeItem<Departement> item = new TreeItem<>(departement);
+            departMap.put(departement.getIdDepartement(), item);
+
+            TreeItem<Departement> parentItem = departMap.getOrDefault(departement.getParentDept(), originalDeptRoot);
+            parentItem.getChildren().add(item);
+        }
+
+        for (Departement departement : departments) {
+            TreeItem<Departement> item = departMap.get(departement.getIdDepartement());
+            TreeItem<Departement> parentItem = departMap.get(departement.getParentDept());
+            if (parentItem != null && parentItem.getValue() != null) {
+                departement.setParentDeptName(parentItem.getValue().getNom());
+            }
+        }
+
+        deptTable.setRoot(originalDeptRoot);
+        deptTable.setShowRoot(false);
+
+        idDapartementColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("idDepartement"));
+        nomDeptColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("nom"));
+        DescriptionDeptColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("description"));
+        DeptparColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("parentDeptName"));
     }
+
 
     private void loadRole1s() {
         List<Role> roleList = roleService.getAllRoles();
