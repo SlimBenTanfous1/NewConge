@@ -298,7 +298,6 @@ public class paneUserController implements Initializable {
 
         userListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                System.out.println("User selected from initialize: " + newValue); // Debugging
                 handleUserSelection(newValue);
             }
         });
@@ -339,7 +338,6 @@ public class paneUserController implements Initializable {
         userTable.setRoot(filteredRoot);
     }
 
-    // Recursive method to filter the tree based on the search text
     private TreeItem<User> filterTreeItem(TreeItem<User> item, String searchText) {
         if (item == null) {
             return null;
@@ -364,9 +362,7 @@ public class paneUserController implements Initializable {
         }
     }
 
-
     private void handleUserSelection(User selectedUser) {
-        System.out.println("User selected: " + selectedUser); // Debugging
         this.selectedUser = selectedUser;
         if (selectedUser != null) {
             ID_A.setText(String.valueOf(selectedUser.getIdUser()));
@@ -375,8 +371,6 @@ public class paneUserController implements Initializable {
             email_A.setText(selectedUser.getEmail());
             MDP_A.setText(selectedUser.getMdp());
             image_A.setText(selectedUser.getImage());
-
-            // Set image
             if (selectedUser.getImage() != null && !selectedUser.getImage().isEmpty()) {
                 try {
                     File file = new File(selectedUser.getImage());
@@ -387,52 +381,35 @@ public class paneUserController implements Initializable {
                     e.printStackTrace();
                 }
             }
-
-            // Fetch and set the department
             Departement department = depService.getDepartmentById(selectedUser.getIdDepartement());
             if (department != null) {
                 Depart_field.setText(department.getNom());
             } else {
                 Depart_field.setText("No department");
             }
-
-            // Fetch and set the role
             Role role = roleService.getRoleByUserId(selectedUser.getIdUser());
             if (role != null) {
                 Role_field.setText(role.getNom());
             } else {
                 Role_field.setText("No role");
             }
-
-            // Fetch and set the solde data
-            System.out.println("Calling populateCongeSolde for user ID: " + selectedUser.getIdUser()); // Debugging
             populateCongeSolde(selectedUser.getIdUser());
         } else {
-            System.out.println("Selected user is null"); // Debugging
         }
-
     }
 
     public void populateSoldeFields(User user) {
-        System.out.println("Populating solde fields for user: " + user); // Debugging
         List<UserSolde> soldeList = getSoldeCongeByUserId(user.getIdUser());
         CongeVbox.getChildren().clear(); // Clear existing entries
-
         for (UserSolde solde : soldeList) {
-            System.out.println("Adding solde: " + solde.getDesignation() + " - " + solde.getTotalSolde()); // Debugging
-
-            // Create the Label and TextField for each solde
             Label congeTypeLabel = new Label(solde.getDesignation());
             congeTypeLabel.setPrefWidth(100); // Adjust the width as necessary
             congeTypeLabel.getStyleClass().add("label"); // Apply the same style class as other labels
-
             TextField soldeField = new TextField(String.valueOf(solde.getTotalSolde()));
             soldeField.setEditable(true); // Make the TextField editable
             soldeField.setPrefWidth(200); // Adjust the width as necessary
             soldeField.setMinWidth(200); // Adjust the width as necessary
             soldeField.getStyleClass().add("text-field"); // Apply the same style class as other text fields
-
-            // Add listener to capture changes
             soldeField.textProperty().addListener((observable, oldValue, newValue) -> {
                 try {
                     double updatedSolde = Double.parseDouble(newValue);
@@ -441,8 +418,6 @@ public class paneUserController implements Initializable {
                     System.err.println("Invalid input: " + newValue);
                 }
             });
-
-            // Set UserSolde as user data
             HBox soldeRow = new HBox(10); // Horizontal box with spacing
             soldeRow.setUserData(solde);
             soldeRow.getChildren().addAll(congeTypeLabel, soldeField);
@@ -457,19 +432,16 @@ public class paneUserController implements Initializable {
             stm.setDouble(1, solde.getTotalSolde());
             stm.setInt(2, solde.getUD_UserSolde());
             stm.executeUpdate();
-            System.out.println("Updated solde in database for ID_UserSolde: " + solde.getUD_UserSolde());
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     private void populateCongeSolde(int userId) {
-        System.out.println("Fetching solde data for user ID: " + userId); // Debugging
         List<UserSolde> soldeList = getSoldeCongeByUserId(userId);
         CongeVbox.getChildren().clear(); // Clear existing entries
 
         for (UserSolde solde : soldeList) {
-            System.out.println("Adding solde: " + solde.getDesignation() + " - " + solde.getTotalSolde()); // Debugging
             HBox soldeRow = new HBox(10); // Horizontal box with spacing
             Label congeTypeLabel = new Label(solde.getDesignation());
             TextField soldeField = new TextField(String.valueOf(solde.getTotalSolde()));
@@ -478,7 +450,6 @@ public class paneUserController implements Initializable {
                 try {
                     double newSolde = Double.parseDouble(newValue);
                     serviceUserSolde.updateUserSolde(userId, solde.getID_TypeConge(), newSolde); // Update database
-                    System.out.println("Updated solde: " + newSolde + " for user ID: " + userId + " and conge ID: " + solde.getID_TypeConge()); // Debugging
                 } catch (NumberFormatException e) {
                     System.err.println("Invalid input for solde: " + newValue); // Debugging
                 }
@@ -506,7 +477,6 @@ public class paneUserController implements Initializable {
                         rs.getString("Designation")
                 );
                 soldeCongeList.add(userSolde);
-                System.out.println("Fetched solde: " + userSolde); // Debugging
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -665,10 +635,8 @@ public class paneUserController implements Initializable {
         userListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 handleUserSelection(newValue);
-                System.out.println("User selected from loadUsers1: " + newValue); // Debugging
                 filteredData.setPredicate(user -> user.equals(newValue));
             } else {
-                System.out.println("No user selected");
                 filteredData.setPredicate(user -> true);
             }
         });
@@ -736,8 +704,6 @@ public class paneUserController implements Initializable {
         try {
             List<User> userList = userService.getAllUsers();
             Map<Integer, User> userMap = userList.stream().collect(Collectors.toMap(User::getIdUser, user -> user));
-
-            // Update the manager name, department, and role for each user
             for (User user : userList) {
                 User manager = userMap.get(user.getIdManager());
                 if (manager != null) {
@@ -745,34 +711,24 @@ public class paneUserController implements Initializable {
                 } else {
                     user.setManagerName("Il n'y a pas de manager");
                 }
-
                 Departement department = userService.getDepartmentByUserId(user.getIdUser());
                 if (department != null) {
                     user.setDepartementNom(department.getNom());
                 } else {
                     user.setDepartementNom("sans département");
                 }
-
                 Role role = userService.getRoleByUserId(user.getIdUser());
                 if (role != null) {
                     user.setRoleNom(role.getNom());
                 } else {
                     user.setRoleNom("sans rôle");
                 }
-
-                // Debugging: Print user details to verify
-                // System.out.println("User: " + user.getNom() + ", Manager: " + user.getManagerName() + ", Department: " + user.getDepartementNom() + ", Role: " + user.getRoleNom());
             }
-
             ObservableList<User> users = FXCollections.observableArrayList(userList);
-
             TreeItem<User> root = new TreeItem<>(new User(0, "", "", "", "", "", null, 0, 0, 0));
             root.setExpanded(true);
-
             Map<Integer, TreeItem<User>> treeItemMap = new HashMap<>();
             treeItemMap.put(0, root);
-
-            // Create tree items for all users
             for (User user : users) {
                 TreeItem<User> item = new TreeItem<>(user);
                 treeItemMap.put(user.getIdUser(), item);
@@ -785,7 +741,6 @@ public class paneUserController implements Initializable {
                     parentItem.getChildren().add(item);
                 }
             }
-
             userTable.setRoot(null);
             userTable.setRoot(root);
             userTable.setShowRoot(false);
@@ -803,25 +758,16 @@ public class paneUserController implements Initializable {
     private void loadRoles3() {
         List<Role> roleList = roleService.getAllRoles();
         ObservableList<Role> roles = FXCollections.observableArrayList(roleList);
-
         TreeItem<Role> root = new TreeItem<>(new Role(0, "Sans role parent", "", 0)); // Adjust constructor as necessary
         root.setExpanded(true);
-        //System.out.println("Root created.");
-
         Map<Integer, TreeItem<Role>> roleMap = new HashMap<>();
         roleMap.put(0, root);
-
         for (Role role : roles) {
-            //System.out.println("Processing role: " + role);
             TreeItem<Role> item = new TreeItem<>(role);
             roleMap.put(role.getIdRole(), item);
-
             TreeItem<Role> parentItem = roleMap.getOrDefault(role.getRoleParent(), root);
             parentItem.getChildren().add(item);
-            // System.out.println("Added role to parent: " + role.getRoleParent());
         }
-
-        // Update roles with their parent and child names
         for (Role role : roles) {
             TreeItem<Role> item = roleMap.get(role.getIdRole());
             TreeItem<Role> parentItem = roleMap.get(role.getRoleParent());
@@ -832,11 +778,8 @@ public class paneUserController implements Initializable {
                 role.setChildRoleName(childItem.getValue().getNom());
             }
         }
-
         roleTable.setRoot(root);
         roleTable.setShowRoot(false);
-        // System.out.println("Roles loaded into table.");
-
         idRoleColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("idRole"));
         nomRoleColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("nom"));
         DescRoleColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("description"));
@@ -845,29 +788,18 @@ public class paneUserController implements Initializable {
     }
 
     private void loadDeparts3() {
-        //System.out.println("Loading departments...");
         List<Departement> departmentList = depService.getAllDepartments();
-        //System.out.println("Departments: " + departmentList);
         ObservableList<Departement> departments = FXCollections.observableArrayList(departmentList);
-
         TreeItem<Departement> root = new TreeItem<>(new Departement(0, "Sans dep.Parent", "", 0));
         root.setExpanded(true);
-        // System.out.println("Root created.");
-
         Map<Integer, TreeItem<Departement>> departMap = new HashMap<>();
         departMap.put(0, root);
-
         for (Departement departement : departments) {
-            //System.out.println("Processing department: " + departement);
             TreeItem<Departement> item = new TreeItem<>(departement);
             departMap.put(departement.getIdDepartement(), item);
-
             TreeItem<Departement> parentItem = departMap.getOrDefault(departement.getParentDept(), root);
             parentItem.getChildren().add(item);
-            //System.out.println("Added department to parent: " + departement.getParentDept());
         }
-
-        // Update departments with their parent names
         for (Departement departement : departments) {
             TreeItem<Departement> item = departMap.get(departement.getIdDepartement());
             TreeItem<Departement> parentItem = departMap.get(departement.getParentDept());
@@ -875,11 +807,8 @@ public class paneUserController implements Initializable {
                 departement.setParentDeptName(parentItem.getValue().getNom());
             }
         }
-
         deptTable.setRoot(root);
         deptTable.setShowRoot(false);
-        //System.out.println("Departments loaded into table.");
-
         idDapartementColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("idDepartement"));
         nomDeptColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("nom"));
         DescriptionDeptColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("description"));
@@ -1026,15 +955,12 @@ public class paneUserController implements Initializable {
             boolean isUpdated = false;
             try {
                 if (selectedRole != null && selectedDepartement != null) {
-                    System.out.println("Updating role and department for user: " + selectedUser);
                     usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedDepartement.getIdDepartement());
                     isUpdated = true;
                 } else if (selectedRole != null) {
-                    System.out.println("Updating role for user: " + selectedUser);
                     usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedUser.getIdDepartement());
                     isUpdated = true;
                 } else if (selectedDepartement != null) {
-                    System.out.println("Updating department for user: " + selectedUser);
                     usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedUser.getIdRole(), selectedDepartement.getIdDepartement());
                     isUpdated = true;
                 }
@@ -1115,7 +1041,6 @@ public class paneUserController implements Initializable {
                 Path destinationPath = destinationFolder.resolve(fileName);
                 Files.copy(selectedFile.toPath(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
                 imagePath = destinationPath.toString();
-                System.out.println("Image uploaded successfully: " + imagePath);
                 image_A.setText("src/main/resources/assets/imgs/" + fileName);
                 if (imagePath != null) {
                     try {
@@ -1459,7 +1384,6 @@ public class paneUserController implements Initializable {
         // Write the output to a file
         try (FileOutputStream fileOut = new FileOutputStream(fileName)) {
             workbook.write(fileOut);
-            System.out.println("Exported to Excel file: " + fileName);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -1635,7 +1559,6 @@ public class paneUserController implements Initializable {
     }
 
     private void clearSoldeFields() {
-        System.out.println("Clearing solde fields..."); // Debugging
         CongeVbox.getChildren().clear();
     }
 
