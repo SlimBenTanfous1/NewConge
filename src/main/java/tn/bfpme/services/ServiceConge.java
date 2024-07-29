@@ -151,17 +151,7 @@ public class ServiceConge implements IConge<Conge> {
         }
     }
 
-    @Override
-    public void deleteConge(Conge conge) {
-        try {
-            String qry = "DELETE FROM `conge` WHERE `ID_Conge`=?";
-            PreparedStatement stm = cnx.prepareStatement(qry);
-            stm.setInt(1, conge.getIdConge());
-            stm.executeUpdate();
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
-    }
+
 
     @Override
     public void deleteCongeByID(int id) {
