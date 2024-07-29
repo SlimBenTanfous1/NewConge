@@ -61,7 +61,7 @@ public class UserCarteController implements Initializable {
                 Image image = new Image(inputStream);
                 pdp_card.setImage(image);
             } catch (FileNotFoundException e) {
-                System.err.println("Image file not found: " + imagePath);
+                //System.err.println("Image file not found: " + imagePath);
             }
         }
         nomprenom_card.setText(user.getPrenom() + " " + user.getNom());
