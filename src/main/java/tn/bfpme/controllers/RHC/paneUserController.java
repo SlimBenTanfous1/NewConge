@@ -58,6 +58,7 @@ import java.util.stream.Collectors;
 
 public class paneUserController implements Initializable {
     public int state = 0;
+    public int state1=0;
     @FXML
     private TextField Depart_field;
     @FXML
@@ -800,6 +801,50 @@ public class paneUserController implements Initializable {
     }
     @FXML
     private void handleEditUser() {
+        userListView.setDisable(false);
+        roleListView.setDisable(false);
+        departListView.setDisable(false);
+        User_field.setDisable(false);
+        User_field.setText("");
+        Role_field.setDisable(false);
+        Role_field.setText("");
+        Depart_field.setDisable(false);
+        Depart_field.setText("");
+        hsecond2.setVisible(true);
+        hsecond2.setDisable(false);
+        handleedit2.setDisable(false);
+        handleremove2.setDisable(true);
+        Hfirst2.setVisible(false);
+        Hfirst2.setDisable(true);
+
+    }
+
+
+
+
+    @FXML
+    private void handleRemoveUserAssignment() {
+        Integer userId = selectedUser.getIdUser();
+
+        if (userId != null) {
+            try {
+                usersubordinateService.removeRoleAndDepartment(userId);
+                affectationlabel.setText("Rôle et département supprimés.");
+                loadUsers3();
+                resetAffectationTab(); // Reset the tab after deletion
+            } catch (Exception e) {
+                e.printStackTrace();
+                showError("Une erreur s'est produite : " + e.getMessage());
+            }
+        } else {
+            showError("Veuillez sélectionner un utilisateur pour supprimer l'affectation.");
+        }
+    }
+
+
+
+    @FXML
+    void Enregistrer_user2(ActionEvent event) {
         if (selectedUser != null) {
             Departement selectedDepartement = departListView.getSelectionModel().getSelectedItem();
             Role selectedRole = roleListView.getSelectionModel().getSelectedItem();
@@ -834,30 +879,8 @@ public class paneUserController implements Initializable {
         }
     }
 
-    @FXML
-    private void handleRemoveUserAssignment() {
-        Integer userId = selectedUser.getIdUser();
-        if (userId != null) {
-            try {
-                usersubordinateService.removeRoleAndDepartment(userId);
-                affectationlabel.setText("Rôle et département supprimés.");
-                loadUsers3();
-                resetAffectationTab(); // Reset the tab after deletion
-            } catch (Exception e) {
-                e.printStackTrace();
-                showError("Une erreur s'est produite : " + e.getMessage());
-            }
-        } else {
-            showError("Veuillez sélectionner un utilisateur pour supprimer l'affectation.");
-        }
-    }
 
 
-
-    @FXML
-    void Enregistrer_user2(ActionEvent event) {
-
-    }
     @FXML
     void Annuler_user2(ActionEvent event) {
         reset2();
