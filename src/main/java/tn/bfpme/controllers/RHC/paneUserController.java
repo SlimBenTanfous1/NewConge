@@ -200,6 +200,15 @@ public class paneUserController implements Initializable {
     @FXML
     public Button upload;
 
+
+    @FXML
+    private Button Annuler2,handleremove2,handleedit2,Enregistrer2;
+
+    @FXML
+    private HBox Hfirst2,hsecond2;
+
+
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Platform.runLater(() -> {
@@ -208,6 +217,7 @@ public class paneUserController implements Initializable {
             stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(UtilisateursPane, stage.getWidth(), stage.getHeight()));
             FontResizer.resizeFonts(UtilisateursPane, stage.getWidth(), stage.getHeight());
         });
+        reset2();
         loadUsers();
         loadUsers1();
         loadUsers3();
@@ -375,7 +385,6 @@ public class paneUserController implements Initializable {
             CongeVbox.getChildren().add(soldeRow);
         }
     }
-
     private List<UserSolde> getSoldeCongeByUserId(int userId) {
         List<UserSolde> soldeCongeList = new ArrayList<>();
         String query = "SELECT us.*, tc.Designation FROM user_solde us " +
@@ -401,7 +410,6 @@ public class paneUserController implements Initializable {
         }
         return soldeCongeList;
     }
-
     @FXML
     void SelecHierar(ActionEvent event) {
         if (hierarCombo.getValue().equals("Utilisateurs")) {
@@ -421,6 +429,7 @@ public class paneUserController implements Initializable {
         List<User> userList = userService.getAllUsers();
         users = FXCollections.observableArrayList(userList);
         filteredData = new FilteredList<>(users, p -> true);
+
         int column = 0;
         int row = 0;
         try {
@@ -789,14 +798,12 @@ public class paneUserController implements Initializable {
                     role.getDescription().toLowerCase().contains(lowerCaseFilter);
         });
     }
-
     @FXML
     private void handleEditUser() {
         if (selectedUser != null) {
             Departement selectedDepartement = departListView.getSelectionModel().getSelectedItem();
             Role selectedRole = roleListView.getSelectionModel().getSelectedItem();
             boolean isUpdated = false;
-
             try {
                 if (selectedRole != null && selectedDepartement != null) {
                     System.out.println("Updating role and department for user: " + selectedUser);
@@ -844,6 +851,37 @@ public class paneUserController implements Initializable {
             showError("Veuillez sélectionner un utilisateur pour supprimer l'affectation.");
         }
     }
+
+
+
+    @FXML
+    void Enregistrer_user2(ActionEvent event) {
+
+    }
+    @FXML
+    void Annuler_user2(ActionEvent event) {
+        reset2();
+
+    }
+
+    void reset2(){
+        userListView.setDisable(false);
+        roleListView.setDisable(false);
+        departListView.setDisable(false);
+        User_field.setDisable(false);
+        User_field.setText("");
+        Role_field.setDisable(false);
+        Role_field.setText("");
+        Depart_field.setDisable(false);
+        Depart_field.setText("");
+        hsecond2.setVisible(true);
+        hsecond2.setDisable(false);
+        handleedit2.setDisable(false);
+        handleremove2.setDisable(true);
+        Hfirst2.setVisible(false);
+        Hfirst2.setDisable(true);
+    }
+
 
     public Integer getSelectedUserId() {
         return selectedUser != null ? selectedUser.getIdUser() : null;
@@ -1178,7 +1216,6 @@ public class paneUserController implements Initializable {
             exportToExcel(users, String.valueOf(file));
         }
     }
-
     private void exportToExcel(List<User> users, String fileName) {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Utilisateurs");
