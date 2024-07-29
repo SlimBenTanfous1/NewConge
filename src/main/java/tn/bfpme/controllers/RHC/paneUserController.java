@@ -204,7 +204,8 @@ public class paneUserController implements Initializable {
             stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(UtilisateursPane, stage.getWidth(), stage.getHeight()));
             stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(UtilisateursPane, stage.getWidth(), stage.getHeight()));
             FontResizer.resizeFonts(UtilisateursPane, stage.getWidth(), stage.getHeight());
-        });        loadUsers();
+        });
+        loadUsers();
         loadUsers1();
         loadUsers3();
         loadDepartments1();
@@ -840,7 +841,6 @@ public class paneUserController implements Initializable {
     }
 
 
-
     @FXML
     private void handleRemoveUserAssignment() {
         Integer userId = selectedUser.getIdUser();
@@ -873,11 +873,9 @@ public class paneUserController implements Initializable {
         }
     }
 
-
     public Integer getSelectedUserId() {
         return selectedUser != null ? selectedUser.getIdUser() : null;
     }
-
 
     protected void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -1000,7 +998,8 @@ public class paneUserController implements Initializable {
                 Pane userBox = fxmlLoader.load();
                 CardUserRHController cardController = fxmlLoader.getController();
                 Departement department = depService.getDepartmentById(user.getIdDepartement());
-                Role role = new ServiceRole().getRoleByUserId(user.getIdUser());
+                Role role = roleService.getRoleByUserId(user.getIdUser());
+                userBox.prefWidthProperty().bind(UserContainers.widthProperty()/*.divide(2).subtract(20)*/);
                 String departmentName = department != null ? department.getNom() : "N/A";
                 String roleName = role != null ? role.getNom() : "N/A";
                 cardController.setData(user, roleName, departmentName);
@@ -1064,6 +1063,7 @@ public class paneUserController implements Initializable {
                 CardUserRHController cardController = fxmlLoader.getController();
                 Departement department = depService.getDepartmentById(user.getIdDepartement());
                 Role role = roleService.getRoleByUserId(user.getIdUser());
+                userBox.prefWidthProperty().bind(UserContainers.widthProperty()/*.divide(2).subtract(20)*/);
                 String departmentName = department != null ? department.getNom() : "N/A";
                 String roleName = role != null ? role.getNom() : "N/A";
                 cardController.setData(user, roleName, departmentName);
@@ -1081,7 +1081,7 @@ public class paneUserController implements Initializable {
 
     @FXML
     void removeFilters(ActionEvent event) {
-
+        RechercheBarUser.clear();
     }
 
     private void setupRemoveFilterButton() {
