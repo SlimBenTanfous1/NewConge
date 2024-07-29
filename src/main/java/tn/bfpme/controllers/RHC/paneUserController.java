@@ -138,6 +138,8 @@ public class paneUserController implements Initializable {
     private Button modifier_user, saveButton;
     @FXML
     private Pane paneSoldeUsers;
+    private TreeItem<User> originalRoot;
+
 
     @FXML
     public GridPane UserContainers;
@@ -273,15 +275,52 @@ public class paneUserController implements Initializable {
 
         // Set the custom row factory for the TreeTableView
         userTable.setRowFactory(tv -> new ColoredTreeRow());
-        deptTable.setRowFactory(tv -> new ColoredTreeRowDepartment()); // Apply department highlighting
+
+        // Store the original root
+        originalRoot = userTable.getRoot();
+
+        // Add listener for dynamic search
+        searchFieldUser.textProperty().addListener((observable, oldValue, newValue) -> filterTree(newValue));
 
         // Clear solde fields initially
         clearSoldeFields();
         CongeVbox.setPadding(new Insets(10, 0, 10, 0));
         CongeVbox.setSpacing(10);
     }
+    private void filterTree(String searchText) {
+        if (searchText == null || searchText.isEmpty()) {
+            userTable.setRoot(originalRoot); // Reset to the original root when the search text is empty
+            return;
+        }
 
+        TreeItem<User> filteredRoot = filterTreeItem(originalRoot, searchText.toLowerCase());
+        userTable.setRoot(filteredRoot);
+    }
 
+    // Recursive method to filter the tree based on the search text
+    private TreeItem<User> filterTreeItem(TreeItem<User> item, String searchText) {
+        if (item == null) {
+            return null;
+        }
+
+        boolean matches = item.getValue().getNom().toLowerCase().contains(searchText) ||
+                item.getValue().getPrenom().toLowerCase().contains(searchText) ||
+                item.getValue().getEmail().toLowerCase().contains(searchText);
+
+        TreeItem<User> filteredItem = new TreeItem<>(item.getValue());
+        for (TreeItem<User> child : item.getChildren()) {
+            TreeItem<User> filteredChild = filterTreeItem(child, searchText);
+            if (filteredChild != null) {
+                filteredItem.getChildren().add(filteredChild);
+            }
+        }
+
+        if (matches || !filteredItem.getChildren().isEmpty()) {
+            return filteredItem;
+        } else {
+            return null;
+        }
+    }
 
 
     private void handleUserSelection(User selectedUser) {
@@ -846,16 +885,17 @@ public class paneUserController implements Initializable {
     @FXML
     void rechercheUser1(ActionEvent event) {
         String searchText = searchFieldUser.getText().trim();
-        filteredData.setPredicate(user -> {
-            if (searchText == null || searchText.isEmpty()) {
-                return true;
-            }
-            String lowerCaseFilter = searchText.toLowerCase();
-            return user.getNom().toLowerCase().contains(lowerCaseFilter) ||
-                    user.getPrenom().toLowerCase().contains(lowerCaseFilter) ||
-                    user.getEmail().toLowerCase().contains(lowerCaseFilter);
-        });
+        if (searchText == null || searchText.isEmpty()) {
+            userTable.setRoot(originalRoot); // Reset to the original root when the search text is empty
+            return;
+        }
+
+        TreeItem<User> filteredRoot = filterTreeItem(originalRoot, searchText.toLowerCase());
+        userTable.setRoot(filteredRoot);
     }
+
+
+
 
     @FXML
     void rechercheDept1(ActionEvent event) {
