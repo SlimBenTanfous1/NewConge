@@ -146,7 +146,7 @@ public class paneUserController implements Initializable {
     @FXML
     private Label affectationlabel;
     @FXML
-    public AnchorPane UtilisateursPane;
+    public Pane UtilisateursPane;
     @FXML
     public ListView<Departement> departListView;
     @FXML
@@ -200,14 +200,10 @@ public class paneUserController implements Initializable {
     public HBox Hfirst;
     @FXML
     public Button upload;
-
-
     @FXML
     private Button Annuler2,handleremove2,handleedit2,Enregistrer2;
-
     @FXML
     private HBox Hfirst2,hsecond2;
-
 
 
     @Override
