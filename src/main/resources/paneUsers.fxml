@@ -157,7 +157,14 @@
                                     <Button fx:id="ExporterExcelButton" mnemonicParsing="false" onAction="#ExporterExcel" prefHeight="27.0" prefWidth="103.0" styleClass="btn-primary" text="Exporter" />
                                  </children>
                               </HBox>
-                              <HBox alignment="CENTER_LEFT" spacing="7.0">
+                              <HBox alignment="CENTER_RIGHT" prefHeight="31.0" prefWidth="335.0" spacing="20.0">
+                                 <children>
+                                    <Label prefHeight="18.0" prefWidth="149.0" styleClass="RobotoBoldCondensedItalic" text="Recherche:" />
+                                    <TextField fx:id="RechercheBarUser" onAction="#RechercheBarUser" />
+                                    <Button fx:id="removeFilterButton" mnemonicParsing="false" onAction="#removeFilters" styleClass="btn-primary" text="X" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER_RIGHT" prefHeight="31.0" prefWidth="350.0" spacing="7.0">
                                  <children>
                                     <Label prefHeight="18.0" prefWidth="135.0" styleClass="RobotoBoldCondensedItalic" text="Trier par rôle:" />
                                     <Pane>
@@ -166,13 +173,11 @@
                                           <TextField fx:id="RoleSearchBar" layoutY="1.0" prefHeight="29.0" prefWidth="121.0" />
                                        </children>
                                     </Pane>
-                                 </children>
-                              </HBox>
-                              <HBox alignment="CENTER_RIGHT" prefHeight="31.0" prefWidth="335.0" spacing="20.0">
-                                 <children>
-                                    <Label prefHeight="18.0" prefWidth="149.0" styleClass="RobotoBoldCondensedItalic" text="Recherche:" />
-                                    <TextField fx:id="RechercheBarUser" onAction="#RechercheBarUser" />
-                                    <Button fx:id="removeFilterButton" mnemonicParsing="false" onAction="#removeFilters" styleClass="btn-primary" text="X" />
+                                    <Button fx:id="toggleButton" prefHeight="30.0" prefWidth="30.0" styleClass="settingsButton">
+                                       <graphic>
+                                          <ImageView fx:id="toggleIcon" fitHeight="23.0" fitWidth="23.0" />
+                                       </graphic>
+                                    </Button>
                                  </children>
                               </HBox>
                            </children>
