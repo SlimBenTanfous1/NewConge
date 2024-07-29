@@ -190,11 +190,15 @@
                         <HBox alignment="CENTER" layoutX="458.0" layoutY="63.0" prefWidth="170.0" AnchorPane.leftAnchor="458.0" AnchorPane.rightAnchor="554.0">
                            <children>
                               <Label alignment="CENTER" maxWidth="66.0" minWidth="66.0" prefHeight="19.0" prefWidth="66.0" styleClass="RobotoBold" text="Role" />
-                              <Button fx:id="toggleButtonR" prefHeight="30.0" prefWidth="30.0" styleClass="settingsButton">
-                                 <graphic>
-                                    <ImageView fx:id="toggleIconR" fitHeight="23.0" fitWidth="23.0" />
-                                 </graphic>
-                              </Button>
+                              <Pane>
+                                 <children>
+                                    <Button prefHeight="30.0" prefWidth="30.0" styleClass="settingsButton">
+                                       <graphic>
+                                          <ImageView fx:id="toggleIconR" fitHeight="23.0" fitWidth="23.0" />
+                                       </graphic>
+                                    </Button>
+                                 </children>
+                              </Pane>
                            </children>
                         </HBox>
                         <HBox alignment="CENTER" layoutX="734.0" layoutY="63.0" AnchorPane.leftAnchor="734.0" AnchorPane.rightAnchor="240.0">
@@ -208,6 +212,7 @@
                            </children>
                         </HBox>
                         <Label alignment="CENTER" layoutX="1004.0" layoutY="70.0" maxWidth="62.0" minWidth="62.0" prefHeight="19.0" prefWidth="62.0" styleClass="RobotoBold" text="Action" AnchorPane.rightAnchor="62.0" />
+                        <Button fx:id="toggleButtonR" layoutX="524.0" layoutY="69.0" mnemonicParsing="false" onAction="#RoleTrier" opacity="0.49" prefHeight="0.0" prefWidth="36.0" />
                      </children>
                   </AnchorPane>
                </content>

@@ -1467,7 +1467,6 @@ public class ServiceUtilisateur implements IUtilisateur {
     }
 
     public List<User> TriUserRolesASC() {
-
         List<User> userList = new ArrayList<>();
         String sql = "SELECT u.*, r.nom AS role_name " +
                 "FROM user u " +
@@ -1500,6 +1499,7 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
         return userList;
     }
+
     public List<User> TriUserRolesDESC() {
         List<User> userList = new ArrayList<>();
         String sql = "SELECT u.*, r.nom AS role_name " +
@@ -1533,6 +1533,7 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
         return userList;
     }
+
 
 
 

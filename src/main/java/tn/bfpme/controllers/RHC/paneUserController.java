@@ -228,47 +228,53 @@ public class paneUserController implements Initializable {
                 resetAffectationTab();
             }
         });
+
         TriAZ = new Image(getClass().getResourceAsStream("/assets/imgs/AZ.png"));
         TriZA = new Image(getClass().getResourceAsStream("/assets/imgs/ZA.png"));
         toggleIcon.setImage(TriAZ);
         toggleIconDep.setImage(TriAZ);
         toggleIconR.setImage(TriAZ);
-        toggleButtonR.setOnAction(event -> {
-            if (isAscending1) {
-                System.out.println("test");
-                loadTri(userService.TriUserRolesASC());
-                toggleIconR.setImage(TriZA);
-            } else {
-                System.out.println("test2");
-                loadTri(userService.TriUserRolesDESC());
-                toggleIconR.setImage(TriAZ);
-            }
-            isAscending1 = !isAscending1;
-        });
-        toggleButtonDep.setOnAction(event -> {
-            if (isAscending2) {
-                loadTri(userService.TriUserDepASC());
-                toggleIconDep.setImage(TriZA);
-            } else {
-                loadTri(userService.TriUserDepDESC());
-                toggleIconDep.setImage(TriAZ);
-            }
-            isAscending2 = !isAscending2;
-        });
+
+        // Toggle for user sorting
         toggleButton.setOnAction(event -> {
             if (isAscending3) {
-                loadTri(userService.TriUsersASC());
+                loadTri(userService.TriUsersDESC());
                 toggleIcon.setImage(TriZA);
             } else {
-                loadTri(userService.TriUsersDESC());
+                loadTri(userService.TriUsersASC());
                 toggleIcon.setImage(TriAZ);
             }
             isAscending3 = !isAscending3;
         });
 
+        // Toggle for department sorting
+        toggleButtonDep.setOnAction(event -> {
+            if (isAscending2) {
+                loadTri(userService.TriUserDepDESC());
+                toggleIconDep.setImage(TriZA);
+            } else {
+                loadTri(userService.TriUserDepASC());
+                toggleIconDep.setImage(TriAZ);
+            }
+            isAscending2 = !isAscending2;
+        });
+
+        // Toggle for role sorting
+        toggleButtonR.setOnAction(event -> {
+            if (isAscending1) {
+                loadTri(userService.TriUserRolesDESC());
+                toggleIconR.setImage(TriZA);
+            } else {
+                loadTri(userService.TriUserRolesASC());
+                toggleIconR.setImage(TriAZ);
+            }
+            isAscending1 = !isAscending1;
+        });
+
         loadRolesIntoComboBox();
         setupRemoveFilterButton();
         setupRoleSearchBar();
+
         if (SessionManager.getInstance().getUserRoleName().equals("AdminIT")) {
             adduserbtn.setDisable(true);
         }
@@ -287,6 +293,7 @@ public class paneUserController implements Initializable {
                 handleRoleSelection(newValue);
             }
         });
+
         userListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 System.out.println("User selected from initialize: " + newValue); // Debugging
@@ -310,13 +317,18 @@ public class paneUserController implements Initializable {
 
         // Add listener for dynamic search
         searchFieldUser.textProperty().addListener((observable, oldValue, newValue) -> filterTree(newValue));
-        searchFieldDept.textProperty().addListener((observable, oldValue, newValue) -> filterDeptTree(newValue)); // Add this line
+        searchFieldDept.textProperty().addListener((observable, oldValue, newValue) -> filterDeptTree(newValue));
+        //searchFieldRole.textProperty().addListener((observable, oldValue, newValue) -> filterRoleTree(newValue));
 
         // Clear solde fields initially
         clearSoldeFields();
         CongeVbox.setPadding(new Insets(10, 0, 10, 0));
         CongeVbox.setSpacing(10);
     }
+
+
+
+
 
     private void filterTree(String searchText) {
         if (searchText == null || searchText.isEmpty()) {
@@ -601,7 +613,7 @@ public class paneUserController implements Initializable {
                 CardUserRHController cardController = fxmlLoader.getController();
                 Departement department = depService.getDepartmentById(user.getIdDepartement());
                 Role role = roleService.getRoleByUserId(user.getIdUser());
-                userBox.prefWidthProperty().bind(UserContainers.widthProperty()/*.divide(2).subtract(20)*/);
+                userBox.prefWidthProperty().bind(UserContainers.widthProperty());
                 String departmentName = department != null ? department.getNom() : "N/A";
                 String roleName = role != null ? role.getNom() : "N/A";
                 cardController.setData(user, roleName, departmentName);
@@ -616,6 +628,7 @@ public class paneUserController implements Initializable {
             e.printStackTrace();
         }
     }
+
 
 
     private void handleRoleSelection(Role selectedRole) {
@@ -1634,4 +1647,15 @@ public class paneUserController implements Initializable {
         CongeVbox.getChildren().clear();
     }
 
+    @FXML
+    public void RoleTrier(ActionEvent actionEvent) {
+        if (isAscending1) {
+            loadTri(userService.TriUserRolesDESC());
+            toggleIconR.setImage(TriZA);
+        } else {
+            loadTri(userService.TriUserRolesASC());
+            toggleIconR.setImage(TriAZ);
+        }
+        isAscending1 = !isAscending1;
+    }
 }
