@@ -480,7 +480,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User " +
                 ") " +
                 "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, " +
-                "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file, typeconge.Designation, typeconge.Pas, typeconge.Periode, typeconge.File " +
+                "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file, typeconge.Designation, typeconge.Pas, typeconge.Periode, typeconge.File AS tcF " +
                 "FROM user " +
                 "JOIN conge ON user.ID_User = conge.ID_User " +
                 "JOIN typeconge ON conge.TypeConge = typeconge.ID_TypeConge " +
@@ -524,7 +524,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 typeConge.setDesignation(rs.getString("Designation"));
                 typeConge.setPas(rs.getDouble("Pas"));
                 typeConge.setPeriode(rs.getString("Periode"));
-                typeConge.setFile(rs.getBoolean("File"));
+                typeConge.setFile(rs.getBoolean("tcF"));
                 conge.setTypeConge2(typeConge); // Set the TypeConge object
                 conges.add(conge);
             }
@@ -548,7 +548,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User " +
                 ") " +
                 "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, " +
-                "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file, typeconge.Designation, typeconge.Pas, typeconge.Periode, typeconge.File " +
+                "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file, typeconge.Designation, typeconge.Pas, typeconge.Periode, typeconge.File AS tcF " +
                 "FROM user " +
                 "JOIN conge ON user.ID_User = conge.ID_User " +
                 "JOIN typeconge ON conge.TypeConge = typeconge.ID_TypeConge " +
@@ -591,7 +591,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 typeConge.setDesignation(rs.getString("Designation"));
                 typeConge.setPas(rs.getDouble("Pas"));
                 typeConge.setPeriode(rs.getString("Periode"));
-                typeConge.setFile(rs.getBoolean("File"));
+                typeConge.setFile(rs.getBoolean("tcF"));
                 conge.setTypeConge2(typeConge); // Set the TypeConge object
                 conges.add(conge);
             }
