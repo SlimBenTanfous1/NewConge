@@ -7,15 +7,13 @@ import java.sql.SQLException;
 public class MyDataBase {
     private static MyDataBase instance;
 
-    /*
      private final String URL = "jdbc:mysql://bfpmeconge.cj4ciugme4xd.eu-west-3.rds.amazonaws.com:3306/bfpmeconge";
      private final String USERNAME = "admin";
      private final String PASSWORD = "ALAmoussa123";
-    */
 
-    private final String URL = "jdbc:mysql://127.0.0.1:3306/bfpmeconge";
+    /*private final String URL = "jdbc:mysql://127.0.0.1:3306/bfpmeconge";
     private final String USERNAME = "root";
-    private final String PASSWORD = "";
+    private final String PASSWORD = "";*/
 
     private Connection cnx;
 

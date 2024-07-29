@@ -103,7 +103,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 typeConge.setDesignation(rs.getString("Designation"));
                 typeConge.setPas(rs.getDouble("Pas"));
                 typeConge.setPeriode(rs.getString("Periode"));
-                typeConge.setFile(rs.getBoolean("File"));
+                typeConge.setFile(rs.getBoolean("file"));
                 conge.setTypeConge2(typeConge); // Set the TypeConge object
                 conges.add(conge);
             }
@@ -649,7 +649,7 @@ public class ServiceUtilisateur implements IUtilisateur {
     }
 
     public int getManagerIdByUserId(int userId) {
-        int managerId = Integer.parseInt(null);
+        int managerId = 0;
         String query = "SELECT ID_Manager FROM user WHERE ID_User = ?";
 
         try {
