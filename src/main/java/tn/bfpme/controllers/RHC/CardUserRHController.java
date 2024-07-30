@@ -122,7 +122,7 @@ public class CardUserRHController {
                 }
             }
 
-            User user = new User(uid, unom, uprenom, uemail, decryptedPassword, updp); // Use the decrypted password here
+            User user = new User(uid, unom, uprenom, uemail, decryptedPassword, updp);
             pUC.populateSoldeFields(user);
 
             pUC.state = 2;
@@ -166,7 +166,12 @@ public class CardUserRHController {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == Oui) {
             String query = "SELECT ID_User FROM user WHERE ID_Manager = ?";
-            try (PreparedStatement statement = cnx.prepareStatement(query)) {
+
+            try {
+                if (cnx == null || cnx.isClosed()) {
+                    cnx = MyDataBase.getInstance().getCnx();
+                }
+                PreparedStatement statement = cnx.prepareStatement(query);
                 statement.setInt(1, uid);
                 ResultSet resultSet = statement.executeQuery();
                 while (resultSet.next()) {
