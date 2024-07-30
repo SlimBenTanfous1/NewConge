@@ -87,7 +87,7 @@ public class ServiceRole {
         return childRoles;
     }
 
-    public List<Role> getAllRoles() {
+    /*public List<Role> getAllRoles() {
         List<Role> roles = new ArrayList<>();
         String query = "SELECT * FROM role";
         try {
@@ -102,6 +102,25 @@ public class ServiceRole {
                         rs.getString("nom"),
                         rs.getString("description")
                 );
+                roles.add(role);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return roles;
+    }*/
+    public List<Role> getAllRoles() {
+        List<Role> roles = new ArrayList<>();
+        String query = "SELECT * FROM role";
+        try (Connection connection = MyDataBase.getInstance().getCnx();
+             PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
+            while (resultSet.next()) {
+                Role role = new Role();
+                role.setIdRole(resultSet.getInt("ID_Role"));
+                role.setNom(resultSet.getString("nom"));
+                role.setDescription(resultSet.getString("description"));
+                role.setLevel(resultSet.getInt("Level"));
                 roles.add(role);
             }
         } catch (SQLException e) {

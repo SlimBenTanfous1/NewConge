@@ -11,7 +11,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import tn.bfpme.models.Departement;
 import tn.bfpme.models.Role;
 import tn.bfpme.services.ServiceRole;
@@ -36,6 +35,7 @@ public class paneRoleController implements Initializable {
     @FXML
     private HBox ParentRoleHBbox, btnEAHbox, btnCRUDHbox;
 
+    private boolean updatingComboBox = false;
     public Role selectedRole;
     private final ServiceRole roleService = new ServiceRole();
     private int state = 0;
@@ -67,7 +67,7 @@ public class paneRoleController implements Initializable {
 
     @FXML
     public void Enregistrer() {
-        if (state == 1) {
+        if (state == 1) { // Adding a new role
             String name = roleNameField.getText();
             String description = roleDescriptionField.getText();
             if (roleNameField.getText().isEmpty() || roleDescriptionField.getText().isEmpty()) {
@@ -76,7 +76,6 @@ public class paneRoleController implements Initializable {
             }
             Role newRole = roleService.addRole2(name, description, 0);
             int id_role = newRole.getIdRole();
-            int n = 0;
             if (newRole != null) {
                 for (Node node : roleParentVBox.getChildren()) {
                     if (node instanceof HBox) {
@@ -87,14 +86,11 @@ public class paneRoleController implements Initializable {
                                 Role parentRole = comboBox.getValue();
                                 if (parentRole != null) {
                                     roleService.addRoleHierarchy(parentRole.getIdRole(), newRole.getIdRole());
-                                    n = n + 1;
                                 }
                             }
                         }
                     }
                 }
-                int n1 = n + 1;
-                Role newRole1 = roleService.updateRole1(id_role, n1);
                 showSuccess("Message de succès", "Le rôle a été ajouté avec succès.");
                 loadRoles();
             } else {
@@ -106,7 +102,7 @@ public class paneRoleController implements Initializable {
             btnEAHbox.setVisible(false);
             btnCRUDHbox.setVisible(true);
         }
-        if (state == 2) {
+        if (state == 2) { // Modifying an existing role
             Role selectedRole = roleListView.getSelectionModel().getSelectedItem();
             if (selectedRole != null) {
                 String name = roleNameField.getText();
@@ -167,42 +163,9 @@ public class paneRoleController implements Initializable {
         parentRoles.sort(Comparator.comparingInt(Role::getLevel));
 
         for (Role parentRole : parentRoles) {
-            ComboBox<Role> comboBox = new ComboBox<>(allRolesObservable);
+            ComboBox<Role> comboBox = createRoleComboBox(allRolesObservable);
             comboBox.setValue(parentRole);
-            comboBox.setPrefHeight(31);
-            comboBox.setPrefWidth(281);
-            comboBox.setCellFactory(param -> new ListCell<Role>() {
-                @Override
-                protected void updateItem(Role item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty || item == null) {
-                        setText(null);
-                    } else {
-                        setText(item.getNom());
-                    }
-                }
-            });
-            comboBox.setButtonCell(new ListCell<Role>() {
-                @Override
-                protected void updateItem(Role item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty || item == null) {
-                        setText(null);
-                    } else {
-                        setText(item.getNom());
-                    }
-                }
-            });
-            HBox hBox = new HBox(comboBox);
-            hBox.setSpacing(5);
-            Button removeButton = new Button("-");
-            removeButton.setPrefHeight(25);
-            HBox.setMargin(removeButton, new Insets(2, 0, 0, 0)); // Top margin of 2
-            removeButton.setPrefWidth(25);
-            removeButton.getStyleClass().addAll("btn-primary", "FontSize-12", "RobotoRegular");
-            removeButton.setOnAction(e -> roleParentVBox.getChildren().remove(hBox));
-            hBox.getChildren().add(removeButton);
-            roleParentVBox.getChildren().add(hBox);
+            addComboBoxToVBox(comboBox);
         }
     }
 
@@ -229,7 +192,7 @@ public class paneRoleController implements Initializable {
     private void handleDeleteRole() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Êtes vous sûrs?");
-        alert.setHeaderText("Êtes-vous certain de vouloir supprimer ce role ?");
+        alert.setHeaderText("Êtes-vous certain de vouloir supprimer ce rôle ?");
         ButtonType Oui = new ButtonType("Oui");
         ButtonType Non = new ButtonType("Non");
         alert.getButtonTypes().setAll(Oui, Non);
@@ -286,9 +249,15 @@ public class paneRoleController implements Initializable {
         // Sort roles by their level before adding to the ComboBox
         filteredRoles.sort(Comparator.comparingInt(Role::getLevel));
 
-        ComboBox<Role> comboBox = new ComboBox<>(FXCollections.observableArrayList(filteredRoles));
+        ComboBox<Role> comboBox = createRoleComboBox(FXCollections.observableArrayList(filteredRoles));
+        addComboBoxToVBox(comboBox);
+    }
+
+    private ComboBox<Role> createRoleComboBox(ObservableList<Role> items) {
+        ComboBox<Role> comboBox = new ComboBox<>(items);
         comboBox.setPrefHeight(31);
         comboBox.setPrefWidth(281);
+
         comboBox.setCellFactory(param -> new ListCell<Role>() {
             @Override
             protected void updateItem(Role item, boolean empty) {
@@ -300,6 +269,7 @@ public class paneRoleController implements Initializable {
                 }
             }
         });
+
         comboBox.setButtonCell(new ListCell<Role>() {
             @Override
             protected void updateItem(Role item, boolean empty) {
@@ -312,6 +282,16 @@ public class paneRoleController implements Initializable {
             }
         });
 
+        comboBox.setOnAction(e -> {
+            if (!updatingComboBox) {
+                updateComboBoxOptions();
+            }
+        });
+
+        return comboBox;
+    }
+
+    private void addComboBoxToVBox(ComboBox<Role> comboBox) {
         Button removeButton = new Button("-");
         removeButton.setPrefHeight(25);
         removeButton.setPrefWidth(25);
@@ -323,26 +303,11 @@ public class paneRoleController implements Initializable {
 
         HBox hBox = new HBox(comboBox, removeButton);
         hBox.setSpacing(5);
-
-        // Add a listener to handle reordering when a role is selected
-        comboBox.setOnAction(e -> reorderRoles());
-
         roleParentVBox.getChildren().add(hBox);
-        updateComboBoxOptions();
-    }
-
-    private void reorderRoles() {
-        List<Node> hBoxList = new ArrayList<>(roleParentVBox.getChildren());
-        hBoxList.sort(Comparator.comparingInt(node -> {
-            ComboBox<Role> comboBox = (ComboBox<Role>) ((HBox) node).getChildren().get(0);
-            Role role = comboBox.getValue();
-            return role != null ? role.getLevel() : Integer.MAX_VALUE;
-        }));
-        roleParentVBox.getChildren().setAll(hBoxList);
-        updateComboBoxOptions();
     }
 
     private void updateComboBoxOptions() {
+        updatingComboBox = true;
         List<Role> allRoles = roleService.getAllRoles();
         Set<Role> selectedRoles = new HashSet<>();
 
@@ -382,6 +347,7 @@ public class paneRoleController implements Initializable {
                 }
             }
         }
+        updatingComboBox = false;
     }
 
     void loadRoles() {
