@@ -21,6 +21,7 @@ import tn.bfpme.services.ServiceDepartement;
 import tn.bfpme.services.ServiceRole;
 import tn.bfpme.services.ServiceSubordinateManager;
 import tn.bfpme.services.ServiceUtilisateur;
+import tn.bfpme.utils.EncryptionUtil;
 import tn.bfpme.utils.MyDataBase;
 import tn.bfpme.utils.StageManager;
 
@@ -98,12 +99,17 @@ public class CardUserRHController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/paneUsers.fxml"));
             Parent paneUsersRoot = loader.load();
             paneUserController pUC = loader.getController();
+
+            // Decrypt the password
+            String decryptedPassword = EncryptionUtil.decrypt(umdp);
+
             pUC.ID_A.setText(String.valueOf(uid));
             pUC.nom_A.setText(unom);
             pUC.Prenom_A.setText(uprenom);
             pUC.email_A.setText(uemail);
-            pUC.MDP_A.setText(umdp);
+            pUC.MDP_A.setText(decryptedPassword); // Set the decrypted password here
             pUC.image_A.setText(updp);
+
             String imagePath = updp;
             if (imagePath != null) {
                 try {
@@ -115,8 +121,10 @@ public class CardUserRHController {
                     System.err.println("Image file not found: " + imagePath);
                 }
             }
-            User user = new User(uid, unom, uprenom, uemail, umdp, updp); // Ensure the User object is created correctly
+
+            User user = new User(uid, unom, uprenom, uemail, decryptedPassword, updp); // Use the decrypted password here
             pUC.populateSoldeFields(user);
+
             pUC.state = 2;
             pUC.Hfirst.setDisable(false);
             pUC.Hfirst.setVisible(true);
@@ -128,6 +136,7 @@ public class CardUserRHController {
             pUC.email_A.setDisable(false);
             pUC.MDP_A.setDisable(false);
             pUC.upload.setDisable(false);
+
             FXMLLoader mainLoader = new FXMLLoader(getClass().getResource("/RH_Interface.fxml"));
             Parent mainRoot = mainLoader.load();
             RHController mainController = mainLoader.getController();
@@ -140,10 +149,11 @@ public class CardUserRHController {
             stage.setScene(scene);
             stage.show();
             StageManager.addStage(stage);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
     @FXML
     void SupprimerUser(ActionEvent event) {
