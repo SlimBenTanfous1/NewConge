@@ -11,11 +11,9 @@ import tn.bfpme.models.*;
 
 public class ServiceUserSolde {
     private static Connection cnx;
-
     public ServiceUserSolde() {
         this.cnx = MyDataBase.getInstance().getCnx();
     }
-
     public void updateUserSolde(UserSolde userSolde) {
         String query = "UPDATE user_solde SET TotalSolde = ? WHERE ID_UserSolde = ?";
         try (Connection cnx = MyDataBase.getInstance().getCnx();
@@ -27,13 +25,6 @@ public class ServiceUserSolde {
             e.printStackTrace();
         }
     }
-
-
-
-
-
-
-
     public void addUserSolde(int userId, int typeCongeId, double totalSolde) {
         Connection cnx = MyDataBase.getInstance().getCnx();
         String query = "INSERT INTO user_solde(ID_User, ID_TypeConge, TotalSolde) VALUES (?,?,?)";
@@ -50,7 +41,6 @@ public class ServiceUserSolde {
             e.printStackTrace();
         }
     }
-
     public List<UserSolde> getUserSoldes(int userId) {
         List<UserSolde> userSoldes = new ArrayList<>();
         String sql = "SELECT ID_UserSolde, ID_User, ID_TypeConge, TotalSolde FROM user_solde WHERE ID_User = ?";
@@ -76,8 +66,6 @@ public class ServiceUserSolde {
 
         return userSoldes;
     }
-
-
     public void incrementMonthlyLeaveBalances() {
         List<UserSolde> allUserSoldes = getAllUserSoldes();
         Map<Integer, Double> typeCongeLimits = getTypeCongeLimit();
@@ -99,9 +87,6 @@ public class ServiceUserSolde {
             updateUserSolde(userSolde); // Ensure this method accepts UserSolde object
         }
     }
-
-
-
     public Map<Integer, Double> getTypeCongeLimit() {
         Map<Integer, Double> typeCongeLimits = new HashMap<>();
         String query = "SELECT ID_TypeConge, `Limit` FROM typeconge";  // Use backticks for reserved keywords
@@ -116,8 +101,6 @@ public class ServiceUserSolde {
         }
         return typeCongeLimits;
     }
-
-
     private Map<Integer, Double> getTypeCongePas() {
         Map<Integer, Double> pasMap = new HashMap<>();
         String query = "SELECT ID_TypeConge, Pas FROM typeconge";
@@ -132,11 +115,6 @@ public class ServiceUserSolde {
         }
         return pasMap;
     }
-
-
-
-
-
     public List<UserSolde> getAllUserSoldes() {
         List<UserSolde> soldeList = new ArrayList<>();
         String query = "SELECT ID_UserSolde, ID_User, ID_TypeConge, TotalSolde FROM user_solde";
