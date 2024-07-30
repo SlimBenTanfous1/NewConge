@@ -292,6 +292,8 @@ public class paneUserController implements Initializable {
                 handleUserSelection(newValue);
             }
         });
+        serviceUserSolde.incrementMonthlyLeaveBalances();
+
 
         idUserColumn.setCellFactory(column -> new ColoredTreeCell());
         prenomUserColumn.setCellFactory(column -> new ColoredTreeCell());
@@ -442,23 +444,49 @@ public class paneUserController implements Initializable {
         List<UserSolde> soldeList = getSoldeCongeByUserId(userId);
         CongeVbox.getChildren().clear(); // Clear existing entries
 
+        Map<Integer, Double> typeCongeLimits = getTypeCongeLimit();
+
         for (UserSolde solde : soldeList) {
             HBox soldeRow = new HBox(10); // Horizontal box with spacing
             Label congeTypeLabel = new Label(solde.getDesignation());
             TextField soldeField = new TextField(String.valueOf(solde.getTotalSolde()));
             soldeField.setEditable(true); // Make the TextField editable
+
             soldeField.textProperty().addListener((observable, oldValue, newValue) -> {
                 try {
                     double newSolde = Double.parseDouble(newValue);
-                    serviceUserSolde.updateUserSolde(userId, solde.getID_TypeConge(), newSolde); // Update database
+                    double limit = typeCongeLimits.getOrDefault(solde.getID_TypeConge(), Double.MAX_VALUE);
+                    if (newSolde > limit) {
+                        newSolde = limit; // Ensure the new solde does not exceed the limit
+                    }
+                    solde.setTotalSolde(newSolde);
+                    serviceUserSolde.updateUserSolde(solde); // Update database with UserSolde object
                 } catch (NumberFormatException e) {
                     System.err.println("Invalid input for solde: " + newValue); // Debugging
                 }
             });
+
             soldeRow.getChildren().addAll(congeTypeLabel, soldeField);
             CongeVbox.getChildren().add(soldeRow);
         }
     }
+
+    // Helper method to get the limit for a TypeConge
+    private Map<Integer, Double> getTypeCongeLimit() {
+        Map<Integer, Double> limitMap = new HashMap<>();
+        String query = "SELECT ID_TypeConge, Limit FROM typeconge";
+        try (Connection cnx = MyDataBase.getInstance().getCnx();
+             PreparedStatement stm = cnx.prepareStatement(query);
+             ResultSet rs = stm.executeQuery()) {
+            while (rs.next()) {
+                limitMap.put(rs.getInt("ID_TypeConge"), rs.getDouble("Limit"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return limitMap;
+    }
+
 
     private List<UserSolde> getSoldeCongeByUserId(int userId) {
         List<UserSolde> soldeCongeList = new ArrayList<>();
