@@ -177,7 +177,7 @@
                               </HBox>
                            </children>
                         </HBox>
-                        <HBox alignment="CENTER" layoutX="133.0" layoutY="63.0">
+                        <HBox alignment="CENTER" layoutX="133.0" layoutY="63.0" prefHeight="33.0" prefWidth="115.0">
                            <children>
                               <Label minWidth="96.0" prefHeight="19.0" prefWidth="96.0" styleClass="RobotoBold" text="Utillisateur" />
                               <Button fx:id="toggleButton" prefHeight="30.0" prefWidth="30.0" styleClass="settingsButton">
@@ -185,20 +185,6 @@
                                     <ImageView fx:id="toggleIcon" fitHeight="23.0" fitWidth="23.0" />
                                  </graphic>
                               </Button>
-                           </children>
-                        </HBox>
-                        <HBox alignment="CENTER" layoutX="458.0" layoutY="63.0" prefWidth="170.0" AnchorPane.leftAnchor="458.0" AnchorPane.rightAnchor="554.0">
-                           <children>
-                              <Label alignment="CENTER" maxWidth="66.0" minWidth="66.0" prefHeight="19.0" prefWidth="66.0" styleClass="RobotoBold" text="Role" />
-                              <Pane>
-                                 <children>
-                                    <Button prefHeight="30.0" prefWidth="30.0" styleClass="settingsButton">
-                                       <graphic>
-                                          <ImageView fx:id="toggleIconR" fitHeight="23.0" fitWidth="23.0" />
-                                       </graphic>
-                                    </Button>
-                                 </children>
-                              </Pane>
                            </children>
                         </HBox>
                         <HBox alignment="CENTER" layoutX="734.0" layoutY="63.0" AnchorPane.leftAnchor="734.0" AnchorPane.rightAnchor="240.0">
@@ -212,14 +198,19 @@
                            </children>
                         </HBox>
                         <Label alignment="CENTER" layoutX="1004.0" layoutY="70.0" maxWidth="62.0" minWidth="62.0" prefHeight="19.0" prefWidth="62.0" styleClass="RobotoBold" text="Action" AnchorPane.rightAnchor="62.0" />
-                        <Button fx:id="toggleButtonR" layoutX="524.0" layoutY="69.0" mnemonicParsing="false" onAction="#RoleTrier" opacity="0.49" prefHeight="0.0" prefWidth="36.0" />
+                        <Label alignment="CENTER" layoutX="472.0" layoutY="71.0" maxWidth="66.0" minWidth="66.0" prefHeight="19.0" prefWidth="66.0" styleClass="RobotoBold" text="Role" AnchorPane.leftAnchor="472.0" AnchorPane.rightAnchor="581.0" />
+                        <Button fx:id="toggleButtonR" layoutX="537.0" layoutY="66.0" maxHeight="30.0" maxWidth="30.0" minHeight="30.0" minWidth="30.0" mnemonicParsing="false" onAction="#RoleTrier" opacity="0.49" prefHeight="30.0" prefWidth="30.0" styleClass="settingsButton" AnchorPane.leftAnchor="537.0" AnchorPane.rightAnchor="552.0">
+                           <graphic>
+                              <ImageView fx:id="toggleIconR" fitHeight="23.0" fitWidth="23.0" />
+                           </graphic>
+                        </Button>
                      </children>
                   </AnchorPane>
                </content>
             </Tab>
             <Tab fx:id="TabAffectationid" onSelectionChanged="#TabAffectation" text="Affectation">
                <content>
-                  <AnchorPane prefHeight="688.0" prefWidth="1120.0" styleClass="grad-bg" stylesheets="@assets/css/style.css">
+                  <AnchorPane onMouseClicked="#SayebSelection" prefHeight="688.0" prefWidth="1120.0" styleClass="grad-bg" stylesheets="@assets/css/style.css">
                      <children>
                         <HBox alignment="TOP_CENTER" layoutX="50.0" layoutY="48.0" prefHeight="486.0" prefWidth="1045.0" spacing="80.0" AnchorPane.bottomAnchor="154.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="24.0" AnchorPane.topAnchor="48.0">
                            <children>

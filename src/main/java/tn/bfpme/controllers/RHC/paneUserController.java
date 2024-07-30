@@ -10,6 +10,7 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
@@ -228,16 +229,11 @@ public class paneUserController implements Initializable {
                 resetAffectationTab();
             }
         });
-
-        // Initialize images for sorting icons
         TriAZ = new Image(getClass().getResourceAsStream("/assets/imgs/AZ.png"));
         TriZA = new Image(getClass().getResourceAsStream("/assets/imgs/ZA.png"));
-
         toggleIcon.setImage(TriAZ);
         toggleIconDep.setImage(TriAZ);
         toggleIconR.setImage(TriAZ);
-
-        // Toggle for user sorting
         toggleButton.setOnAction(event -> {
             if (isAscending3) {
                 loadTri(userService.TriUsersDESC());
@@ -248,8 +244,6 @@ public class paneUserController implements Initializable {
             }
             isAscending3 = !isAscending3;
         });
-
-        // Toggle for department sorting
         toggleButtonDep.setOnAction(event -> {
             if (isAscending2) {
                 loadTri(userService.TriUserDepDESC());
@@ -260,8 +254,6 @@ public class paneUserController implements Initializable {
             }
             isAscending2 = !isAscending2;
         });
-
-        // Toggle for role sorting
         toggleButtonR.setOnAction(event -> {
             if (isAscending1) {
                 loadTri(userService.TriUserRolesDESC());
@@ -288,7 +280,6 @@ public class paneUserController implements Initializable {
         hierarCombo.setValue("Selectioner type");
         hierarCombo.setItems(HierarchieList);
 
-        // Add the listener to the userListView
         userListView.getSelectionModel().selectedItemProperty().addListener(userSelectionListener);
         roleListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
@@ -302,30 +293,40 @@ public class paneUserController implements Initializable {
             }
         });
 
-        // Set the custom cell factory for each column
         idUserColumn.setCellFactory(column -> new ColoredTreeCell());
         prenomUserColumn.setCellFactory(column -> new ColoredTreeCell());
         nomUserColumn.setCellFactory(column -> new ColoredTreeCell());
         roleUserColumn.setCellFactory(column -> new ColoredTreeCell());
         departUserColumn.setCellFactory(column -> new ColoredTreeCell());
         managerUserColumn.setCellFactory(column -> new ColoredTreeCell());
-
-        // Set the custom row factory for the TreeTableView
         userTable.setRowFactory(tv -> new ColoredTreeRow());
-
-        // Store the original root
         originalRoot = userTable.getRoot();
 
-        // Add listener for dynamic search
         searchFieldUser.textProperty().addListener((observable, oldValue, newValue) -> filterTree(newValue));
         searchFieldDept.textProperty().addListener((observable, oldValue, newValue) -> filterDeptTree(newValue));
         //searchFieldRole.textProperty().addListener((observable, oldValue, newValue) -> filterRoleTree(newValue));
         deptTable.setRowFactory(tv -> new ColoredTreeRowDepartment()); // Apply department highlighting
-
-        // Clear solde fields initially
         clearSoldeFields();
         CongeVbox.setPadding(new Insets(10, 0, 10, 0));
         CongeVbox.setSpacing(10);
+    }
+
+    private void LOADERS() {
+        loadUsers();
+        loadUsers1();
+        loadUsers3();
+        loadDepartments1();
+        loadDeparts3();
+        loadRole1s();
+        loadRoles3();
+        loadRolesIntoComboBox();
+        setupRemoveFilterButton();
+        setupRoleSearchBar();
+        setupRoleComboBoxListener();
+        roleListView.getSelectionModel().select(-1);
+        userListView.getSelectionModel().select(-1);
+        departListView.getSelectionModel().select(-1);
+        reset2();
     }
 
     private void filterTree(String searchText) {
@@ -597,7 +598,6 @@ public class paneUserController implements Initializable {
             e.printStackTrace();
         }
     }
-
 
 
     private void handleRoleSelection(Role selectedRole) {
@@ -929,12 +929,12 @@ public class paneUserController implements Initializable {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == Oui) {
             Integer userId = selectedUser.getIdUser();
-
             if (userId != null) {
                 try {
                     usersubordinateService.removeRoleAndDepartment(userId);
                     affectationlabel.setText("Rôle et département supprimés.");
                     loadUsers3();
+                    selectedUser.setIdDepartement(0);
                     resetAffectationTab(); // Reset the tab after deletion
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -979,6 +979,7 @@ public class paneUserController implements Initializable {
             showError("Veuillez sélectionner un utilisateur à modifier.");
         }
         reset2();
+        LOADERS();
     }
 
 
@@ -1212,6 +1213,11 @@ public class paneUserController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    void SayebSelection(MouseEvent event) {
+        LOADERS();
     }
 
     @FXML

@@ -185,6 +185,84 @@ public class ServiceSubordinateManager {
         System.out.println("newManagerDeptId: " + newManagerDeptId);
 
         // Query to get the levels of the new manager's role and department
+        String levelQuery = "SELECT r.Level AS roleLevel, d.Level AS deptLevel, d.Parent_Dept " +
+                "FROM role r, departement d " +
+                "WHERE r.ID_Role = ? AND d.ID_Departement = ?";
+        int newManagerRoleLevel = -1;
+        int newManagerDeptLevel = -1;
+        int newManagerParentDept = -1;
+        try (PreparedStatement levelStatement = cnx.prepareStatement(levelQuery)) {
+            levelStatement.setInt(1, newManagerRoleId);
+            levelStatement.setInt(2, newManagerDeptId);
+            ResultSet levelResultSet = levelStatement.executeQuery();
+            if (levelResultSet.next()) {
+                newManagerRoleLevel = levelResultSet.getInt("roleLevel");
+                newManagerDeptLevel = levelResultSet.getInt("deptLevel");
+                newManagerParentDept = levelResultSet.getInt("Parent_Dept");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error getting new manager role and department level: " + e.getMessage(), e);
+        }
+
+        System.out.println("newManagerRoleLevel: " + newManagerRoleLevel);
+        System.out.println("newManagerDeptLevel: " + newManagerDeptLevel);
+        System.out.println("newManagerParentDept: " + newManagerParentDept);
+
+        if (newManagerRoleLevel == -1 || newManagerDeptLevel == -1) {
+            throw new RuntimeException("Could not determine role or department level for the new manager.");
+        }
+
+        // Query to find subordinates in child departments of the new manager's department
+        String queryParentDept = "SELECT u.ID_User " +
+                "FROM user u " +
+                "JOIN user_role ur ON u.ID_User = ur.ID_User " +
+                "JOIN role r ON ur.ID_Role = r.ID_Role " +
+                "JOIN departement d ON u.ID_Departement = d.ID_Departement " +
+                "WHERE d.Parent_Dept = ?";
+
+        try (PreparedStatement statement = cnx.prepareStatement(queryParentDept)) {
+            statement.setInt(1, newManagerDeptId);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                int subordinateId = resultSet.getInt("ID_User");
+                updateUserManager(subordinateId, newManagerId);
+                System.out.println("Reassigned subordinate in child department with ID: " + subordinateId + " to new manager with ID: " + newManagerId);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error reassigning subordinates in child departments: " + e.getMessage(), e);
+        }
+
+        // Query to find subordinates in the same department with role level +1
+        String querySameDept = "SELECT u.ID_User " +
+                "FROM user u " +
+                "JOIN user_role ur ON u.ID_User = ur.ID_User " +
+                "JOIN role r ON ur.ID_Role = r.ID_Role " +
+                "WHERE u.ID_Departement = ? AND r.Level = ?";
+
+        try (PreparedStatement statement = cnx.prepareStatement(querySameDept)) {
+            statement.setInt(1, newManagerDeptId);
+            statement.setInt(2, newManagerRoleLevel + 1);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                int subordinateId = resultSet.getInt("ID_User");
+                updateUserManager(subordinateId, newManagerId);
+                System.out.println("Reassigned subordinate in same department with role level +1, ID: " + subordinateId + " to new manager with ID: " + newManagerId);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error reassigning subordinates in same department: " + e.getMessage(), e);
+        }
+    }
+
+
+    /*
+    private void reassignSubordinatesToNewManager(int newManagerId, int newManagerRoleId, int newManagerDeptId) throws SQLException {
+        ensureConnection();
+
+        System.out.println("newManagerId: " + newManagerId);
+        System.out.println("newManagerRoleId: " + newManagerRoleId);
+        System.out.println("newManagerDeptId: " + newManagerDeptId);
+
+        // Query to get the levels of the new manager's role and department
         String levelQuery = "SELECT r.Level AS roleLevel, d.Level AS deptLevel " +
                 "FROM role r, departement d " +
                 "WHERE r.ID_Role = ? AND d.ID_Departement = ?";
@@ -241,6 +319,7 @@ public class ServiceSubordinateManager {
             throw new RuntimeException("Error reassigning subordinates: " + e.getMessage(), e);
         }
     }
+    */
 
     public void assignRoleAndDepartment(int userId, int roleId, int departmentId) throws SQLException {
         ensureConnection();
