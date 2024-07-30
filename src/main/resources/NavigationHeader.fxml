@@ -51,7 +51,7 @@
                   <String fx:value="RobotoBold" />
                </styleClass>
             </Button>
-            <Button mnemonicParsing="false" onAction="#ListeEmployés" prefHeight="35.0" prefWidth="127.0" text="Mon équipe">
+            <Button fx:id="btnMonEquipe" mnemonicParsing="false" onAction="#ListeEmployés" prefHeight="35.0" prefWidth="127.0" text="Mon équipe">
                <font>
                   <Font size="14.0" />
                </font>
@@ -59,19 +59,19 @@
                   <String fx:value="btn-secondary" />
                   <String fx:value="RobotoBold" />
                   <String fx:value="FontSize-15" />
-               </styleClass>
-            </Button>
-            <Button mnemonicParsing="false" onAction="#Demander" prefHeight="38.0" prefWidth="181.0" text="Demande de congé">
-               <font>
-                  <Font size="14.0" />
-               </font>
-               <styleClass>
-                  <String fx:value="btn-secondary" />
-                  <String fx:value="FontSize-15" />
-                  <String fx:value="RobotoBold" />
                </styleClass>
             </Button>
             <Button fx:id="btnListe" mnemonicParsing="false" onAction="#ListeDesDemandes" prefHeight="38.0" prefWidth="267.0" text="Liste des demandes de congés">
+               <font>
+                  <Font size="14.0" />
+               </font>
+               <styleClass>
+                  <String fx:value="btn-secondary" />
+                  <String fx:value="FontSize-15" />
+                  <String fx:value="RobotoBold" />
+               </styleClass>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#Demander" prefHeight="38.0" prefWidth="181.0" text="Demande de congé">
                <font>
                   <Font size="14.0" />
                </font>

@@ -44,9 +44,10 @@
                                       </Button>
                                   </children>
                               </HBox>
-                              <HBox alignment="CENTER" layoutX="197.0" layoutY="462.0" AnchorPane.leftAnchor="197.0" AnchorPane.rightAnchor="211.0">
+                              <HBox alignment="CENTER" layoutX="198.0" layoutY="467.0" prefHeight="27.0" prefWidth="263.0" spacing="20.0" AnchorPane.leftAnchor="198.0" AnchorPane.rightAnchor="169.0">
                                   <children>
                                       <Button mnemonicParsing="false" onAction="#Login" prefHeight="25.0" prefWidth="194.0" styleClass="btn-primary" text="Se Connecter" />
+                              <Button mnemonicParsing="false" onAction="#FacialRecognitionButton" prefHeight="27.0" prefWidth="33.0" styleClass="btn-primary" />
                                   </children>
                               </HBox>
                               <Label layoutX="72.0" layoutY="357.0" text="E-mail :">
