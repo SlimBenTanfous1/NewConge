@@ -1458,7 +1458,7 @@ public class paneUserController implements Initializable {
     @FXML
     void ajouter_user(ActionEvent actionEvent) {
         state = 1;
-        ID_A.setDisable(true);
+        ID_A.setDisable(false);
         email_A.setDisable(false);
         nom_A.setDisable(false);
         Prenom_A.setDisable(false);
@@ -1476,6 +1476,7 @@ public class paneUserController implements Initializable {
     @FXML
     void Enregistrer_user(ActionEvent event) {
         if (state == 1) {
+            int idUser = Integer.parseInt(ID_A.getText());
             String nom = nom_A.getText();
             String prenom = Prenom_A.getText();
             String email = email_A.getText();
@@ -1487,12 +1488,12 @@ public class paneUserController implements Initializable {
                 String encryptedPassword = EncryptionUtil.encrypt(mdp);
 
                 if (!emailExists(email)) {
-                    User newUser = new User(0, nom, prenom, email, encryptedPassword, image, LocalDate.now());
+                    User newUser = new User(idUser, nom, prenom, email, encryptedPassword, image, LocalDate.now());
                     UserS.AddUser_RH(newUser);
-                    int newUserId = UserS.getLastInsertedUserId();
+                    //int newUserId = UserS.getLastInsertedUserId();
                     List<TypeConge> typeConges = serviceTypeConge.getAllTypeConge();
                     for (TypeConge typeConge : typeConges) {
-                        serviceUserSolde.addUserSolde(newUserId, typeConge.getIdTypeConge(), 0.0);
+                        serviceUserSolde.addUserSolde(idUser, typeConge.getIdTypeConge(), 0.0);
                     }
                     infolabel.setText("Ajout Effectué");
                 } else {
@@ -1504,6 +1505,8 @@ public class paneUserController implements Initializable {
             reset();
 
         } else if (state == 2) {
+            int idUser = Integer.parseInt(ID_A.getText());
+
             String Nom = nom_A.getText();
             String Prenom = Prenom_A.getText();
             String Email = email_A.getText();

@@ -17,7 +17,7 @@ public class FontResizer {
         double fontSize = Math.min(width, height) / 50;
         double fontSize2 = Math.min(width, height) / 50;
         double fontSize3 = Math.min(width, height) / 50;
-        fontSize = Math.max(14, Math.min(fontSize, 18));
+        fontSize = Math.max(16, Math.min(fontSize, 28));
         fontSize2 = Math.max(13, Math.min(fontSize2, 16));
         fontSize3 = Math.max(12, Math.min(fontSize3, 14));
 

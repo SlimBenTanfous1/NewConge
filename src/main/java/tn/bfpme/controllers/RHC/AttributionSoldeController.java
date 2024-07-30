@@ -73,14 +73,15 @@ public class AttributionSoldeController implements Initializable {
         this.serviceUtilisateur = new ServiceUtilisateur();
         this.serviceUserSolde = new ServiceUserSolde();
         this.periodDaysMap = new HashMap<>();
-        this.periodDaysMap.put("Semestriel", 180);
+        this.periodDaysMap.put("Mensuel", 30);
         this.periodDaysMap.put("Trimestriel", 90);
+        this.periodDaysMap.put("Semestriel", 180);
         this.periodDaysMap.put("Annuel", 365);
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        ComboPeriode.setItems(FXCollections.observableArrayList("Semestriel", "Trimestriel", "Annuel"));
+        ComboPeriode.setItems(FXCollections.observableArrayList("Mensuel","Trimestriel","Semestriel" , "Annuel"));
         Platform.runLater(() -> {
             Stage stage = (Stage) MainAnchorPane.getScene().getWindow();
             stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
@@ -271,23 +272,33 @@ public class AttributionSoldeController implements Initializable {
     }
 
     private void updatePeriodLabel(String periode) {
-        String periodText = "";
-        switch (periode) {
-            case "Semestriel":
-                periodText = "6 mois";
-                break;
-            case "Trimestriel":
-                periodText = "3 mois";
-                break;
-            case "Annuel":
-                periodText = "1 année";
-                break;
-            default:
-                periodText = "Période non définie";
-                break;
+        String periodText;
+        if (periode == null) {
+            periodText = "Période non définie";
+        } else {
+            switch (periode) {
+                case "Mensuel":
+                    periodText = "1 mois";
+                    break;
+                case "Trimestriel":
+                    periodText = "3 mois";
+                    break;
+                case "Semestriel":
+                    periodText = "6 mois";
+                    break;
+                case "Annuel":
+                    periodText = "1 année";
+                    break;
+                default:
+                    periodText = "Période non définie";
+                    break;
+            }
         }
         periodlabel.setText(periodText);
     }
+
+
+
 
     private void formDisableOption(boolean arg) {
         Designation_Solde.setDisable(arg);
