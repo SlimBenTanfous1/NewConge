@@ -92,12 +92,12 @@ public class ServiceUserSolde {
 
     public Map<Integer, Double> getTypeCongeLimit() {
         Map<Integer, Double> typeCongeLimits = new HashMap<>();
-        String query = "SELECT ID_TypeConge, `Limit` FROM typeconge";  // Use backticks for reserved keywords
+        String query = "SELECT ID_TypeConge, `Limite` FROM typeconge";  // Use backticks for reserved keywords
         try (Connection cnx = MyDataBase.getInstance().getCnx();
              PreparedStatement stm = cnx.prepareStatement(query);
              ResultSet rs = stm.executeQuery()) {
             while (rs.next()) {
-                typeCongeLimits.put(rs.getInt("ID_TypeConge"), rs.getDouble("Limit"));
+                typeCongeLimits.put(rs.getInt("ID_TypeConge"), rs.getDouble("Limite"));
             }
         } catch (SQLException e) {
             e.printStackTrace();

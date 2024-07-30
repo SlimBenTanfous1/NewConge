@@ -1482,11 +1482,12 @@ public class paneUserController implements Initializable {
             String mdp = MDP_A.getText();
             String image = image_A.getText();
 
-            String hashedPassword = BCrypt.hashpw(mdp, BCrypt.gensalt());
-
             try {
+                // Encrypt the password
+                String encryptedPassword = EncryptionUtil.encrypt(mdp);
+
                 if (!emailExists(email)) {
-                    User newUser = new User(0, nom, prenom, email, hashedPassword, image, LocalDate.now());
+                    User newUser = new User(0, nom, prenom, email, encryptedPassword, image, LocalDate.now());
                     UserS.AddUser_RH(newUser);
                     int newUserId = UserS.getLastInsertedUserId();
                     List<TypeConge> typeConges = serviceTypeConge.getAllTypeConge();
@@ -1497,7 +1498,7 @@ public class paneUserController implements Initializable {
                 } else {
                     infolabel.setText("Email déjà existe");
                 }
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
             reset();
@@ -1509,17 +1510,19 @@ public class paneUserController implements Initializable {
             String Mdp = MDP_A.getText();
             String Image = image_A.getText();
             int IdUser = Integer.parseInt(ID_A.getText());
-            String hashedPassword = BCrypt.hashpw(Mdp, BCrypt.gensalt());
 
             try {
+                // Encrypt the password
+                String encryptedPassword = EncryptionUtil.encrypt(Mdp);
+
                 if (!emailExistss(Email, IdUser) || isCurrentUser(IdUser, Email)) {
-                    User user = new User(IdUser, Nom, Prenom, Email, hashedPassword, Image);
+                    User user = new User(IdUser, Nom, Prenom, Email, encryptedPassword, Image);
                     UserS.Update(user);
                     infolabel.setText("Modification Effectuée");
                 } else {
                     infolabel.setText("Email déjà existe");
                 }
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 infolabel.setText("Erreur de base de données: " + e.getMessage());
                 e.printStackTrace();
             }
@@ -1549,6 +1552,7 @@ public class paneUserController implements Initializable {
             reset();
         }
     }
+
 
 
     @FXML
