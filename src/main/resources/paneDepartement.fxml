@@ -15,7 +15,7 @@
 
 <AnchorPane fx:id="DepartementPane" prefHeight="726.0" prefWidth="1119.0" styleClass="grad-bg" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.RHC.paneDepController">
    <children>
-      <AnchorPane layoutX="70.0" layoutY="72.0" onMouseClicked="#Unselect" prefHeight="597.0" prefWidth="980.0" styleClass="paneRoundedCornders" AnchorPane.bottomAnchor="57.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="69.0" AnchorPane.topAnchor="72.0">
+      <AnchorPane layoutX="70.0" layoutY="72.0" prefHeight="597.0" prefWidth="980.0" styleClass="paneRoundedCornders" AnchorPane.bottomAnchor="57.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="69.0" AnchorPane.topAnchor="72.0">
          <children>
             <VBox layoutX="54.0" layoutY="42.0" prefHeight="477.0" prefWidth="315.0" spacing="10.0" AnchorPane.bottomAnchor="77.0" AnchorPane.leftAnchor="54.0" AnchorPane.topAnchor="42.0">
                <children>
@@ -75,6 +75,7 @@
                      </styleClass></Button>
                </children>
             </HBox>
+            <Button fx:id="btnRemoveFiter" layoutX="379.0" layoutY="70.0" mnemonicParsing="false" onAction="#removeFilter" styleClass="btn-primary" text="X" />
          </children>
       </AnchorPane>
       <Label alignment="TOP_CENTER" layoutX="415.0" layoutY="21.0" prefHeight="29.0" prefWidth="289.0" styleClass="RobotoBold" text="Gestion des Départements" AnchorPane.leftAnchor="415.0" AnchorPane.rightAnchor="415.0" AnchorPane.topAnchor="21.0">

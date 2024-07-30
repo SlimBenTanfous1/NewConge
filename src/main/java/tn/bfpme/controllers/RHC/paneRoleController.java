@@ -60,10 +60,7 @@ public class paneRoleController implements Initializable {
         btnEAHbox.setVisible(false);
     }
 
-    @FXML
-    public void Annuler() {
-        reset();
-    }
+
 
     @FXML
     public void Enregistrer() {

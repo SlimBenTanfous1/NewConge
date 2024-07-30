@@ -31,7 +31,7 @@ public class paneDepController implements Initializable {
     private final ServiceDepartement depService = new ServiceDepartement();
     private RHController RHC;
     @FXML
-    private Button Annuler, Enregistrer, Delete, Update, Add;
+    private Button Enregistrer, Delete, Update, Add ,btnRemoveFiter;
     @FXML
     private HBox Hfirst, Hsecond;
 
@@ -333,10 +333,7 @@ public class paneDepController implements Initializable {
         alert.showAndWait();
     }
 
-    @FXML
-    void Unselect(MouseEvent event) {
-        reset();
-    }
+
 
     void reset() {
         departementListView.getSelectionModel().clearSelection();
@@ -356,5 +353,35 @@ public class paneDepController implements Initializable {
         Hfirst.setDisable(false);
         Hsecond.setDisable(true);
         Hsecond.setVisible(false);
+    }
+
+    public void removeFilter(ActionEvent actionEvent) {
+            // Clear any filters
+            departementListView.getSelectionModel().clearSelection();
+
+            // Reload all departments
+            loadDepartments();
+
+            // Reset any fields or UI elements related to filtering
+            deptNameField.clear();
+            deptDescriptionField.clear();
+            parentDeptComboBox.getSelectionModel().clearSelection();
+            comboBoxContainer.getChildren().clear();
+
+            // Reset buttons and state
+        Add.setDisable(false);
+        Update.setDisable(true);
+        Delete.setDisable(true);
+        deptDescriptionField.setDisable(true);
+        deptNameField.setDisable(true);
+        comboBoxContainer.setDisable(true);
+        parentDeptComboBox.setDisable(true);
+        Hsecond.setDisable(true);
+        Hsecond.setVisible(false);
+        departementListView.setDisable(false);
+        Hfirst.setVisible(true);
+        Hfirst.setDisable(false);
+
+
     }
 }

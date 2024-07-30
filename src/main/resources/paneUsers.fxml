@@ -30,7 +30,7 @@
          <tabs>
             <Tab fx:id="TabGestionid" onSelectionChanged="#TabGestion" text="Géstion des utilisateurs">
                <content>
-                  <AnchorPane onMouseClicked="#unselect" prefHeight="200.0" prefWidth="200.0" styleClass="grad-bg" stylesheets="@assets/css/style.css">
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="grad-bg" stylesheets="@assets/css/style.css">
                      <children>
                         <HBox layoutX="28.0" layoutY="66.0" prefHeight="538.0" prefWidth="644.0" AnchorPane.bottomAnchor="84.0" AnchorPane.leftAnchor="28.0" AnchorPane.rightAnchor="559.0" AnchorPane.topAnchor="66.0">
                            <children>
