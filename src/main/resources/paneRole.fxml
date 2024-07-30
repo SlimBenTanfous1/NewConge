@@ -13,9 +13,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="RolesPane" minWidth="87.0" onMouseClicked="#Annuler" prefHeight="726.0" prefWidth="1119.0" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.RHC.paneRoleController">
+<AnchorPane fx:id="RolesPane" minWidth="87.0" prefHeight="726.0" prefWidth="1119.0" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.RHC.paneRoleController">
    <children>
-      <AnchorPane layoutX="70.0" layoutY="73.0" onMouseClicked="#Annuler" prefHeight="597.0" prefWidth="980.0" styleClass="paneRoundedCornders" AnchorPane.bottomAnchor="55.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="68.0" AnchorPane.topAnchor="73.0">
+      <AnchorPane layoutX="70.0" layoutY="73.0" prefHeight="597.0" prefWidth="980.0" styleClass="paneRoundedCornders" AnchorPane.bottomAnchor="55.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="68.0" AnchorPane.topAnchor="73.0">
          <children>
             <HBox layoutX="54.0" layoutY="73.0" maxHeight="477.0" maxWidth="315.0" minHeight="477.0" minWidth="315.0" prefHeight="477.0" prefWidth="315.0" AnchorPane.bottomAnchor="46.0" AnchorPane.leftAnchor="54.0" AnchorPane.rightAnchor="611.0" AnchorPane.topAnchor="73.0">
                <children>
