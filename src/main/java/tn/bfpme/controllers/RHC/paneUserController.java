@@ -55,7 +55,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class paneUserController implements Initializable {
+public class paneUserController extends AttributionSoldeController implements Initializable {
     public int state = 0;
     public int state1 = 0;
     @FXML
@@ -184,6 +184,9 @@ public class paneUserController implements Initializable {
     private final ServiceSubordinateManager usersubordinateService = new ServiceSubordinateManager(roleService, depService);
     private final ServiceUserSolde serviceUserSolde = new ServiceUserSolde();
     private final ServiceTypeConge serviceTypeConge = new ServiceTypeConge();
+
+    private LeaveBalanceService leaveBalanceService;
+    private AttributionSoldeController attributionSoldeController;
     private ObservableList<User> users;
 
     private ChangeListener<User> userSelectionListener = (observable, oldValue, newValue) -> {
@@ -292,8 +295,6 @@ public class paneUserController implements Initializable {
                 handleUserSelection(newValue);
             }
         });
-        serviceUserSolde.incrementMonthlyLeaveBalances();
-
 
         idUserColumn.setCellFactory(column -> new ColoredTreeCell());
         prenomUserColumn.setCellFactory(column -> new ColoredTreeCell());
@@ -306,12 +307,16 @@ public class paneUserController implements Initializable {
 
         searchFieldUser.textProperty().addListener((observable, oldValue, newValue) -> filterTree(newValue));
         searchFieldDept.textProperty().addListener((observable, oldValue, newValue) -> filterDeptTree(newValue));
-        //searchFieldRole.textProperty().addListener((observable, oldValue, newValue) -> filterRoleTree(newValue));
         deptTable.setRowFactory(tv -> new ColoredTreeRowDepartment()); // Apply department highlighting
         clearSoldeFields();
         CongeVbox.setPadding(new Insets(10, 0, 10, 0));
         CongeVbox.setSpacing(10);
+
+        // Schedule the leave balance increment task
+        LeaveBalanceService leaveBalanceService = new LeaveBalanceService(this);
+        leaveBalanceService.start();
     }
+
 
     private void LOADERS() {
         loadUsers();
