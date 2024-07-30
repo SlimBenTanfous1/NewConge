@@ -51,7 +51,7 @@
                   <String fx:value="RobotoBold" />
                </styleClass>
             </Button>
-            <Button mnemonicParsing="false" onAction="#ListeEmployés" prefHeight="35.0" prefWidth="127.0" text="Mon équipe">
+            <Button fx:id="btnMonEquipe" mnemonicParsing="false" onAction="#ListeEmployés" prefHeight="35.0" prefWidth="127.0" text="Mon équipe">
                <font>
                   <Font size="14.0" />
                </font>

@@ -29,27 +29,21 @@ public class NavigationHeaderController implements Initializable {
     private Pane NavPane;
     @FXML
     private AnchorPane NavHeaderPane;
-
     @FXML
     private Button NotifBtn;
-
     @FXML
     private Button btnListe;
-
     @FXML
     private Button btnRH;
-
     @FXML
     private Button test_interfaceID;
-
     @FXML
     private ImageView pdp2;
-
     @FXML
     private Button admin_interface;
-
     @FXML
-    private Button settingsButton;
+    private Button settingsButton,btnMonEquipe;
+
     private Popup settingsPopup;
     private Popup notifPopup;
 
@@ -57,7 +51,7 @@ public class NavigationHeaderController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         String userRoleName = SessionManager.getInstance().getUserRoleName();
         String userDepartmentName = SessionManager.getInstance().getUserDepartmentName();
-
+        btnMonEquipe.setVisible(!"Employe".equals(userRoleName));
         btnListe.setVisible(!"Employe".equals(userRoleName) || "AdminIT".equals(userRoleName));
         btnListe.setVisible(!userRoleName.equals("Employe")||userRoleName.equals("AdminIT"));
 
