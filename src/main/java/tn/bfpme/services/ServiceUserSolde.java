@@ -28,12 +28,6 @@ public class ServiceUserSolde {
         }
     }
 
-
-
-
-
-
-
     public void addUserSolde(int userId, int typeCongeId, double totalSolde) {
         Connection cnx = MyDataBase.getInstance().getCnx();
         String query = "INSERT INTO user_solde(ID_User, ID_TypeConge, TotalSolde) VALUES (?,?,?)";
@@ -77,7 +71,6 @@ public class ServiceUserSolde {
         return userSoldes;
     }
 
-
     public void incrementMonthlyLeaveBalances() {
         List<UserSolde> allUserSoldes = getAllUserSoldes();
         Map<Integer, Double> typeCongeLimits = getTypeCongeLimit();
@@ -100,8 +93,6 @@ public class ServiceUserSolde {
         }
     }
 
-
-
     public Map<Integer, Double> getTypeCongeLimit() {
         Map<Integer, Double> typeCongeLimits = new HashMap<>();
         String query = "SELECT ID_TypeConge, `Limit` FROM typeconge";  // Use backticks for reserved keywords
@@ -117,7 +108,6 @@ public class ServiceUserSolde {
         return typeCongeLimits;
     }
 
-
     private Map<Integer, Double> getTypeCongePas() {
         Map<Integer, Double> pasMap = new HashMap<>();
         String query = "SELECT ID_TypeConge, Pas FROM typeconge";
@@ -132,10 +122,6 @@ public class ServiceUserSolde {
         }
         return pasMap;
     }
-
-
-
-
 
     public List<UserSolde> getAllUserSoldes() {
         List<UserSolde> soldeList = new ArrayList<>();
@@ -158,8 +144,6 @@ public class ServiceUserSolde {
         }
         return soldeList;
     }
-
-
 
 
 }
