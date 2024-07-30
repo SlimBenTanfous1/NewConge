@@ -47,7 +47,14 @@
                               <HBox alignment="CENTER" layoutX="198.0" layoutY="467.0" prefHeight="27.0" prefWidth="263.0" spacing="20.0" AnchorPane.leftAnchor="198.0" AnchorPane.rightAnchor="169.0">
                                   <children>
                                       <Button mnemonicParsing="false" onAction="#Login" prefHeight="25.0" prefWidth="194.0" styleClass="btn-primary" text="Se Connecter" />
-                              <Button mnemonicParsing="false" onAction="#FacialRecognitionButton" prefHeight="27.0" prefWidth="33.0" styleClass="btn-primary" />
+                              <Button alignment="CENTER" contentDisplay="CENTER" graphicTextGap="0.0" maxWidth="27.0" minHeight="27.0" minWidth="27.0" mnemonicParsing="false" onAction="#FacialRecognitionButton" prefHeight="27.0" prefWidth="27.0" styleClass="settingsButton">
+                                 <graphic>
+                                    <ImageView fitHeight="27.0" fitWidth="27.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@assets/imgs/facial-recognition.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic></Button>
                                   </children>
                               </HBox>
                               <Label layoutX="72.0" layoutY="357.0" text="E-mail :">
