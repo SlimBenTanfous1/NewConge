@@ -67,6 +67,57 @@ public class ServiceUserSolde {
 
         return userSoldes;
     }
+    public UserSolde getUserSoldeByUserIdAndTypeCongeId(int userId, int typeCongeId) {
+        UserSolde userSolde = null;
+        String query = "SELECT * FROM user_solde WHERE ID_User = ? AND ID_TypeConge = ?";
+
+        try (Connection cnx = MyDataBase.getInstance().getCnx();
+             PreparedStatement pstmt = cnx.prepareStatement(query)) {
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, typeCongeId);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                userSolde = new UserSolde(
+                        rs.getInt("ID_UserSolde"),
+                        rs.getInt("ID_User"),
+                        rs.getInt("ID_TypeConge"),
+                        rs.getDouble("TotalSolde")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return userSolde;
+    }
+
+    public boolean requestLeave(int userId, int typeCongeId, double daysRequested) {
+        UserSolde userSolde = getUserSoldeByUserIdAndTypeCongeId(userId, typeCongeId);
+        if (userSolde != null) {
+            double currentSolde = userSolde.getTotalSolde();
+            double newSolde = currentSolde - daysRequested;
+            if (newSolde >= 0) {
+                userSolde.setTotalSolde(newSolde);
+                updateUserSolde(userSolde);
+                System.out.println("Leave requested: " + daysRequested + " days. New solde: " + newSolde);
+                return true; // Leave request can be processed
+            }
+        }
+        System.out.println("Leave request failed: Not enough solde.");
+        return false; // Not enough solde to process the leave request
+    }
+
+    public void refuseLeave(int userId, int typeCongeId, double daysRequested) {
+        UserSolde userSolde = getUserSoldeByUserIdAndTypeCongeId(userId, typeCongeId);
+        if (userSolde != null) {
+            double currentSolde = userSolde.getTotalSolde();
+            double newSolde = currentSolde + daysRequested;
+            userSolde.setTotalSolde(newSolde);
+            updateUserSolde(userSolde);
+            System.out.println("Leave request refused: " + daysRequested + " days. Solde re-incremented to: " + newSolde);
+        }
+    }
 
     /*public void incrementMonthlyLeaveBalances() {
         List<UserSolde> allUserSoldes = getAllUserSoldes();
