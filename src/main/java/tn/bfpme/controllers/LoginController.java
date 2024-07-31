@@ -64,7 +64,12 @@ public class LoginController implements Initializable {
         String style = "-fx-background-color: transparent; -fx-border-color: transparent transparent #eab53f transparent; -fx-border-width: 0 0 1 0; -fx-padding: 0 0 3 0;";
         LoginEmail.setStyle(style);
         LoginMDP.setStyle(style);
-
+        Platform.runLater(() -> {
+            Stage stage = (Stage) MainAnchorPane.getScene().getWindow();
+            stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
+            stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
+            FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight());
+        });
         // Load the images
         showPasswordImage = new Image(getClass().getResourceAsStream("/assets/imgs/hide.png"));
         hidePasswordImage = new Image(getClass().getResourceAsStream("/assets/imgs/show.png"));
@@ -147,7 +152,6 @@ public class LoginController implements Initializable {
             System.out.println("Error: Cannot open the camera.");
             return;
         }
-
         Task<Void> faceRecognitionTask = new Task<Void>() {
             @Override
             protected Void call() {
@@ -155,7 +159,6 @@ public class LoginController implements Initializable {
                 while (capture.read(frame)) {
                     MatOfRect faceDetections = new MatOfRect();
                     faceDetector.detectMultiScale(frame, faceDetections);
-
                     for (Rect rect : faceDetections.toArray()) {
                         Imgproc.rectangle(frame, new org.opencv.core.Point(rect.x, rect.y), new org.opencv.core.Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0));
                     }
@@ -171,7 +174,7 @@ public class LoginController implements Initializable {
                         System.out.println("Face not recognized.");
                     }
                     try {
-                        Thread.sleep(33); // ~30 frames per second
+                        Thread.sleep(33);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

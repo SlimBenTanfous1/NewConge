@@ -28,26 +28,26 @@
                <children>
                       <AnchorPane layoutX="20.0" layoutY="23.0" prefHeight="785.0" prefWidth="630.0" styleClass="pane1" AnchorPane.bottomAnchor="22.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="23.0">
                           <children>
-                              <HBox layoutX="196.0" layoutY="351.0" prefHeight="28.0" prefWidth="235.0" AnchorPane.leftAnchor="196.0" AnchorPane.rightAnchor="171.0">
+                              <HBox layoutX="184.0" layoutY="319.0" prefHeight="28.0" prefWidth="235.0" AnchorPane.leftAnchor="184.0" AnchorPane.rightAnchor="183.0">
                                   <children>
-                                      <TextField fx:id="LoginEmail" prefHeight="28.0" prefWidth="526.0" promptText="email" style="-fx-background-color: transparent; -fx-border-color: transparent transparent #eab53f transparent; -fx-border-width: 0 0 1 0; -fx-padding: 0 0 3 0;" text="999">
+                                      <TextField fx:id="LoginEmail" prefHeight="28.0" prefWidth="526.0" promptText="email" styleClass="loginTextField" text="999">
                                  <font>
                                     <Font size="24.0" />
                                  </font></TextField>
                                   </children>
                               </HBox>
-                              <HBox layoutX="196.0" layoutY="400.0" prefHeight="28.0" prefWidth="274.0" AnchorPane.leftAnchor="196.0" AnchorPane.rightAnchor="132.0">
+                              <HBox layoutX="184.0" layoutY="450.0" prefHeight="28.0" prefWidth="274.0" AnchorPane.leftAnchor="184.0" AnchorPane.rightAnchor="144.0">
                                   <children>
-                                      <PasswordField fx:id="LoginMDP" onAction="#Login" prefHeight="28.0" prefWidth="476.0" promptText="mdp" style="-fx-background-color: transparent; -fx-border-color: transparent transparent #eab53f transparent; -fx-border-width: 0 0 1 0; -fx-padding: 0 0 3 0;" text="999" />
+                                      <PasswordField fx:id="LoginMDP" onAction="#Login" prefHeight="28.0" prefWidth="476.0" promptText="mdp" styleClass="loginTextField" text="999" />
                                       <TextField fx:id="showPasswordField" managed="false" prefHeight="28.0" prefWidth="476.0" promptText="mdp" style="-fx-background-color: transparent; -fx-border-color: transparent transparent #eab53f transparent; -fx-border-width: 0 0 1 0; -fx-padding: 0 0 3 0;" visible="false" />
-                                      <Button fx:id="toggleButton" layoutX="470.0" layoutY="0.0" prefHeight="28.0" prefWidth="50.0" style="-fx-background-color: transparent;">
+                                      <Button fx:id="toggleButton" layoutX="470.0" layoutY="0.0" prefHeight="28.0" prefWidth="50.0" styleClass="settingsButton">
                                           <graphic>
                                               <ImageView fx:id="toggleIcon" fitHeight="20.0" fitWidth="20.0" />
                                           </graphic>
                                       </Button>
                                   </children>
                               </HBox>
-                              <HBox alignment="CENTER" layoutX="198.0" layoutY="467.0" prefHeight="27.0" prefWidth="263.0" spacing="20.0" AnchorPane.leftAnchor="198.0" AnchorPane.rightAnchor="169.0">
+                              <HBox alignment="CENTER" layoutX="185.0" layoutY="530.0" prefHeight="27.0" prefWidth="263.0" spacing="20.0" AnchorPane.leftAnchor="185.0" AnchorPane.rightAnchor="182.0">
                                   <children>
                                       <Button mnemonicParsing="false" onAction="#Login" prefHeight="25.0" prefWidth="194.0" styleClass="btn-primary" text="Se Connecter" />
                               <Button fx:id="FacialRecognitionButton" alignment="CENTER" contentDisplay="CENTER" graphicTextGap="0.0" maxWidth="27.0" minHeight="27.0" minWidth="27.0" mnemonicParsing="false" onAction="#FacialRecognitionButton" prefHeight="27.0" prefWidth="27.0" styleClass="settingsButton">
@@ -60,22 +60,22 @@
                                  </graphic></Button>
                                   </children>
                               </HBox>
-                              <Label layoutX="72.0" layoutY="357.0" text="E-mail :">
+                              <Label alignment="CENTER" layoutX="276.0" layoutY="279.0" styleClass="RobotoBold" text="E-mail" AnchorPane.leftAnchor="276.0" AnchorPane.rightAnchor="276.0">
                            <font>
                               <Font size="28.0" />
                            </font>
                         </Label>
-                              <Label layoutX="61.0" layoutY="409.0" text="Mot de Passe :">
+                              <Label alignment="CENTER" layoutX="227.0" layoutY="393.0" prefHeight="38.0" prefWidth="179.0" styleClass="RobotoBold" text="Mot de Passe" AnchorPane.leftAnchor="226.0" AnchorPane.rightAnchor="226.0">
                            <font>
                               <Font size="26.0" />
                            </font>
                         </Label>
-                              <Label alignment="CENTER" layoutX="158.0" layoutY="48.0" prefHeight="54.0" prefWidth="286.0" text="Page de Connexion" AnchorPane.leftAnchor="158.0" AnchorPane.rightAnchor="158.0" AnchorPane.topAnchor="48.0">
+                              <Label alignment="CENTER" layoutX="158.0" layoutY="25.0" prefHeight="54.0" prefWidth="286.0" text="Page de Connexion" AnchorPane.leftAnchor="158.0" AnchorPane.rightAnchor="158.0" AnchorPane.topAnchor="25.0">
                                   <font>
                                       <Font size="24.0" />
                                   </font>
                               </Label>
-                        <HBox alignment="CENTER" layoutX="215.0" layoutY="102.0" AnchorPane.leftAnchor="215.0" AnchorPane.rightAnchor="215.0" AnchorPane.topAnchor="102.0">
+                        <HBox alignment="CENTER" layoutX="215.0" layoutY="79.0" AnchorPane.leftAnchor="215.0" AnchorPane.rightAnchor="215.0" AnchorPane.topAnchor="79.0">
                            <children>
                               <ImageView fx:id="imageView" fitHeight="200.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
                            </children>
