@@ -1,4 +1,5 @@
 package tn.bfpme.controllers;
+
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -27,6 +28,8 @@ import org.opencv.videoio.Videoio;
 import tn.bfpme.models.User;
 import tn.bfpme.utils.*;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -58,6 +61,9 @@ public class LoginController implements Initializable {
 
     private Image showPasswordImage;
     private Image hidePasswordImage;
+    private VideoCapture capture;
+    private Timer timer;
+    private boolean cameraActive = false;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -141,54 +147,60 @@ public class LoginController implements Initializable {
 
     @FXML
     void FacialRecognitionButton(ActionEvent event) {
-        String faceCascadePath = "src/main/resources/assets/FacialRegDATA/XML/haarcascades/haarcascade_frontalface_alt.xml";
-        CascadeClassifier faceDetector = new CascadeClassifier(faceCascadePath);
-        if (faceDetector.empty()) {
-            System.err.println("Failed to load haarcascade_frontalface_alt.xml");
-            return;
-        }
-        VideoCapture capture = new VideoCapture(0, Videoio.CAP_DSHOW); // Try using DirectShow backend
-        if (!capture.isOpened()) {
-            System.out.println("Error: Cannot open the camera.");
-            return;
-        }
-        Task<Void> faceRecognitionTask = new Task<Void>() {
-            @Override
-            protected Void call() {
-                Mat frame = new Mat();
-                while (capture.read(frame)) {
-                    MatOfRect faceDetections = new MatOfRect();
-                    faceDetector.detectMultiScale(frame, faceDetections);
-                    for (Rect rect : faceDetections.toArray()) {
-                        Imgproc.rectangle(frame, new org.opencv.core.Point(rect.x, rect.y), new org.opencv.core.Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0));
-                    }
-                    Image imageToShow = FacialRec.mat2Image(frame);
-                    Platform.runLater(() -> imageView.setImage(imageToShow));
-                    String capturedImagePath = "src/main/resources/assets/FacialRegDATA/Captured/captured_frame.jpg";
-                    Imgcodecs.imwrite(capturedImagePath, frame);
-                    boolean recognized = recognizeFace(capturedImagePath);
-                    if (recognized) {
-                        System.out.println("Face recognized successfully.");
-                        break;
-                    } else {
-                        System.out.println("Face not recognized.");
-                    }
-                    try {
-                        Thread.sleep(33);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+        if (!this.cameraActive) {
+            this.capture = new VideoCapture(0, Videoio.CAP_DSHOW);
+            if (this.capture.isOpened()) {
+                this.cameraActive = true;
+                String faceCascadePath = "src/main/resources/assets/FacialRegDATA/XML/haarcascades/haarcascade_frontalface_alt.xml";
+                CascadeClassifier faceDetector = new CascadeClassifier(faceCascadePath);
+                if (faceDetector.empty()) {
+                    System.err.println("Failed to load haarcascade_frontalface_alt.xml");
+                    return;
                 }
-
-                capture.release();
-                return null;
+                TimerTask frameGrabber = new TimerTask() {
+                    @Override
+                    public void run() {
+                        Mat frame = new Mat();
+                        if (capture.read(frame)) {
+                            MatOfRect faceDetections = new MatOfRect();
+                            faceDetector.detectMultiScale(frame, faceDetections);
+                            for (Rect rect : faceDetections.toArray()) {
+                                Imgproc.rectangle(frame, new org.opencv.core.Point(rect.x, rect.y), new org.opencv.core.Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0));
+                            }
+                            Image imageToShow = FacialRec.mat2Image(frame);
+                            Platform.runLater(() -> {
+                                imageView.setImage(imageToShow);
+                                imageView.setFitWidth(380);
+                                imageView.setPreserveRatio(true);
+                            });
+                            String capturedImagePath = "src/main/resources/assets/FacialRegDATA/Captured/captured_frame.jpg";
+                            Imgcodecs.imwrite(capturedImagePath, frame);
+                            boolean recognized = recognizeFace(capturedImagePath);
+                            if (recognized) {
+                                System.out.println("Face recognized successfully.");
+                                cameraActive = false; // stop the camera
+                            } else {
+                                System.out.println("Face not recognized.");
+                            }
+                        }
+                    }
+                };
+                this.timer = new Timer();
+                this.timer.schedule(frameGrabber, 0, 33);
+            } else {
+                System.err.println("Impossible to open the camera connection...");
             }
-        };
-
-        Thread faceRecognitionThread = new Thread(faceRecognitionTask);
-        faceRecognitionThread.setDaemon(true);
-        faceRecognitionThread.start();
+        } else {
+            this.cameraActive = false;
+            if (this.timer != null) {
+                this.timer.cancel();
+                this.timer = null;
+            }
+            this.capture.release();
+            imageView.setImage(null);
+        }
     }
+
 
     private boolean recognizeFace(String capturedImagePath) {
         Mat capturedImage = Imgcodecs.imread(capturedImagePath);
