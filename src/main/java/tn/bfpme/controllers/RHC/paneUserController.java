@@ -471,7 +471,6 @@ public class paneUserController implements Initializable {
         }
     }
 
-    // Helper method to get the limit for a TypeConge
     private Map<Integer, Double> getTypeCongeLimit() {
         Map<Integer, Double> limitMap = new HashMap<>();
         String query = "SELECT ID_TypeConge, Limit FROM typeconge";
@@ -486,7 +485,6 @@ public class paneUserController implements Initializable {
         }
         return limitMap;
     }
-
 
     private List<UserSolde> getSoldeCongeByUserId(int userId) {
         List<UserSolde> soldeCongeList = new ArrayList<>();
@@ -541,7 +539,6 @@ public class paneUserController implements Initializable {
         deptTable.setRoot(filteredRoot);
     }
 
-    // Recursive method to filter the tree based on the search text
     private TreeItem<Departement> filterDeptTreeItem(TreeItem<Departement> item, String searchText) {
         if (item == null) {
             return null;
