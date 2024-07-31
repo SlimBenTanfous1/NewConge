@@ -12,14 +12,14 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="MainAnchorPane" onMouseClicked="#Deselect" prefHeight="726.0" prefWidth="1119.0" styleClass="grad-bg" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.RHC.paneEmailTempController">
+<AnchorPane fx:id="MainAnchorPane" prefHeight="726.0" prefWidth="1119.0" styleClass="grad-bg" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.RHC.paneEmailTempController">
    <children>
       <Label alignment="TOP_CENTER" layoutX="406.0" layoutY="21.0" prefHeight="29.0" prefWidth="308.0" styleClass="RobotoBold" text="Modèles de correspondance" AnchorPane.leftAnchor="406.0" AnchorPane.rightAnchor="405.0" AnchorPane.topAnchor="21.0">
          <font>
             <Font size="24.0" />
          </font>²
       </Label>
-      <AnchorPane layoutX="70.0" layoutY="73.0" onMouseClicked="#Deselect" prefHeight="597.0" prefWidth="980.0" styleClass="paneRoundedCornders" AnchorPane.bottomAnchor="56.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="69.0" AnchorPane.topAnchor="73.0">
+      <AnchorPane layoutX="70.0" layoutY="73.0" prefHeight="597.0" prefWidth="980.0" styleClass="paneRoundedCornders" AnchorPane.bottomAnchor="56.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="69.0" AnchorPane.topAnchor="73.0">
          <children>
             <HBox fx:id="Hfirst" alignment="CENTER" layoutX="303.0" layoutY="535.0" prefHeight="37.0" prefWidth="376.0" spacing="25.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="303.0" AnchorPane.rightAnchor="303.0">
                <children>

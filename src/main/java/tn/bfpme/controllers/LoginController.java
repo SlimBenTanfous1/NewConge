@@ -25,10 +25,7 @@ import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.Videoio;
 import tn.bfpme.models.User;
-import tn.bfpme.utils.FacialRec;
-import tn.bfpme.utils.MyDataBase;
-import tn.bfpme.utils.SessionManager;
-import tn.bfpme.utils.StageManager;
+import tn.bfpme.utils.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -100,21 +97,26 @@ public class LoginController implements Initializable {
                 "FROM `user` as u " +
                 "JOIN `user_role` ur ON ur.ID_User = u.ID_User " +
                 "WHERE u.`Email`=?";
+
         try {
             PreparedStatement stm = cnx.prepareStatement(qry);
             stm.setString(1, LoginEmail.getText());
             ResultSet rs = stm.executeQuery();
-            if (rs.next()) {
-                String storedHashedPassword = rs.getString("MDP");
-                String enteredPassword = LoginMDP.getText();
 
-                if (BCrypt.checkpw(enteredPassword, storedHashedPassword)) {
+            if (rs.next()) {
+                String storedEncryptedPassword = rs.getString("MDP");
+
+                // Decrypt the stored password
+                String decryptedPassword = EncryptionUtil.decrypt(storedEncryptedPassword);
+
+                // Check if the decrypted password matches the entered password
+                if (decryptedPassword.equals(LoginMDP.getText())) {
                     User connectedUser = new User(
                             rs.getInt("ID_User"),
                             rs.getString("Nom"),
                             rs.getString("Prenom"),
                             rs.getString("Email"),
-                            storedHashedPassword,
+                            storedEncryptedPassword, // Keep the encrypted password for session
                             rs.getString("Image"),
                             rs.getInt("ID_Manager"),
                             rs.getInt("ID_Departement"),
@@ -132,8 +134,11 @@ public class LoginController implements Initializable {
             }
         } catch (SQLException | IOException ex) {
             ex.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
+
 
     @FXML
     void FacialRecognitionButton(ActionEvent event) {

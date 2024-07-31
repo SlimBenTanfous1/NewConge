@@ -55,7 +55,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class paneUserController implements Initializable {
+public class paneUserController extends AttributionSoldeController implements Initializable {
     public int state = 0;
     public int state1 = 0;
     @FXML
@@ -184,6 +184,9 @@ public class paneUserController implements Initializable {
     private final ServiceSubordinateManager usersubordinateService = new ServiceSubordinateManager(roleService, depService);
     private final ServiceUserSolde serviceUserSolde = new ServiceUserSolde();
     private final ServiceTypeConge serviceTypeConge = new ServiceTypeConge();
+
+    private LeaveBalanceService leaveBalanceService;
+    private AttributionSoldeController attributionSoldeController;
     private ObservableList<User> users;
 
     private ChangeListener<User> userSelectionListener = (observable, oldValue, newValue) -> {
@@ -292,8 +295,6 @@ public class paneUserController implements Initializable {
                 handleUserSelection(newValue);
             }
         });
-        serviceUserSolde.incrementMonthlyLeaveBalances();
-
 
         idUserColumn.setCellFactory(column -> new ColoredTreeCell());
         prenomUserColumn.setCellFactory(column -> new ColoredTreeCell());
@@ -306,12 +307,16 @@ public class paneUserController implements Initializable {
 
         searchFieldUser.textProperty().addListener((observable, oldValue, newValue) -> filterTree(newValue));
         searchFieldDept.textProperty().addListener((observable, oldValue, newValue) -> filterDeptTree(newValue));
-        //searchFieldRole.textProperty().addListener((observable, oldValue, newValue) -> filterRoleTree(newValue));
         deptTable.setRowFactory(tv -> new ColoredTreeRowDepartment()); // Apply department highlighting
         clearSoldeFields();
         CongeVbox.setPadding(new Insets(10, 0, 10, 0));
         CongeVbox.setSpacing(10);
+
+        // Schedule the leave balance increment task
+        LeaveBalanceService leaveBalanceService = new LeaveBalanceService(this);
+        leaveBalanceService.start();
     }
+
 
     private void LOADERS() {
         loadUsers();
@@ -1455,7 +1460,7 @@ public class paneUserController implements Initializable {
     @FXML
     void ajouter_user(ActionEvent actionEvent) {
         state = 1;
-        ID_A.setDisable(true);
+        ID_A.setDisable(false);
         email_A.setDisable(false);
         nom_A.setDisable(false);
         Prenom_A.setDisable(false);
@@ -1473,50 +1478,56 @@ public class paneUserController implements Initializable {
     @FXML
     void Enregistrer_user(ActionEvent event) {
         if (state == 1) {
+            int idUser = Integer.parseInt(ID_A.getText());
             String nom = nom_A.getText();
             String prenom = Prenom_A.getText();
             String email = email_A.getText();
             String mdp = MDP_A.getText();
             String image = image_A.getText();
 
-            String hashedPassword = BCrypt.hashpw(mdp, BCrypt.gensalt());
-
             try {
+                // Encrypt the password
+                String encryptedPassword = EncryptionUtil.encrypt(mdp);
+
                 if (!emailExists(email)) {
-                    User newUser = new User(0, nom, prenom, email, hashedPassword, image, LocalDate.now());
+                    User newUser = new User(idUser, nom, prenom, email, encryptedPassword, image, LocalDate.now());
                     UserS.AddUser_RH(newUser);
-                    int newUserId = UserS.getLastInsertedUserId();
+                    //int newUserId = UserS.getLastInsertedUserId();
                     List<TypeConge> typeConges = serviceTypeConge.getAllTypeConge();
                     for (TypeConge typeConge : typeConges) {
-                        serviceUserSolde.addUserSolde(newUserId, typeConge.getIdTypeConge(), 0.0);
+                        serviceUserSolde.addUserSolde(idUser, typeConge.getIdTypeConge(), 0.0);
                     }
                     infolabel.setText("Ajout Effectué");
                 } else {
                     infolabel.setText("Email déjà existe");
                 }
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
             reset();
 
         } else if (state == 2) {
+            int idUser = Integer.parseInt(ID_A.getText());
+
             String Nom = nom_A.getText();
             String Prenom = Prenom_A.getText();
             String Email = email_A.getText();
             String Mdp = MDP_A.getText();
             String Image = image_A.getText();
             int IdUser = Integer.parseInt(ID_A.getText());
-            String hashedPassword = BCrypt.hashpw(Mdp, BCrypt.gensalt());
 
             try {
+                // Encrypt the password
+                String encryptedPassword = EncryptionUtil.encrypt(Mdp);
+
                 if (!emailExistss(Email, IdUser) || isCurrentUser(IdUser, Email)) {
-                    User user = new User(IdUser, Nom, Prenom, Email, hashedPassword, Image);
+                    User user = new User(IdUser, Nom, Prenom, Email, encryptedPassword, Image);
                     UserS.Update(user);
                     infolabel.setText("Modification Effectuée");
                 } else {
                     infolabel.setText("Email déjà existe");
                 }
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 infolabel.setText("Erreur de base de données: " + e.getMessage());
                 e.printStackTrace();
             }
@@ -1546,6 +1557,7 @@ public class paneUserController implements Initializable {
             reset();
         }
     }
+
 
 
     @FXML

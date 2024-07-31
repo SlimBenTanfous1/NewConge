@@ -68,7 +68,7 @@ public class ServiceUserSolde {
         return userSoldes;
     }
 
-    public void incrementMonthlyLeaveBalances() {
+    /*public void incrementMonthlyLeaveBalances() {
         List<UserSolde> allUserSoldes = getAllUserSoldes();
         Map<Integer, Double> typeCongeLimits = getTypeCongeLimit();
         Map<Integer, Double> typeCongePas = getTypeCongePas();
@@ -88,16 +88,16 @@ public class ServiceUserSolde {
             userSolde.setTotalSolde(newSolde);
             updateUserSolde(userSolde); // Ensure this method accepts UserSolde object
         }
-    }
+    }*/
 
     public Map<Integer, Double> getTypeCongeLimit() {
         Map<Integer, Double> typeCongeLimits = new HashMap<>();
-        String query = "SELECT ID_TypeConge, `Limit` FROM typeconge";  // Use backticks for reserved keywords
+        String query = "SELECT ID_TypeConge, `Limite` FROM typeconge";  // Use backticks for reserved keywords
         try (Connection cnx = MyDataBase.getInstance().getCnx();
              PreparedStatement stm = cnx.prepareStatement(query);
              ResultSet rs = stm.executeQuery()) {
             while (rs.next()) {
-                typeCongeLimits.put(rs.getInt("ID_TypeConge"), rs.getDouble("Limit"));
+                typeCongeLimits.put(rs.getInt("ID_TypeConge"), rs.getDouble("Limite"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -105,7 +105,7 @@ public class ServiceUserSolde {
         return typeCongeLimits;
     }
 
-    private Map<Integer, Double> getTypeCongePas() {
+    public Map<Integer, Double> getTypeCongePas() {
         Map<Integer, Double> pasMap = new HashMap<>();
         String query = "SELECT ID_TypeConge, Pas FROM typeconge";
         try (Connection cnx = MyDataBase.getInstance().getCnx();
@@ -118,6 +118,23 @@ public class ServiceUserSolde {
             e.printStackTrace();
         }
         return pasMap;
+    }
+
+    public Map<Integer, String> getTypeCongePeriods() {
+        Map<Integer, String> typeCongePeriods = new HashMap<>();
+        String query = "SELECT ID_TypeConge, Periode FROM typeconge";
+        try (Connection cnx = MyDataBase.getInstance().getCnx();
+             PreparedStatement pst = cnx.prepareStatement(query);
+             ResultSet rs = pst.executeQuery()) {
+            while (rs.next()) {
+                int typeCongeId = rs.getInt("ID_TypeConge");
+                String periode = rs.getString("Periode");
+                typeCongePeriods.put(typeCongeId, periode);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return typeCongePeriods;
     }
 
     public List<UserSolde> getAllUserSoldes() {

@@ -14,6 +14,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import tn.bfpme.models.TypeConge;
+import tn.bfpme.models.UserSolde;
+import tn.bfpme.services.LeaveBalanceService;
 import tn.bfpme.services.ServiceTypeConge;
 import tn.bfpme.services.ServiceUserSolde;
 import tn.bfpme.services.ServiceUtilisateur;
@@ -24,10 +26,8 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.time.LocalDate;
+import java.util.*;
 
 public class AttributionSoldeController implements Initializable {
     @FXML
@@ -68,19 +68,23 @@ public class AttributionSoldeController implements Initializable {
 
     private HashMap<String, Integer> periodDaysMap;
 
+    private LeaveBalanceService leaveBalanceService;
+
+
     public AttributionSoldeController() {
         this.serviceTypeConge = new ServiceTypeConge();
         this.serviceUtilisateur = new ServiceUtilisateur();
         this.serviceUserSolde = new ServiceUserSolde();
         this.periodDaysMap = new HashMap<>();
-        this.periodDaysMap.put("Semestriel", 180);
+        this.periodDaysMap.put("Mensuel", 30);
         this.periodDaysMap.put("Trimestriel", 90);
+        this.periodDaysMap.put("Semestriel", 180);
         this.periodDaysMap.put("Annuel", 365);
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        ComboPeriode.setItems(FXCollections.observableArrayList("Semestriel", "Trimestriel", "Annuel"));
+        ComboPeriode.setItems(FXCollections.observableArrayList("Mensuel","Trimestriel","Semestriel" , "Annuel"));
         Platform.runLater(() -> {
             Stage stage = (Stage) MainAnchorPane.getScene().getWindow();
             stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
@@ -105,6 +109,9 @@ public class AttributionSoldeController implements Initializable {
                 (observable, oldValue, newValue) -> populateFields(newValue));
         formDisableOption(true);
         toggleButtonVisibility(true);
+
+        leaveBalanceService = new LeaveBalanceService(this);
+        leaveBalanceService.start();
     }
 
     @FXML
@@ -270,24 +277,81 @@ public class AttributionSoldeController implements Initializable {
         fileToggleGroup.selectToggle(null); // Clear radio button selection
     }
 
-    private void updatePeriodLabel(String periode) {
-        String periodText = "";
-        switch (periode) {
-            case "Semestriel":
-                periodText = "6 mois";
-                break;
-            case "Trimestriel":
-                periodText = "3 mois";
-                break;
-            case "Annuel":
-                periodText = "1 année";
-                break;
-            default:
-                periodText = "Période non définie";
-                break;
+    private String updatePeriodLabel(String periode) {
+        String periodText;
+        if (periode == null) {
+            periodText = "Période non définie";
+        } else {
+            switch (periode) {
+                case "Mensuel":
+                    periodText = "1 mois";
+                    break;
+                case "Trimestriel":
+                    periodText = "3 mois";
+                    break;
+                case "Semestriel":
+                    periodText = "6 mois";
+                    break;
+                case "Annuel":
+                    periodText = "1 année";
+                    break;
+                default:
+                    periodText = "Période non définie";
+                    break;
+            }
         }
-        periodlabel.setText(periodText);
+        //periodlabel.setText(periodText);
+        return periodText;
     }
+    public void incrementLeaveBalances() {
+        List<UserSolde> allUserSoldes = serviceUserSolde.getAllUserSoldes();
+        Map<Integer, Double> typeCongeLimits = serviceUserSolde.getTypeCongeLimit();
+        Map<Integer, Double> typeCongePas = serviceUserSolde.getTypeCongePas();
+        //Map<Integer, String> typeCongePeriods = serviceUserSolde.getTypeCongePeriods(); // Assuming you have this method to get the period
+        LocalDate currentDate = LocalDate.now();
+
+        for (UserSolde userSolde : allUserSoldes) {
+            int typeCongeId = userSolde.getID_TypeConge();
+            double currentSolde = userSolde.getTotalSolde();
+            String periode = TypeConge.getPeriode();
+
+            double pas = typeCongePas.getOrDefault(typeCongeId, 0.0);
+            double limit = typeCongeLimits.getOrDefault(typeCongeId, Double.MAX_VALUE);
+
+            boolean shouldIncrement = false;
+
+            switch (periode) {
+                case "Mensuel":
+                    shouldIncrement = currentDate.getDayOfMonth() == 1;
+                    break;
+                case "Trimestriel":
+                    shouldIncrement = currentDate.getDayOfMonth() == 1 && (currentDate.getMonthValue() % 3 == 1);
+                    break;
+                case "Semestriel":
+                    shouldIncrement = currentDate.getDayOfMonth() == 1 && (currentDate.getMonthValue() == 1 || currentDate.getMonthValue() == 7);
+                    break;
+                case "Annuel":
+                    shouldIncrement = currentDate.getDayOfMonth() == 1 && currentDate.getMonthValue() == 1;
+                    break;
+            }
+
+            if (shouldIncrement) {
+                double newSolde = currentSolde + pas;
+
+                if (newSolde > limit) {
+                    newSolde = limit;
+                }
+
+                userSolde.setTotalSolde(newSolde);
+                serviceUserSolde.updateUserSolde(userSolde); // Ensure this method accepts UserSolde object
+
+                // Debug message
+                System.out.println("Updated after " + periode + ": " + userSolde.getDesignation() + " new solde: " + newSolde);
+            }
+        }
+    }
+
+
 
     private void formDisableOption(boolean arg) {
         Designation_Solde.setDisable(arg);
@@ -324,5 +388,9 @@ public class AttributionSoldeController implements Initializable {
             clearTextFields();
         }
         state = 0;
+    }
+
+    public void setServiceUserSolde(ServiceUserSolde serviceUserSolde) {
+        this.serviceUserSolde = serviceUserSolde;
     }
 }

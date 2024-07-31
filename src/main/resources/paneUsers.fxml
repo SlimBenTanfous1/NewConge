@@ -30,7 +30,7 @@
          <tabs>
             <Tab fx:id="TabGestionid" onSelectionChanged="#TabGestion" text="Géstion des utilisateurs">
                <content>
-                  <AnchorPane onMouseClicked="#unselect" prefHeight="200.0" prefWidth="200.0" styleClass="grad-bg" stylesheets="@assets/css/style.css">
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="grad-bg" stylesheets="@assets/css/style.css">
                      <children>
                         <HBox layoutX="28.0" layoutY="66.0" prefHeight="538.0" prefWidth="644.0" AnchorPane.bottomAnchor="84.0" AnchorPane.leftAnchor="28.0" AnchorPane.rightAnchor="559.0" AnchorPane.topAnchor="66.0">
                            <children>
@@ -93,9 +93,9 @@
                                           </Button>
                                        </children>
                                     </HBox>
-                                    <HBox fx:id="Hfirst" layoutX="147.0" layoutY="454.0" prefHeight="56.0" prefWidth="238.0" AnchorPane.bottomAnchor="28.0" AnchorPane.leftAnchor="146.0" AnchorPane.rightAnchor="147.0">
+                                    <HBox fx:id="Hfirst" layoutX="147.0" layoutY="452.0" prefHeight="56.0" prefWidth="278.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="147.0" AnchorPane.rightAnchor="109.0">
                                        <children>
-                                          <Button fx:id="Enregistrer" mnemonicParsing="false" onAction="#Enregistrer_user" prefHeight="56.0" prefWidth="100.0" text="Enregistrer">
+                                          <Button fx:id="Enregistrer" mnemonicParsing="false" onAction="#Enregistrer_user" prefHeight="56.0" prefWidth="149.0" text="Enregistrer">
                                              <styleClass>
                                                 <String fx:value="btn-secondary" />
                                                 <String fx:value="btn-approver" />
@@ -103,7 +103,7 @@
                                              </styleClass>
                                           </Button>
                                           <Separator orientation="VERTICAL" prefHeight="56.0" prefWidth="38.0" styleClass="seperator" />
-                                          <Button fx:id="Annuler" mnemonicParsing="false" onAction="#Annuler_user" prefHeight="56.0" prefWidth="100.0" text="Annuler">
+                                          <Button fx:id="Annuler" mnemonicParsing="false" onAction="#Annuler_user" prefHeight="56.0" prefWidth="105.0" text="Annuler">
                                              <styleClass>
                                                 <String fx:value="btn-secondary" />
                                                 <String fx:value="btn-refuser" />

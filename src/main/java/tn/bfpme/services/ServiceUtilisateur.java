@@ -733,18 +733,19 @@ public class ServiceUtilisateur implements IUtilisateur {
     }
 
     public void AddUser_RH(User user) {
-        String query = "INSERT INTO user (`Nom`, `Prenom`, `Email`, `MDP`, `Image`,`Creation_Date`) VALUES (?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO user (`ID_User`,`Nom`, `Prenom`, `Email`, `MDP`, `Image`,`Creation_Date`) VALUES (?,?, ?, ?, ?, ?, ?)";
         try {
             if (cnx == null || cnx.isClosed()) {
                 cnx = MyDataBase.getInstance().getCnx();
             }
             PreparedStatement pst = cnx.prepareStatement(query);
-            pst.setString(1, user.getNom());
-            pst.setString(2, user.getPrenom());
-            pst.setString(3, user.getEmail());
-            pst.setString(4, user.getMdp());
-            pst.setString(5, user.getImage());
-            pst.setDate(6, Date.valueOf(user.getCreationDate()));
+            pst.setInt(1, user.getIdUser()); // Set the ID_User explicitly
+            pst.setString(2, user.getNom());
+            pst.setString(3, user.getPrenom());
+            pst.setString(4, user.getEmail());
+            pst.setString(5, user.getMdp());
+            pst.setString(6, user.getImage());
+            pst.setDate(7, Date.valueOf(user.getCreationDate()));
             pst.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace();

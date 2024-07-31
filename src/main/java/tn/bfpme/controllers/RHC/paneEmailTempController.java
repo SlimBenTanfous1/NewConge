@@ -238,10 +238,7 @@ public class paneEmailTempController implements Initializable {
         }
 
     }
-    @FXML
-    void Deselect(MouseEvent event) {
-       reset1();
-    }
+
     void reset1(){
         ObjListView.getSelectionModel().clearSelection();
         ObjListView.setDisable(false);
