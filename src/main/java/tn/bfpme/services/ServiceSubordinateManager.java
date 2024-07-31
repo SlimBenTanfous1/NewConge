@@ -14,7 +14,7 @@ import java.util.List;
 
 public class ServiceSubordinateManager {
     private ServiceRole roleService;
-    private ServiceUtilisateur userService;
+    private final ServiceUtilisateur userService = new ServiceUtilisateur();
     private ServiceDepartement departementService;
     private static Connection cnx = MyDataBase.getInstance().getCnx();
 
@@ -161,21 +161,23 @@ public class ServiceSubordinateManager {
     }
 
     public void removeRoleAndDepartment(int userId) throws SQLException {
-        updateUserRole(userId, null);
-        updateUserDepartment(userId, null);
-        updateUserManager(userId, null);
-        int DeletedUserManager = userService.getManagerIdByUserId(userId);
+        int DeletedUserManagerId = userService.getManagerIdByUserId(userId);
         String query = "SELECT ID_User FROM user WHERE ID_Manager = ?";
-        try (PreparedStatement statement = cnx.prepareStatement(query)) {
+        try {
+            ensureConnection();
+            PreparedStatement statement = cnx.prepareStatement(query);
             statement.setInt(1, userId);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 int subordinateId = resultSet.getInt("ID_User");
-                updateUserManager(subordinateId, DeletedUserManager);
+                updateUserManager(subordinateId, DeletedUserManagerId);
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error removing role and department: " + e.getMessage(), e);
         }
+        updateUserRole(userId, null);
+        updateUserDepartment(userId, null);
+        updateUserManager(userId, null);
     }
 
     private void reassignSubordinatesToNewManager(int newManagerId, int newManagerRoleId, int newManagerDeptId) throws SQLException {
