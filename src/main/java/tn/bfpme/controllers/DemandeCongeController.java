@@ -20,10 +20,7 @@ import javafx.util.StringConverter;
 import tn.bfpme.models.Conge;
 import tn.bfpme.models.Statut;
 import tn.bfpme.models.TypeConge;
-import tn.bfpme.services.ServiceConge;
-import tn.bfpme.services.ServiceNotification;
-import tn.bfpme.services.ServiceTypeConge;
-import tn.bfpme.services.ServiceUtilisateur;
+import tn.bfpme.services.*;
 import tn.bfpme.utils.FontResizer;
 import tn.bfpme.utils.MyDataBase;
 import tn.bfpme.utils.SessionManager;
@@ -68,6 +65,7 @@ public class DemandeCongeController implements Initializable {
     private HBox ForDoc2;
 
     private final ServiceTypeConge serviceTypeConge = new ServiceTypeConge();
+    private final ServiceUserSolde serviceUserSolde = new ServiceUserSolde();
     private final ServiceConge serviceConge = new ServiceConge();
     private final ServiceNotification notifService = new ServiceNotification();
     private final ServiceUtilisateur userService = new ServiceUtilisateur();
@@ -158,6 +156,13 @@ public class DemandeCongeController implements Initializable {
             return;
         }
 
+        // Decrement the solde
+        boolean success = serviceUserSolde.requestLeave(userId, IDTYPE, daysBetween);
+        if (!success) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Solde insuffisant", "Votre solde est insuffisant pour la période demandée.");
+            return;
+        }
+
         serviceConge.AddConge(new Conge(0, DD, DF, IDTYPE, Statut.En_Attente, userId, docLinkToUse, DESC));
         String NotifSubject = "Vous avez reçu une nouvelle demande de congé " + selectedTypeConge.getDesignation();
         String messageText = "Vous avez reçu une nouvelle demande de congé " + selectedTypeConge.getDesignation() + " de la part de " + SessionManager.getInstance().getUser().getNom() + " " + SessionManager.getInstance().getUser().getPrenom() + " du " + DD + " au " + DF;
@@ -186,6 +191,7 @@ public class DemandeCongeController implements Initializable {
             System.out.println("Closing current scene...");
         }
     }
+
 
     private double getCurrentBalance(int userId, int typeCongeId) {
         String query = "SELECT TotalSolde FROM user_Solde WHERE ID_User = ? AND ID_TypeConge = ?";
