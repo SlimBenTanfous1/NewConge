@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 import tn.bfpme.models.*;
 import tn.bfpme.services.ServiceConge;
 import tn.bfpme.services.ServiceNotification;
+import tn.bfpme.services.ServiceUserSolde;
 import tn.bfpme.services.ServiceUtilisateur;
 import tn.bfpme.utils.Mails;
 import tn.bfpme.utils.MyDataBase;
@@ -59,6 +60,8 @@ public class DemandeDepController implements Initializable {
     String employeeName, startDate, endDate, managerName, managerRole;
     String to, Subject, MessageText;
     private final ServiceConge serviceConge = new ServiceConge();
+
+    private final ServiceUserSolde serviceUserSolde = new ServiceUserSolde();
     private final ServiceUtilisateur serviceUser = new ServiceUtilisateur();
     private final ServiceNotification serviceNotif = new ServiceNotification();
     UserConge enAtt = serviceUser.AfficherEnAttente();
@@ -141,7 +144,7 @@ public class DemandeDepController implements Initializable {
                 Stage demandeDepListeStage = new Stage();
                 Scene scene = new Scene(root);
                 demandeDepListeStage.setScene(scene);
-                demandeDepListeStage.setTitle("Mailing de Demande");
+                demandeDepListeStage.setTitle("Liste des demandes");
                 demandeDepListeStage.show();
                 StageManager.addStage("DemandeDepListe", demandeDepListeStage);
                 Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
@@ -167,6 +170,7 @@ public class DemandeDepController implements Initializable {
 
         }
     }
+
 
     @FXML
     void RefuserConge(ActionEvent event) throws IOException {
@@ -197,11 +201,16 @@ public class DemandeDepController implements Initializable {
                 e.printStackTrace();
                 System.err.println("An unexpected error occurred");
             }
-        }
-        this.conge.setStatut(Statut.Rejeté);
-        serviceConge.updateStatutConge(this.conge.getIdConge(), Statut.Rejeté);
-    }
 
+            int congeDays = (int) ChronoUnit.DAYS.between(conge.getDateDebut(), conge.getDateFin());
+
+            // Re-increment TotalSolde
+            serviceUserSolde.refuseLeave(this.user.getIdUser(), conge.getTypeConge().getIdTypeConge(), congeDays);
+
+            this.conge.setStatut(Statut.Rejeté);
+            serviceConge.updateStatutConge(this.conge.getIdConge(), Statut.Rejeté);
+        }
+    }
 
     @FXML
     void retour(ActionEvent event) {
