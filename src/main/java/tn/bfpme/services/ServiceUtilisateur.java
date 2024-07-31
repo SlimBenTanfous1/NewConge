@@ -537,7 +537,6 @@ public class ServiceUtilisateur implements IUtilisateur {
         return new UserConge(users, conges);
     }
 
-
     @Override
     public UserConge AfficherReject() {
         List<User> users = new ArrayList<>();
@@ -607,8 +606,6 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
         return new UserConge(users, conges);
     }
-
-
 
     private List<TypeConge> getTypeCongesByUserId(int userId) {
         List<TypeConge> typeConges = new ArrayList<>();
