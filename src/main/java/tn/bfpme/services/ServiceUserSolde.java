@@ -26,6 +26,15 @@ public class ServiceUserSolde {
         }
     }
 
+    public void updateUserSolde(int userId, int idtype, long days) {
+        UserSolde userSolde = getUserSoldeByUserIdAndTypeCongeId(userId, idtype);
+        if (userSolde != null) {
+            double newSolde = userSolde.getTotalSolde() - days;
+            userSolde.setTotalSolde(newSolde);
+            updateUserSolde(userSolde);
+        }
+    }
+
     public void addUserSolde(int userId, int typeCongeId, double totalSolde) {
         Connection cnx = MyDataBase.getInstance().getCnx();
         String query = "INSERT INTO user_solde(ID_User, ID_TypeConge, TotalSolde) VALUES (?,?,?)";
@@ -64,19 +73,16 @@ public class ServiceUserSolde {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return userSoldes;
     }
     public UserSolde getUserSoldeByUserIdAndTypeCongeId(int userId, int typeCongeId) {
         UserSolde userSolde = null;
         String query = "SELECT * FROM user_solde WHERE ID_User = ? AND ID_TypeConge = ?";
-
         try (Connection cnx = MyDataBase.getInstance().getCnx();
              PreparedStatement pstmt = cnx.prepareStatement(query)) {
             pstmt.setInt(1, userId);
             pstmt.setInt(2, typeCongeId);
             ResultSet rs = pstmt.executeQuery();
-
             if (rs.next()) {
                 userSolde = new UserSolde(
                         rs.getInt("ID_UserSolde"),
@@ -88,7 +94,6 @@ public class ServiceUserSolde {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return userSolde;
     }
 
@@ -107,7 +112,6 @@ public class ServiceUserSolde {
         System.out.println("Leave request failed: Not enough solde.");
         return false; // Not enough solde to process the leave request
     }
-
     public void refuseLeave(int userId, int typeCongeId, double daysRequested) {
         UserSolde userSolde = getUserSoldeByUserIdAndTypeCongeId(userId, typeCongeId);
         if (userSolde != null) {
@@ -118,7 +122,6 @@ public class ServiceUserSolde {
             System.out.println("Leave request refused: " + daysRequested + " days. Solde re-incremented to: " + newSolde);
         }
     }
-
     /*public void incrementMonthlyLeaveBalances() {
         List<UserSolde> allUserSoldes = getAllUserSoldes();
         Map<Integer, Double> typeCongeLimits = getTypeCongeLimit();

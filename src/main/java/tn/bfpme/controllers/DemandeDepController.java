@@ -211,6 +211,7 @@ public class DemandeDepController implements Initializable {
             serviceConge.updateStatutConge(this.conge.getIdConge(), Statut.Rejeté);
         }
     }
+
     @FXML
     void retour(ActionEvent event) {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
