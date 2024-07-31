@@ -15,7 +15,7 @@
 
 <AnchorPane fx:id="MainAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="830.0" prefWidth="1340.0" styleClass="grad-bg" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.EmployeController">
    <children>
-      <AnchorPane layoutX="117.0" layoutY="145.0" maxHeight="800.0" maxWidth="1200.0" prefHeight="589.0" prefWidth="619.0" AnchorPane.bottomAnchor="96.0" AnchorPane.leftAnchor="117.0" AnchorPane.rightAnchor="604.0" AnchorPane.topAnchor="145.0">
+      <AnchorPane layoutX="117.0" layoutY="145.0" maxHeight="800.0" maxWidth="1200.0" prefHeight="589.0" prefWidth="665.0" AnchorPane.bottomAnchor="96.0" AnchorPane.leftAnchor="117.0" AnchorPane.rightAnchor="558.0" AnchorPane.topAnchor="145.0">
          <children>
             <Label layoutX="1.0" prefHeight="36.0" prefWidth="316.0" styleClass="RobotoBold" text="Mes informations :" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="0.0">
                <font>
@@ -24,10 +24,10 @@
             </Label>
             <AnchorPane layoutY="37.0" maxHeight="1.7976931348623157E308" prefHeight="227.0" prefWidth="609.0" style="-fx-border-color: white;" styleClass="pane1" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="37.0">
                <children>
-                  <GridPane layoutX="197.0" layoutY="38.0" prefHeight="152.0" prefWidth="392.0" AnchorPane.leftAnchor="197.0" AnchorPane.rightAnchor="24.0">
+                  <GridPane alignment="CENTER_LEFT" layoutX="197.0" layoutY="38.0" prefHeight="152.0" prefWidth="392.0" AnchorPane.leftAnchor="189.0" AnchorPane.rightAnchor="24.0">
                      <columnConstraints>
-                        <ColumnConstraints hgrow="ALWAYS" maxWidth="179.0" minWidth="10.0" prefWidth="153.0" />
-                        <ColumnConstraints hgrow="ALWAYS" maxWidth="239.0" minWidth="10.0" prefWidth="239.0" />
+                        <ColumnConstraints fillWidth="false" halignment="LEFT" hgrow="ALWAYS" maxWidth="227.0" minWidth="10.0" prefWidth="194.0" />
+                        <ColumnConstraints fillWidth="false" halignment="CENTER" hgrow="ALWAYS" maxWidth="243.0" minWidth="10.0" prefWidth="243.0" />
                      </columnConstraints>
                      <rowConstraints>
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -36,12 +36,12 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <children>
-                        <Label prefHeight="17.0" prefWidth="165.0" styleClass="RobotoBold" text="Nom et Prénom :">
+                        <Label maxWidth="250.0" prefHeight="18.0" prefWidth="250.0" styleClass="RobotoBold" text="Nom et Prénom :">
                            <font>
                               <Font name="System Bold" size="14.0" />
                            </font>
                         </Label>
-                        <Label prefHeight="17.0" prefWidth="74.0" styleClass="RobotoBold" text="E-mail : " GridPane.rowIndex="1">
+                        <Label maxWidth="250.0" prefHeight="18.0" prefWidth="250.0" styleClass="RobotoBold" text="E-mail : " GridPane.rowIndex="1">
                            <font>
                               <Font name="System Bold" size="14.0" />
                            </font>
@@ -51,12 +51,12 @@
                               <Font name="Roboto Regular" size="14.0" />
                            </font>
                         </Label>
-                        <Label prefHeight="17.0" prefWidth="165.0" styleClass="RobotoBold" text="Département :" GridPane.rowIndex="2">
+                        <Label maxWidth="250.0" prefHeight="17.0" prefWidth="250.0" styleClass="RobotoBold" text="Département :" GridPane.rowIndex="2">
                            <font>
                               <Font name="System Bold" size="14.0" />
                            </font>
                         </Label>
-                        <Label prefHeight="17.0" prefWidth="165.0" styleClass="RobotoBold" text="Rôle : " GridPane.rowIndex="3">
+                        <Label maxWidth="250.0" prefHeight="17.0" prefWidth="250.0" styleClass="RobotoBold" text="Rôle : " GridPane.rowIndex="3">
                            <font>
                               <Font name="System Bold" size="14.0" />
                            </font>
@@ -78,7 +78,7 @@
                         </Label>
                      </children>
                   </GridPane>
-                  <ImageView fx:id="CU_pdp" fitHeight="150.0" fitWidth="200.0" layoutX="21.0" layoutY="40.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="21.0">
+                  <ImageView fx:id="CU_pdp" fitHeight="150.0" fitWidth="200.0" layoutX="21.0" layoutY="40.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="18.0">
                      <image>
                         <Image url="@assets/imgs/User.jpg" />
                      </image>
