@@ -97,26 +97,20 @@ public class LoginController implements Initializable {
                 "FROM `user` as u " +
                 "JOIN `user_role` ur ON ur.ID_User = u.ID_User " +
                 "WHERE u.`Email`=?";
-
         try {
             PreparedStatement stm = cnx.prepareStatement(qry);
             stm.setString(1, LoginEmail.getText());
             ResultSet rs = stm.executeQuery();
-
             if (rs.next()) {
                 String storedEncryptedPassword = rs.getString("MDP");
-
-                // Decrypt the stored password
                 String decryptedPassword = EncryptionUtil.decrypt(storedEncryptedPassword);
-
-                // Check if the decrypted password matches the entered password
                 if (decryptedPassword.equals(LoginMDP.getText())) {
                     User connectedUser = new User(
                             rs.getInt("ID_User"),
                             rs.getString("Nom"),
                             rs.getString("Prenom"),
                             rs.getString("Email"),
-                            storedEncryptedPassword, // Keep the encrypted password for session
+                            storedEncryptedPassword,
                             rs.getString("Image"),
                             rs.getInt("ID_Manager"),
                             rs.getInt("ID_Departement"),
@@ -148,7 +142,6 @@ public class LoginController implements Initializable {
             System.err.println("Failed to load haarcascade_frontalface_alt.xml");
             return;
         }
-
         VideoCapture capture = new VideoCapture(0, Videoio.CAP_DSHOW); // Try using DirectShow backend
         if (!capture.isOpened()) {
             System.out.println("Error: Cannot open the camera.");
