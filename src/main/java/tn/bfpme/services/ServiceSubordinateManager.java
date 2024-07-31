@@ -14,6 +14,7 @@ import java.util.List;
 
 public class ServiceSubordinateManager {
     private ServiceRole roleService;
+    private ServiceUtilisateur userService;
     private ServiceDepartement departementService;
     private static Connection cnx = MyDataBase.getInstance().getCnx();
 
@@ -163,14 +164,14 @@ public class ServiceSubordinateManager {
         updateUserRole(userId, null);
         updateUserDepartment(userId, null);
         updateUserManager(userId, null);
-
+        int DeletedUserManager = userService.getManagerIdByUserId(userId);
         String query = "SELECT ID_User FROM user WHERE ID_Manager = ?";
         try (PreparedStatement statement = cnx.prepareStatement(query)) {
             statement.setInt(1, userId);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 int subordinateId = resultSet.getInt("ID_User");
-                updateUserManager(subordinateId, null);
+                updateUserManager(subordinateId, DeletedUserManager);
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error removing role and department: " + e.getMessage(), e);
@@ -252,7 +253,6 @@ public class ServiceSubordinateManager {
             throw new RuntimeException("Error reassigning subordinates in same department: " + e.getMessage(), e);
         }
     }
-
 
     /*
     private void reassignSubordinatesToNewManager(int newManagerId, int newManagerRoleId, int newManagerDeptId) throws SQLException {
