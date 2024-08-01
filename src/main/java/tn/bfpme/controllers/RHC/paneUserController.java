@@ -167,6 +167,35 @@ public class paneUserController extends AttributionSoldeController implements In
     private Pane UserPane1;
 
     @FXML
+    private ListView<User> interim_listview;
+
+    @FXML
+    private ListView<User> manager_listview;
+
+
+    @FXML
+    private HBox Hint1;
+
+    @FXML
+    private Button Hint1A;
+
+    @FXML
+    private Button Hint1M;
+
+    @FXML
+    private Button Hint1S;
+
+    @FXML
+    private HBox Hint2;
+
+    @FXML
+    private Button Hint2A;
+
+    @FXML
+    private Button Hint2E;
+
+
+    @FXML
     public Button removeFilterButton, adduserbtn, toggleButton, toggleButtonR, toggleButtonDep;
 
     @FXML
@@ -1616,4 +1645,26 @@ public class paneUserController extends AttributionSoldeController implements In
         }
         isAscending1 = !isAscending1;
     }
+
+    @FXML
+    void annulerInterim(ActionEvent event) {
+
+    }
+    @FXML
+    void affecterInterim(ActionEvent event) {
+
+    }
+    @FXML
+    void supprimerInterim(ActionEvent event) {
+
+    }
+    @FXML
+    void modifierInterim(ActionEvent event) {
+
+    }
+    @FXML
+    void enregistrerInterim(ActionEvent event) {
+
+    }
+
 }
