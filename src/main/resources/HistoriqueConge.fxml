@@ -125,7 +125,7 @@
                                     </ImageView>
                                  </graphic>
                               </Button>
-                              <Label prefHeight="25.0" prefWidth="52.0" styleClass="RobotoBold" text="Statut">
+                              <Label prefHeight="25.0" prefWidth="91.0" styleClass="RobotoBold" text="Statut">
                                  <font>
                                     <Font size="18.0" />
                                  </font>

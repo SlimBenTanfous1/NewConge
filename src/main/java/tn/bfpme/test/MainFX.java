@@ -2,16 +2,22 @@ package tn.bfpme.test;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.layout.Pane;
+import javafx.stage.WindowEvent;
+import org.opencv.core.Core;
 import javafx.stage.Stage;
 import tn.bfpme.utils.StageManager;
+
 import java.io.IOException;
 
 public class MainFX extends Application {
+    static {
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+    }
 
     public static void main(String[] args) {
         launch(args);

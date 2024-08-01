@@ -1,6 +1,7 @@
 package tn.bfpme.controllers;
 
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,15 +17,28 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import org.mindrot.jbcrypt.BCrypt;
+import org.opencv.core.*;
+import org.opencv.face.FaceRecognizer;
+import org.opencv.face.LBPHFaceRecognizer;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.objdetect.CascadeClassifier;
+import org.opencv.videoio.VideoCapture;
+import org.opencv.videoio.Videoio;
 import tn.bfpme.models.User;
 import tn.bfpme.utils.*;
 
+import java.util.Timer;
+import java.util.TimerTask;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
@@ -41,17 +55,27 @@ public class LoginController implements Initializable {
     @FXML
     private ImageView toggleIcon;
     @FXML
+    private ImageView imageView;
+    @FXML
     private Connection cnx;
 
     private Image showPasswordImage;
     private Image hidePasswordImage;
+    private VideoCapture capture;
+    private Timer timer;
+    private boolean cameraActive = false;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         String style = "-fx-background-color: transparent; -fx-border-color: transparent transparent #eab53f transparent; -fx-border-width: 0 0 1 0; -fx-padding: 0 0 3 0;";
         LoginEmail.setStyle(style);
         LoginMDP.setStyle(style);
-
+        Platform.runLater(() -> {
+            Stage stage = (Stage) MainAnchorPane.getScene().getWindow();
+            stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
+            stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
+            FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight());
+        });
         // Load the images
         showPasswordImage = new Image(getClass().getResourceAsStream("/assets/imgs/hide.png"));
         hidePasswordImage = new Image(getClass().getResourceAsStream("/assets/imgs/show.png"));
@@ -84,26 +108,20 @@ public class LoginController implements Initializable {
                 "FROM `user` as u " +
                 "JOIN `user_role` ur ON ur.ID_User = u.ID_User " +
                 "WHERE u.`Email`=?";
-
         try {
             PreparedStatement stm = cnx.prepareStatement(qry);
             stm.setString(1, LoginEmail.getText());
             ResultSet rs = stm.executeQuery();
-
             if (rs.next()) {
                 String storedEncryptedPassword = rs.getString("MDP");
-
-                // Decrypt the stored password
                 String decryptedPassword = EncryptionUtil.decrypt(storedEncryptedPassword);
-
-                // Check if the decrypted password matches the entered password
                 if (decryptedPassword.equals(LoginMDP.getText())) {
                     User connectedUser = new User(
                             rs.getInt("ID_User"),
                             rs.getString("Nom"),
                             rs.getString("Prenom"),
                             rs.getString("Email"),
-                            storedEncryptedPassword, // Keep the encrypted password for session
+                            storedEncryptedPassword,
                             rs.getString("Image"),
                             rs.getInt("ID_Manager"),
                             rs.getInt("ID_Departement"),
@@ -127,11 +145,107 @@ public class LoginController implements Initializable {
     }
 
 
-
     @FXML
     void FacialRecognitionButton(ActionEvent event) {
-
+        if (!this.cameraActive) {
+            this.capture = new VideoCapture(0, Videoio.CAP_DSHOW);
+            if (this.capture.isOpened()) {
+                this.cameraActive = true;
+                String faceCascadePath = "src/main/resources/assets/FacialRegDATA/XML/haarcascades/haarcascade_frontalface_alt.xml";
+                CascadeClassifier faceDetector = new CascadeClassifier(faceCascadePath);
+                if (faceDetector.empty()) {
+                    System.err.println("Failed to load haarcascade_frontalface_alt.xml");
+                    return;
+                }
+                TimerTask frameGrabber = new TimerTask() {
+                    @Override
+                    public void run() {
+                        Mat frame = new Mat();
+                        if (capture.read(frame)) {
+                            MatOfRect faceDetections = new MatOfRect();
+                            faceDetector.detectMultiScale(frame, faceDetections);
+                            for (Rect rect : faceDetections.toArray()) {
+                                Imgproc.rectangle(frame, new org.opencv.core.Point(rect.x, rect.y), new org.opencv.core.Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0));
+                            }
+                            Image imageToShow = FacialRec.mat2Image(frame);
+                            Platform.runLater(() -> {
+                                imageView.setImage(imageToShow);
+                                imageView.setFitWidth(380);
+                                imageView.setPreserveRatio(true);
+                            });
+                            String capturedImagePath = "src/main/resources/assets/FacialRegDATA/Captured/captured_frame.jpg";
+                            Imgcodecs.imwrite(capturedImagePath, frame);
+                            boolean recognized = recognizeFace(capturedImagePath);
+                            if (recognized) {
+                                System.out.println("Face recognized successfully.");
+                                cameraActive = false; // stop the camera
+                            } else {
+                                System.out.println("Face not recognized.");
+                            }
+                        }
+                    }
+                };
+                this.timer = new Timer();
+                this.timer.schedule(frameGrabber, 0, 33);
+            } else {
+                System.err.println("Impossible to open the camera connection...");
+            }
+        } else {
+            this.cameraActive = false;
+            if (this.timer != null) {
+                this.timer.cancel();
+                this.timer = null;
+            }
+            this.capture.release();
+            imageView.setImage(null);
+        }
     }
+
+
+    private boolean recognizeFace(String capturedImagePath) {
+        Mat capturedImage = Imgcodecs.imread(capturedImagePath);
+        File directory = new File("src/main/resources/assets/FacialRegDATA");
+        File[] storedFaceFiles = directory.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png"));
+
+        if (storedFaceFiles == null) {
+            System.err.println("No stored face images found.");
+            return false;
+        }
+
+        for (File storedFaceFile : storedFaceFiles) {
+            Mat storedFace = Imgcodecs.imread(storedFaceFile.getAbsolutePath());
+            if (storedFace.empty()) {
+                System.err.println("Failed to load stored face image: " + storedFaceFile.getName());
+                continue;
+            }
+
+            System.out.println("Comparing with stored face: " + storedFaceFile.getName());
+            if (compareFaces(capturedImage, storedFace)) {
+                System.out.println("Face matched with: " + storedFaceFile.getName());
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean compareFaces(Mat capturedImage, Mat storedFace) {
+        Mat grayCapturedImage = new Mat();
+        Mat grayStoredFace = new Mat();
+        Imgproc.cvtColor(capturedImage, grayCapturedImage, Imgproc.COLOR_BGR2GRAY);
+        Imgproc.cvtColor(storedFace, grayStoredFace, Imgproc.COLOR_BGR2GRAY);
+        Imgproc.resize(grayCapturedImage, grayCapturedImage, grayStoredFace.size());
+        FaceRecognizer faceRecognizer = LBPHFaceRecognizer.create();
+        List<Mat> images = new ArrayList<>();
+        List<Integer> labels = new ArrayList<>();
+        images.add(grayStoredFace);
+        labels.add(1); // Label for the stored face
+        faceRecognizer.train(images, new MatOfInt(1));
+        int[] label = new int[1];
+        double[] confidence = new double[1];
+        faceRecognizer.predict(grayCapturedImage, label, confidence);
+        return label[0] == 1 && confidence[0] < 50.0; // Adjust confidence threshold as needed
+    }
+
 
     private void populateUserSolde(User user) {
         String soldeQuery = "SELECT us.*, tc.Designation FROM user_solde us JOIN typeconge tc ON us.ID_TypeConge = tc.ID_TypeConge WHERE us.ID_User = ?";
