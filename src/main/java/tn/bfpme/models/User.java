@@ -15,6 +15,7 @@ public class User {
     private int idDepartement;
     private int idRole;
     private int idSolde;
+    private int idInterim;
 
     private String managerName;
     private String departementNom;
@@ -88,6 +89,21 @@ public class User {
         this.creationDate = creationDate != null ? creationDate : LocalDate.now();
         this.ID_UserSolde = ID_UserSolde;
     }
+    public User(int idUser, String nom, String prenom, String email, String mdp, String image,int idManager, int idDepartement, int idRole, LocalDate creationDate,int ID_UserSolde,int idInterim) {
+        this.idUser = idUser;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.email = email;
+        this.mdp = mdp;
+        this.image = image;
+        this.idManager = idManager;
+        this.idDepartement = idDepartement;
+        this.idRole = idRole;
+        this.creationDate = creationDate != null ? creationDate : LocalDate.now();
+        this.ID_UserSolde = ID_UserSolde;
+        this.idInterim=idInterim;
+    }
+
 
     public User(int idUser, String nom, String prenom, String email, String mdp, String image) { //Const modif
         this.idUser = idUser;
@@ -134,6 +150,21 @@ public class User {
         this.idManager = idManager;
         this.idRole = idRole;
         this.ID_UserSolde = ID_UserSolde;
+
+    }
+    public User(int idUser, String nom, String prenom, String email, String mdp, String image, LocalDate creationDate, int idDepartement, int idManager, int ID_UserSolde, int idRole, int idInterim) {
+        this.idUser = idUser;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.email = email;
+        this.mdp = mdp;
+        this.image = image;
+        this.creationDate = creationDate != null ? creationDate : LocalDate.now();
+        this.idDepartement = idDepartement;
+        this.idManager = idManager;
+        this.idRole = idRole;
+        this.ID_UserSolde = ID_UserSolde;
+        this.idInterim=idInterim;
 
     }
 

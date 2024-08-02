@@ -57,7 +57,16 @@ import java.util.stream.Collectors;
 
 public class paneUserController extends AttributionSoldeController implements Initializable {
     public int state = 0;
+    @FXML
+    private TextField Manager_field;
+    @FXML
+    private TextField Interim_field;
     public int state1 = 0;
+
+
+    @FXML
+    private Label InterimLabel;
+
     @FXML
     private TextField Depart_field;
     @FXML
@@ -171,7 +180,7 @@ public class paneUserController extends AttributionSoldeController implements In
 
     @FXML
     private ListView<User> manager_listview;
-
+int stateInt =0 ;
 
     @FXML
     private HBox Hint1;
@@ -203,9 +212,13 @@ public class paneUserController extends AttributionSoldeController implements In
 
 
     public User selectedUser;
+    public User selectedManager;
+    public User selectedInterim;
     public FilteredList<User> filteredData;
     public FilteredList<Departement> filteredDepartments;
     public FilteredList<Role> filteredRoles;
+    public FilteredList<User> filteredManager;
+    public FilteredList<User> filteredInterim;
     private final ServiceDepartement depService = new ServiceDepartement();
     private final ServiceUtilisateur userService = new ServiceUtilisateur();
     private final ServiceRole roleService = new ServiceRole();
@@ -221,6 +234,15 @@ public class paneUserController extends AttributionSoldeController implements In
     private ChangeListener<User> userSelectionListener = (observable, oldValue, newValue) -> {
         if (newValue != null) {
             handleUserSelection(newValue);
+        }
+    };
+    private ChangeListener<User> userSelection1Listener = (observable, oldValue, newValue) -> {
+        if (newValue != null) {
+            try {
+                handleManagerSelection(newValue);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
     };
     ServiceUtilisateur UserS = new ServiceUtilisateur();
@@ -248,6 +270,7 @@ public class paneUserController extends AttributionSoldeController implements In
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        resetInt();
         reset2();
         loadUsers();
         loadUsers1();
@@ -255,6 +278,8 @@ public class paneUserController extends AttributionSoldeController implements In
         loadDepartments1();
         setupSearch();
         setupSearch1();
+        loadManagers();
+        loadInterims();
 
         TabAffectationid.setOnSelectionChanged(event -> {
             if (TabAffectationid.isSelected()) {
@@ -318,12 +343,26 @@ public class paneUserController extends AttributionSoldeController implements In
                 handleRoleSelection(newValue);
             }
         });
-
         userListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 handleUserSelection(newValue);
             }
         });
+        manager_listview.getSelectionModel().selectedItemProperty().addListener(userSelection1Listener);
+        manager_listview.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+                   if (newValue != null) {
+                       try {
+                           handleManagerSelection(newValue);
+                       } catch (SQLException e) {
+                           throw new RuntimeException(e);
+                       }
+                   }
+       });
+       interim_listview.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+                  if (newValue != null) {
+        handleInterimSelection(newValue);
+    }
+       });
 
         idUserColumn.setCellFactory(column -> new ColoredTreeCell());
         prenomUserColumn.setCellFactory(column -> new ColoredTreeCell());
@@ -345,8 +384,6 @@ public class paneUserController extends AttributionSoldeController implements In
         LeaveBalanceService leaveBalanceService = new LeaveBalanceService(this);
         leaveBalanceService.start();
     }
-
-
     private void LOADERS() {
         loadUsers();
         loadUsers1();
@@ -355,6 +392,8 @@ public class paneUserController extends AttributionSoldeController implements In
         loadDeparts3();
         loadRole1s();
         loadRoles3();
+        loadManagers();
+        loadInterims();
         loadRolesIntoComboBox();
         setupRemoveFilterButton();
         setupRoleSearchBar();
@@ -362,6 +401,8 @@ public class paneUserController extends AttributionSoldeController implements In
         roleListView.getSelectionModel().select(-1);
         userListView.getSelectionModel().select(-1);
         departListView.getSelectionModel().select(-1);
+        manager_listview.getSelectionModel().select(-1);
+        interim_listview.getSelectionModel().select(-1);
         reset2();
     }
 
@@ -1648,23 +1689,254 @@ public class paneUserController extends AttributionSoldeController implements In
 
     @FXML
     void annulerInterim(ActionEvent event) {
-
+        resetInt();
     }
     @FXML
     void affecterInterim(ActionEvent event) {
+        stateInt=1;
+        Hint1.setDisable(true);
+        Hint1.setVisible(false);
+        Hint2.setVisible(true);
+        Hint2.setDisable(false);
+        Manager_field.setDisable(false);
+        Interim_field.setDisable(true);
+        manager_listview.setDisable(false);
+        interim_listview.setDisable(true);
+        Hint2E.setText("Enregistrer");
 
     }
     @FXML
     void supprimerInterim(ActionEvent event) {
+        stateInt=3;
+        Hint1.setDisable(true);
+        Hint1.setVisible(false);
+        Hint2.setVisible(true);
+        Hint2.setDisable(false);
+        Manager_field.setDisable(false);
+        Interim_field.setDisable(true);
+        manager_listview.setDisable(false);
+        interim_listview.setDisable(true);
+        Hint2E.setText("Supprimer");
 
     }
     @FXML
     void modifierInterim(ActionEvent event) {
-
+        stateInt=2;
+        Hint1.setDisable(true);
+        Hint1.setVisible(false);
+        Hint2.setVisible(true);
+        Hint2.setDisable(false);
+        Manager_field.setDisable(false);
+        Interim_field.setDisable(true);
+        manager_listview.setDisable(false);
+        interim_listview.setDisable(true);
+        Hint2E.setText("Enregistrer");
     }
     @FXML
     void enregistrerInterim(ActionEvent event) {
+        if (stateInt==1){
+            if (selectedManager != null) {
+                boolean isAffected = false;
+                try {
+                    if (selectedInterim != null) {
+                        userService.assignInterimManager(selectedManager.getIdUser(), selectedInterim.getIdUser());
+                        isAffected = true;
+                    if (isAffected) {
+                        InterimLabel.setText("Affectation effectuée");
+                        resetInt();
+                    } else {
+                        showError("Veuillez sélectionner un Intérim à affecter.");
+                    }
+                }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    showError("Une erreur s'est produite : " + e.getMessage());
+                }
+            }else {
+                showError("Veuillez sélectionner un Intérim à affecter.");
+            }
+        } else if (stateInt==2) {
+            if (selectedManager != null) {
+                User selectedInterim = interim_listview.getSelectionModel().getSelectedItem();
+                boolean isUpdated = false;
+                try {
+                    if (selectedInterim != null) {
+                        userService.updateInterimManager(selectedManager.getIdUser(), selectedInterim.getIdUser());
+                        isUpdated = true;
+                        if (isUpdated) {
+                            InterimLabel.setText("Modification effectuée");
+                            resetInt();
+                        } else {
+                            showError("Veuillez sélectionner un Intérim à modifier.");
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    showError("Une erreur s'est produite : " + e.getMessage());
+                }
+            }else {
+                showError("Veuillez sélectionner un Intérim à modifier.");
+            }
+        }else if (stateInt == 3) {
+            if (selectedManager != null) {
+                boolean isDeleted = false;
+                try {
+                    // Show confirmation dialog
+                    Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
+                    confirmationAlert.setTitle("Confirmation");
+                    confirmationAlert.setHeaderText(null);
+                    confirmationAlert.setContentText("Êtes-vous sûr de vouloir supprimer l'intérim pour ce manager?");
+
+                    // Capture the user's response
+                    Optional<ButtonType> result = confirmationAlert.showAndWait();
+                    if (result.isPresent() && result.get() == ButtonType.OK) {
+                        userService.deleteInterimManager(selectedManager.getIdUser());
+                        isDeleted = true;
+                        if (isDeleted) {
+                            InterimLabel.setText("Intérim supprimé");
+                            resetInt();
+                        } else {
+                            showError("Une erreur s'est produite lors de la suppression de l'intérim.");
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    showError("Une erreur s'est produite : " + e.getMessage());
+                }
+            } else {
+                showError("Veuillez sélectionner un manager pour supprimer l'intérim.");
+            }
+        }
 
     }
+    void resetInt(){
+        Manager_field.setText("");
+        Manager_field.setDisable(true);
+        Interim_field.setDisable(true);
+        Interim_field.setText("");
+
+        manager_listview.setDisable(true);
+        interim_listview.setDisable(true);
+        manager_listview.getSelectionModel().clearSelection();
+        interim_listview.getSelectionModel().clearSelection();
+        Hint1.setDisable(false);
+        Hint1.setVisible(true);
+        Hint1A.setDisable(false);
+        Hint1M.setDisable(false);
+        Hint1S.setDisable(false);
+        Hint2.setDisable(true);
+        Hint2.setVisible(false);
+    }
+    private void handleInterimSelection(User selectedInterim) {
+        this.selectedInterim = selectedInterim;
+        if(selectedInterim!= null){
+
+        }else{
+
+        }
+
+    }
+
+
+    private void handleManagerSelection(User selectedManager) throws SQLException {
+        this.selectedManager = selectedManager;
+        if(selectedManager!= null && stateInt!=3) {
+            manager_listview.setDisable(false);
+            interim_listview.setDisable(false);
+            manager_listview.getSelectionModel().clearSelection();
+            interim_listview.getSelectionModel().clearSelection();
+            Interim_field.setDisable(false);
+            Manager_field.setDisable(false);
+            User user =userService.getInterimByUserId(selectedManager.getIdUser());
+            User user1=userService.getUserById(selectedManager.getIdUser());
+            Manager_field.setText(user1.getNom()+" "+user1.getPrenom());
+            if (user != null) {
+                Interim_field.setText(user.getNom()+" "+user.getPrenom());
+            } else {
+                Interim_field.setText("No Intérim");
+            }
+
+
+        }else{
+
+        }
+    }
+
+    @FXML
+    void clearmanagerselection(ActionEvent event) {
+        Manager_field.setText("");
+        Interim_field.setText("");
+        Manager_field.clear();
+        manager_listview.getSelectionModel().clearSelection();
+        Interim_field.clear();
+        interim_listview.getSelectionModel().clearSelection();
+        filteredManager.setPredicate(user -> true);
+        filteredInterim.setPredicate(user -> true);
+
+        // Refresh the list views
+        manager_listview.setItems(filteredManager);
+        interim_listview.setItems(filteredInterim);
+    }
+    @FXML
+    void clearinterimselection(ActionEvent event) {
+        Interim_field.setText("");
+        Interim_field.clear();
+        interim_listview.getSelectionModel().clearSelection();
+    }
+    private void loadManagers() {
+        List<User> managerList = userService.getAllManagers();
+        ObservableList<User> users = FXCollections.observableArrayList(managerList);
+        filteredManager = new FilteredList<>(users, p -> true);
+        manager_listview.setItems(filteredManager);
+        manager_listview.setCellFactory(param -> new ListCell<User>() {
+            @Override
+            protected void updateItem(User user, boolean empty) {
+                super.updateItem(user, empty);
+                if (empty || user == null) {
+                    setText(null);
+                } else {
+                    setText(user.getPrenom() + " " + user.getNom());
+                }
+            }
+        });
+        manager_listview.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                try {
+                    handleManagerSelection(newValue);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+                filteredManager.setPredicate(user -> user.equals(newValue));
+            } else {
+                filteredManager.setPredicate(user -> true);
+            }
+        });
+    }
+    private void loadInterims() {
+        List<User> interimList = userService.getAllManagers();
+        ObservableList<User> users = FXCollections.observableArrayList(interimList);
+        filteredInterim = new FilteredList<>(users, p -> true);
+        interim_listview.setItems(filteredInterim);
+        interim_listview.setCellFactory(param -> new ListCell<User>() {
+            @Override
+            protected void updateItem(User user, boolean empty) {
+                super.updateItem(user, empty);
+                if (empty || user == null) {
+                    setText(null);
+                } else {
+                    setText(user.getPrenom() + " " + user.getNom());
+                }
+            }
+        });
+        interim_listview.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                handleInterimSelection(newValue);
+                filteredInterim.setPredicate(user -> user.equals(newValue));
+            } else {
+                filteredInterim.setPredicate(user -> true);
+            }
+        });
+    }
+
 
 }

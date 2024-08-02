@@ -324,8 +324,8 @@
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" styleClass="grad-bg2">
                      <children>
-                        <ListView fx:id="manager_listview" layoutX="155.0" layoutY="102.0" prefHeight="450.0" prefWidth="320.0" />
-                        <ListView fx:id="interim_listview" layoutX="650.0" layoutY="102.0" prefHeight="450.0" prefWidth="320.0" />
+                        <ListView fx:id="manager_listview" layoutX="155.0" layoutY="132.0" prefHeight="437.0" prefWidth="320.0" />
+                        <ListView fx:id="interim_listview" layoutX="651.0" layoutY="134.0" prefHeight="437.0" prefWidth="320.0" />
                         <Label layoutX="271.0" layoutY="52.0" text="Employés">
                            <font>
                               <Font size="15.0" />
@@ -335,7 +335,7 @@
                               <String fx:value="FontSize-20" />
                            </styleClass>
                         </Label>
-                        <Label layoutX="772.0" layoutY="52.0" text="intérims">
+                        <Label layoutX="774.0" layoutY="52.0" text="Intérims">
                            <font>
                               <Font size="15.0" />
                            </font>
@@ -387,6 +387,31 @@
                               </Button>
                            </children>
                         </HBox>
+                        <TextField fx:id="Interim_field" layoutX="651.0" layoutY="91.0" onKeyReleased="#User_Recherche" prefHeight="29.0" prefWidth="320.0" />
+                        <TextField fx:id="Manager_field" layoutX="155.0" layoutY="88.0" onKeyReleased="#User_Recherche" prefHeight="29.0" prefWidth="320.0" />
+                        <Button layoutX="928.0" layoutY="88.0" mnemonicParsing="false" onAction="#clearinterimselection" prefHeight="27.0" prefWidth="35.0" styleClass="settingsButton">
+                           <graphic>
+                              <ImageView fitHeight="25.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@assets/imgs/icons8-close-24.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button layoutX="432.0" layoutY="85.0" mnemonicParsing="false" onAction="#clearmanagerselection" prefHeight="27.0" prefWidth="35.0" styleClass="settingsButton">
+                           <graphic>
+                              <ImageView fitHeight="25.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@assets/imgs/icons8-close-24.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Label fx:id="InterimLabel" layoutX="427.0" layoutY="26.0" prefHeight="17.0" prefWidth="265.0" styleClass="RobotoBold">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
                      </children>
                   </AnchorPane>
               </content>
