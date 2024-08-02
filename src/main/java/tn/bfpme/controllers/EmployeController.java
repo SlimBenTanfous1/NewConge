@@ -11,7 +11,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.stage.Stage;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
@@ -21,9 +20,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.Stage;
 import tn.bfpme.models.*;
 import tn.bfpme.services.ServiceConge;
 import tn.bfpme.services.ServiceUserSolde;
+import tn.bfpme.utils.DatabaseConnector;
 import tn.bfpme.utils.MyDataBase;
 import tn.bfpme.utils.SessionManager;
 import tn.bfpme.utils.FontResizer;
@@ -66,6 +67,10 @@ public class EmployeController implements Initializable {
     private TableColumn<Conge, Integer> indexColumn;
     @FXML
     private HBox soldeHBox;
+    @FXML
+    private TextArea conversationArea;
+    @FXML
+    private TextField inputField;
 
     private final ServiceConge serviceConge = new ServiceConge();
     private final ServiceUserSolde serviceUserSolde = new ServiceUserSolde();
@@ -206,5 +211,54 @@ public class EmployeController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    public void handleUserInput() {
+        String userInput = inputField.getText();
+        inputField.clear();
+
+        conversationArea.appendText("You: " + userInput + "\n");
+
+        // Handle the user input and generate a response
+        String response = generateResponse(userInput);
+        conversationArea.appendText("Bot: " + response + "\n");
+    }
+
+    private String generateResponse(String userInput) {
+        // Assume the current user ID is from SessionManager
+        User currentUser = SessionManager.getInstance().getUser();
+        String userId = String.valueOf(currentUser.getIdUser());
+        String role = SessionManager.getInstance().getUserRoleName();
+        String department = SessionManager.getInstance().getUserDepartmentName();
+
+        if (userInput.toLowerCase().contains("credits")) {
+            return checkLeaveCredits(userId);
+        } else if (userInput.toLowerCase().contains("leave on")) {
+            return validateLeaveRequest(userId, userInput, role, department);
+        } else {
+            return "I'm sorry, I don't understand the question.";
+        }
+    }
+
+    private String checkLeaveCredits(String userId) {
+        int credits = DatabaseConnector.getLeaveCredits(userId);
+        return "You have " + credits + " leave credits remaining.";
+    }
+
+    private String validateLeaveRequest(String userId, String userInput, String role, String department) {
+        String date = extractDate(userInput);
+        boolean canTakeLeave = DatabaseConnector.canTakeLeave(userId, date, role, department);
+        if (canTakeLeave) {
+            return "You can take a leave on " + date + ".";
+        } else {
+            return "You cannot take a leave on " + date + ".";
+        }
+    }
+
+    private String extractDate(String userInput) {
+        // Placeholder for date extraction logic
+        // You can use regex or NLP to extract the date from user input
+        return "2024-08-15"; // Example date
     }
 }

@@ -24,6 +24,8 @@ public class ServiceTypeConge {
             }
             Statement stmt = cnx.createStatement();
             ResultSet rs = stmt.executeQuery(query);
+
+            int count = 0; // Debug variable to count records
             while (rs.next()) {
                 TypeConge type = new TypeConge(
                         rs.getInt("ID_TypeConge"),
@@ -32,15 +34,18 @@ public class ServiceTypeConge {
                         rs.getBoolean("File"),
                         rs.getDouble("Limite"),
                         rs.getString("Periode")
-
                 );
                 typeconges.add(type);
+                count++;
             }
+            // Debug statement
+            System.out.println("Debug: Retrieved " + count + " TypeConge records.");
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return typeconges;
     }
+
 
     public void AddTypeConge(String designation, double pas, boolean file, double limite, String periode) {
         String query = "INSERT INTO typeconge (Designation, Pas, File,Limite, Periode) VALUES (?, ?, ?, ?, ?)";

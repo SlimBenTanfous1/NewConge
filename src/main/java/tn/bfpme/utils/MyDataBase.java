@@ -1,8 +1,6 @@
 package tn.bfpme.utils;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class MyDataBase {
     private static MyDataBase instance;
@@ -14,10 +12,10 @@ public class MyDataBase {
     */
 
     //private final String URL = "jdbc:mysql://192.168.1.68:3306/bfpmeconge";
-    private final String URL = "jdbc:mysql://10.10.50.94:3306/bfpmeconge";
-//    private final String URL = "jdbc:mysql://127.0.0.1:3306/bfpmeconge";
-    private final String USERNAME = "ala";
-    private final String PASSWORD = "ala";
+    //private final String URL = "jdbc:mysql://10.10.50.94:3306/bfpmeconge";
+    private final String URL = "jdbc:mysql://127.0.0.1:3306/bfpmeconge";
+    private final String USERNAME = "root";
+    private final String PASSWORD = "";
 
     private Connection cnx;
 
@@ -48,4 +46,5 @@ public class MyDataBase {
         }
         return cnx;
     }
+
 }

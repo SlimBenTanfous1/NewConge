@@ -124,4 +124,7 @@ public class TypeConge {
     }
 
 
+    public int getID_TypeConge() {
+        return idTypeConge;
+    }
 }
