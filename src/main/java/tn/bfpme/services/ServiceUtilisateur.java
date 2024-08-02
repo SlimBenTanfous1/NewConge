@@ -1432,7 +1432,41 @@ public class ServiceUtilisateur implements IUtilisateur {
 
         return interimUser;
     }
+    public boolean isUsersManagerOnLeave(int userId) {
+        String managerQuery = "SELECT ID_Manager FROM user WHERE ID_User = ?";
+        String congeQuery = "SELECT COUNT(*) FROM conge WHERE ID_User = ? AND ? BETWEEN DateDebut AND DateFin AND Statut = 'Approuvé'";
+        boolean isOnLeave = false;
 
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+
+            // Step 1: Get the manager ID of the given user
+            PreparedStatement psManager = cnx.prepareStatement(managerQuery);
+            psManager.setInt(1, userId);
+            ResultSet rsManager = psManager.executeQuery();
+
+            if (rsManager.next()) {
+                int managerId = rsManager.getInt("ID_Manager");
+
+                // Step 2: Check if the manager is currently on leave
+                PreparedStatement psConge = cnx.prepareStatement(congeQuery);
+                psConge.setInt(1, managerId);
+                psConge.setDate(2, Date.valueOf(LocalDate.now())); // Set the current date
+                ResultSet rsConge = psConge.executeQuery();
+
+                if (rsConge.next()) {
+                    int leaveCount = rsConge.getInt(1);
+                    isOnLeave = leaveCount > 0; // If leave count is greater than 0, the manager is on leave
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return isOnLeave;
+    }
 
 
 
