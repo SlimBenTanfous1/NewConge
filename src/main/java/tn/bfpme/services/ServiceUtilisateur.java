@@ -1387,6 +1387,52 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
         return interimUser;
     }
+    public User getInterimOfUsersManager(int userId) {
+        String managerQuery = "SELECT ID_Manager FROM user WHERE ID_User = ?";
+        String interimQuery = "SELECT u2.* FROM user u1 JOIN user u2 ON u1.ID_Interim = u2.ID_User WHERE u1.ID_User = ?";
+        User interimUser = null;
+
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+
+            // Step 1: Get the manager ID of the given user
+            PreparedStatement psManager = cnx.prepareStatement(managerQuery);
+            psManager.setInt(1, userId);
+            ResultSet rsManager = psManager.executeQuery();
+
+            if (rsManager.next()) {
+                int managerId = rsManager.getInt("ID_Manager");
+
+                // Step 2: Get the interim details of the manager
+                PreparedStatement psInterim = cnx.prepareStatement(interimQuery);
+                psInterim.setInt(1, managerId);
+                ResultSet rsInterim = psInterim.executeQuery();
+
+                if (rsInterim.next()) {
+                    interimUser = new User(
+                            rsInterim.getInt("ID_User"),
+                            rsInterim.getString("Nom"),
+                            rsInterim.getString("Prenom"),
+                            rsInterim.getString("Email"),
+                            rsInterim.getString("MDP"),
+                            rsInterim.getString("Image"),
+                            rsInterim.getDate("Creation_Date") != null ? rsInterim.getDate("Creation_Date").toLocalDate() : null,
+                            rsInterim.getInt("ID_Departement"),
+                            rsInterim.getInt("ID_Manager"),
+                            rsInterim.getInt("idSolde"),
+                            rsInterim.getInt("ID_Interim")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return interimUser;
+    }
+
 
 
 
