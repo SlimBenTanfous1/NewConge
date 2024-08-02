@@ -22,12 +22,11 @@ public class FontResizer {
         fontSize3 = Math.max(12, Math.min(fontSize3, 14));
 
         if (node instanceof Label) {
-            Label label = (Label) node;
-            label.setStyle("-fx-font-size: " + fontSize + "px;");
+            ((Label) node).setStyle("-fx-font-size: " + fontSize + "px;");
         } else if (node instanceof TextField) {
             ((TextField) node).setStyle("-fx-font-size: " + fontSize3 + "px;");
         } else if (node instanceof TextInputControl) {
-            ((TextArea) node).setStyle("-fx-font-size: " + fontSize3 + "px;");
+            ((TextInputControl) node).setStyle("-fx-font-size: " + fontSize3 + "px;");
         } else if (node instanceof ComboBox) {
             ((ComboBox<?>) node).setStyle("-fx-font-size: " + fontSize3 + "px;");
         } else if (node instanceof Button) {
@@ -42,6 +41,10 @@ public class FontResizer {
                 }
                 resizeFonts(tab.getContent(), width, height);
             }
+        } else if (node instanceof ListView) {
+            ((ListView<?>) node).setStyle("-fx-font-size: " + fontSize3 + "px;");
+        } else if (node instanceof TreeView) {
+            ((TreeView<?>) node).setStyle("-fx-font-size: " + fontSize3 + "px;");
         }
 
         if (node instanceof Pane) {
