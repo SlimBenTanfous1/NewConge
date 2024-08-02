@@ -9,6 +9,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -27,7 +28,9 @@ import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.Videoio;
 import tn.bfpme.models.User;
 import tn.bfpme.utils.*;
-
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.io.File;
@@ -64,6 +67,7 @@ public class LoginController implements Initializable {
     private VideoCapture capture;
     private Timer timer;
     private boolean cameraActive = false;
+    private volatile boolean stopCamera = false;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -147,7 +151,67 @@ public class LoginController implements Initializable {
 
     @FXML
     void FacialRecognitionButton(ActionEvent event) {
-        if (!this.cameraActive) {
+        stopCamera = false;
+        System.out.println("FacialRecognitionButton clicked");
+
+        Thread facialRecognitionThread = new Thread(() -> {
+            try {
+                System.out.println("Starting Python script");
+                ProcessBuilder pb = new ProcessBuilder("python", "src/main/java/tn/bfpme/utils/facial_recognition.py");
+                pb.redirectErrorStream(true);
+                Process process = pb.start();
+
+                BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                String line;
+                while ((line = in.readLine()) != null) {
+                    System.out.println("Python Output: " + line);
+                    if (line.contains("Face recognized")) {
+                        stopCamera = true;
+                        Platform.runLater(() -> {
+                            try {
+                                navigateToProfile(event);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                    }
+                }
+                process.waitFor();
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+                showAlert("Error", "An error occurred while starting the facial recognition process.");
+            }
+        });
+
+        Thread cameraThread = new Thread(() -> {
+            while (!stopCamera) {
+                File file = new File("src/main/java/tn/bfpme/utils/temp_frame.jpg");
+                if (file.exists()) {
+                    Image image = new Image(file.toURI().toString());
+                    Platform.runLater(() -> imageView.setImage(image));
+                }
+                try {
+                    Thread.sleep(100); // Adjust the delay as needed
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        facialRecognitionThread.setDaemon(true);
+        cameraThread.setDaemon(true);
+        facialRecognitionThread.start();
+        cameraThread.start();
+    }
+
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+        /*if (!this.cameraActive) {
             this.capture = new VideoCapture(0, Videoio.CAP_DSHOW);
             if (this.capture.isOpened()) {
                 this.cameraActive = true;
@@ -198,9 +262,7 @@ public class LoginController implements Initializable {
             }
             this.capture.release();
             imageView.setImage(null);
-        }
-    }
-
+        }*/
 
     private boolean recognizeFace(String capturedImagePath) {
         Mat capturedImage = Imgcodecs.imread(capturedImagePath);
