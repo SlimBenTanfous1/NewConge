@@ -1276,6 +1276,120 @@ public class ServiceUtilisateur implements IUtilisateur {
         user.setRoleNom(resultSet.getString("roleNom"));
         return user;
     }
+    public List<User> getAllManagers() {
+        List<User> userList = new ArrayList<>();
+        String sql = "SELECT DISTINCT u.* FROM user u " +
+                "INNER JOIN user u2 ON u.ID_User = u2.ID_Manager";
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+            PreparedStatement ps = cnx.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                User user = new User(
+                        rs.getInt("ID_User"),
+                        rs.getString("Nom"),
+                        rs.getString("Prenom"),
+                        rs.getString("Email"),
+                        rs.getString("MDP"),
+                        rs.getString("Image"),
+                        rs.getDate("Creation_Date") != null ? rs.getDate("Creation_Date").toLocalDate() : null,
+                        rs.getInt("ID_Departement"),
+                        rs.getInt("ID_Manager"),
+                        rs.getInt("idSolde"),
+                        rs.getInt("ID_Interim")
+                );
+                userList.add(user);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return userList;
+    }
+    public boolean assignInterimManager(int managerId, int interimManagerId) {
+        String sql = "UPDATE user SET ID_Interim = ? WHERE ID_User = ?";
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+            PreparedStatement ps = cnx.prepareStatement(sql);
+            ps.setInt(1, interimManagerId);
+            ps.setInt(2, managerId);
+            int rowsUpdated = ps.executeUpdate();
+            return rowsUpdated > 0;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+    public boolean updateInterimManager(int managerId, int newInterimManagerId) {
+        String sql = "UPDATE user SET ID_Interim = ? WHERE ID_User = ?";
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+            PreparedStatement ps = cnx.prepareStatement(sql);
+            ps.setInt(1, newInterimManagerId);
+            ps.setInt(2, managerId);
+            int rowsUpdated = ps.executeUpdate();
+            return rowsUpdated > 0;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+    public boolean deleteInterimManager(int managerId) {
+        String sql = "UPDATE user SET ID_Interim = NULL WHERE ID_User = ?";
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+            PreparedStatement ps = cnx.prepareStatement(sql);
+            ps.setInt(1, managerId);
+            int rowsUpdated = ps.executeUpdate();
+            return rowsUpdated > 0;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+    public User getInterimByUserId(int userId) {
+        String query = "SELECT u2.* FROM user u1 " +
+                "JOIN user u2 ON u1.ID_Interim = u2.ID_User " +
+                "WHERE u1.ID_User = ?";
+        User interimUser = null;
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+            PreparedStatement ps = cnx.prepareStatement(query);
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                interimUser = new User(
+                        rs.getInt("ID_User"),
+                        rs.getString("Nom"),
+                        rs.getString("Prenom"),
+                        rs.getString("Email"),
+                        rs.getString("MDP"),
+                        rs.getString("Image"),
+                        rs.getDate("Creation_Date") != null ? rs.getDate("Creation_Date").toLocalDate() : null,
+                        rs.getInt("ID_Departement"),
+                        rs.getInt("ID_Manager"),
+                        rs.getInt("idSolde"),
+                        rs.getInt("ID_Interim")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return interimUser;
+    }
+
+
+
 
 
 }
