@@ -71,7 +71,10 @@ public class EmployeController implements Initializable {
     private TextArea conversationArea;
     @FXML
     private TextField inputField;
-
+    @FXML
+    private AnchorPane chatPane;
+    @FXML
+    private Button buttonFermer, openchat;
     private final ServiceConge serviceConge = new ServiceConge();
     private final ServiceUserSolde serviceUserSolde = new ServiceUserSolde();
 
@@ -79,6 +82,7 @@ public class EmployeController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         indexColumn.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(TableHistorique.getItems().indexOf(cellData.getValue()) + 1));
         indexColumn.setSortable(false);
+        buttonFermer.setVisible(false);
         fetchUserConges();
         reloadUserData();
         try {
@@ -260,5 +264,18 @@ public class EmployeController implements Initializable {
         // Placeholder for date extraction logic
         // You can use regex or NLP to extract the date from user input
         return "2024-08-15"; // Example date
+    }
+
+    @FXML
+    private void openChat() {
+        chatPane.setVisible(true);
+        buttonFermer.setVisible(true);
+        openchat.setVisible(false);
+    }
+    @FXML
+    private void buttonFermer() {
+        openchat.setVisible(true);
+        chatPane.setVisible(false);
+        buttonFermer.setVisible(false);
     }
 }

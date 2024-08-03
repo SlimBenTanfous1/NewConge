@@ -63,6 +63,8 @@ public class ChatBot extends Application {
         }
     }
 
+
+
     private String getAllUserCredits(String userId) {
         ServiceTypeConge serviceTypeConge = new ServiceTypeConge();
         List<TypeConge> types = serviceTypeConge.getAllTypeConge(); // Fetch all types of leaves
