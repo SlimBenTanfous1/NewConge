@@ -112,6 +112,7 @@ public class ServiceUserSolde {
         System.out.println("Leave request failed: Not enough solde.");
         return false; // Not enough solde to process the leave request
     }
+
     public void refuseLeave(int userId, int typeCongeId, double daysRequested) {
         UserSolde userSolde = getUserSoldeByUserIdAndTypeCongeId(userId, typeCongeId);
         if (userSolde != null) {
@@ -122,6 +123,7 @@ public class ServiceUserSolde {
             System.out.println("Leave request refused: " + daysRequested + " days. Solde re-incremented to: " + newSolde);
         }
     }
+
     /*public void incrementMonthlyLeaveBalances() {
         List<UserSolde> allUserSoldes = getAllUserSoldes();
         Map<Integer, Double> typeCongeLimits = getTypeCongeLimit();

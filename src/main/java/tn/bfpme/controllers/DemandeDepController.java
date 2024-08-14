@@ -208,7 +208,7 @@ public class DemandeDepController implements Initializable {
                 System.err.println("An unexpected error occurred");
             }
 
-            int congeDays = (int) ChronoUnit.DAYS.between(conge.getDateDebut(), conge.getDateFin());
+            int congeDays = (int) ChronoUnit.DAYS.between(conge.getDateDebut(), conge.getDateFin()) + 1;
 
             // Re-increment TotalSolde
             serviceUserSolde.refuseLeave(this.user.getIdUser(), conge.getTypeConge().getIdTypeConge(), congeDays);
