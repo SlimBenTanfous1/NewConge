@@ -135,27 +135,34 @@ public class DemandeDepController implements Initializable {
             String Subject = "Approvation de Demande de Congé";
             String NotifContent = "";
             String MessageText = Mails.generateApprobationDemande(employeeName, startDate, endDate, managerName, managerRole);
-            //xMails.sendEmail(to, Subject, MessageText); //Mailing
+            // xMails.sendEmail(to, Subject, MessageText); // Mailing
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/DemandeDepListe.fxml"));
+                FXMLLoader loader;
+                boolean isManager = serviceConge.hasSubordinates(this.user.getIdUser());
+                if (isManager) {
+                    System.out.println("User is a manager, redirecting to Interim.fxml");
+                    loader = new FXMLLoader(getClass().getResource("/Interim.fxml"));
+                } else {
+                    System.out.println("User is not a manager, redirecting to DemandeDepListe.fxml");
+                    loader = new FXMLLoader(getClass().getResource("/DemandeDepListe.fxml"));
+                }
                 Parent root = loader.load();
-                controller = loader.getController();
-                StageManager.closeAllStages();
-                Stage demandeDepListeStage = new Stage();
-                Scene scene = new Scene(root);
-                demandeDepListeStage.setScene(scene);
-                demandeDepListeStage.setTitle("Liste des demandes");
-                demandeDepListeStage.show();
-                StageManager.addStage("DemandeDepListe", demandeDepListeStage);
-                Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-                demandeDepListeStage.setX((screenBounds.getWidth() - demandeDepListeStage.getWidth()) / 2);
-                demandeDepListeStage.setY((screenBounds.getHeight() - demandeDepListeStage.getHeight()) / 2);
+                if (isManager) {
+                    InterimController interimController = loader.getController();
+                    interimController.setData(this.user); // Set data for the interim controller if needed
+                } else {
+                    DemandeDepListeController demandeDepListeController = loader.getController();
+                    demandeDepListeController.setData(enAtt, app, reg); // Set data for the demande dep liste controller if needed
+                }
+
+                // Replace the current scene content with the new FXML content
+                Scene currentScene = ((Node) event.getSource()).getScene();
+                currentScene.setRoot(root);
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
             int congeDays = (int) ChronoUnit.DAYS.between(conge.getDateDebut(), conge.getDateFin());
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.close();
             Alert cbon = new Alert(Alert.AlertType.INFORMATION);
             cbon.setTitle("Demande approuvée");
             cbon.setHeaderText("La demande de congé " + this.conge.getDesignation() + " de " + this.user.getNom() + " " + this.user.getPrenom() + " a été approuvée");
@@ -164,12 +171,11 @@ public class DemandeDepController implements Initializable {
             serviceConge.updateUserSolde(this.user.getIdUser(), conge.getTypeConge().getIdTypeConge(), congeDays);
             serviceConge.updateStatutConge(this.conge.getIdConge(), Statut.Approuvé);
             String NotifSubject = "Votre Demande de congé " + this.conge.getDesignation() + " a été approuvé.";
-            String messageText =  "Votre Demande de congé " + this.conge.getDesignation() + " du "+ this.conge.getDateDebut() +" jusqu'au "+ this.conge.getDateFin() +"  a été approuvé.";
+            String messageText =  "Votre Demande de congé " + this.conge.getDesignation() + " du "+ this.conge.getDateDebut() +" jusqu'au "+ this.conge.getDateFin() +" a été approuvé.";
             serviceNotif.NewNotification(user.getIdUser(), NotifSubject, 1, messageText);
-            controller.setData(enAtt, app, reg);
-
         }
     }
+
 
 
     @FXML

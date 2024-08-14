@@ -30,7 +30,7 @@
                           <children>
                               <HBox layoutX="184.0" layoutY="319.0" prefHeight="28.0" prefWidth="235.0" AnchorPane.leftAnchor="184.0" AnchorPane.rightAnchor="183.0">
                                   <children>
-                                      <TextField fx:id="LoginEmail" prefHeight="28.0" prefWidth="526.0" promptText="email" styleClass="loginTextField" text="999">
+                                      <TextField fx:id="LoginEmail" prefHeight="28.0" prefWidth="526.0" promptText="email" styleClass="loginTextField" text="ayachi@gmail.com">
                                  <font>
                                     <Font size="24.0" />
                                  </font></TextField>
@@ -38,7 +38,7 @@
                               </HBox>
                               <HBox layoutX="184.0" layoutY="450.0" prefHeight="28.0" prefWidth="274.0" AnchorPane.leftAnchor="184.0" AnchorPane.rightAnchor="144.0">
                                   <children>
-                                      <PasswordField fx:id="LoginMDP" onAction="#Login" prefHeight="28.0" prefWidth="476.0" promptText="mdp" styleClass="loginTextField" text="999" />
+                                      <PasswordField fx:id="LoginMDP" onAction="#Login" prefHeight="28.0" prefWidth="476.0" promptText="mdp" styleClass="loginTextField" text="1234" />
                                       <TextField fx:id="showPasswordField" managed="false" prefHeight="28.0" prefWidth="476.0" promptText="mdp" style="-fx-background-color: transparent; -fx-border-color: transparent transparent #eab53f transparent; -fx-border-width: 0 0 1 0; -fx-padding: 0 0 3 0;" visible="false" />
                                       <Button fx:id="toggleButton" layoutX="470.0" layoutY="0.0" prefHeight="28.0" prefWidth="50.0" styleClass="settingsButton">
                                           <graphic>
