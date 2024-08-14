@@ -62,7 +62,7 @@
                               <Font name="System Bold" size="14.0" />
                            </font>
                         </Label>
-                        <Label maxWidth="250.0" prefHeight="17.0" prefWidth="250.0" styleClass="RobotoBold" text="Rôle : " GridPane.rowIndex="3">
+                        <Label maxWidth="250.0" prefHeight="17.0" prefWidth="250.0" styleClass="RobotoBold" text="Fonction : " GridPane.rowIndex="3">
                            <font>
                               <Font name="System Bold" size="14.0" />
                            </font>

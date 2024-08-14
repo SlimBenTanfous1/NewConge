@@ -1,6 +1,7 @@
 package tn.bfpme.controllers;
 
 import javafx.application.Application;
+import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -8,7 +9,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import tn.bfpme.services.ServiceTypeConge;
 import tn.bfpme.models.*;
-import tn.bfpme.controllers.*;
 import tn.bfpme.utils.MyDataBase;
 import tn.bfpme.utils.SessionManager;
 
@@ -20,7 +20,9 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class ChatBot extends Application {
+    @FXML
     private TextArea conversationArea;
+    @FXML
     private TextField inputField;
 
     public static void main(String[] args) {
@@ -43,6 +45,7 @@ public class ChatBot extends Application {
         primaryStage.show();
     }
 
+    @FXML
     private void handleUserInput() {
         String userInput = inputField.getText();
         inputField.clear();
@@ -55,29 +58,24 @@ public class ChatBot extends Application {
     }
 
     private String generateResponse(String userInput) {
-        if (userInput.toLowerCase().contains("credits")) {
+        if (userInput.toLowerCase().contains("crédits") || userInput.toLowerCase().contains("mon solde")) {
             String currentUserId = String.valueOf(SessionManager.getInstance().getUser().getIdUser());
             return getAllUserCredits(currentUserId);
         } else {
             return "I'm sorry, I don't understand the question.";
         }
     }
-
-
-
     private String getAllUserCredits(String userId) {
         ServiceTypeConge serviceTypeConge = new ServiceTypeConge();
         List<TypeConge> types = serviceTypeConge.getAllTypeConge(); // Fetch all types of leaves
 
         // Debug statement to check the number of types retrieved
-        System.out.println("Debug: Retrieved " + types.size() + " TypeConge records.");
-
         StringBuilder response = new StringBuilder();
-        response.append("Here are your leave credits:\n");
+        response.append("Voici vos soldes:\n");
 
         for (TypeConge type : types) {
             // Debug statement to check each TypeConge record
-            System.out.println("Debug: Processing TypeConge - ID: " + type.getID_TypeConge() + ", Designation: " + type.getDesignation());
+            //System.out.println("Debug: Processing TypeConge - ID: " + type.getID_TypeConge() + ", Designation: " + type.getDesignation());
 
             double solde = getSoldeForType(userId, type.getID_TypeConge());
             response.append("Type: ").append(type.getDesignation())

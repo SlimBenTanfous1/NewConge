@@ -25,7 +25,7 @@ public class ServiceTypeConge {
             Statement stmt = cnx.createStatement();
             ResultSet rs = stmt.executeQuery(query);
 
-            int count = 0; // Debug variable to count records
+            int count = 0;
             while (rs.next()) {
                 TypeConge type = new TypeConge(
                         rs.getInt("ID_TypeConge"),
@@ -34,7 +34,9 @@ public class ServiceTypeConge {
                         rs.getBoolean("File"),
                         rs.getDouble("Limite"),
                         rs.getString("Periode")
+
                 );
+                System.out.println(rs.getString("Periode"));
                 typeconges.add(type);
                 count++;
             }

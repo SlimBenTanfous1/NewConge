@@ -77,6 +77,7 @@ public class EmployeController implements Initializable {
     private Button buttonFermer, openchat;
     private final ServiceConge serviceConge = new ServiceConge();
     private final ServiceUserSolde serviceUserSolde = new ServiceUserSolde();
+    public static Stage chatWindow;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -236,7 +237,7 @@ public class EmployeController implements Initializable {
         String role = SessionManager.getInstance().getUserRoleName();
         String department = SessionManager.getInstance().getUserDepartmentName();
 
-        if (userInput.toLowerCase().contains("credits")) {
+        if (userInput.toLowerCase().contains("credits") || userInput.toLowerCase().contains("mon solde")) {
             return checkLeaveCredits(userId);
         } else if (userInput.toLowerCase().contains("leave on")) {
             return validateLeaveRequest(userId, userInput, role, department);
@@ -246,8 +247,8 @@ public class EmployeController implements Initializable {
     }
 
     private String checkLeaveCredits(String userId) {
-        int credits = DatabaseConnector.getLeaveCredits(userId);
-        return "You have " + credits + " leave credits remaining.";
+        int crédits = DatabaseConnector.getLeaveCredits(userId);
+        return "You have " + crédits + " leave credits remaining.";
     }
 
     private String validateLeaveRequest(String userId, String userInput, String role, String department) {
@@ -268,10 +269,22 @@ public class EmployeController implements Initializable {
 
     @FXML
     private void openChat() {
-        chatPane.setVisible(true);
-        buttonFermer.setVisible(true);
-        openchat.setVisible(false);
+        if (chatWindow == null || !chatWindow.isShowing()) {
+            try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/chatBot.fxml"));
+            Parent root = loader.load();
+            Stage chatStage = new Stage();
+            chatStage.setTitle("Chat Window");
+            chatStage.setScene(new Scene(root));
+            chatStage.show();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("Chat window is already open.");
+        }
     }
+
     @FXML
     private void buttonFermer() {
         openchat.setVisible(true);
