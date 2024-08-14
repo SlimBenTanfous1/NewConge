@@ -93,9 +93,7 @@ public class CardNotifController implements Initializable {
             e.printStackTrace();
         }
     }
-
-
-
+    
     protected void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");

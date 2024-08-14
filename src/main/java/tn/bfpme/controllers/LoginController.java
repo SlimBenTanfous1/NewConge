@@ -157,7 +157,7 @@ public class LoginController implements Initializable {
         Thread facialRecognitionThread = new Thread(() -> {
             try {
                 System.out.println("Starting Python script");
-                ProcessBuilder pb = new ProcessBuilder("python", "src/main/java/tn/bfpme/utils/facial_recognition.py");
+                ProcessBuilder pb = new ProcessBuilder("python", "C:\\Users\\alamo\\PycharmProjects\\pythonProject\\facial_recognition.py");
                 pb.redirectErrorStream(true);
                 Process process = pb.start();
 
@@ -174,6 +174,11 @@ public class LoginController implements Initializable {
                                 e.printStackTrace();
                             }
                         });
+                    } else if (line.contains("Recognized")) {
+                        String[] parts = line.split(" ");
+                        String recognizedName = parts[1];
+                        System.out.println("Recognized: " + recognizedName);
+                        // You can add further actions based on the recognized name if needed
                     }
                 }
                 process.waitFor();
@@ -183,25 +188,8 @@ public class LoginController implements Initializable {
             }
         });
 
-        Thread cameraThread = new Thread(() -> {
-            while (!stopCamera) {
-                File file = new File("src/main/java/tn/bfpme/utils/temp_frame.jpg");
-                if (file.exists()) {
-                    Image image = new Image(file.toURI().toString());
-                    Platform.runLater(() -> imageView.setImage(image));
-                }
-                try {
-                    Thread.sleep(100); // Adjust the delay as needed
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
         facialRecognitionThread.setDaemon(true);
-        cameraThread.setDaemon(true);
         facialRecognitionThread.start();
-        cameraThread.start();
     }
 
     private void showAlert(String title, String content) {

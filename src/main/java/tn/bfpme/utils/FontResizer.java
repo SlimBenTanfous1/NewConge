@@ -3,11 +3,7 @@ package tn.bfpme.utils;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
@@ -32,12 +28,11 @@ public class FontResizer {
         } else if (node instanceof Button) {
             ((Button) node).setStyle("-fx-font-size: " + fontSize2 + "px;");
         } else if (node instanceof TabPane) {
-            ((TabPane) node).setStyle("-fx-tab-label-font-size: " + fontSize2 + "px;");
-            for (Tab tab : ((TabPane) node).getTabs()) {
-                if (tab.getGraphic() instanceof Labeled) {
-                    ((Labeled) tab.getGraphic()).setStyle("-fx-font-size: " + fontSize + "px;");
-                } else if (tab.getGraphic() != null) {
-                    resizeFonts(tab.getGraphic(), width, height);
+            TabPane tabPane = (TabPane) node;
+            for (Tab tab : tabPane.getTabs()) {
+                Node tabLabel = findTabLabel(tab);
+                if (tabLabel != null) {
+                    tabLabel.setStyle("-fx-font-size: " + fontSize2 + "px;");
                 }
                 resizeFonts(tab.getContent(), width, height);
             }
@@ -45,6 +40,9 @@ public class FontResizer {
             ((ListView<?>) node).setStyle("-fx-font-size: " + fontSize3 + "px;");
         } else if (node instanceof TreeView) {
             ((TreeView<?>) node).setStyle("-fx-font-size: " + fontSize3 + "px;");
+            for (TreeItem<?> item : ((TreeView<?>) node).getRoot().getChildren()) {
+                resizeFonts(item.getGraphic(), width, height);
+            }
         }
 
         if (node instanceof Pane) {
@@ -69,11 +67,20 @@ public class FontResizer {
             for (Node child : ((GridPane) node).getChildren()) {
                 resizeFonts(child, width, height);
             }
-        } else if (node instanceof TabPane) {
-            for (Tab tab : ((TabPane) node).getTabs()) {
-                resizeFonts(tab.getContent(), width, height);
-            }
         }
+    }
+
+    private static Node findTabLabel(Tab tab) {
+        if (tab.getGraphic() instanceof Labeled) {
+            return tab.getGraphic();
+        }
+        if (tab.getText() != null && !tab.getText().isEmpty()) {
+            Label label = new Label(tab.getText());
+            tab.setGraphic(label);
+            tab.setText(null);
+            return label;
+        }
+        return null;
     }
 
     public static Stage getStageFromNode(Node node) {
