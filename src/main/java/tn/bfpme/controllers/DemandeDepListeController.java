@@ -20,10 +20,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
-import javafx.scene.control.ContextMenu;
-import javafx.stage.Popup;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import tn.bfpme.models.*;
 import tn.bfpme.services.ServiceConge;
 import tn.bfpme.services.ServiceUtilisateur;
@@ -102,6 +99,24 @@ public class DemandeDepListeController implements Initializable {
             DemandesContainer.getChildren().clear();
             List<User> users = Arg.getUsers();
             List<Conge> conges = Arg.getConges();
+
+            // Get the logged-in user
+            User loggedInUser = SessionManager.getInstance().getUser();
+
+            if (loggedInUser != null) {
+                // Check if the logged-in user is an interim for any manager who is currently on leave
+                User interimForManager = UserS.getInterimOfUsersManager(loggedInUser.getIdUser());
+                if (interimForManager != null) {
+                    if (UserS.isUsersManagerOnLeave(interimForManager.getIdUser())) {
+                        List<User> subordinates = UserS.getSubordinatesIfManagerOnLeave(interimForManager.getIdUser());
+                        users.addAll(subordinates);
+                    } else {
+                        // Reset interim status if the manager's leave is over
+                        UserS.resetInterimStatus(loggedInUser);
+                    }
+                }
+            }
+
             for (Conge conge : conges) {
                 for (User user : users) {
                     if (conge.getIdUser() == user.getIdUser()) {
@@ -132,6 +147,7 @@ public class DemandeDepListeController implements Initializable {
             e.printStackTrace();
         }
     }
+
 
     @FXML
     void LesApprouves(ActionEvent event) {

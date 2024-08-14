@@ -84,18 +84,18 @@ public class AttributionSoldeController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        ComboPeriode.setItems(FXCollections.observableArrayList("Mensuel","Trimestriel","Semestriel" , "Annuel"));
+        ComboPeriode.setItems(FXCollections.observableArrayList("Mensuel","Trimestriel","Semestriel","Annuel"));
         Platform.runLater(() -> {
             Stage stage = (Stage) MainAnchorPane.getScene().getWindow();
             stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
             stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
             FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight());
         });
-        colDesignation.setCellValueFactory(new PropertyValueFactory<>("designation"));
-        colPas.setCellValueFactory(new PropertyValueFactory<>("pas"));
-        colLimite.setCellValueFactory(new PropertyValueFactory<>("limite"));
-        colPeriode.setCellValueFactory(new PropertyValueFactory<>("periode"));
-        colFile.setCellValueFactory(new PropertyValueFactory<>("file"));
+        colDesignation.setCellValueFactory(new PropertyValueFactory<>("Designation"));
+        colPas.setCellValueFactory(new PropertyValueFactory<>("Pas"));
+        colLimite.setCellValueFactory(new PropertyValueFactory<>("Limite"));
+        colPeriode.setCellValueFactory(new PropertyValueFactory<>("Periode"));
+        colFile.setCellValueFactory(new PropertyValueFactory<>("File"));
 
         ComboPeriode.valueProperty().addListener((obs, oldVal, newVal) -> updatePeriodLabel(newVal));
 

@@ -34,12 +34,6 @@
             </Label>
          </children>
       </HBox>
-      <Label layoutX="546.0" layoutY="357.0" text="Période (Jour) :" visible="false" />
-      <Label layoutX="545.0" layoutY="411.0" text="Période (Mois) :" visible="false" />
-      <Label layoutX="545.0" layoutY="462.0" text="Période (Année) :" visible="false" />
-      <TextField fx:id="PeriodeMoisTF" layoutX="676.0" layoutY="406.0" prefHeight="17.0" prefWidth="147.0" visible="false" />
-      <TextField fx:id="PeriodeAnTF" layoutX="676.0" layoutY="458.0" prefHeight="17.0" prefWidth="147.0" visible="false" />
-      <TextField fx:id="PeriodeJourTF" layoutX="676.0" layoutY="351.0" prefHeight="17.0" prefWidth="147.0" visible="false" />
       <HBox alignment="CENTER_LEFT" layoutX="754.0" layoutY="364.0" prefHeight="29.0" prefWidth="346.0" spacing="10.0" AnchorPane.rightAnchor="87.0">
          <children>
             <Label minWidth="120.0" prefHeight="18.0" prefWidth="120.0" styleClass="RobotoBoldItalic" text="Recherche:" />

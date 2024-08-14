@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -11,6 +16,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane fx:id="MainAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="830.0" prefWidth="1340.0" styleClass="grad-bg" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.EmployeController">
@@ -56,7 +62,7 @@
                               <Font name="System Bold" size="14.0" />
                            </font>
                         </Label>
-                        <Label maxWidth="250.0" prefHeight="17.0" prefWidth="250.0" styleClass="RobotoBold" text="Rôle : " GridPane.rowIndex="3">
+                        <Label maxWidth="250.0" prefHeight="17.0" prefWidth="250.0" styleClass="RobotoBold" text="Fonction : " GridPane.rowIndex="3">
                            <font>
                               <Font name="System Bold" size="14.0" />
                            </font>
@@ -118,5 +124,25 @@
             </Label>
          </children>
       </AnchorPane>
+
+      <AnchorPane fx:id="chatPane" layoutX="114.0" layoutY="345.0" maxHeight="698.0" maxWidth="871.0" prefHeight="426.0" prefWidth="428.0" style="-fx-border-color: white;" styleClass="pane1" visible="false">
+         <children>
+            <VBox layoutX="-1.0" layoutY="51.0" prefHeight="363.0" prefWidth="427.0">
+               <TextArea fx:id="conversationArea" editable="false" prefHeight="500.0" prefWidth="380.0" />
+               <TextField fx:id="inputField" onAction="#handleUserInput" prefHeight="26.0" prefWidth="380.0" />
+            </VBox>
+         </children>
+      </AnchorPane>
+      <HBox layoutX="117.0" layoutY="773.0" prefHeight="43.0" prefWidth="188.0">
+         <children>
+            <Button fx:id="buttonFermer" mnemonicParsing="false" onAction="#buttonFermer" prefHeight="43.0" prefWidth="88.0" styleClass="btn-secondary" text="Fermer" />
+            <Separator orientation="VERTICAL" prefHeight="200.0" />
+            <Button fx:id="openchat" onAction="#openChat" prefHeight="43.0" prefWidth="95.0" styleClass="btn-secondary" text="Open Chat">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </Button>
+         </children>
+      </HBox>
    </children>
 </AnchorPane>

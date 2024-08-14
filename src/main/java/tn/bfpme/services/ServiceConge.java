@@ -389,4 +389,27 @@ public class ServiceConge implements IConge<Conge> {
             System.out.println(ex.getMessage());
         }
     }
+    public boolean hasSubordinates(int userId) {
+        String query = "SELECT COUNT(*) FROM user WHERE ID_Manager = ?";
+        boolean hasSubordinates = false;
+
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+            PreparedStatement ps = cnx.prepareStatement(query);
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                hasSubordinates = count > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return hasSubordinates;
+    }
+
 }

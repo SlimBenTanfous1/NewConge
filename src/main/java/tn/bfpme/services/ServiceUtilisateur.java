@@ -1387,6 +1387,266 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
         return interimUser;
     }
+    public User getInterimOfUsersManager(int userId) {
+        String managerQuery = "SELECT ID_Manager FROM user WHERE ID_User = ?";
+        String interimQuery = "SELECT u2.* FROM user u1 JOIN user u2 ON u1.ID_Interim = u2.ID_User WHERE u1.ID_User = ?";
+        User interimUser = null;
+
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+
+            // Step 1: Get the manager ID of the given user
+            PreparedStatement psManager = cnx.prepareStatement(managerQuery);
+            psManager.setInt(1, userId);
+            ResultSet rsManager = psManager.executeQuery();
+
+            if (rsManager.next()) {
+                int managerId = rsManager.getInt("ID_Manager");
+
+                // Step 2: Get the interim details of the manager
+                PreparedStatement psInterim = cnx.prepareStatement(interimQuery);
+                psInterim.setInt(1, managerId);
+                ResultSet rsInterim = psInterim.executeQuery();
+
+                if (rsInterim.next()) {
+                    interimUser = new User(
+                            rsInterim.getInt("ID_User"),
+                            rsInterim.getString("Nom"),
+                            rsInterim.getString("Prenom"),
+                            rsInterim.getString("Email"),
+                            rsInterim.getString("MDP"),
+                            rsInterim.getString("Image"),
+                            rsInterim.getDate("Creation_Date") != null ? rsInterim.getDate("Creation_Date").toLocalDate() : null,
+                            rsInterim.getInt("ID_Departement"),
+                            rsInterim.getInt("ID_Manager"),
+                            rsInterim.getInt("idSolde"),
+                            rsInterim.getInt("ID_Interim")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return interimUser;
+    }
+
+    public boolean isUsersManagerOnLeave(int userId) {
+        String managerQuery = "SELECT ID_Manager FROM user WHERE ID_User = ?";
+        String congeQuery = "SELECT COUNT(*) FROM conge WHERE ID_User = ? AND ? BETWEEN DateDebut AND DateFin AND Statut = 'Approuvé'";
+        boolean isOnLeave = false;
+
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+
+            // Step 1: Get the manager ID of the given user
+            PreparedStatement psManager = cnx.prepareStatement(managerQuery);
+            psManager.setInt(1, userId);
+            ResultSet rsManager = psManager.executeQuery();
+
+            if (rsManager.next()) {
+                int managerId = rsManager.getInt("ID_Manager");
+
+                // Step 2: Check if the manager is currently on leave
+                PreparedStatement psConge = cnx.prepareStatement(congeQuery);
+                psConge.setInt(1, managerId);
+                psConge.setDate(2, Date.valueOf(LocalDate.now())); // Set the current date
+                ResultSet rsConge = psConge.executeQuery();
+
+                if (rsConge.next()) {
+                    int leaveCount = rsConge.getInt(1);
+                    isOnLeave = leaveCount > 0; // If leave count is greater than 0, the manager is on leave
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return isOnLeave;
+    }
+
+    public List<User> getSubordinatesIfManagerOnLeave(int interimUserId) {
+        String interimQuery = "SELECT ID_User FROM user WHERE ID_Interim = ?";
+        String congeQuery = "SELECT COUNT(*) FROM conge WHERE ID_User = ? AND ? BETWEEN DateDebut AND DateFin AND Statut = 'Approuvé'";
+        String subordinatesQuery = "SELECT * FROM user WHERE ID_Manager = ?";
+        List<User> subordinates = new ArrayList<>();
+
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+
+            // Step 1: Check if the user is an interim for any manager
+            PreparedStatement psInterim = cnx.prepareStatement(interimQuery);
+            psInterim.setInt(1, interimUserId);
+            ResultSet rsInterim = psInterim.executeQuery();
+
+            while (rsInterim.next()) {
+                int managerId = rsInterim.getInt("ID_User");
+
+                // Step 2: Check if the manager is currently on leave
+                PreparedStatement psConge = cnx.prepareStatement(congeQuery);
+                psConge.setInt(1, managerId);
+                psConge.setDate(2, Date.valueOf(LocalDate.now())); // Set the current date
+                ResultSet rsConge = psConge.executeQuery();
+
+                if (rsConge.next() && rsConge.getInt(1) > 0) {
+                    // Step 3: Retrieve the subordinates of the manager
+                    PreparedStatement psSubordinates = cnx.prepareStatement(subordinatesQuery);
+                    psSubordinates.setInt(1, managerId);
+                    ResultSet rsSubordinates = psSubordinates.executeQuery();
+
+                    while (rsSubordinates.next()) {
+                        User subordinate = new User(
+                                rsSubordinates.getInt("ID_User"),
+                                rsSubordinates.getString("Nom"),
+                                rsSubordinates.getString("Prenom"),
+                                rsSubordinates.getString("Email"),
+                                rsSubordinates.getString("MDP"),
+                                rsSubordinates.getString("Image"),
+                                rsSubordinates.getDate("Creation_Date") != null ? rsSubordinates.getDate("Creation_Date").toLocalDate() : null,
+                                rsSubordinates.getInt("ID_Departement"),
+                                rsSubordinates.getInt("ID_Manager"),
+                                rsSubordinates.getInt("idSolde"),
+                                rsSubordinates.getInt("ID_Interim")
+                        );
+                        subordinates.add(subordinate);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return subordinates;
+    }
+    public List<User> getAppropriateUsers(int id_manager) {
+        List<User> users = new ArrayList<>();
+
+        // Query to get the manager's manager
+        String managerQuery = "SELECT u.* FROM user u JOIN user u2 ON u.ID_User = u2.ID_Manager WHERE u2.ID_User = ?";
+
+        // Query to get the subordinates of the manager
+        String subordinatesQuery = "SELECT * FROM user WHERE ID_Manager = ?";
+
+        // Query to get users with the same role as the manager
+        String sameRoleQuery = "SELECT u.* FROM user u JOIN user_role ur ON u.ID_User = ur.ID_User WHERE ur.ID_Role = (SELECT ur2.ID_Role FROM user_role ur2 WHERE ur2.ID_User = ?) AND u.ID_User != ?";
+
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+
+            // Get the manager's manager
+            PreparedStatement psManager = cnx.prepareStatement(managerQuery);
+            psManager.setInt(1, id_manager);
+            ResultSet rsManager = psManager.executeQuery();
+
+            if (rsManager.next()) {
+                User manager = new User(
+                        rsManager.getInt("ID_User"),
+                        rsManager.getString("Nom"),
+                        rsManager.getString("Prenom"),
+                        rsManager.getString("Email"),
+                        rsManager.getString("MDP"),
+                        rsManager.getString("Image"),
+                        rsManager.getDate("Creation_Date") != null ? rsManager.getDate("Creation_Date").toLocalDate() : null,
+                        rsManager.getInt("ID_Departement"),
+                        rsManager.getInt("ID_Manager"),
+                        rsManager.getInt("idSolde"),
+                        rsManager.getInt("ID_Interim")
+                );
+                users.add(manager);
+            }
+
+            // Get the subordinates of the manager
+            PreparedStatement psSubordinates = cnx.prepareStatement(subordinatesQuery);
+            psSubordinates.setInt(1, id_manager);
+            ResultSet rsSubordinates = psSubordinates.executeQuery();
+
+            while (rsSubordinates.next()) {
+                User subordinate = new User(
+                        rsSubordinates.getInt("ID_User"),
+                        rsSubordinates.getString("Nom"),
+                        rsSubordinates.getString("Prenom"),
+                        rsSubordinates.getString("Email"),
+                        rsSubordinates.getString("MDP"),
+                        rsSubordinates.getString("Image"),
+                        rsSubordinates.getDate("Creation_Date") != null ? rsSubordinates.getDate("Creation_Date").toLocalDate() : null,
+                        rsSubordinates.getInt("ID_Departement"),
+                        rsSubordinates.getInt("ID_Manager"),
+                        rsSubordinates.getInt("idSolde"),
+                        rsSubordinates.getInt("ID_Interim")
+                );
+                users.add(subordinate);
+            }
+
+            // Get users with the same role as the manager
+            PreparedStatement psSameRole = cnx.prepareStatement(sameRoleQuery);
+            psSameRole.setInt(1, id_manager);
+            psSameRole.setInt(2, id_manager);
+            ResultSet rsSameRole = psSameRole.executeQuery();
+
+            while (rsSameRole.next()) {
+                User sameRoleUser = new User(
+                        rsSameRole.getInt("ID_User"),
+                        rsSameRole.getString("Nom"),
+                        rsSameRole.getString("Prenom"),
+                        rsSameRole.getString("Email"),
+                        rsSameRole.getString("MDP"),
+                        rsSameRole.getString("Image"),
+                        rsSameRole.getDate("Creation_Date") != null ? rsSameRole.getDate("Creation_Date").toLocalDate() : null,
+                        rsSameRole.getInt("ID_Departement"),
+                        rsSameRole.getInt("ID_Manager"),
+                        rsSameRole.getInt("idSolde"),
+                        rsSameRole.getInt("ID_Interim")
+                );
+                users.add(sameRoleUser);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return users;
+    }
+    public boolean isUserAnInterim(int userId) {
+        String query = "SELECT COUNT(*) FROM user WHERE ID_Interim = ?";
+        boolean isInterim = false;
+
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+            PreparedStatement ps = cnx.prepareStatement(query);
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                isInterim = count > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return isInterim;
+    }
+
+
+
+    // Method to fetch the subordinates of a manager currently on leave
+
+    // Method to reset interim status when manager's leave is over
+    public void resetInterimStatus(User user) {
+        if (!isUsersManagerOnLeave(user.getIdUser())) {
+            setInterimToNull(user.getIdUser());
+        }
+    }
 
 
 

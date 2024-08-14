@@ -1,8 +1,6 @@
 package tn.bfpme.utils;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class MyDataBase {
     private static MyDataBase instance;
@@ -48,4 +46,5 @@ public class MyDataBase {
         }
         return cnx;
     }
+
 }

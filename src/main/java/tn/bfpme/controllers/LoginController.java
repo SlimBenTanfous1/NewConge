@@ -112,6 +112,7 @@ public class LoginController implements Initializable {
                 "FROM `user` as u " +
                 "JOIN `user_role` ur ON ur.ID_User = u.ID_User " +
                 "WHERE u.`Email`=?";
+        System.out.println("essaie connection");
         try {
             PreparedStatement stm = cnx.prepareStatement(qry);
             stm.setString(1, LoginEmail.getText());
