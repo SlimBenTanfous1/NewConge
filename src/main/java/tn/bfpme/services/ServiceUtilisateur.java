@@ -656,7 +656,6 @@ public class ServiceUtilisateur implements IUtilisateur {
     public int getManagerIdByUserId(int userId) {
         int managerId = 0;
         String query = "SELECT ID_Manager FROM user WHERE ID_User = ?";
-
         try {
             if (cnx == null || cnx.isClosed()) {
                 cnx = MyDataBase.getInstance().getCnx();
@@ -664,14 +663,12 @@ public class ServiceUtilisateur implements IUtilisateur {
             PreparedStatement ps = cnx.prepareStatement(query);
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
-
             if (rs.next()) {
                 managerId = rs.getInt("ID_Manager");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return managerId;
     }
 
@@ -1276,6 +1273,7 @@ public class ServiceUtilisateur implements IUtilisateur {
         user.setRoleNom(resultSet.getString("roleNom"));
         return user;
     }
+
     public List<User> getAllManagers() {
         List<User> userList = new ArrayList<>();
         String sql = "SELECT DISTINCT u.* FROM user u " +
@@ -1307,6 +1305,7 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
         return userList;
     }
+
     public boolean assignInterimManager(int managerId, int interimManagerId) {
         String sql = "UPDATE user SET ID_Interim = ? WHERE ID_User = ?";
         try {
@@ -1323,6 +1322,7 @@ public class ServiceUtilisateur implements IUtilisateur {
             return false;
         }
     }
+
     public boolean updateInterimManager(int managerId, int newInterimManagerId) {
         String sql = "UPDATE user SET ID_Interim = ? WHERE ID_User = ?";
         try {
@@ -1339,6 +1339,7 @@ public class ServiceUtilisateur implements IUtilisateur {
             return false;
         }
     }
+
     public boolean deleteInterimManager(int managerId) {
         String sql = "UPDATE user SET ID_Interim = NULL WHERE ID_User = ?";
         try {
@@ -1354,6 +1355,7 @@ public class ServiceUtilisateur implements IUtilisateur {
             return false;
         }
     }
+
     public User getInterimByUserId(int userId) {
         String query = "SELECT u2.* FROM user u1 " +
                 "JOIN user u2 ON u1.ID_Interim = u2.ID_User " +
@@ -1387,6 +1389,7 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
         return interimUser;
     }
+
     public User getInterimOfUsersManager(int userId) {
         String managerQuery = "SELECT ID_Manager FROM user WHERE ID_User = ?";
         String interimQuery = "SELECT u2.* FROM user u1 JOIN user u2 ON u1.ID_Interim = u2.ID_User WHERE u1.ID_User = ?";
@@ -1524,28 +1527,19 @@ public class ServiceUtilisateur implements IUtilisateur {
 
         return subordinates;
     }
+
     public List<User> getAppropriateUsers(int id_manager) {
         List<User> users = new ArrayList<>();
-
-        // Query to get the manager's manager
         String managerQuery = "SELECT u.* FROM user u JOIN user u2 ON u.ID_User = u2.ID_Manager WHERE u2.ID_User = ?";
-
-        // Query to get the subordinates of the manager
         String subordinatesQuery = "SELECT * FROM user WHERE ID_Manager = ?";
-
-        // Query to get users with the same role as the manager
         String sameRoleQuery = "SELECT u.* FROM user u JOIN user_role ur ON u.ID_User = ur.ID_User WHERE ur.ID_Role = (SELECT ur2.ID_Role FROM user_role ur2 WHERE ur2.ID_User = ?) AND u.ID_User != ?";
-
         try {
             if (cnx == null || cnx.isClosed()) {
                 cnx = MyDataBase.getInstance().getCnx();
             }
-
-            // Get the manager's manager
             PreparedStatement psManager = cnx.prepareStatement(managerQuery);
             psManager.setInt(1, id_manager);
             ResultSet rsManager = psManager.executeQuery();
-
             if (rsManager.next()) {
                 User manager = new User(
                         rsManager.getInt("ID_User"),
@@ -1562,12 +1556,9 @@ public class ServiceUtilisateur implements IUtilisateur {
                 );
                 users.add(manager);
             }
-
-            // Get the subordinates of the manager
             PreparedStatement psSubordinates = cnx.prepareStatement(subordinatesQuery);
             psSubordinates.setInt(1, id_manager);
             ResultSet rsSubordinates = psSubordinates.executeQuery();
-
             while (rsSubordinates.next()) {
                 User subordinate = new User(
                         rsSubordinates.getInt("ID_User"),
@@ -1584,13 +1575,10 @@ public class ServiceUtilisateur implements IUtilisateur {
                 );
                 users.add(subordinate);
             }
-
-            // Get users with the same role as the manager
             PreparedStatement psSameRole = cnx.prepareStatement(sameRoleQuery);
             psSameRole.setInt(1, id_manager);
             psSameRole.setInt(2, id_manager);
             ResultSet rsSameRole = psSameRole.executeQuery();
-
             while (rsSameRole.next()) {
                 User sameRoleUser = new User(
                         rsSameRole.getInt("ID_User"),
@@ -1607,17 +1595,15 @@ public class ServiceUtilisateur implements IUtilisateur {
                 );
                 users.add(sameRoleUser);
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return users;
     }
+
     public boolean isUserAnInterim(int userId) {
         String query = "SELECT COUNT(*) FROM user WHERE ID_Interim = ?";
         boolean isInterim = false;
-
         try {
             if (cnx == null || cnx.isClosed()) {
                 cnx = MyDataBase.getInstance().getCnx();
@@ -1625,7 +1611,6 @@ public class ServiceUtilisateur implements IUtilisateur {
             PreparedStatement ps = cnx.prepareStatement(query);
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
-
             if (rs.next()) {
                 int count = rs.getInt(1);
                 isInterim = count > 0;
@@ -1633,7 +1618,6 @@ public class ServiceUtilisateur implements IUtilisateur {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return isInterim;
     }
 
@@ -1643,5 +1627,34 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
     }*/
 
+    public boolean isUser_OFFDUTY(int ID_USER) {
+        String Query = "SELECT * FROM `conge` WHERE `ID_User`=? AND CURDATE() BETWEEN `DateDebut` AND `DateFin`";
+        try {
+        PreparedStatement ps = cnx.prepareStatement(Query);
+            ps.setInt(1, ID_USER);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
+    public int getHisInterim(int ID_USER) {
+        String Query = "SELECT `ID_Interim` FROM `user` WHERE `ID_User`=?";
+        int INTERIM = Integer.parseInt(null);
+        try {
+            PreparedStatement ps = cnx.prepareStatement(Query);
+            ps.setInt(1, ID_USER);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+               INTERIM = rs.getInt("ID_Interim");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return INTERIM;
+    }
 }

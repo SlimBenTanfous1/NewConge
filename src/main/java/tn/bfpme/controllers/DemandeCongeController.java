@@ -140,33 +140,32 @@ public class DemandeCongeController implements Initializable {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Dates invalides", "La date de début et la date de fin doivent être postérieures ou égales à la date actuelle, et la date de début doit être antérieure ou égale à la date de fin.");
             return;
         }
-
         long daysBetween = ChronoUnit.DAYS.between(DD, DF) + 1;
         int userId = SessionManager.getInstance().getUser().getIdUser();
         double currentBalance = getCurrentBalance(userId, IDTYPE);
-
-        // Check if the leave days exceed the limit set for the leave type
         if (selectedTypeConge.getLimite() > 0 && daysBetween > selectedTypeConge.getLimite()) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Limite de congé dépassée", "La période demandée dépasse la limite autorisée pour ce type de congé.");
             return;
         }
-
         if (currentBalance < daysBetween) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Solde insuffisant", "Votre solde est insuffisant pour la période demandée.");
             return;
         }
-
-        // Decrement the solde
         boolean success = serviceUserSolde.requestLeave(userId, IDTYPE, daysBetween);
         if (!success) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Solde insuffisant", "Votre solde est insuffisant pour la période demandée.");
             return;
         }
 
+        int ID_MANAGER = userService.getManagerIdByUserId(SessionManager.getInstance().getUser().getIdUser());
+        if(userService.isUser_OFFDUTY(ID_MANAGER)){
+            ID_MANAGER = userService.getHisInterim(ID_MANAGER);
+        }
+
         serviceConge.AddConge(new Conge(0, DD, DF, IDTYPE, Statut.En_Attente, userId, docLinkToUse, DESC));
         String NotifSubject = "Vous avez reçu une nouvelle demande de congé " + selectedTypeConge.getDesignation();
         String messageText = "Vous avez reçu une nouvelle demande de congé " + selectedTypeConge.getDesignation() + " de la part de " + SessionManager.getInstance().getUser().getNom() + " " + SessionManager.getInstance().getUser().getPrenom() + " du " + DD + " au " + DF;
-        notifService.NewNotification(userService.getManagerIdByUserId(SessionManager.getInstance().getUser().getIdUser()), NotifSubject, 2, messageText);
+        notifService.NewNotification(ID_MANAGER, NotifSubject, 2, messageText);
 
         Alert successAlert = new Alert(Alert.AlertType.CONFIRMATION);
         successAlert.setTitle("Succès");
@@ -191,7 +190,6 @@ public class DemandeCongeController implements Initializable {
             System.out.println("Closing current scene...");
         }
     }
-
 
     private double getCurrentBalance(int userId, int typeCongeId) {
         String query = "SELECT TotalSolde FROM user_Solde WHERE ID_User = ? AND ID_TypeConge = ?";
