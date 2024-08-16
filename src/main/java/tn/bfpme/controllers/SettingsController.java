@@ -94,7 +94,6 @@ public class SettingsController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     @FXML
@@ -128,6 +127,16 @@ public class SettingsController implements Initializable {
 
     @FXML
     void Help_button(ActionEvent event) {
-        // Implement your help button action here
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/Statistiques.fxml"));
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Statistiques");
+            stage.show();
+            StageManager.closeAllStages();
+            StageManager.addStage(stage);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
