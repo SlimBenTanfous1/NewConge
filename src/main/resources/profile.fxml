@@ -145,5 +145,13 @@
             </Button>
          </children>
       </HBox>
+      <ImageView fx:id="cameraView" fitWidth="640.0" fitHeight="480.0" layoutX="117.0" layoutY="775.0" />
+
+      <!-- Add Label for instructions -->
+      <Label fx:id="instructionLabel" layoutX="117.0" layoutY="1265.0" prefHeight="30.0" prefWidth="640.0" styleClass="RobotoBold" text="Face directly to the camera">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>
