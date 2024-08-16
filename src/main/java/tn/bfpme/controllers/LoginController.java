@@ -29,12 +29,9 @@ import org.opencv.videoio.Videoio;
 import tn.bfpme.models.User;
 import tn.bfpme.utils.*;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
@@ -151,15 +148,20 @@ public class LoginController implements Initializable {
     }
 
     @FXML
-    void FacialRecognitionButton(ActionEvent event) {
-        String faceCascadePath = "src/main/resources/assets/FacialRegDATA/XML/haarcascades/haarcascade_frontalface_alt.xml";
+    void FacialRecognitionButton(ActionEvent event) throws UnsupportedEncodingException {
+        String faceCascadePath = getClass().getResource("/assets/FacialRegDATA/XML/haarcascades/haarcascade_frontalface_alt.xml").getPath();
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {
+            faceCascadePath = faceCascadePath.substring(1);
+        }
         CascadeClassifier faceDetector = new CascadeClassifier(faceCascadePath);
+
+
         if (faceDetector.empty()) {
             System.err.println("Failed to load haarcascade_frontalface_alt.xml");
             return;
         }
 
-        VideoCapture capture = new VideoCapture(0, Videoio.CAP_DSHOW); // Try using DirectShow backend
+        VideoCapture capture = new VideoCapture(0, Videoio.CAP_DSHOW); // Open the default camera
         if (!capture.isOpened()) {
             System.out.println("Error: Cannot open the camera.");
             return;
@@ -175,34 +177,39 @@ public class LoginController implements Initializable {
                         faceDetector.detectMultiScale(frame, faceDetections);
 
                         for (Rect rect : faceDetections.toArray()) {
-                            Imgproc.rectangle(frame, new org.opencv.core.Point(rect.x, rect.y), new org.opencv.core.Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0));
+                            Imgproc.rectangle(frame, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0));
                         }
+
+                        // Convert Mat to Image and display in ImageView
                         Image imageToShow = FacialRec.mat2Image(frame);
                         Platform.runLater(() -> imageView.setImage(imageToShow));
 
-                        // Save the frame to a file
+                        // Save the captured frame
                         String capturedImagePath = "src/main/resources/assets/FacialRegDATA/Captured/captured_frame.jpg";
                         Imgcodecs.imwrite(capturedImagePath, frame);
 
-                        // Recognize the face from the saved frame in a separate thread
-                        new Thread(() -> {
-                            boolean recognized = recognizeFace(capturedImagePath);
-                            if (recognized) {
-                                Platform.runLater(() -> System.out.println("Face recognized successfully."));
-                            } else {
-                                Platform.runLater(() -> System.out.println("Face not recognized."));
-                            }
-                        }).start();
+                        // Perform face recognition
+                        boolean recognized = recognizeFace(capturedImagePath);
+                        if (recognized) {
+                            Platform.runLater(() -> {
+                                System.out.println("Face recognized successfully.");
+                                // Continue with login process
+                                handleSuccessfulRecognition(event);
+                            });
+                            break; // Exit the loop if face is recognized
+                        } else {
+                            Platform.runLater(() -> System.out.println("Face not recognized."));
+                        }
 
                         try {
-                            Thread.sleep(33); // ~30 frames per second
+                            Thread.sleep(1000); // Add delay to simulate real-time processing
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                     }
                 }
 
-                capture.release();
+                capture.release(); // Release the camera after processing
                 return null;
             }
         };
@@ -211,14 +218,25 @@ public class LoginController implements Initializable {
         faceRecognitionThread.setDaemon(true);
         faceRecognitionThread.start();
     }
+    private void handleSuccessfulRecognition(ActionEvent event) {
+        // This method is called when the face is successfully recognized
+        // You can either automatically log the user in or ask them to proceed with a button click
+
+        // Navigate to the user's profile or main dashboard
+        try {
+            navigateToProfile(event);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     private boolean recognizeFace(String capturedImagePath) {
         Mat capturedImage = Imgcodecs.imread(capturedImagePath);
-        File directory = new File("src/main/resources/assets/FacialRegDATA");
-        File[] storedFaceFiles = directory.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png"));
+        File directory = new File("src/main/resources/assets/users"); // Update to your desired path
+        File[] storedFaceFiles = directory.listFiles((dir, name) -> name.endsWith(".jpg"));
 
-        if (storedFaceFiles == null) {
+        if (storedFaceFiles == null || storedFaceFiles.length == 0) {
             System.err.println("No stored face images found.");
             return false;
         }
@@ -230,7 +248,6 @@ public class LoginController implements Initializable {
                 continue;
             }
 
-            System.out.println("Comparing with stored face: " + storedFaceFile.getName());
             if (compareFaces(capturedImage, storedFace)) {
                 System.out.println("Face matched with: " + storedFaceFile.getName());
                 return true;
@@ -238,6 +255,7 @@ public class LoginController implements Initializable {
         }
         return false;
     }
+
 
     private boolean compareFaces(Mat capturedImage, Mat storedFace) {
         Mat grayCapturedImage = new Mat();
