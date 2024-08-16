@@ -683,12 +683,14 @@
 .tab-pane > .tab-header-area > .headers-region > .tab {
     -fx-background-color: #ccdaff;
     -fx-background-insets: 0 0 1px 0;
-    -fx-padding: 4px;
+    -fx-padding: 10px 25px 10px 25px;
     -fx-border-color: #c9c9c9;
 }
 
 .tab-pane > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label {
     -fx-text-fill: #112349;
+    -fx-font-family: "Roboto Bold";
+    -fx-font-size: 14px; /* Default size */
 }
 
 .tab-pane > .tab-header-area > .headers-region > .tab:selected {
