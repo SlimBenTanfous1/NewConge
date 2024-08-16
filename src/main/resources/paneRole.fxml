@@ -22,7 +22,7 @@
                   <ListView fx:id="roleListView" prefHeight="477.0" prefWidth="395.0" />
                </children>
             </HBox>
-            <Label layoutX="514.0" layoutY="61.0" styleClass="RobotoItalic" text="Désignation de rôle :" AnchorPane.leftAnchor="514.0" AnchorPane.topAnchor="61.0" />
+            <Label layoutX="514.0" layoutY="61.0" styleClass="RobotoItalic" text="Désignation de fonction:" AnchorPane.leftAnchor="514.0" AnchorPane.topAnchor="61.0" />
             <HBox layoutX="514.0" layoutY="88.0" prefHeight="29.0" prefWidth="281.0" AnchorPane.leftAnchor="514.0" AnchorPane.rightAnchor="186.0">
                <children>
                   <TextField fx:id="roleNameField" prefHeight="29.0" prefWidth="333.0" promptText="Désignation de rôle..." />
@@ -34,7 +34,7 @@
                   <TextArea fx:id="roleDescriptionField" prefHeight="104.0" prefWidth="333.0" promptText="Déscription..." wrapText="true" />
                </children>
             </HBox>
-            <Label layoutX="516.0" layoutY="296.0" styleClass="RobotoItalic" text="Rôle parent :" />
+            <Label layoutX="516.0" layoutY="296.0" styleClass="RobotoItalic" text="Fonction parent :" />
             <Button fx:id="AddNewRoleCombo" layoutX="852.0" layoutY="328.0" onAction="#addRole" prefHeight="40.0" prefWidth="40.0" styleClass="btn-primary" text="+" />
             <HBox fx:id="ParentRoleHBbox" layoutX="515.0" layoutY="328.0" minWidth="281.0" prefHeight="179.0" prefWidth="330.0" AnchorPane.leftAnchor="514.0" AnchorPane.topAnchor="327.0">
                <children>
@@ -71,7 +71,7 @@
                   <String fx:value="RobotoMediumItalic" />
                </styleClass>
             </Label>
-            <Label layoutX="54.0" layoutY="42.0" prefHeight="18.0" prefWidth="174.0" styleClass="RobotoBold" text="Liste des rôles" AnchorPane.leftAnchor="54.0" AnchorPane.topAnchor="42.0" />
+            <Label layoutX="54.0" layoutY="42.0" prefHeight="18.0" prefWidth="174.0" styleClass="RobotoBold" text="Liste des fonctions" AnchorPane.leftAnchor="54.0" AnchorPane.topAnchor="42.0" />
             <HBox fx:id="btnEAHbox" layoutX="529.0" layoutY="519.0" prefHeight="48.0" prefWidth="302.0" spacing="8.0">
                <children>
                   <Separator orientation="VERTICAL" prefHeight="200.0" styleClass="seperator" />
@@ -89,7 +89,7 @@
             </HBox>
          </children>
       </AnchorPane>
-      <Label alignment="CENTER" layoutX="366.0" layoutY="24.0" prefHeight="29.0" prefWidth="388.0" styleClass="RobotoBold" text="Gestion des rôles" AnchorPane.leftAnchor="366.0" AnchorPane.rightAnchor="365.0" AnchorPane.topAnchor="24.0">
+      <Label alignment="CENTER" layoutX="366.0" layoutY="24.0" prefHeight="29.0" prefWidth="388.0" styleClass="RobotoBold" text="Gestion des Fonctions" AnchorPane.leftAnchor="366.0" AnchorPane.rightAnchor="365.0" AnchorPane.topAnchor="24.0">
          <font>
             <Font size="24.0" />
          </font>

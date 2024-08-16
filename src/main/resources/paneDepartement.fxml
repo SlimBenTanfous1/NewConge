@@ -25,8 +25,8 @@
             </VBox>
             <TextField fx:id="deptNameField" disable="true" layoutX="582.0" layoutY="82.0" prefHeight="29.0" prefWidth="281.0" AnchorPane.leftAnchor="583.0" AnchorPane.rightAnchor="117.0" />
             <TextField fx:id="deptDescriptionField" alignment="TOP_LEFT" disable="true" layoutX="582.0" layoutY="157.0" prefHeight="104.0" prefWidth="281.0" AnchorPane.leftAnchor="582.0" AnchorPane.rightAnchor="116.0" />
-            <Label layoutX="582.0" layoutY="61.0" styleClass="RobotoItalic" text="Abbrevation :" AnchorPane.leftAnchor="582.0" AnchorPane.topAnchor="61.0" />
-            <Label layoutX="582.0" layoutY="135.0" styleClass="RobotoItalic" text="Nom departement :" AnchorPane.leftAnchor="583.0" AnchorPane.topAnchor="135.0" />
+            <Label layoutX="583.0" layoutY="52.0" styleClass="RobotoItalic" text="Abbrevation :" AnchorPane.leftAnchor="583.0" AnchorPane.topAnchor="52.0" />
+            <Label layoutX="584.0" layoutY="126.0" styleClass="RobotoItalic" text="Nom departement :" AnchorPane.leftAnchor="584.0" AnchorPane.topAnchor="126.0" />
             <HBox layoutX="584.0" layoutY="317.0" minHeight="167.0" minWidth="281.0" prefHeight="167.0" prefWidth="291.0" AnchorPane.leftAnchor="583.0" AnchorPane.rightAnchor="107.0" AnchorPane.topAnchor="316.0">
                <children>
                   <ScrollPane prefHeight="167.0" prefWidth="307.0">
