@@ -112,7 +112,7 @@ public class DemandeDepListeController implements Initializable {
                         users.addAll(subordinates);
                     } else {
                         // Reset interim status if the manager's leave is over
-                        UserS.resetInterimStatus(loggedInUser);
+                       // UserS.resetInterimStatus(loggedInUser);
                     }
                 }
             }
