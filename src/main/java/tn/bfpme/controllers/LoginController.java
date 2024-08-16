@@ -158,11 +158,13 @@ public class LoginController implements Initializable {
             System.err.println("Failed to load haarcascade_frontalface_alt.xml");
             return;
         }
+
         VideoCapture capture = new VideoCapture(0, Videoio.CAP_DSHOW); // Try using DirectShow backend
         if (!capture.isOpened()) {
             System.out.println("Error: Cannot open the camera.");
             return;
         }
+
         Task<Void> faceRecognitionTask = new Task<Void>() {
             @Override
             protected Void call() {
@@ -171,11 +173,27 @@ public class LoginController implements Initializable {
                     if (capture.read(frame)) {
                         MatOfRect faceDetections = new MatOfRect();
                         faceDetector.detectMultiScale(frame, faceDetections);
+
                         for (Rect rect : faceDetections.toArray()) {
                             Imgproc.rectangle(frame, new org.opencv.core.Point(rect.x, rect.y), new org.opencv.core.Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0));
                         }
                         Image imageToShow = FacialRec.mat2Image(frame);
                         Platform.runLater(() -> imageView.setImage(imageToShow));
+
+                        // Save the frame to a file
+                        String capturedImagePath = "src/main/resources/assets/FacialRegDATA/Captured/captured_frame.jpg";
+                        Imgcodecs.imwrite(capturedImagePath, frame);
+
+                        // Recognize the face from the saved frame in a separate thread
+                        new Thread(() -> {
+                            boolean recognized = recognizeFace(capturedImagePath);
+                            if (recognized) {
+                                Platform.runLater(() -> System.out.println("Face recognized successfully."));
+                            } else {
+                                Platform.runLater(() -> System.out.println("Face not recognized."));
+                            }
+                        }).start();
+
                         try {
                             Thread.sleep(33); // ~30 frames per second
                         } catch (InterruptedException e) {
@@ -183,15 +201,16 @@ public class LoginController implements Initializable {
                         }
                     }
                 }
+
                 capture.release();
                 return null;
             }
         };
+
         Thread faceRecognitionThread = new Thread(faceRecognitionTask);
         faceRecognitionThread.setDaemon(true);
         faceRecognitionThread.start();
     }
-
 
 
     private boolean recognizeFace(String capturedImagePath) {
