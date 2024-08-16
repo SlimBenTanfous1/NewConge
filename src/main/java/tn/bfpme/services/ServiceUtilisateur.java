@@ -1637,19 +1637,11 @@ public class ServiceUtilisateur implements IUtilisateur {
         return isInterim;
     }
 
-
-
-    // Method to fetch the subordinates of a manager currently on leave
-
-    // Method to reset interim status when manager's leave is over
     /*public void resetInterimStatus(User user) {
         if (!isUsersManagerOnLeave(user.getIdUser())) {
             setInterimToNull(user.getIdUser());
         }
     }*/
-
-
-
 
 
 }

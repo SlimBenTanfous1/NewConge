@@ -280,7 +280,12 @@ int stateInt =0 ;
         setupSearch1();
         loadManagers();
         loadInterims();
-
+        Platform.runLater(() -> {
+            Stage stage = (Stage) UtilisateursPane.getScene().getWindow();
+            stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(UtilisateursPane, stage.getWidth(), stage.getHeight()));
+            stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(UtilisateursPane, stage.getWidth(), stage.getHeight()));
+            FontResizer.resizeFonts(UtilisateursPane, stage.getWidth(), stage.getHeight());
+        });
         TabAffectationid.setOnSelectionChanged(event -> {
             if (TabAffectationid.isSelected()) {
                 resetAffectationTab();
