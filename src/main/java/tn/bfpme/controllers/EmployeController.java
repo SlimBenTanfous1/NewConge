@@ -28,6 +28,10 @@ import tn.bfpme.utils.DatabaseConnector;
 import tn.bfpme.utils.MyDataBase;
 import tn.bfpme.utils.SessionManager;
 import tn.bfpme.utils.FontResizer;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.videoio.VideoCapture;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -290,5 +294,53 @@ public class EmployeController implements Initializable {
         openchat.setVisible(true);
         chatPane.setVisible(false);
         buttonFermer.setVisible(false);
+    }
+
+    @FXML
+    public void FacialRecognition(ActionEvent actionEvent) {
+        VideoCapture camera = new VideoCapture(0); // Open the default camera
+        if (!camera.isOpened()) {
+            System.err.println("Error: Camera not accessible");
+            return;
+        }
+
+        int pictureCount = 0;
+        while (pictureCount < 4) {
+            Mat frame = new Mat();
+            if (camera.read(frame)) {
+                // Convert the frame to a byte array
+                MatOfByte matOfByte = new MatOfByte();
+                Imgcodecs.imencode(".jpg", frame, matOfByte);
+                byte[] faceImage = matOfByte.toArray();
+
+                // Store the image (you might want to change how and where this is stored)
+                storeFaceImage(faceImage, pictureCount);
+
+                pictureCount++;
+                System.out.println("Captured picture " + pictureCount);
+
+                // Add a short delay to simulate the user moving their face slightly between captures
+                try {
+                    Thread.sleep(500); // 500ms delay between captures
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                System.err.println("Error: Unable to capture image");
+            }
+        }
+        camera.release(); // Release the camera
+    }
+
+    private void storeFaceImage(byte[] faceImage, int pictureCount) {
+        try {
+            String query = "UPDATE user SET face_data" + (pictureCount + 1) + " = ? WHERE ID_User = ?";
+            PreparedStatement ps = MyDataBase.getInstance().getCnx().prepareStatement(query);
+            ps.setBytes(1, faceImage);
+            ps.setInt(2, SessionManager.getInstance().getUser().getIdUser());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
