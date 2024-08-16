@@ -151,22 +151,22 @@
                         </ScrollPane>
                         <HBox alignment="CENTER" layoutX="38.0" layoutY="14.0" prefHeight="31.0" prefWidth="1047.0" spacing="50.0" AnchorPane.leftAnchor="38.0" AnchorPane.rightAnchor="53.0">
                            <children>
-                              <HBox alignment="CENTER_LEFT" prefHeight="31.0" prefWidth="239.0" spacing="21.0">
+                              <HBox alignment="CENTER_LEFT" prefHeight="31.0" prefWidth="296.0" spacing="21.0">
                                  <children>
-                                    <Label prefHeight="18.0" prefWidth="100.0" styleClass="RobotoBoldCondensedItalic" text="Exporter en Excel:" />
+                                    <Label alignment="CENTER_RIGHT" prefHeight="18.0" prefWidth="201.0" styleClass="RobotoBoldCondensedItalic" text="Exporter en Excel:" />
                                     <Button fx:id="ExporterExcelButton" mnemonicParsing="false" onAction="#ExporterExcel" prefHeight="27.0" prefWidth="103.0" styleClass="btn-primary" text="Exporter" />
                                  </children>
                               </HBox>
-                              <HBox alignment="CENTER_RIGHT" prefHeight="31.0" prefWidth="335.0" spacing="20.0">
+                              <HBox alignment="CENTER_RIGHT" prefHeight="31.0" prefWidth="358.0" spacing="20.0">
                                  <children>
-                                    <Label prefHeight="18.0" prefWidth="101.0" styleClass="RobotoBoldCondensedItalic" text="Recherche:" />
+                                    <Label alignment="CENTER_RIGHT" prefHeight="18.0" prefWidth="169.0" styleClass="RobotoBoldCondensedItalic" text="Recherche:" />
                                     <TextField fx:id="RechercheBarUser" onAction="#RechercheBarUser" />
                                     <Button fx:id="removeFilterButton" mnemonicParsing="false" onAction="#removeFilters" styleClass="btn-primary" text="X" />
                                  </children>
                               </HBox>
                               <HBox alignment="CENTER_RIGHT" prefHeight="31.0" prefWidth="350.0" spacing="7.0">
                                  <children>
-                                    <Label prefHeight="18.0" prefWidth="135.0" styleClass="RobotoBoldCondensedItalic" text="Trier par rôle:" />
+                                    <Label prefHeight="18.0" prefWidth="156.0" styleClass="RobotoBoldCondensedItalic" text="Trier par rôle:" />
                                     <Pane>
                                        <children>
                                           <ComboBox fx:id="RoleComboFilter" onAction="#filterByRoleCB" prefWidth="150.0" promptText="Roles" />
@@ -177,9 +177,9 @@
                               </HBox>
                            </children>
                         </HBox>
-                        <HBox alignment="CENTER" layoutX="133.0" layoutY="63.0" prefHeight="33.0" prefWidth="115.0">
+                        <HBox alignment="CENTER" layoutX="77.0" layoutY="63.0" prefHeight="33.0" prefWidth="193.0">
                            <children>
-                              <Label minWidth="96.0" prefHeight="19.0" prefWidth="96.0" styleClass="RobotoBold" text="Utillisateur" />
+                              <Label alignment="CENTER_RIGHT" minWidth="96.0" prefHeight="53.0" prefWidth="152.0" styleClass="RobotoBold" text="Utillisateur" />
                               <Button fx:id="toggleButton" prefHeight="30.0" prefWidth="30.0" styleClass="settingsButton">
                                  <graphic>
                                     <ImageView fx:id="toggleIcon" fitHeight="23.0" fitWidth="23.0" />
@@ -187,9 +187,9 @@
                               </Button>
                            </children>
                         </HBox>
-                        <HBox alignment="CENTER" layoutX="734.0" layoutY="63.0" AnchorPane.leftAnchor="734.0" AnchorPane.rightAnchor="240.0">
+                        <HBox alignment="CENTER" layoutX="702.0" layoutY="63.0" prefHeight="33.0" prefWidth="177.0" AnchorPane.leftAnchor="702.0" AnchorPane.rightAnchor="240.0">
                            <children>
-                              <Label alignment="CENTER" maxWidth="104.0" minWidth="104.0" prefHeight="19.0" prefWidth="104.0" styleClass="RobotoBold" text="Departement" />
+                              <Label alignment="CENTER_RIGHT" maxWidth="147.0" minWidth="104.0" prefHeight="41.0" prefWidth="136.0" styleClass="RobotoBold" text="Departement" />
                               <Button fx:id="toggleButtonDep" prefHeight="30.0" prefWidth="30.0" styleClass="settingsButton">
                                  <graphic>
                                     <ImageView fx:id="toggleIconDep" fitHeight="23.0" fitWidth="23.0" />
@@ -198,7 +198,7 @@
                            </children>
                         </HBox>
                         <Label alignment="CENTER" layoutX="1004.0" layoutY="70.0" maxWidth="62.0" minWidth="62.0" prefHeight="19.0" prefWidth="62.0" styleClass="RobotoBold" text="Action" AnchorPane.rightAnchor="62.0" />
-                        <Label alignment="CENTER" layoutX="472.0" layoutY="71.0" maxWidth="66.0" minWidth="66.0" prefHeight="19.0" prefWidth="66.0" styleClass="RobotoBold" text="Fonction" AnchorPane.leftAnchor="472.0" AnchorPane.rightAnchor="581.0" />
+                        <Label alignment="CENTER" layoutX="423.0" layoutY="64.0" maxWidth="114.0" minWidth="66.0" prefHeight="31.0" prefWidth="114.0" styleClass="RobotoBold" text="Fonction" AnchorPane.leftAnchor="423.0" AnchorPane.rightAnchor="582.0" />
                         <Button fx:id="toggleButtonR" layoutX="537.0" layoutY="66.0" maxHeight="30.0" maxWidth="30.0" minHeight="30.0" minWidth="30.0" mnemonicParsing="false" onAction="#RoleTrier" opacity="0.49" prefHeight="30.0" prefWidth="30.0" styleClass="settingsButton" AnchorPane.leftAnchor="537.0" AnchorPane.rightAnchor="552.0">
                            <graphic>
                               <ImageView fx:id="toggleIconR" fitHeight="23.0" fitWidth="23.0" />
@@ -236,7 +236,7 @@
                               </VBox>
                               <VBox alignment="CENTER" spacing="10.0">
                                  <children>
-                                    <Label styleClass="RobotoBoldItalic" text="Rôles" />
+                                    <Label styleClass="RobotoBoldItalic" text="Fonctions" />
                                     <Pane>
                                        <children>
                                           <TextField fx:id="Role_field" layoutY="3.0" onKeyReleased="#Role_Recherche" prefHeight="29.0" prefWidth="280.0" />
@@ -433,7 +433,7 @@
                                     <TreeTableColumn fx:id="idUserColumn" prefWidth="75.0" text="Matricule" />
                                     <TreeTableColumn fx:id="prenomUserColumn" prefWidth="140.0" text="Prénom" />
                                     <TreeTableColumn fx:id="nomUserColumn" prefWidth="153.0" text="Nom" />
-                                    <TreeTableColumn fx:id="roleUserColumn" prefWidth="161.0" text="Rôle" />
+                                    <TreeTableColumn fx:id="roleUserColumn" prefWidth="161.0" text="Fonctions" />
                                     <TreeTableColumn fx:id="departUserColumn" prefWidth="159.0" text="Département" />
                                     <TreeTableColumn fx:id="managerUserColumn" prefWidth="155.0" text="Manager" />
                                  </columns>
