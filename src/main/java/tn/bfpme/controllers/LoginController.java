@@ -3,6 +3,7 @@ package tn.bfpme.controllers;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import java.sql.Blob;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -123,7 +124,11 @@ public class LoginController implements Initializable {
     @FXML
     void Login(ActionEvent event) {
         cnx = MyDataBase.getInstance().getCnx();
-        String qry = "SELECT u.*, ur.ID_Role FROM `user` as u JOIN `user_role` ur ON ur.ID_User = u.ID_User WHERE u.`Email`=?";
+        String qry = "SELECT u.*, ur.ID_Role " +
+                "FROM `user` as u " +
+                "JOIN `user_role` ur ON ur.ID_User = u.ID_User " +
+                "WHERE u.`Email`=?";
+        System.out.println("essaie connection");
         try {
             PreparedStatement stm = cnx.prepareStatement(qry);
             stm.setString(1, LoginEmail.getText());
@@ -145,7 +150,10 @@ public class LoginController implements Initializable {
                     );
                     connectedUser.setIdRole(rs.getInt("ID_Role"));
                     populateUserSolde(connectedUser);
+
+                    // Initialize SessionManager
                     SessionManager.getInstance(connectedUser);
+
                     navigateToProfile(event);
                 } else {
                     System.out.println("Login failed: Invalid email or password.");
@@ -156,9 +164,10 @@ public class LoginController implements Initializable {
         } catch (SQLException | IOException ex) {
             ex.printStackTrace();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
+
 
     @FXML
     void FacialRecognitionButton(ActionEvent event) {
@@ -233,64 +242,84 @@ public class LoginController implements Initializable {
     }
 
     private boolean recognizeFaceFromFrame(Mat capturedFrame) {
-        try {
-            System.out.println("Converting captured frame to grayscale...");
-            Mat grayCapturedImage = new Mat();
-            Imgproc.cvtColor(capturedFrame, grayCapturedImage, Imgproc.COLOR_BGR2GRAY);
+        System.out.println("Attempting face recognition...");
 
-            // Fetch stored images from the database
-            List<Mat> storedFaces = fetchStoredFacesFromDatabase();
-
-            if (storedFaces.isEmpty()) {
-                System.err.println("No stored face images found in the database.");
-                return false;
-            }
-
-            for (Mat storedFace : storedFaces) {
-                if (storedFace.empty()) {
-                    System.err.println("Failed to load a stored face image.");
-                    continue;
-                }
-
-                System.out.println("Converting stored face to grayscale...");
-                Mat grayStoredFace = new Mat();
-                Imgproc.cvtColor(storedFace, grayStoredFace, Imgproc.COLOR_BGR2GRAY);
-                Imgproc.resize(grayCapturedImage, grayCapturedImage, grayStoredFace.size());
-
-                System.out.println("Creating face recognizer...");
-                FaceRecognizer faceRecognizer = LBPHFaceRecognizer.create();
-                System.out.println("Face recognizer created successfully.");
-
-                List<Mat> images = new ArrayList<>();
-                List<Integer> labels = new ArrayList<>();
-                images.add(grayStoredFace);
-                labels.add(1); // Label for the stored face
-                faceRecognizer.train(images, new MatOfInt(1));
-
-                int[] label = new int[1];
-                double[] confidence = new double[1];
-                System.out.println("Starting face recognition prediction...");
-                faceRecognizer.predict(grayCapturedImage, label, confidence);
-
-                System.out.println("Prediction complete. Label: " + label[0] + ", Confidence: " + confidence[0]);
-
-                if (label[0] == 1 && confidence[0] < 50.0) { // Adjust confidence threshold as needed
-                    System.out.println("Face matched.");
-                    return true;
-                } else {
-                    System.out.println("Face not recognized.");
-                }
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("Exception during face recognition: " + e.getMessage());
+        if (capturedFrame.empty()) {
+            System.err.println("Captured frame is empty. Exiting recognition.");
+            return false;
         }
 
+        System.out.println("Converting captured frame to grayscale...");
+        Mat grayCapturedImage = new Mat();
+        Imgproc.cvtColor(capturedFrame, grayCapturedImage, Imgproc.COLOR_BGR2GRAY);
+        System.out.println("Captured frame converted to grayscale.");
+
+        // Ensure the SessionManager is initialized and retrieve the current user
+        User currentUser = SessionManager.getInstance().getUser();
+
+        System.out.println("Fetching stored face data from the database for user ID: " + currentUser.getIdUser());
+        List<Mat> storedFaces = fetchStoredFacesFromDatabase(currentUser.getIdUser());
+
+        if (storedFaces.isEmpty()) {
+            System.out.println("No stored faces found for this user.");
+            return false;
+        }
+
+        for (Mat storedFace : storedFaces) {
+            if (storedFace.empty()) {
+                System.err.println("One of the stored faces is empty.");
+                continue;
+            }
+
+            System.out.println("Comparing captured frame with stored face.");
+            if (compareFaces(grayCapturedImage, storedFace)) {
+                System.out.println("Face matched with stored data.");
+                return true;
+            }
+        }
+
+        System.out.println("Face not recognized.");
         return false;
     }
 
-    private List<Mat> fetchStoredFacesFromDatabase() {
+    private boolean compareFaces(Mat capturedImage, Mat storedFace) {
+        System.out.println("Creating face recognizer...");
+
+        // Convert both images to grayscale
+        Mat grayCapturedImage = new Mat();
+        Mat grayStoredFace = new Mat();
+        Imgproc.cvtColor(capturedImage, grayCapturedImage, Imgproc.COLOR_BGR2GRAY);
+        Imgproc.cvtColor(storedFace, grayStoredFace, Imgproc.COLOR_BGR2GRAY);
+
+        // Resize the captured image to match the size of the stored image
+        Imgproc.resize(grayCapturedImage, grayCapturedImage, grayStoredFace.size());
+
+        // Create the LBPH (Local Binary Patterns Histograms) face recognizer
+        FaceRecognizer faceRecognizer = LBPHFaceRecognizer.create();
+
+        // Train the recognizer with the stored face
+        List<Mat> images = new ArrayList<>();
+        List<Integer> labels = new ArrayList<>();
+        images.add(grayStoredFace);
+        labels.add(1); // Assign a label to the stored face
+
+        faceRecognizer.train(images, new MatOfInt(1));
+
+        // Predict using the recognizer
+        int[] label = new int[1];
+        double[] confidence = new double[1];
+        faceRecognizer.predict(grayCapturedImage, label, confidence);
+
+        System.out.println("Prediction confidence: " + confidence[0]);
+
+        // Adjust the confidence threshold as necessary
+        return label[0] == 1 && confidence[0] < 50.0;
+    }
+
+
+
+
+    /*private List<Mat> fetchStoredFacesFromDatabase() {
         List<Mat> storedFaces = new ArrayList<>();
 
         String query = "SELECT face_data1, face_data2, face_data3, face_data4 FROM user WHERE Email=?";
@@ -314,8 +343,34 @@ public class LoginController implements Initializable {
         }
 
         return storedFaces;
-    }
+    }*/
 
+    private List<Mat> fetchStoredFacesFromDatabase(int userId) {
+        List<Mat> faceImages = new ArrayList<>();
+        String query = "SELECT face_data1, face_data2, face_data3, face_data4 FROM user WHERE ID_User = ?";
+
+        try (Connection cnx = MyDataBase.getInstance().getCnx();
+             PreparedStatement stmt = cnx.prepareStatement(query)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                for (int i = 1; i <= 4; i++) {
+                    byte[] faceData = rs.getBytes("face_data" + i);
+                    if (faceData != null) {
+                        Mat faceMat = Imgcodecs.imdecode(new MatOfByte(faceData), Imgcodecs.IMREAD_GRAYSCALE);
+                        if (!faceMat.empty()) {
+                            faceImages.add(faceMat);
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return faceImages;
+    }
 
 
     private void handleSuccessfulRecognition(ActionEvent event) {

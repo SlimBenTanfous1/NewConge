@@ -11,8 +11,14 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.videoio.VideoCapture;
+import tn.bfpme.utils.MyDataBase;
+import tn.bfpme.utils.SessionManager;
+import tn.bfpme.models.User;
 
 import java.io.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class CameraFeedController {
 
@@ -78,34 +84,21 @@ public class CameraFeedController {
         return new Image(new ByteArrayInputStream(buffer.toArray()));
     }
 
-    private void storeFaceImage(byte[] faceImage) {
-        try {
-            // Specify the directory path within your project
-            String directoryPath = System.getProperty("user.dir") + "/src/main/resources/assets/users/";
+    private void storeFaceImageInDatabase(byte[] faceImage) {
+        Connection cnx = MyDataBase.getInstance().getCnx();
+        String updateQuery = "UPDATE user SET face_data" + (pictureCount + 1) + " = ? WHERE ID_User = ?";
+        User loggedInUser = SessionManager.getInstance().getUser();
 
-            // Create the directory if it doesn't exist
-            File directory = new File(directoryPath);
-            if (!directory.exists()) {
-                directory.mkdirs();  // Use mkdirs() to create any necessary parent directories
-            }
-
-            // Create a unique filename for each image
-            String fileName = "face_image_" + pictureCount + ".jpg";
-            String filePath = directoryPath + fileName;
-
-            // Write the byte array to a file
-            FileOutputStream fos = new FileOutputStream(filePath);
-            fos.write(faceImage);
-            fos.close();
-
-            System.out.println("Stored image " + pictureCount + " at " + filePath);
-        } catch (IOException e) {
-            System.err.println("Error saving image: " + e.getMessage());
+        try (PreparedStatement pstmt = cnx.prepareStatement(updateQuery)) {
+            pstmt.setBytes(1, faceImage);
+            pstmt.setInt(2, loggedInUser.getIdUser());
+            pstmt.executeUpdate();
+            System.out.println("Stored image " + pictureCount + " in the database for user ID " + loggedInUser.getIdUser());
+        } catch (SQLException e) {
+            System.err.println("Error saving image to the database: " + e.getMessage());
             e.printStackTrace();
         }
     }
-
-
 
     @FXML
     private void handleContinue() {
@@ -115,7 +108,7 @@ public class CameraFeedController {
             MatOfByte matOfByte = new MatOfByte();
             Imgcodecs.imencode(".jpg", frame, matOfByte);
             byte[] faceImage = matOfByte.toArray();
-            storeFaceImage(faceImage);
+            storeFaceImageInDatabase(faceImage);  // Store the image in the database
         }
 
         pictureCount++;
