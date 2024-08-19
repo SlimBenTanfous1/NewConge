@@ -215,7 +215,7 @@
                                           </Button>
                                        </children>
                                     </Pane>
-                                    <ListView fx:id="userListView" prefHeight="400.0" prefWidth="391.0" />
+                                    <ListView fx:id="userListView" prefHeight="400.0" prefWidth="391.0" VBox.vgrow="SOMETIMES" />
                                  </children>
                               </VBox>
                               <VBox alignment="CENTER" spacing="10.0">
@@ -235,7 +235,7 @@
                                           </Button>
                                        </children>
                                     </Pane>
-                                    <ListView fx:id="roleListView" prefHeight="400.0" prefWidth="280.0" />
+                                    <ListView fx:id="roleListView" prefHeight="400.0" prefWidth="280.0" VBox.vgrow="SOMETIMES" />
                                  </children>
                               </VBox>
                               <VBox alignment="CENTER" spacing="10.0">
@@ -255,7 +255,7 @@
                                           </Button>
                                        </children>
                                     </Pane>
-                                    <ListView fx:id="departListView" prefHeight="400.0" prefWidth="280.0" />
+                                    <ListView fx:id="departListView" prefHeight="400.0" prefWidth="280.0" VBox.vgrow="SOMETIMES" />
                                  </children>
                               </VBox>
                            </children>
