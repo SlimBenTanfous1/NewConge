@@ -139,4 +139,31 @@ public class SettingsController implements Initializable {
             e.printStackTrace();
         }
     }
+
+    @FXML
+    public void FacialRecognition() {
+        try {
+            // Load the CameraFeed window
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/CameraFeed.fxml"));
+            Parent root = loader.load();
+            CameraFeedController controller = loader.getController();
+
+            // Create a new stage (window)
+            Stage stage = new Stage();
+            stage.setTitle("Facial Recognition");
+            stage.setScene(new Scene(root));
+
+            // Pass the stage to the controller
+            controller.setStage(stage);
+
+            // Show the stage
+            stage.show();
+
+            // Start the facial recognition process
+            controller.startFacialRecognition();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
