@@ -10,12 +10,14 @@ import javafx.stage.Stage;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 import tn.bfpme.utils.MyDataBase;
 import tn.bfpme.utils.SessionManager;
 import tn.bfpme.models.User;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -84,18 +86,46 @@ public class CameraFeedController {
         return new Image(new ByteArrayInputStream(buffer.toArray()));
     }
 
-    private void storeFaceImageInDatabase(byte[] faceImage) {
+    private void storeFaceImageAsJPG(Mat frame) {
+        try {
+            // Specify the directory path within your project
+            String directoryPath = System.getProperty("user.dir") + "/src/main/resources/assets/users/";
+
+            // Create the directory if it doesn't exist
+            File directory = new File(directoryPath);
+            if (!directory.exists()) {
+                directory.mkdirs();  // Use mkdirs() to create any necessary parent directories
+            }
+
+            // Create a unique filename for each image
+            String fileName = "face_image_" + pictureCount + ".jpg";
+            String filePath = directoryPath + fileName;
+
+            // Save the image to the file system
+            Imgcodecs.imwrite(filePath, frame);
+
+            // Store the file path in the database
+            storeFacePathInDatabase(filePath, pictureCount);
+
+            System.out.println("Stored image " + pictureCount + " at " + filePath);
+        } catch (Exception e) {
+            System.err.println("Error saving image: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void storeFacePathInDatabase(String filePath, int index) {
         Connection cnx = MyDataBase.getInstance().getCnx();
-        String updateQuery = "UPDATE user SET face_data" + (pictureCount + 1) + " = ? WHERE ID_User = ?";
+        String updateQuery = "UPDATE user SET face_data" + (index + 1) + " = ? WHERE ID_User = ?";
         User loggedInUser = SessionManager.getInstance().getUser();
 
         try (PreparedStatement pstmt = cnx.prepareStatement(updateQuery)) {
-            pstmt.setBytes(1, faceImage);
+            pstmt.setString(1, filePath);
             pstmt.setInt(2, loggedInUser.getIdUser());
             pstmt.executeUpdate();
-            System.out.println("Stored image " + pictureCount + " in the database for user ID " + loggedInUser.getIdUser());
+            System.out.println("Stored image path " + filePath + " in the database for user ID " + loggedInUser.getIdUser());
         } catch (SQLException e) {
-            System.err.println("Error saving image to the database: " + e.getMessage());
+            System.err.println("Error saving image path to the database: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -105,10 +135,11 @@ public class CameraFeedController {
         // Capture the current image
         Mat frame = new Mat();
         if (camera.read(frame)) {
-            MatOfByte matOfByte = new MatOfByte();
-            Imgcodecs.imencode(".jpg", frame, matOfByte);
-            byte[] faceImage = matOfByte.toArray();
-            storeFaceImageInDatabase(faceImage);  // Store the image in the database
+            // Resize the frame to reduce the size of the stored image
+            Mat resizedFrame = new Mat();
+            Imgproc.resize(frame, resizedFrame, new org.opencv.core.Size(300 , 300)); // Resize to 100x100 pixels
+
+            storeFaceImageAsJPG(resizedFrame);  // Store the image as JPG
         }
 
         pictureCount++;
