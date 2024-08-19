@@ -1,5 +1,7 @@
 package tn.bfpme.controllers.RHC;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,6 +13,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 import tn.bfpme.models.Departement;
 import tn.bfpme.models.Role;
 import tn.bfpme.services.ServiceRole;
@@ -23,7 +27,7 @@ public class paneRoleController implements Initializable {
     @FXML
     private TextArea roleDescriptionField;
     @FXML
-    private AnchorPane RolePane;
+    private AnchorPane RolesPane;
     @FXML
     private ListView<Role> roleListView;
     @FXML
@@ -42,6 +46,28 @@ public class paneRoleController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        Platform.runLater(() -> {
+            Stage stage = FontResizer.getStageFromNode(RolesPane);
+            if (stage != null) {
+                stage.widthProperty().addListener((obs, oldVal, newVal) ->
+                        FontResizer.resizeFonts(RolesPane, stage.getWidth(), stage.getHeight())
+                );
+                stage.heightProperty().addListener((obs, oldVal, newVal) ->
+                        FontResizer.resizeFonts(RolesPane, stage.getWidth(), stage.getHeight())
+                );
+                Timeline timeline = new Timeline(new KeyFrame(
+                        Duration.millis(100),
+                        event -> FontResizer.resizeFonts(RolesPane, stage.getWidth(), stage.getHeight())
+                ));
+                timeline.setCycleCount(1);
+                timeline.play();
+                stage.showingProperty().addListener((obs, wasShowing, isNowShowing) -> {
+                    if (isNowShowing) {
+                        FontResizer.resizeFonts(RolesPane, stage.getWidth(), stage.getHeight());
+                    }
+                });
+            }
+        });
         loadRoles();
         roleListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
@@ -287,7 +313,7 @@ public class paneRoleController implements Initializable {
                 updateComboBoxOptions();
             }
         });
-
+        UpdateFontSize();
         return comboBox;
     }
 
@@ -420,5 +446,28 @@ public class paneRoleController implements Initializable {
         fieldsClear();
     }
 
-
+    void UpdateFontSize(){
+        Platform.runLater(() -> {
+            Stage stage = FontResizer.getStageFromNode(RolesPane);
+            if (stage != null) {
+                stage.widthProperty().addListener((obs, oldVal, newVal) ->
+                        FontResizer.resizeFonts(RolesPane, stage.getWidth(), stage.getHeight())
+                );
+                stage.heightProperty().addListener((obs, oldVal, newVal) ->
+                        FontResizer.resizeFonts(RolesPane, stage.getWidth(), stage.getHeight())
+                );
+                Timeline timeline = new Timeline(new KeyFrame(
+                        Duration.millis(100),
+                        event -> FontResizer.resizeFonts(RolesPane, stage.getWidth(), stage.getHeight())
+                ));
+                timeline.setCycleCount(1);
+                timeline.play();
+                stage.showingProperty().addListener((obs, wasShowing, isNowShowing) -> {
+                    if (isNowShowing) {
+                        FontResizer.resizeFonts(RolesPane, stage.getWidth(), stage.getHeight());
+                    }
+                });
+            }
+        });
+    }
 }

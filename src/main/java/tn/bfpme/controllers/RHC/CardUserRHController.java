@@ -1,8 +1,12 @@
 package tn.bfpme.controllers.RHC;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -16,12 +20,14 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import tn.bfpme.models.User;
 import tn.bfpme.services.ServiceDepartement;
 import tn.bfpme.services.ServiceRole;
 import tn.bfpme.services.ServiceSubordinateManager;
 import tn.bfpme.services.ServiceUtilisateur;
 import tn.bfpme.utils.EncryptionUtil;
+import tn.bfpme.utils.FontResizer;
 import tn.bfpme.utils.MyDataBase;
 import tn.bfpme.utils.StageManager;
 
@@ -29,13 +35,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
-public class CardUserRHController {
+public class CardUserRHController implements Initializable {
     @FXML
     private HBox HBoxBtns;
     @FXML
@@ -50,6 +58,8 @@ public class CardUserRHController {
     private Label cardnameprename;
     @FXML
     private Label cardrole;
+    @FXML
+    private Label cardmarticule;
 
     private static Connection cnx = MyDataBase.getInstance().getCnx();
     private final ServiceUtilisateur UserS = new ServiceUtilisateur();
@@ -78,7 +88,7 @@ public class CardUserRHController {
         cardrole.setText(roleName);
         carddepart.setText(departmentName);
         UserCard.setStyle("-fx-border-radius: 5px;-fx-border-color:#808080");
-
+        cardmarticule.setText(String.valueOf(user.getIdUser()));
         uprenom = user.getPrenom();
         uid = user.getIdUser();
         unom = user.getNom();
@@ -182,8 +192,34 @@ public class CardUserRHController {
             } catch (SQLException e) {
                 throw new RuntimeException("Error removing role and department: " + e.getMessage(), e);
             }
-        UserS.DeleteByID(uid);
-        ((GridPane) UserCard.getParent()).getChildren().remove(UserCard);
+            UserS.DeleteByID(uid);
+            ((GridPane) UserCard.getParent()).getChildren().remove(UserCard);
         }
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        Platform.runLater(() -> {
+            Stage stage = FontResizer.getStageFromNode(UserCard);
+            if (stage != null) {
+                stage.widthProperty().addListener((obs, oldVal, newVal) ->
+                        FontResizer.resizeFonts(UserCard, stage.getWidth(), stage.getHeight())
+                );
+                stage.heightProperty().addListener((obs, oldVal, newVal) ->
+                        FontResizer.resizeFonts(UserCard, stage.getWidth(), stage.getHeight())
+                );
+                Timeline timeline = new Timeline(new KeyFrame(
+                        Duration.millis(100),
+                        event -> FontResizer.resizeFonts(UserCard, stage.getWidth(), stage.getHeight())
+                ));
+                timeline.setCycleCount(1);
+                timeline.play();
+                stage.showingProperty().addListener((obs, wasShowing, isNowShowing) -> {
+                    if (isNowShowing) {
+                        FontResizer.resizeFonts(UserCard, stage.getWidth(), stage.getHeight());
+                    }
+                });
+            }
+        });
     }
 }

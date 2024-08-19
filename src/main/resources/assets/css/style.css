@@ -315,12 +315,14 @@
     -fx-border-width: 0 0 1 0;
     -fx-padding: 0 0 3 0;
 }
+
 .loginTextField:focused {
     -fx-background-color: transparent;
     -fx-border-color: transparent transparent #eab53f transparent;
     -fx-border-width: 0 0 1 0;
     -fx-padding: 0 0 3 0;
 }
+
 /* BUTTONS DESIGNS */
 .btn-primary {
     -fx-background-color: linear-gradient(#112349, #1a3766);
@@ -706,3 +708,11 @@
     -fx-opacity: 0;
 }
 
+
+.date-picker {
+    -fx-font: 17px "Roboto Regular";
+}
+
+.date-picker .text-field {
+    -fx-font: 17px "Roboto Regular";
+}

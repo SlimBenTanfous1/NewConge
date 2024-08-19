@@ -84,13 +84,13 @@ public class AttributionSoldeController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        ComboPeriode.setItems(FXCollections.observableArrayList("Mensuel","Trimestriel","Semestriel","Annuel"));
         Platform.runLater(() -> {
             Stage stage = (Stage) MainAnchorPane.getScene().getWindow();
             stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
             stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
             FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight());
         });
+        ComboPeriode.setItems(FXCollections.observableArrayList("Mensuel","Trimestriel","Semestriel","Annuel"));
         colDesignation.setCellValueFactory(new PropertyValueFactory<>("Designation"));
         colPas.setCellValueFactory(new PropertyValueFactory<>("Pas"));
         colLimite.setCellValueFactory(new PropertyValueFactory<>("Limite"));
@@ -307,17 +307,18 @@ public class AttributionSoldeController implements Initializable {
         List<UserSolde> allUserSoldes = serviceUserSolde.getAllUserSoldes();
         Map<Integer, Double> typeCongeLimits = serviceUserSolde.getTypeCongeLimit();
         Map<Integer, Double> typeCongePas = serviceUserSolde.getTypeCongePas();
-        //Map<Integer, String> typeCongePeriods = serviceUserSolde.getTypeCongePeriods(); // Assuming you have this method to get the period
         LocalDate currentDate = LocalDate.now();
 
         for (UserSolde userSolde : allUserSoldes) {
             int typeCongeId = userSolde.getID_TypeConge();
             double currentSolde = userSolde.getTotalSolde();
-            String periode = TypeConge.getPeriode();
+
+            // Get the TypeConge instance for the current UserSolde
+            TypeConge typeConge = serviceUserSolde.getTypeCongeById(typeCongeId);
+            String periode = typeConge.getPeriode(); // This is now instance-specific
 
             double pas = typeCongePas.getOrDefault(typeCongeId, 0.0);
             double limit = typeCongeLimits.getOrDefault(typeCongeId, Double.MAX_VALUE);
-
             boolean shouldIncrement = false;
 
             switch (periode) {
@@ -337,19 +338,16 @@ public class AttributionSoldeController implements Initializable {
 
             if (shouldIncrement) {
                 double newSolde = currentSolde + pas;
-
                 if (newSolde > limit) {
                     newSolde = limit;
                 }
-
                 userSolde.setTotalSolde(newSolde);
-                serviceUserSolde.updateUserSolde(userSolde); // Ensure this method accepts UserSolde object
-
-                // Debug message
+                serviceUserSolde.updateUserSolde(userSolde);
                 System.out.println("Updated after " + periode + ": " + userSolde.getDesignation() + " new solde: " + newSolde);
             }
         }
     }
+
 
 
 

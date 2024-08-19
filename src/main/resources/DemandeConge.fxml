@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.String?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.DatePicker?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.text.Font?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
 <AnchorPane fx:id="MainAnchorPane" prefHeight="830.0" prefWidth="1340.0" styleClass="grad-bg" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.DemandeCongeController">
    <children>
@@ -34,7 +28,7 @@
                   </Label>
                   <HBox alignment="CENTER" layoutX="451.0" layoutY="120.0" prefHeight="40.0" prefWidth="355.0" AnchorPane.leftAnchor="450.0" AnchorPane.rightAnchor="270.0">
                      <children>
-                        <DatePicker fx:id="datedebut" maxWidth="521.0" prefHeight="40.0" prefWidth="521.0" />
+                        <DatePicker fx:id="datedebut" maxWidth="521.0" prefHeight="40.0" prefWidth="521.0" styleClass="RobotoBold" />
                      </children>
                   </HBox>
                   <HBox alignment="CENTER" layoutX="452.0" layoutY="256.0" prefHeight="81.0" prefWidth="353.0" AnchorPane.leftAnchor="451.0" AnchorPane.rightAnchor="271.0">
@@ -57,7 +51,7 @@
                   </HBox>
                   <HBox alignment="CENTER" layoutX="450.0" layoutY="183.0" prefHeight="40.0" prefWidth="355.0" AnchorPane.leftAnchor="449.0" AnchorPane.rightAnchor="271.0">
                      <children>
-                        <DatePicker fx:id="datefin" maxWidth="521.0" prefHeight="40.0" prefWidth="521.0" />
+                        <DatePicker fx:id="datefin" maxWidth="521.0" prefHeight="40.0" prefWidth="521.0" styleClass="RobotoBold" />
                      </children>
                   </HBox>
                   <Label layoutX="289.0" layoutY="120.0" minWidth="125.0" prefHeight="40.0" prefWidth="125.0" styleClass="RobotoBold" text="Date debut : " AnchorPane.leftAnchor="289.0" AnchorPane.rightAnchor="660.0">
@@ -75,12 +69,12 @@
                         <Font name="Roboto Regular" size="15.0" />
                      </font>
                   </Label>
-                  <Label fx:id="ForDoc1" layoutX="290.0" layoutY="356.0" prefHeight="40.0" prefWidth="161.0" styleClass="RobotoBold" text="Document Justicatif : " AnchorPane.leftAnchor="290.0" AnchorPane.rightAnchor="626.0">
+                  <Label fx:id="ForDoc1" layoutX="292.0" layoutY="356.0" prefHeight="40.0" prefWidth="188.0" styleClass="RobotoBold" text="Document Justicatif : " AnchorPane.leftAnchor="291.0" AnchorPane.rightAnchor="599.0">
                      <font>
                         <Font name="Roboto Regular" size="15.0" />
                      </font>
                   </Label>
-                  <HBox fx:id="ForDoc2" alignment="CENTER" layoutX="454.0" layoutY="356.0" prefHeight="40.0" prefWidth="493.0" spacing="15.0" AnchorPane.leftAnchor="453.0" AnchorPane.rightAnchor="132.0">
+                  <HBox fx:id="ForDoc2" alignment="CENTER" layoutX="453.0" layoutY="356.0" prefHeight="40.0" prefWidth="492.0" spacing="15.0" AnchorPane.leftAnchor="452.0" AnchorPane.rightAnchor="134.0">
                      <children>
                         <TextField fx:id="Doc_Link" disable="true" maxWidth="521.0" prefHeight="29.0" prefWidth="521.0" />
                         <Button maxWidth="134.0" minWidth="134.0" mnemonicParsing="false" onAction="#Doc_Imp" prefHeight="28.0" prefWidth="134.0" styleClass="btn-primary" text="Importer" textAlignment="CENTER">

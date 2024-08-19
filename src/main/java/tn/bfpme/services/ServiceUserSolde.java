@@ -11,9 +11,11 @@ import tn.bfpme.models.*;
 
 public class ServiceUserSolde {
     private static Connection cnx;
+
     public ServiceUserSolde() {
         this.cnx = MyDataBase.getInstance().getCnx();
     }
+
     public void updateUserSolde(UserSolde userSolde) {
         String query = "UPDATE user_solde SET TotalSolde = ? WHERE ID_UserSolde = ?";
         try (Connection cnx = MyDataBase.getInstance().getCnx();
@@ -51,6 +53,7 @@ public class ServiceUserSolde {
             e.printStackTrace();
         }
     }
+
     public List<UserSolde> getUserSoldes(int userId) {
         List<UserSolde> userSoldes = new ArrayList<>();
         String sql = "SELECT ID_UserSolde, ID_User, ID_TypeConge, TotalSolde FROM user_solde WHERE ID_User = ?";
@@ -75,6 +78,7 @@ public class ServiceUserSolde {
         }
         return userSoldes;
     }
+
     public UserSolde getUserSoldeByUserIdAndTypeCongeId(int userId, int typeCongeId) {
         UserSolde userSolde = null;
         String query = "SELECT * FROM user_solde WHERE ID_User = ? AND ID_TypeConge = ?";
@@ -213,5 +217,32 @@ public class ServiceUserSolde {
             e.printStackTrace();
         }
         return soldeList;
+    }
+
+    public TypeConge getTypeCongeById(int typeCongeId) {
+        TypeConge typeConge = null;
+        String query = "SELECT `ID_TypeConge`, `Designation`, `Pas`, `File`, `Limite`, `Periode` FROM `typeconge` WHERE `ID_TypeConge` = ?";
+
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+            PreparedStatement preparedStatement = cnx.prepareStatement(query);
+            preparedStatement.setInt(1, typeCongeId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                int idTypeConge = resultSet.getInt("ID_TypeConge");
+                String designation = resultSet.getString("Designation");
+                double pas = resultSet.getDouble("Pas");
+                boolean file = resultSet.getBoolean("File");
+                double limite = resultSet.getDouble("Limite");
+                String periode = resultSet.getString("Periode");
+
+                typeConge = new TypeConge(idTypeConge, designation, pas, file, limite, periode);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return typeConge;
     }
 }

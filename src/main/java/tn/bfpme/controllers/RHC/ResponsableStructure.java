@@ -176,6 +176,7 @@ public class ResponsableStructure implements Initializable {
         });
 
         loadUsers();
+
     }
 
     @FXML

@@ -26,9 +26,7 @@ public class ServiceUtilisateur implements IUtilisateur {
     public List<User> show() throws SQLException {
         List<User> users = new ArrayList<>();
         String qry = "SELECT * FROM user";
-
-        try (PreparedStatement pstm = cnx.prepareStatement(qry);
-             ResultSet rs = pstm.executeQuery()) {
+        try (PreparedStatement pstm = cnx.prepareStatement(qry); ResultSet rs = pstm.executeQuery()) {
             while (rs.next()) {
                 User user = new User();
                 user.setIdUser(rs.getInt("ID"));
@@ -49,35 +47,33 @@ public class ServiceUtilisateur implements IUtilisateur {
     public UserConge AfficherEnAttente() {
         List<User> users = new ArrayList<>();
         List<Conge> conges = new ArrayList<>();
-        String query = "WITH RECURSIVE Subordinates AS (" +
-                "SELECT ID_User, Nom, Prenom, Email, Image, ID_Departement " +
-                "FROM `user` " +
-                "WHERE ID_User = ? " +
-                "UNION ALL " +
-                "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.Image, u.ID_Departement " +
-                "FROM `user` u " +
-                "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User " +
-                ") " +
-                "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, " +
-                "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file, " +
-                "typeconge.Designation, typeconge.Pas, typeconge.Periode, typeconge.File AS tcF " +
-                "FROM `user` " +
-                "JOIN conge ON user.ID_User = conge.ID_User " +
-                "JOIN typeconge ON conge.TypeConge = typeconge.ID_TypeConge " +
-                "WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) " +
-                "AND conge.Statut = ?";
-
         try {
             if (cnx == null || cnx.isClosed()) {
                 cnx = MyDataBase.getInstance().getCnx();
             }
+
+            String query = "WITH RECURSIVE Subordinates AS ("
+                    + "SELECT ID_User, Nom, Prenom, ID_Manager, Email, Image, ID_Departement "
+                    + "FROM `user` "
+                    + "WHERE ID_User = ? "
+                    + "UNION ALL "
+                    + "SELECT u.ID_User, u.Nom, u.Prenom, u.ID_Manager, u.Email, u.Image, u.ID_Departement "
+                    + "FROM `user` u "
+                    + "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User ) "
+                    + "SELECT user.ID_User, user.ID_Manager, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, "
+                    + "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file, "
+                    + "typeconge.Designation, typeconge.Pas, typeconge.Periode, typeconge.File AS tcF FROM `user` "
+                    + "JOIN conge ON user.ID_User = conge.ID_User "
+                    + "JOIN typeconge ON conge.TypeConge = typeconge.ID_TypeConge "
+                    + "WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ?";
             PreparedStatement ps = cnx.prepareStatement(query);
             int currentUserId = SessionManager.getInstance().getUser().getIdUser();
             ps.setInt(1, currentUserId);
             ps.setInt(2, currentUserId);
             ps.setString(3, String.valueOf(Statut.En_Attente));
-            ResultSet rs = ps.executeQuery();
 
+
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 User user = new User();
                 user.setIdUser(rs.getInt("ID_User"));
@@ -85,11 +81,11 @@ public class ServiceUtilisateur implements IUtilisateur {
                 user.setPrenom(rs.getString("Prenom"));
                 user.setEmail(rs.getString("Email"));
                 user.setImage(rs.getString("Image"));
+                user.setIdManager(rs.getInt("ID_Manager"));
                 user.setIdDepartement(rs.getInt("ID_Departement"));
                 if (!users.contains(user)) {
                     users.add(user);
                 }
-
                 Conge conge = new Conge();
                 conge.setIdConge(rs.getInt("ID_Conge"));
                 conge.setDateDebut(rs.getDate("DateDebut").toLocalDate());
@@ -118,20 +114,17 @@ public class ServiceUtilisateur implements IUtilisateur {
     public UserConge TriType() {
         List<User> users = new ArrayList<>();
         List<Conge> conges = new ArrayList<>();
-        String query = "WITH RECURSIVE Subordinates AS (" +
-                "SELECT ID_User, Nom, Prenom, Email, Image, ID_Departement " +
-                "FROM user " +
-                "WHERE ID_User = ? " +
-                "UNION ALL " +
-                "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.Image, u.ID_Departement " +
-                "FROM user u " +
-                "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User " +
-                ") " +
-                "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, " +
-                "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file " +
-                "FROM user " +
-                "JOIN conge ON user.ID_User = conge.ID_User " +
-                "WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ? ORDER BY conge.TypeConge";
+        String query = "WITH RECURSIVE Subordinates AS ("
+                + "SELECT ID_User, Nom, Prenom, ID_Manager, Email, Image, ID_Departement "
+                + "FROM user "
+                + "WHERE ID_User = ? "
+                + "UNION ALL "
+                + "SELECT u.ID_User, u.Nom, u.Prenom, u.ID_Manager, u.Email, u.Image, u.ID_Departement "
+                + "FROM user u INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User ) "
+                + "SELECT user.ID_User, user.Nom, user.Prenom, user.ID_Manager, user.Email, user.Image, user.ID_Departement, "
+                + "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file "
+                + "FROM user JOIN conge ON user.ID_User = conge.ID_User "
+                + "WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ? ORDER BY conge.TypeConge";
         try {
             if (cnx == null || cnx.isClosed()) {
                 cnx = MyDataBase.getInstance().getCnx();
@@ -149,6 +142,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 user.setPrenom(rs.getString("Prenom"));
                 user.setEmail(rs.getString("Email"));
                 user.setImage(rs.getString("Image"));
+                user.setIdManager(rs.getInt("ID_Manager"));
                 user.setIdDepartement(rs.getInt("ID_Departement"));
                 if (!users.contains(user)) {
                     users.add(user);
@@ -174,20 +168,14 @@ public class ServiceUtilisateur implements IUtilisateur {
     public UserConge TriNom() {
         List<User> users = new ArrayList<>();
         List<Conge> conges = new ArrayList<>();
-        String query = "WITH RECURSIVE Subordinates AS (" +
-                "SELECT ID_User, Nom, Prenom, Email, Image, ID_Departement " +
-                "FROM user " +
-                "WHERE ID_User = ? " +
-                "UNION ALL " +
-                "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.Image, u.ID_Departement " +
-                "FROM user u " +
-                "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User " +
-                ") " +
-                "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, " +
-                "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file " +
-                "FROM user " +
-                "JOIN conge ON user.ID_User = conge.ID_User " +
-                "WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ? ORDER BY user.Nom ";
+        String query = "WITH RECURSIVE Subordinates AS ("
+                + "SELECT ID_User, Nom, Prenom, ID_Manager, Email, Image, ID_Departement FROM user "
+                + "WHERE ID_User = ? UNION ALL SELECT u.ID_User, u.Nom, u.Prenom, u.ID_Manager, u.Email, u.Image, u.ID_Departement "
+                + "FROM user u INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User ) "
+                + "SELECT user.ID_User, user.Nom, user.Prenom, user.ID_Manager, user.Email, user.Image, user.ID_Departement, "
+                + "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file "
+                + "FROM user JOIN conge ON user.ID_User = conge.ID_User "
+                + "WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ? ORDER BY user.Nom ";
         try {
             if (cnx == null || cnx.isClosed()) {
                 cnx = MyDataBase.getInstance().getCnx();
@@ -205,6 +193,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 user.setPrenom(rs.getString("Prenom"));
                 user.setEmail(rs.getString("Email"));
                 user.setImage(rs.getString("Image"));
+                user.setIdManager(rs.getInt("ID_Manager"));
                 user.setIdDepartement(rs.getInt("ID_Departement"));
                 if (!users.contains(user)) {
                     users.add(user);
@@ -229,26 +218,18 @@ public class ServiceUtilisateur implements IUtilisateur {
     public UserConge RechercheUserCongeEnAtt(String searchCriteria) {
         List<User> users = new ArrayList<>();
         List<Conge> conges = new ArrayList<>();
-        String query = "WITH RECURSIVE Subordinates AS (" +
-                "SELECT ID_User, Nom, Prenom, Email, Image, ID_Departement " +
-                "FROM user " +
-                "WHERE ID_User = ? " +
-                "UNION ALL " +
-                "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.Image, u.ID_Departement " +
-                "FROM user u " +
-                "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User " +
-                ") " +
-                "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, " +
-                "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file " +
-                "FROM user " +
-                "JOIN conge ON user.ID_User = conge.ID_User " +
-                "WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) " +
-                "AND conge.Statut = ? ";
+        String query = "WITH RECURSIVE Subordinates AS ("
+                + "SELECT ID_User, Nom, Prenom, ID_Manager, Email, Image, ID_Departement "
+                + "FROM user WHERE ID_User = ? UNION ALL SELECT u.ID_User, u.Nom, u.Prenom, u.ID_Manager, u.Email, u.Image, u.ID_Departement "
+                + "FROM user u INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User ) "
+                + "SELECT user.ID_User, user.Nom, user.Prenom, user.ID_Manager, user.Email, user.Image, user.ID_Departement, "
+                + "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file "
+                + "FROM user JOIN conge ON user.ID_User = conge.ID_User WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) "
+                + "AND conge.Statut = ? ";
 
         // Append search criteria to the query
         if (searchCriteria != null && !searchCriteria.isEmpty()) {
-            query += "AND (user.Nom LIKE ? OR user.Prenom LIKE ? OR user.Email LIKE ? " +
-                    "OR conge.TypeConge LIKE ? OR conge.DateDebut = ? OR conge.DateFin = ?) ";
+            query += "AND (user.Nom LIKE ? OR user.Prenom LIKE ? OR user.Email LIKE ? " + "OR conge.TypeConge LIKE ? OR conge.DateDebut = ? OR conge.DateFin = ?) ";
         }
 
         try {
@@ -280,6 +261,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 user.setEmail(rs.getString("Email"));
                 user.setImage(rs.getString("Image"));
                 user.setIdDepartement(rs.getInt("ID_Departement"));
+                user.setIdManager(rs.getInt("ID_Manager"));
                 if (!users.contains(user)) {
                     users.add(user);
                 }
@@ -304,20 +286,13 @@ public class ServiceUtilisateur implements IUtilisateur {
     public UserConge TriPrenom() {
         List<User> users = new ArrayList<>();
         List<Conge> conges = new ArrayList<>();
-        String query = "WITH RECURSIVE Subordinates AS (" +
-                "SELECT ID_User, Nom, Prenom, Email, Image, ID_Departement " +
-                "FROM user " +
-                "WHERE ID_User = ? " +
-                "UNION ALL " +
-                "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.Image, u.ID_Departement " +
-                "FROM user u " +
-                "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User " +
-                ") " +
-                "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, " +
-                "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file " +
-                "FROM user " +
-                "JOIN conge ON user.ID_User = conge.ID_User " +
-                "WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ? ORDER BY user.Prenom";
+        String query = "WITH RECURSIVE Subordinates AS ("
+                + "SELECT ID_User, Nom, Prenom, ID_Manager, Email, Image, ID_Departement "
+                + "FROM user WHERE ID_User = ? UNION ALL SELECT u.ID_User, u.Nom, u.Prenom, u.ID_Manager, u.Email, u.Image, u.ID_Departement "
+                + "FROM user u INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User ) "
+                + "SELECT user.ID_User, user.Nom, user.Prenom, user.ID_Manager, user.Email, user.Image, user.ID_Departement, "
+                + "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file "
+                + "FROM user JOIN conge ON user.ID_User = conge.ID_User WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ? ORDER BY user.Prenom";
         try {
             if (cnx == null || cnx.isClosed()) {
                 cnx = MyDataBase.getInstance().getCnx();
@@ -335,6 +310,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 user.setPrenom(rs.getString("Prenom"));
                 user.setEmail(rs.getString("Email"));
                 user.setImage(rs.getString("Image"));
+                user.setIdManager(rs.getInt("ID_Manager"));
                 user.setIdDepartement(rs.getInt("ID_Departement"));
                 if (!users.contains(user)) {
                     users.add(user);
@@ -359,20 +335,14 @@ public class ServiceUtilisateur implements IUtilisateur {
     public UserConge TriDateDebut() {
         List<User> users = new ArrayList<>();
         List<Conge> conges = new ArrayList<>();
-        String query = "WITH RECURSIVE Subordinates AS (" +
-                "SELECT ID_User, Nom, Prenom, Email, Image, ID_Departement " +
-                "FROM user " +
-                "WHERE ID_User = ? " +
-                "UNION ALL " +
-                "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.Image, u.ID_Departement " +
-                "FROM user u " +
-                "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User " +
-                ") " +
-                "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, " +
-                "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file " +
-                "FROM user " +
-                "JOIN conge ON user.ID_User = conge.ID_User " +
-                "WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ? ORDER BY conge.DateDebut";
+        String query = "WITH RECURSIVE Subordinates AS ("
+                + "SELECT ID_User, Nom, Prenom, ID_Manager, Email, Image, ID_Departement "
+                + "FROM user WHERE ID_User = ? UNION ALL SELECT u.ID_User, u.Nom, u.Prenom, u.ID_Manager, u.Email, u.Image, u.ID_Departement "
+                + "FROM user u INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User ) "
+                + "SELECT user.ID_User, user.Nom, user.Prenom, user.ID_Manager, user.Email, user.Image, user.ID_Departement, "
+                + "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file "
+                + "FROM user JOIN conge ON user.ID_User = conge.ID_User "
+                + "WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ? ORDER BY conge.DateDebut";
         try {
             if (cnx == null || cnx.isClosed()) {
                 cnx = MyDataBase.getInstance().getCnx();
@@ -390,6 +360,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 user.setPrenom(rs.getString("Prenom"));
                 user.setEmail(rs.getString("Email"));
                 user.setImage(rs.getString("Image"));
+                user.setIdManager(rs.getInt("ID_Manager"));
                 user.setIdDepartement(rs.getInt("ID_Departement"));
                 if (!users.contains(user)) {
                     users.add(user);
@@ -415,20 +386,13 @@ public class ServiceUtilisateur implements IUtilisateur {
     public UserConge TriDateFin() {
         List<User> users = new ArrayList<>();
         List<Conge> conges = new ArrayList<>();
-        String query = "WITH RECURSIVE Subordinates AS (" +
-                "SELECT ID_User, Nom, Prenom, Email, Image, ID_Departement " +
-                "FROM user " +
-                "WHERE ID_User = ? " +
-                "UNION ALL " +
-                "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.Image, u.ID_Departement " +
-                "FROM user u " +
-                "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User " +
-                ") " +
-                "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, " +
-                "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file " +
-                "FROM user " +
-                "JOIN conge ON user.ID_User = conge.ID_User " +
-                "WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ? ORDER BY conge.DateFin";
+        String query = "WITH RECURSIVE Subordinates AS ("
+                + "SELECT ID_User, Nom, Prenom, ID_Manager, Email, Image, ID_Departement "
+                + "FROM user WHERE ID_User = ? UNION ALL SELECT u.ID_User, u.Nom, u.Prenom, u.ID_Manager, u.Email, u.Image, u.ID_Departement "
+                + "FROM user u INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User ) "
+                + "SELECT user.ID_User, user.Nom, user.Prenom, user.ID_Manager, user.Email, user.Image, user.ID_Departement, "
+                + "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file "
+                + "FROM user JOIN conge ON user.ID_User = conge.ID_User WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ? ORDER BY conge.DateFin";
         try {
             if (cnx == null || cnx.isClosed()) {
                 cnx = MyDataBase.getInstance().getCnx();
@@ -447,6 +411,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 user.setEmail(rs.getString("Email"));
                 user.setImage(rs.getString("Image"));
                 user.setIdDepartement(rs.getInt("ID_Departement"));
+                user.setIdManager(rs.getInt("ID_Manager"));
                 if (!users.contains(user)) {
                     users.add(user);
                 }
@@ -471,23 +436,15 @@ public class ServiceUtilisateur implements IUtilisateur {
     public UserConge AfficherApprove() {
         List<User> users = new ArrayList<>();
         List<Conge> conges = new ArrayList<>();
-        String query = "WITH RECURSIVE Subordinates AS (" +
-                "SELECT ID_User, Nom, Prenom, Email, Image, ID_Departement " +
-                "FROM `user` " +
-                "WHERE ID_User = ? " +
-                "UNION ALL " +
-                "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.Image, u.ID_Departement " +
-                "FROM `user` u " +
-                "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User " +
-                ") " +
-                "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, " +
-                "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file, " +
-                "typeconge.Designation, typeconge.Pas, typeconge.Periode, typeconge.File AS tcF " +
-                "FROM `user` " +
-                "JOIN conge ON `user`.ID_User = conge.ID_User " +
-                "JOIN typeconge ON conge.TypeConge = typeconge.ID_TypeConge " +
-                "WHERE `user`.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) " +
-                "AND conge.Statut = ?";
+        String query = "WITH RECURSIVE Subordinates AS ("
+                + "SELECT ID_User, Nom, Prenom, ID_Manager, Email, Image, ID_Departement "
+                + "FROM `user` WHERE ID_User = ? UNION ALL SELECT u.ID_User, u.Nom,u.Prenom, u.ID_Manager, u.Email, u.Image, u.ID_Departement "
+                + "FROM `user` u INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User ) "
+                + "SELECT user.ID_User, user.Nom, user.Prenom, user.ID_Manager, user.Email, user.Image, user.ID_Departement, "
+                + "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file, "
+                + "typeconge.Designation, typeconge.Pas, typeconge.Periode, typeconge.File AS tcF "
+                + "FROM `user` JOIN conge ON `user`.ID_User = conge.ID_User JOIN typeconge ON conge.TypeConge = typeconge.ID_TypeConge "
+                + "WHERE `user`.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ?";
 
         try {
             if (cnx == null || cnx.isClosed()) {
@@ -508,6 +465,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 user.setEmail(rs.getString("Email"));
                 user.setImage(rs.getString("Image"));
                 user.setIdDepartement(rs.getInt("ID_Departement"));
+                user.setIdManager(rs.getInt("ID_Manager"));
                 // Add idSolde field handling if necessary
                 if (!users.contains(user)) {
                     users.add(user);
@@ -541,23 +499,14 @@ public class ServiceUtilisateur implements IUtilisateur {
     public UserConge AfficherReject() {
         List<User> users = new ArrayList<>();
         List<Conge> conges = new ArrayList<>();
-        String query = "WITH RECURSIVE Subordinates AS (" +
-                "SELECT ID_User, Nom, Prenom, Email, Image, ID_Departement " +
-                "FROM `user` " +
-                "WHERE ID_User = ? " +
-                "UNION ALL " +
-                "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.Image, u.ID_Departement " +
-                "FROM `user` u " +
-                "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User " +
-                ") " +
-                "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, " +
-                "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file, " +
-                "typeconge.Designation, typeconge.Pas, typeconge.Periode, typeconge.File AS tcF " +
-                "FROM `user` " +
-                "JOIN conge ON `user`.ID_User = conge.ID_User " +
-                "JOIN typeconge ON conge.TypeConge = typeconge.ID_TypeConge " +
-                "WHERE `user`.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) " +
-                "AND conge.Statut = ?";
+        String query = "WITH RECURSIVE Subordinates AS ("
+                + "SELECT ID_User, Nom, Prenom, ID_Manager, Email, Image, ID_Departement "
+                + "FROM `user` WHERE ID_User = ? UNION ALL SELECT u.ID_User, u.Nom, u.Prenom, u.ID_Manager, u.Email, u.Image, u.ID_Departement "
+                + "FROM `user` u INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User ) "
+                + "SELECT user.ID_User, user.Nom, user.Prenom, user.ID_Manager, user.Email, user.Image, user.ID_Departement, "
+                + "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file, "
+                + "typeconge.Designation, typeconge.Pas, typeconge.Periode, typeconge.File AS tcF FROM `user` JOIN conge ON `user`.ID_User = conge.ID_User "
+                + "JOIN typeconge ON conge.TypeConge = typeconge.ID_TypeConge WHERE `user`.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ?";
 
         try {
             if (cnx == null || cnx.isClosed()) {
@@ -578,6 +527,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 user.setEmail(rs.getString("Email"));
                 user.setImage(rs.getString("Image"));
                 user.setIdDepartement(rs.getInt("ID_Departement"));
+                user.setIdManager(rs.getInt("ID_Manager"));
                 // Add idSolde field handling if necessary
                 if (!users.contains(user)) {
                     users.add(user);
@@ -609,12 +559,9 @@ public class ServiceUtilisateur implements IUtilisateur {
 
     private List<TypeConge> getTypeCongesByUserId(int userId) {
         List<TypeConge> typeConges = new ArrayList<>();
-        String query = "SELECT tc.* FROM typeconge tc " +
-                "JOIN user_typeconge utc ON tc.ID_TypeConge = utc.ID_TypeConge " +
-                "WHERE utc.ID_User = ?";
+        String query = "SELECT tc.* FROM typeconge tc " + "JOIN user_typeconge utc ON tc.ID_TypeConge = utc.ID_TypeConge " + "WHERE utc.ID_User = ?";
 
-        try (Connection cnx = MyDataBase.getInstance().getCnx();
-             PreparedStatement ps = cnx.prepareStatement(query)) {
+        try (Connection cnx = MyDataBase.getInstance().getCnx(); PreparedStatement ps = cnx.prepareStatement(query)) {
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -656,7 +603,6 @@ public class ServiceUtilisateur implements IUtilisateur {
     public int getManagerIdByUserId(int userId) {
         int managerId = 0;
         String query = "SELECT ID_Manager FROM user WHERE ID_User = ?";
-
         try {
             if (cnx == null || cnx.isClosed()) {
                 cnx = MyDataBase.getInstance().getCnx();
@@ -664,22 +610,18 @@ public class ServiceUtilisateur implements IUtilisateur {
             PreparedStatement ps = cnx.prepareStatement(query);
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
-
             if (rs.next()) {
                 managerId = rs.getInt("ID_Manager");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return managerId;
     }
 
     public List<User> getUsersByDepartment(String departement) {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement " +
-                "FROM user " +
-                "WHERE user.ID_Departement = ?";
+        String sql = "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement " + "FROM user " + "WHERE user.ID_Departement = ?";
 
         try {
             PreparedStatement ps = cnx.prepareStatement(sql);
@@ -796,22 +738,7 @@ public class ServiceUtilisateur implements IUtilisateur {
     public List<User> ShowUnder() {
         List<User> users = new ArrayList<>();
         int currentUserId = SessionManager.getInstance().getUser().getIdUser(); // Assuming SessionManager manages the current user's session
-        String sql = "WITH RECURSIVE Subordinates AS (" +
-                "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.MDP, u.Image, u.ID_Departement, u.ID_Manager, ur.ID_Role " +
-                "FROM user u " +
-                "LEFT JOIN user_role ur ON u.ID_User = ur.ID_User " +
-                "WHERE u.ID_Manager = ? " +
-                "UNION ALL " +
-                "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.MDP, u.Image, u.ID_Departement, u.ID_Manager, ur.ID_Role " +
-                "FROM user u " +
-                "INNER JOIN Subordinates s ON s.ID_User = u.ID_Manager " +
-                "LEFT JOIN user_role ur ON u.ID_User = ur.ID_User" +
-                ") " +
-                "SELECT s.ID_User, s.Nom, s.Prenom, s.Email, s.MDP, s.Image, s.ID_Departement, s.ID_Manager, s.ID_Role, d.nom AS DepartementNom, r.nom AS RoleNom " +
-                "FROM Subordinates s " +
-                "LEFT JOIN departement d ON s.ID_Departement = d.ID_Departement " +
-                "LEFT JOIN role r ON s.ID_Role = r.ID_Role " +
-                "WHERE s.ID_User != ?";
+        String sql = "WITH RECURSIVE Subordinates AS (" + "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.MDP, u.Image, u.ID_Departement, u.ID_Manager, ur.ID_Role " + "FROM user u " + "LEFT JOIN user_role ur ON u.ID_User = ur.ID_User " + "WHERE u.ID_Manager = ? " + "UNION ALL " + "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.MDP, u.Image, u.ID_Departement, u.ID_Manager, ur.ID_Role " + "FROM user u " + "INNER JOIN Subordinates s ON s.ID_User = u.ID_Manager " + "LEFT JOIN user_role ur ON u.ID_User = ur.ID_User" + ") " + "SELECT s.ID_User, s.Nom, s.Prenom, s.Email, s.MDP, s.Image, s.ID_Departement, s.ID_Manager, s.ID_Role, d.nom AS DepartementNom, r.nom AS RoleNom " + "FROM Subordinates s " + "LEFT JOIN departement d ON s.ID_Departement = d.ID_Departement " + "LEFT JOIN role r ON s.ID_Role = r.ID_Role " + "WHERE s.ID_User != ?";
 
         try {
             if (cnx == null || cnx.isClosed()) {
@@ -844,9 +771,7 @@ public class ServiceUtilisateur implements IUtilisateur {
 
     public int getLastInsertedUserId() throws SQLException {
         String query = "SELECT LAST_INSERT_ID()";
-        try (Connection cnx = MyDataBase.getInstance().getCnx();
-             Statement stmt = cnx.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
+        try (Connection cnx = MyDataBase.getInstance().getCnx(); Statement stmt = cnx.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             if (rs.next()) {
                 return rs.getInt(1);
             }
@@ -872,23 +797,7 @@ public class ServiceUtilisateur implements IUtilisateur {
     public List<User> RechercheUnder(String input) {
         List<User> users = new ArrayList<>();
         int currentUserId = SessionManager.getInstance().getUser().getIdUser(); // Assuming SessionManager manages the current user's session
-        String sql = "WITH RECURSIVE Subordinates AS (" +
-                "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.MDP, u.Image, u.ID_Departement, u.ID_Manager, ur.ID_Role " +
-                "FROM user u " +
-                "LEFT JOIN user_role ur ON u.ID_User = ur.ID_User " +
-                "WHERE u.ID_Manager = ? " +
-                "UNION ALL " +
-                "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.MDP, u.Image, u.ID_Departement, u.ID_Manager, ur.ID_Role " +
-                "FROM user u " +
-                "INNER JOIN Subordinates s ON s.ID_User = u.ID_Manager " +
-                "LEFT JOIN user_role ur ON u.ID_User = ur.ID_User" +
-                ") " +
-                "SELECT s.ID_User, s.Nom, s.Prenom, s.Email, s.MDP, s.Image, s.ID_Departement, s.ID_Manager, s.ID_Role, d.nom AS DepartementNom, r.nom AS RoleNom " +
-                "FROM Subordinates s " +
-                "LEFT JOIN departement d ON s.ID_Departement = d.ID_Departement " +
-                "LEFT JOIN role r ON s.ID_Role = r.ID_Role " +
-                "WHERE s.ID_User != ? " +
-                "AND (s.Nom LIKE ? OR s.Prenom LIKE ? OR s.Email LIKE ?)";
+        String sql = "WITH RECURSIVE Subordinates AS (" + "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.MDP, u.Image, u.ID_Departement, u.ID_Manager, ur.ID_Role " + "FROM user u " + "LEFT JOIN user_role ur ON u.ID_User = ur.ID_User " + "WHERE u.ID_Manager = ? " + "UNION ALL " + "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.MDP, u.Image, u.ID_Departement, u.ID_Manager, ur.ID_Role " + "FROM user u " + "INNER JOIN Subordinates s ON s.ID_User = u.ID_Manager " + "LEFT JOIN user_role ur ON u.ID_User = ur.ID_User" + ") " + "SELECT s.ID_User, s.Nom, s.Prenom, s.Email, s.MDP, s.Image, s.ID_Departement, s.ID_Manager, s.ID_Role, d.nom AS DepartementNom, r.nom AS RoleNom " + "FROM Subordinates s " + "LEFT JOIN departement d ON s.ID_Departement = d.ID_Departement " + "LEFT JOIN role r ON s.ID_Role = r.ID_Role " + "WHERE s.ID_User != ? " + "AND (s.Nom LIKE ? OR s.Prenom LIKE ? OR s.Email LIKE ?)";
 
         try {
             if (cnx == null || cnx.isClosed()) {
@@ -924,11 +833,7 @@ public class ServiceUtilisateur implements IUtilisateur {
     }
 
     public String getRoleNameByUserID(int userId) {
-        String query = "SELECT r.nom AS RoleName " +
-                "FROM user u " +
-                "JOIN user_role ur ON u.ID_User = ur.ID_User " +
-                "JOIN role r ON ur.ID_Role = r.ID_Role " +
-                "WHERE u.ID_User = ?";
+        String query = "SELECT r.nom AS RoleName " + "FROM user u " + "JOIN user_role ur ON u.ID_User = ur.ID_User " + "JOIN role r ON ur.ID_Role = r.ID_Role " + "WHERE u.ID_User = ?";
         String RoleName = "";
         try {
             if (cnx == null || cnx.isClosed()) {
@@ -948,10 +853,7 @@ public class ServiceUtilisateur implements IUtilisateur {
     }
 
     public String getDepNameByUserID(int userId) {
-        String query = "SELECT d.nom AS DepartmentName " +
-                "FROM user u " +
-                "JOIN departement d ON u.ID_Departement = d.ID_Departement " +
-                "WHERE u.ID_User = ?";
+        String query = "SELECT d.nom AS DepartmentName " + "FROM user u " + "JOIN departement d ON u.ID_Departement = d.ID_Departement " + "WHERE u.ID_User = ?";
         String DepName = "";
         try {
             if (cnx == null || cnx.isClosed()) {
@@ -980,18 +882,7 @@ public class ServiceUtilisateur implements IUtilisateur {
             PreparedStatement ps = cnx.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                User user = new User(
-                        rs.getInt("ID_User"),
-                        rs.getString("Nom"),
-                        rs.getString("Prenom"),
-                        rs.getString("Email"),
-                        rs.getString("MDP"),
-                        rs.getString("Image"),
-                        rs.getDate("Creation_Date") != null ? rs.getDate("Creation_Date").toLocalDate() : null,
-                        rs.getInt("ID_Departement"),
-                        rs.getInt("ID_Manager"),
-                        rs.getInt("idSolde")
-                );
+                User user = new User(rs.getInt("ID_User"), rs.getString("Nom"), rs.getString("Prenom"), rs.getString("Email"), rs.getString("MDP"), rs.getString("Image"), rs.getDate("Creation_Date") != null ? rs.getDate("Creation_Date").toLocalDate() : null, rs.getInt("ID_Departement"), rs.getInt("ID_Manager"), rs.getInt("idSolde"));
                 userList.add(user);
             }
         } catch (SQLException ex) {
@@ -1010,18 +901,7 @@ public class ServiceUtilisateur implements IUtilisateur {
             PreparedStatement ps = cnx.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                User user = new User(
-                        rs.getInt("ID_User"),
-                        rs.getString("Nom"),
-                        rs.getString("Prenom"),
-                        rs.getString("Email"),
-                        rs.getString("MDP"),
-                        rs.getString("Image"),
-                        rs.getDate("Creation_Date") != null ? rs.getDate("Creation_Date").toLocalDate() : null,
-                        rs.getInt("ID_Departement"),
-                        rs.getInt("ID_Manager"),
-                        rs.getInt("idSolde")
-                );
+                User user = new User(rs.getInt("ID_User"), rs.getString("Nom"), rs.getString("Prenom"), rs.getString("Email"), rs.getString("MDP"), rs.getString("Image"), rs.getDate("Creation_Date") != null ? rs.getDate("Creation_Date").toLocalDate() : null, rs.getInt("ID_Departement"), rs.getInt("ID_Manager"), rs.getInt("idSolde"));
                 userList.add(user);
             }
         } catch (SQLException ex) {
@@ -1040,18 +920,7 @@ public class ServiceUtilisateur implements IUtilisateur {
             PreparedStatement ps = cnx.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                User user = new User(
-                        rs.getInt("ID_User"),
-                        rs.getString("Nom"),
-                        rs.getString("Prenom"),
-                        rs.getString("Email"),
-                        rs.getString("MDP"),
-                        rs.getString("Image"),
-                        rs.getDate("Creation_Date") != null ? rs.getDate("Creation_Date").toLocalDate() : null,
-                        rs.getInt("ID_Departement"),
-                        rs.getInt("ID_Manager"),
-                        rs.getInt("idSolde")
-                );
+                User user = new User(rs.getInt("ID_User"), rs.getString("Nom"), rs.getString("Prenom"), rs.getString("Email"), rs.getString("MDP"), rs.getString("Image"), rs.getDate("Creation_Date") != null ? rs.getDate("Creation_Date").toLocalDate() : null, rs.getInt("ID_Departement"), rs.getInt("ID_Manager"), rs.getInt("idSolde"));
                 userList.add(user);
             }
         } catch (SQLException ex) {
@@ -1062,10 +931,7 @@ public class ServiceUtilisateur implements IUtilisateur {
 
     public List<User> TriUserDepASC() {
         List<User> userList = new ArrayList<>();
-        String sql = "SELECT u.*, d.nom AS department_name " +
-                "FROM user u " +
-                "JOIN departement d ON u.ID_Departement = d.ID_Departement " +
-                "ORDER BY d.nom ASC";
+        String sql = "SELECT u.*, d.nom AS department_name " + "FROM user u " + "JOIN departement d ON u.ID_Departement = d.ID_Departement " + "ORDER BY d.nom ASC";
         try {
             if (cnx == null || cnx.isClosed()) {
                 cnx = MyDataBase.getInstance().getCnx();
@@ -1073,18 +939,7 @@ public class ServiceUtilisateur implements IUtilisateur {
             PreparedStatement ps = cnx.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                User user = new User(
-                        rs.getInt("ID_User"),
-                        rs.getString("Nom"),
-                        rs.getString("Prenom"),
-                        rs.getString("Email"),
-                        rs.getString("MDP"),
-                        rs.getString("Image"),
-                        rs.getDate("Creation_Date") != null ? rs.getDate("Creation_Date").toLocalDate() : null,
-                        rs.getInt("ID_Departement"),
-                        rs.getInt("ID_Manager"),
-                        rs.getInt("idSolde")
-                );
+                User user = new User(rs.getInt("ID_User"), rs.getString("Nom"), rs.getString("Prenom"), rs.getString("Email"), rs.getString("MDP"), rs.getString("Image"), rs.getDate("Creation_Date") != null ? rs.getDate("Creation_Date").toLocalDate() : null, rs.getInt("ID_Departement"), rs.getInt("ID_Manager"), rs.getInt("idSolde"));
                 userList.add(user);
             }
         } catch (SQLException ex) {
@@ -1095,10 +950,7 @@ public class ServiceUtilisateur implements IUtilisateur {
 
     public List<User> TriUserDepDESC() {
         List<User> userList = new ArrayList<>();
-        String sql = "SELECT u.*, d.nom AS department_name " +
-                "FROM user u " +
-                "JOIN departement d ON u.ID_Departement = d.ID_Departement " +
-                "ORDER BY d.nom DESC";
+        String sql = "SELECT u.*, d.nom AS department_name " + "FROM user u " + "JOIN departement d ON u.ID_Departement = d.ID_Departement " + "ORDER BY d.nom DESC";
         try {
             if (cnx == null || cnx.isClosed()) {
                 cnx = MyDataBase.getInstance().getCnx();
@@ -1106,18 +958,7 @@ public class ServiceUtilisateur implements IUtilisateur {
             PreparedStatement ps = cnx.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                User user = new User(
-                        rs.getInt("ID_User"),
-                        rs.getString("Nom"),
-                        rs.getString("Prenom"),
-                        rs.getString("Email"),
-                        rs.getString("MDP"),
-                        rs.getString("Image"),
-                        rs.getDate("Creation_Date") != null ? rs.getDate("Creation_Date").toLocalDate() : null,
-                        rs.getInt("ID_Departement"),
-                        rs.getInt("ID_Manager"),
-                        rs.getInt("idSolde")
-                );
+                User user = new User(rs.getInt("ID_User"), rs.getString("Nom"), rs.getString("Prenom"), rs.getString("Email"), rs.getString("MDP"), rs.getString("Image"), rs.getDate("Creation_Date") != null ? rs.getDate("Creation_Date").toLocalDate() : null, rs.getInt("ID_Departement"), rs.getInt("ID_Manager"), rs.getInt("idSolde"));
                 userList.add(user);
             }
         } catch (SQLException ex) {
@@ -1128,11 +969,7 @@ public class ServiceUtilisateur implements IUtilisateur {
 
     public List<User> TriUserRolesASC() {
         List<User> userList = new ArrayList<>();
-        String sql = "SELECT u.*, r.nom AS role_name " +
-                "FROM user u " +
-                "JOIN user_role ur ON u.ID_User = ur.ID_User " +
-                "JOIN role r ON ur.ID_Role = r.ID_Role " +
-                "ORDER BY r.nom ASC";
+        String sql = "SELECT u.*, r.nom AS role_name " + "FROM user u " + "JOIN user_role ur ON u.ID_User = ur.ID_User " + "JOIN role r ON ur.ID_Role = r.ID_Role " + "ORDER BY r.nom ASC";
         try {
             if (cnx == null || cnx.isClosed()) {
                 cnx = MyDataBase.getInstance().getCnx();
@@ -1140,18 +977,7 @@ public class ServiceUtilisateur implements IUtilisateur {
             PreparedStatement ps = cnx.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                User user = new User(
-                        rs.getInt("ID_User"),
-                        rs.getString("Nom"),
-                        rs.getString("Prenom"),
-                        rs.getString("Email"),
-                        rs.getString("MDP"),
-                        rs.getString("Image"),
-                        rs.getDate("Creation_Date") != null ? rs.getDate("Creation_Date").toLocalDate() : null,
-                        rs.getInt("ID_Departement"),
-                        rs.getInt("ID_Manager"),
-                        rs.getInt("idSolde")
-                );
+                User user = new User(rs.getInt("ID_User"), rs.getString("Nom"), rs.getString("Prenom"), rs.getString("Email"), rs.getString("MDP"), rs.getString("Image"), rs.getDate("Creation_Date") != null ? rs.getDate("Creation_Date").toLocalDate() : null, rs.getInt("ID_Departement"), rs.getInt("ID_Manager"), rs.getInt("idSolde"));
                 userList.add(user);
             }
         } catch (SQLException ex) {
@@ -1162,11 +988,7 @@ public class ServiceUtilisateur implements IUtilisateur {
 
     public List<User> TriUserRolesDESC() {
         List<User> userList = new ArrayList<>();
-        String sql = "SELECT u.*, r.nom AS role_name " +
-                "FROM user u " +
-                "JOIN user_role ur ON u.ID_User = ur.ID_User " +
-                "JOIN role r ON ur.ID_Role = r.ID_Role " +
-                "ORDER BY r.nom DESC";
+        String sql = "SELECT u.*, r.nom AS role_name " + "FROM user u " + "JOIN user_role ur ON u.ID_User = ur.ID_User " + "JOIN role r ON ur.ID_Role = r.ID_Role " + "ORDER BY r.nom DESC";
         try {
             if (cnx == null || cnx.isClosed()) {
                 cnx = MyDataBase.getInstance().getCnx();
@@ -1174,18 +996,7 @@ public class ServiceUtilisateur implements IUtilisateur {
             PreparedStatement ps = cnx.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                User user = new User(
-                        rs.getInt("ID_User"),
-                        rs.getString("Nom"),
-                        rs.getString("Prenom"),
-                        rs.getString("Email"),
-                        rs.getString("MDP"),
-                        rs.getString("Image"),
-                        rs.getDate("Creation_Date") != null ? rs.getDate("Creation_Date").toLocalDate() : null,
-                        rs.getInt("ID_Departement"),
-                        rs.getInt("ID_Manager"),
-                        rs.getInt("idSolde")
-                );
+                User user = new User(rs.getInt("ID_User"), rs.getString("Nom"), rs.getString("Prenom"), rs.getString("Email"), rs.getString("MDP"), rs.getString("Image"), rs.getDate("Creation_Date") != null ? rs.getDate("Creation_Date").toLocalDate() : null, rs.getInt("ID_Departement"), rs.getInt("ID_Manager"), rs.getInt("idSolde"));
                 userList.add(user);
             }
         } catch (SQLException ex) {
@@ -1238,12 +1049,7 @@ public class ServiceUtilisateur implements IUtilisateur {
 
     public User getUserById(int userId) throws SQLException {
         ensureConnection();
-        String query = "SELECT u.*, d.nom AS departementNom, r.nom AS roleNom " +
-                "FROM user u " +
-                "LEFT JOIN departement d ON u.ID_Departement = d.ID_Departement " +
-                "LEFT JOIN user_role ur ON u.ID_User = ur.ID_User " +
-                "LEFT JOIN role r ON ur.ID_Role = r.ID_Role " +
-                "WHERE u.ID_User = ?";
+        String query = "SELECT u.*, d.nom AS departementNom, r.nom AS roleNom " + "FROM user u " + "LEFT JOIN departement d ON u.ID_Departement = d.ID_Departement " + "LEFT JOIN user_role ur ON u.ID_User = ur.ID_User " + "LEFT JOIN role r ON ur.ID_Role = r.ID_Role " + "WHERE u.ID_User = ?";
         try (PreparedStatement statement = cnx.prepareStatement(query)) {
             statement.setInt(1, userId);
             ResultSet resultSet = statement.executeQuery();
@@ -1276,10 +1082,10 @@ public class ServiceUtilisateur implements IUtilisateur {
         user.setRoleNom(resultSet.getString("roleNom"));
         return user;
     }
+
     public List<User> getAllManagers() {
         List<User> userList = new ArrayList<>();
-        String sql = "SELECT DISTINCT u.* FROM user u " +
-                "INNER JOIN user u2 ON u.ID_User = u2.ID_Manager";
+        String sql = "SELECT DISTINCT u.* FROM user u " + "INNER JOIN user u2 ON u.ID_User = u2.ID_Manager";
         try {
             if (cnx == null || cnx.isClosed()) {
                 cnx = MyDataBase.getInstance().getCnx();
@@ -1287,19 +1093,7 @@ public class ServiceUtilisateur implements IUtilisateur {
             PreparedStatement ps = cnx.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                User user = new User(
-                        rs.getInt("ID_User"),
-                        rs.getString("Nom"),
-                        rs.getString("Prenom"),
-                        rs.getString("Email"),
-                        rs.getString("MDP"),
-                        rs.getString("Image"),
-                        rs.getDate("Creation_Date") != null ? rs.getDate("Creation_Date").toLocalDate() : null,
-                        rs.getInt("ID_Departement"),
-                        rs.getInt("ID_Manager"),
-                        rs.getInt("idSolde"),
-                        rs.getInt("ID_Interim")
-                );
+                User user = new User(rs.getInt("ID_User"), rs.getString("Nom"), rs.getString("Prenom"), rs.getString("Email"), rs.getString("MDP"), rs.getString("Image"), rs.getDate("Creation_Date") != null ? rs.getDate("Creation_Date").toLocalDate() : null, rs.getInt("ID_Departement"), rs.getInt("ID_Manager"), rs.getInt("idSolde"), rs.getInt("ID_Interim"));
                 userList.add(user);
             }
         } catch (SQLException ex) {
@@ -1307,6 +1101,7 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
         return userList;
     }
+
     public boolean assignInterimManager(int managerId, int interimManagerId) {
         String sql = "UPDATE user SET ID_Interim = ? WHERE ID_User = ?";
         try {
@@ -1323,6 +1118,7 @@ public class ServiceUtilisateur implements IUtilisateur {
             return false;
         }
     }
+
     public boolean updateInterimManager(int managerId, int newInterimManagerId) {
         String sql = "UPDATE user SET ID_Interim = ? WHERE ID_User = ?";
         try {
@@ -1339,6 +1135,7 @@ public class ServiceUtilisateur implements IUtilisateur {
             return false;
         }
     }
+
     public boolean deleteInterimManager(int managerId) {
         String sql = "UPDATE user SET ID_Interim = NULL WHERE ID_User = ?";
         try {
@@ -1354,10 +1151,9 @@ public class ServiceUtilisateur implements IUtilisateur {
             return false;
         }
     }
+
     public User getInterimByUserId(int userId) {
-        String query = "SELECT u2.* FROM user u1 " +
-                "JOIN user u2 ON u1.ID_Interim = u2.ID_User " +
-                "WHERE u1.ID_User = ?";
+        String query = "SELECT u2.* FROM user u1 " + "JOIN user u2 ON u1.ID_Interim = u2.ID_User " + "WHERE u1.ID_User = ?";
         User interimUser = null;
         try {
             if (cnx == null || cnx.isClosed()) {
@@ -1368,25 +1164,14 @@ public class ServiceUtilisateur implements IUtilisateur {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                interimUser = new User(
-                        rs.getInt("ID_User"),
-                        rs.getString("Nom"),
-                        rs.getString("Prenom"),
-                        rs.getString("Email"),
-                        rs.getString("MDP"),
-                        rs.getString("Image"),
-                        rs.getDate("Creation_Date") != null ? rs.getDate("Creation_Date").toLocalDate() : null,
-                        rs.getInt("ID_Departement"),
-                        rs.getInt("ID_Manager"),
-                        rs.getInt("idSolde"),
-                        rs.getInt("ID_Interim")
-                );
+                interimUser = new User(rs.getInt("ID_User"), rs.getString("Nom"), rs.getString("Prenom"), rs.getString("Email"), rs.getString("MDP"), rs.getString("Image"), rs.getDate("Creation_Date") != null ? rs.getDate("Creation_Date").toLocalDate() : null, rs.getInt("ID_Departement"), rs.getInt("ID_Manager"), rs.getInt("idSolde"), rs.getInt("ID_Interim"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return interimUser;
     }
+
     public User getInterimOfUsersManager(int userId) {
         String managerQuery = "SELECT ID_Manager FROM user WHERE ID_User = ?";
         String interimQuery = "SELECT u2.* FROM user u1 JOIN user u2 ON u1.ID_Interim = u2.ID_User WHERE u1.ID_User = ?";
@@ -1411,19 +1196,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 ResultSet rsInterim = psInterim.executeQuery();
 
                 if (rsInterim.next()) {
-                    interimUser = new User(
-                            rsInterim.getInt("ID_User"),
-                            rsInterim.getString("Nom"),
-                            rsInterim.getString("Prenom"),
-                            rsInterim.getString("Email"),
-                            rsInterim.getString("MDP"),
-                            rsInterim.getString("Image"),
-                            rsInterim.getDate("Creation_Date") != null ? rsInterim.getDate("Creation_Date").toLocalDate() : null,
-                            rsInterim.getInt("ID_Departement"),
-                            rsInterim.getInt("ID_Manager"),
-                            rsInterim.getInt("idSolde"),
-                            rsInterim.getInt("ID_Interim")
-                    );
+                    interimUser = new User(rsInterim.getInt("ID_User"), rsInterim.getString("Nom"), rsInterim.getString("Prenom"), rsInterim.getString("Email"), rsInterim.getString("MDP"), rsInterim.getString("Image"), rsInterim.getDate("Creation_Date") != null ? rsInterim.getDate("Creation_Date").toLocalDate() : null, rsInterim.getInt("ID_Departement"), rsInterim.getInt("ID_Manager"), rsInterim.getInt("idSolde"), rsInterim.getInt("ID_Interim"));
                 }
             }
         } catch (SQLException e) {
@@ -1501,19 +1274,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                     ResultSet rsSubordinates = psSubordinates.executeQuery();
 
                     while (rsSubordinates.next()) {
-                        User subordinate = new User(
-                                rsSubordinates.getInt("ID_User"),
-                                rsSubordinates.getString("Nom"),
-                                rsSubordinates.getString("Prenom"),
-                                rsSubordinates.getString("Email"),
-                                rsSubordinates.getString("MDP"),
-                                rsSubordinates.getString("Image"),
-                                rsSubordinates.getDate("Creation_Date") != null ? rsSubordinates.getDate("Creation_Date").toLocalDate() : null,
-                                rsSubordinates.getInt("ID_Departement"),
-                                rsSubordinates.getInt("ID_Manager"),
-                                rsSubordinates.getInt("idSolde"),
-                                rsSubordinates.getInt("ID_Interim")
-                        );
+                        User subordinate = new User(rsSubordinates.getInt("ID_User"), rsSubordinates.getString("Nom"), rsSubordinates.getString("Prenom"), rsSubordinates.getString("Email"), rsSubordinates.getString("MDP"), rsSubordinates.getString("Image"), rsSubordinates.getDate("Creation_Date") != null ? rsSubordinates.getDate("Creation_Date").toLocalDate() : null, rsSubordinates.getInt("ID_Departement"), rsSubordinates.getInt("ID_Manager"), rsSubordinates.getInt("idSolde"), rsSubordinates.getInt("ID_Interim"));
                         subordinates.add(subordinate);
                     }
                 }
@@ -1524,100 +1285,57 @@ public class ServiceUtilisateur implements IUtilisateur {
 
         return subordinates;
     }
+
     public List<User> getAppropriateUsers(int id_manager) {
         List<User> users = new ArrayList<>();
-
-        // Query to get the manager's manager
         String managerQuery = "SELECT u.* FROM user u JOIN user u2 ON u.ID_User = u2.ID_Manager WHERE u2.ID_User = ?";
-
-        // Query to get the subordinates of the manager
         String subordinatesQuery = "SELECT * FROM user WHERE ID_Manager = ?";
-
-        // Query to get users with the same role as the manager
         String sameRoleQuery = "SELECT u.* FROM user u JOIN user_role ur ON u.ID_User = ur.ID_User WHERE ur.ID_Role = (SELECT ur2.ID_Role FROM user_role ur2 WHERE ur2.ID_User = ?) AND u.ID_User != ?";
-
         try {
             if (cnx == null || cnx.isClosed()) {
                 cnx = MyDataBase.getInstance().getCnx();
             }
-
-            // Get the manager's manager
             PreparedStatement psManager = cnx.prepareStatement(managerQuery);
             psManager.setInt(1, id_manager);
             ResultSet rsManager = psManager.executeQuery();
-
             if (rsManager.next()) {
-                User manager = new User(
-                        rsManager.getInt("ID_User"),
-                        rsManager.getString("Nom"),
-                        rsManager.getString("Prenom"),
-                        rsManager.getString("Email"),
-                        rsManager.getString("MDP"),
-                        rsManager.getString("Image"),
-                        rsManager.getDate("Creation_Date") != null ? rsManager.getDate("Creation_Date").toLocalDate() : null,
-                        rsManager.getInt("ID_Departement"),
-                        rsManager.getInt("ID_Manager"),
-                        rsManager.getInt("idSolde"),
-                        rsManager.getInt("ID_Interim")
-                );
-                users.add(manager);
+                int managerId = rsManager.getInt("ID_User");
+                if (!isUser_OFFDUTY(managerId)) {
+                    User manager = new User(managerId, rsManager.getString("Nom"), rsManager.getString("Prenom"), rsManager.getString("Email"), rsManager.getString("MDP"), rsManager.getString("Image"), rsManager.getDate("Creation_Date") != null ? rsManager.getDate("Creation_Date").toLocalDate() : null, rsManager.getInt("ID_Departement"), rsManager.getInt("ID_Manager"), rsManager.getInt("idSolde"), rsManager.getInt("ID_Interim"));
+                    users.add(manager);
+                }
             }
-
-            // Get the subordinates of the manager
             PreparedStatement psSubordinates = cnx.prepareStatement(subordinatesQuery);
             psSubordinates.setInt(1, id_manager);
             ResultSet rsSubordinates = psSubordinates.executeQuery();
-
             while (rsSubordinates.next()) {
-                User subordinate = new User(
-                        rsSubordinates.getInt("ID_User"),
-                        rsSubordinates.getString("Nom"),
-                        rsSubordinates.getString("Prenom"),
-                        rsSubordinates.getString("Email"),
-                        rsSubordinates.getString("MDP"),
-                        rsSubordinates.getString("Image"),
-                        rsSubordinates.getDate("Creation_Date") != null ? rsSubordinates.getDate("Creation_Date").toLocalDate() : null,
-                        rsSubordinates.getInt("ID_Departement"),
-                        rsSubordinates.getInt("ID_Manager"),
-                        rsSubordinates.getInt("idSolde"),
-                        rsSubordinates.getInt("ID_Interim")
-                );
-                users.add(subordinate);
+                int subordinateId = rsSubordinates.getInt("ID_User");
+                if (!isUser_OFFDUTY(subordinateId)) {
+                    User subordinate = new User(subordinateId, rsSubordinates.getString("Nom"), rsSubordinates.getString("Prenom"), rsSubordinates.getString("Email"), rsSubordinates.getString("MDP"), rsSubordinates.getString("Image"), rsSubordinates.getDate("Creation_Date") != null ? rsSubordinates.getDate("Creation_Date").toLocalDate() : null, rsSubordinates.getInt("ID_Departement"), rsSubordinates.getInt("ID_Manager"), rsSubordinates.getInt("idSolde"), rsSubordinates.getInt("ID_Interim"));
+                    users.add(subordinate);
+                }
             }
-
-            // Get users with the same role as the manager
             PreparedStatement psSameRole = cnx.prepareStatement(sameRoleQuery);
             psSameRole.setInt(1, id_manager);
             psSameRole.setInt(2, id_manager);
             ResultSet rsSameRole = psSameRole.executeQuery();
-
             while (rsSameRole.next()) {
-                User sameRoleUser = new User(
-                        rsSameRole.getInt("ID_User"),
-                        rsSameRole.getString("Nom"),
-                        rsSameRole.getString("Prenom"),
-                        rsSameRole.getString("Email"),
-                        rsSameRole.getString("MDP"),
-                        rsSameRole.getString("Image"),
-                        rsSameRole.getDate("Creation_Date") != null ? rsSameRole.getDate("Creation_Date").toLocalDate() : null,
-                        rsSameRole.getInt("ID_Departement"),
-                        rsSameRole.getInt("ID_Manager"),
-                        rsSameRole.getInt("idSolde"),
-                        rsSameRole.getInt("ID_Interim")
-                );
-                users.add(sameRoleUser);
+                int sameRoleId = rsSameRole.getInt("ID_User");
+                if (!isUser_OFFDUTY(sameRoleId)) {
+                    User sameRoleUser = new User(sameRoleId, rsSameRole.getString("Nom"), rsSameRole.getString("Prenom"), rsSameRole.getString("Email"), rsSameRole.getString("MDP"), rsSameRole.getString("Image"), rsSameRole.getDate("Creation_Date") != null ? rsSameRole.getDate("Creation_Date").toLocalDate() : null, rsSameRole.getInt("ID_Departement"), rsSameRole.getInt("ID_Manager"), rsSameRole.getInt("idSolde"), rsSameRole.getInt("ID_Interim"));
+                    users.add(sameRoleUser);
+                }
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return users;
     }
+
+
     public boolean isUserAnInterim(int userId) {
         String query = "SELECT COUNT(*) FROM user WHERE ID_Interim = ?";
         boolean isInterim = false;
-
         try {
             if (cnx == null || cnx.isClosed()) {
                 cnx = MyDataBase.getInstance().getCnx();
@@ -1625,7 +1343,6 @@ public class ServiceUtilisateur implements IUtilisateur {
             PreparedStatement ps = cnx.prepareStatement(query);
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
-
             if (rs.next()) {
                 int count = rs.getInt(1);
                 isInterim = count > 0;
@@ -1633,7 +1350,6 @@ public class ServiceUtilisateur implements IUtilisateur {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return isInterim;
     }
 
@@ -1643,5 +1359,35 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
     }*/
 
+    public boolean isUser_OFFDUTY(int ID_USER) {
+        String query = "SELECT * FROM `conge` WHERE `ID_User`=? AND `Statut`='Approuvé' AND CURDATE() BETWEEN `DateDebut` AND `DateFin`";
+        try (PreparedStatement ps = cnx.prepareStatement(query)) {
+            ps.setInt(1, ID_USER);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
+
+    public int getHisInterim(int ID_USER) {
+        String Query = "SELECT `ID_Interim` FROM `user` WHERE `ID_User`=?";
+        int INTERIM = Integer.parseInt(null);
+        try {
+            PreparedStatement ps = cnx.prepareStatement(Query);
+            ps.setInt(1, ID_USER);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                INTERIM = rs.getInt("ID_Interim");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return INTERIM;
+    }
 }

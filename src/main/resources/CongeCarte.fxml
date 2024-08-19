@@ -29,7 +29,7 @@
          <children>
             <HBox alignment="CENTER_LEFT">
                <children>
-                  <Label fx:id="cardType" alignment="CENTER" contentDisplay="CENTER" prefHeight="75.0" prefWidth="83.0" styleClass="RobotoRegular" text="Type" textAlignment="CENTER">
+                  <Label fx:id="cardType" alignment="CENTER" contentDisplay="CENTER" prefHeight="75.0" prefWidth="131.0" styleClass="RobotoRegular" text="Type" textAlignment="CENTER">
                      <font>
                         <Font size="15.0" />
                      </font>

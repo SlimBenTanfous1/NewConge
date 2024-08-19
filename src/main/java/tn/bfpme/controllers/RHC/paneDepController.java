@@ -1,5 +1,7 @@
 package tn.bfpme.controllers.RHC;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -9,6 +11,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import tn.bfpme.models.Departement;
 import tn.bfpme.services.ServiceDepartement;
 import javafx.scene.layout.*;
@@ -56,10 +59,26 @@ public class paneDepController implements Initializable {
             }
         });
         Platform.runLater(() -> {
-            Stage stage = (Stage) DepartementPane.getScene().getWindow();
-            stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(DepartementPane, stage.getWidth(), stage.getHeight()));
-            stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(DepartementPane, stage.getWidth(), stage.getHeight()));
-            FontResizer.resizeFonts(DepartementPane, stage.getWidth(), stage.getHeight());
+            Stage stage = FontResizer.getStageFromNode(DepartementPane);
+            if (stage != null) {
+                stage.widthProperty().addListener((obs, oldVal, newVal) ->
+                        FontResizer.resizeFonts(DepartementPane, stage.getWidth(), stage.getHeight())
+                );
+                stage.heightProperty().addListener((obs, oldVal, newVal) ->
+                        FontResizer.resizeFonts(DepartementPane, stage.getWidth(), stage.getHeight())
+                );
+                Timeline timeline = new Timeline(new KeyFrame(
+                        Duration.millis(100),
+                        event -> FontResizer.resizeFonts(DepartementPane, stage.getWidth(), stage.getHeight())
+                ));
+                timeline.setCycleCount(1);
+                timeline.play();
+                stage.showingProperty().addListener((obs, wasShowing, isNowShowing) -> {
+                    if (isNowShowing) {
+                        FontResizer.resizeFonts(DepartementPane, stage.getWidth(), stage.getHeight());
+                    }
+                });
+            }
         });
         parentDeptComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {

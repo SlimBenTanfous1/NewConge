@@ -99,24 +99,6 @@ public class DemandeDepListeController implements Initializable {
             DemandesContainer.getChildren().clear();
             List<User> users = Arg.getUsers();
             List<Conge> conges = Arg.getConges();
-
-            // Get the logged-in user
-            User loggedInUser = SessionManager.getInstance().getUser();
-
-            if (loggedInUser != null) {
-                // Check if the logged-in user is an interim for any manager who is currently on leave
-                User interimForManager = UserS.getInterimOfUsersManager(loggedInUser.getIdUser());
-                if (interimForManager != null) {
-                    if (UserS.isUsersManagerOnLeave(interimForManager.getIdUser())) {
-                        List<User> subordinates = UserS.getSubordinatesIfManagerOnLeave(interimForManager.getIdUser());
-                        users.addAll(subordinates);
-                    } else {
-                        // Reset interim status if the manager's leave is over
-                       // UserS.resetInterimStatus(loggedInUser);
-                    }
-                }
-            }
-
             for (Conge conge : conges) {
                 for (User user : users) {
                     if (conge.getIdUser() == user.getIdUser()) {
@@ -146,6 +128,61 @@ public class DemandeDepListeController implements Initializable {
             System.err.println("Error in load method: " + e.getMessage());
             e.printStackTrace();
         }
+       /* DemandesContainer.getColumnConstraints().clear();
+        for (int i = 0; i < 3; i++) { // Three columns
+            ColumnConstraints columnConstraints = new ColumnConstraints();
+            columnConstraints.setHgrow(Priority.ALWAYS);
+            DemandesContainer.getColumnConstraints().add(columnConstraints);
+        }
+        DemandesContainer.setVgap(8);
+        DemandesContainer.setHgap(10);
+        DemandesContainer.setPadding(new Insets(8));
+        int row = 0;
+        int column = 0;
+        try {
+            DemandesContainer.getChildren().clear();
+            List<User> users = Arg.getUsers();
+            List<Conge> conges = Arg.getConges();
+            User loggedInUser = SessionManager.getInstance().getUser();
+            if (loggedInUser != null) {
+                User interimForManager = UserS.getInterimOfUsersManager(loggedInUser.getIdUser());
+                if (interimForManager != null) {
+                    if (UserS.isUsersManagerOnLeave(interimForManager.getIdUser())) {
+                        List<User> subordinates = UserS.getSubordinatesIfManagerOnLeave(interimForManager.getIdUser());
+                        users.addAll(subordinates);
+                    } else {
+                    }
+                }
+            }
+            for (Conge conge : conges) {
+                for (User user : users) {
+                    if (conge.getIdUser() == user.getIdUser()) {
+                        FXMLLoader fxmlLoader = new FXMLLoader();
+                        fxmlLoader.setLocation(getClass().getResource("/UserCarte.fxml"));
+                        try {
+                            Pane cardBox = fxmlLoader.load();
+                            UserCarteController cardu = fxmlLoader.getController();
+                            cardu.setData(conge, user);
+                            cardBox.prefWidthProperty().bind(DemandesContainer.widthProperty());
+                            DemandesContainer.add(cardBox, column, row);
+                            GridPane.setMargin(cardBox, new Insets(10));
+                            cardBox.setMaxWidth(Double.MAX_VALUE);
+                            column++;
+                            if (column == 1) {
+                                column = 0;
+                                row++;
+                            }
+                        } catch (IOException e) {
+                            System.err.println("Error loading UserCarte.fxml: " + e.getMessage());
+                        }
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error in load method: " + e.getMessage());
+            e.printStackTrace();
+        }*/
     }
 
 
