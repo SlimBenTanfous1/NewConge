@@ -36,6 +36,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
@@ -176,19 +177,24 @@ public class LoginController implements Initializable {
 
     private Boolean runPythonFaceRecognitionScript(String capturedImagePath, List<String> storedImagePaths) {
         try {
-            // Use the exact path to the Python executable
-            String pythonExecutablePath = "C:\\Users\\slimb\\AppData\\Local\\Programs\\Python\\Python312\\python.exe";
-
-            // Prepare the command to run the Python script with the image paths as arguments
             List<String> command = new ArrayList<>();
-            command.add(pythonExecutablePath);
-            command.add("src/main/resources/assets/Adapted_Face_Recognition.py");
+            command.add("C:\\Users\\slimb\\AppData\\Local\\Programs\\Python\\Python312\\python.exe");
+            command.add("C:\\Users\\slimb\\OneDrive\\Bureau\\NewProjectGestionconge\\src\\main\\resources\\assets\\Adapted_Face_Recognition.py");
             command.add(capturedImagePath);
             command.addAll(storedImagePaths);
 
             System.out.println("Executing command: " + String.join(" ", command));
 
             ProcessBuilder pb = new ProcessBuilder(command);
+
+            // Set up the environment variables
+            Map<String, String> env = pb.environment();
+            /*env.put("PATH", "C:\\Users\\slimb\\AppData\\Local\\Programs\\Python\\Python312\\");
+            env.put("PYTHONPATH", "C:\\Users\\slimb\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages");
+
+            // Optional: Set the working directory if needed
+            pb.directory(new File("C:\\Users\\slimb\\OneDrive\\Bureau\\NewProjectGestionconge\\src\\main\\resources\\assets"));
+*/
             pb.redirectErrorStream(true);
             Process process = pb.start();
 
@@ -230,23 +236,26 @@ public class LoginController implements Initializable {
         Task<Boolean> task = new Task<Boolean>() {
             @Override
             protected Boolean call() {
-                // Retrieve the stored image paths from the database
+                System.out.println("Starting facial recognition task...");
                 List<String> storedImagePaths = fetchStoredImagePathsFromDatabase(SessionManager.getInstance().getUser().getIdUser());
 
-                // Use the first stored image path as the captured image path (for testing)
-                // In a real-world scenario, this would be the path to a newly captured image
-                String capturedImagePath = storedImagePaths.isEmpty() ? null : storedImagePaths.get(0);
-
-                if (capturedImagePath == null) {
-                    System.err.println("No captured image path found.");
+                // Ensure that at least one image path is retrieved
+                if (storedImagePaths.isEmpty()) {
+                    System.err.println("No stored images found for the user.");
                     return false;
                 }
 
-                return runPythonFaceRecognitionScript(capturedImagePath, storedImagePaths);
+                String capturedImagePath = storedImagePaths.get(0);
+                System.out.println("Captured image path set to: " + capturedImagePath);
+
+                Boolean result = runPythonFaceRecognitionScript(capturedImagePath, storedImagePaths);
+                System.out.println("Facial recognition result: " + result);
+                return result;
             }
 
             @Override
             protected void succeeded() {
+                System.out.println("Facial recognition succeeded.");
                 if (getValue()) {
                     showAlert("Face recognized", "Welcome back!");
                 } else {
@@ -256,12 +265,14 @@ public class LoginController implements Initializable {
 
             @Override
             protected void failed() {
+                System.err.println("Facial recognition task failed.");
                 showAlert("Error", "An error occurred while running the face recognition script.");
             }
         };
 
         new Thread(task).start();
     }
+
 
     private List<String> fetchStoredImagePathsFromDatabase(int userId) {
         List<String> imagePaths = new ArrayList<>();
@@ -272,15 +283,19 @@ public class LoginController implements Initializable {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
+                System.out.println("Retrieved stored image paths from database.");
                 for (int i = 1; i <= 4; i++) {
                     String faceDataPath = rs.getString("face_data" + i);
                     if (faceDataPath != null && !faceDataPath.isEmpty()) {
                         imagePaths.add(faceDataPath);
                     }
                 }
+            } else {
+                System.out.println("No stored image paths found for user ID: " + userId);
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            System.err.println("Error fetching stored image paths: " + e.getMessage());
         }
 
         return imagePaths;
