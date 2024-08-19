@@ -81,7 +81,12 @@ public class LoginController implements Initializable {
         showPasswordImage = new Image(getClass().getResourceAsStream("/assets/imgs/hide.png"));
         hidePasswordImage = new Image(getClass().getResourceAsStream("/assets/imgs/show.png"));
         toggleIcon.setImage(showPasswordImage);
-
+        Platform.runLater(() -> {
+            Stage stage = (Stage) MainAnchorPane.getScene().getWindow();
+            stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
+            stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
+            FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight());
+        });
         // Toggle visibility of password fields
         toggleButton.setOnAction(event -> {
             if (showPasswordField.isVisible()) {
