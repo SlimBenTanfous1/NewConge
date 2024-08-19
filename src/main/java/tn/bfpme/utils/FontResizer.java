@@ -21,6 +21,8 @@ public class FontResizer {
             ((Label) node).setStyle("-fx-font-size: " + fontSize + "px;");
         } else if (node instanceof TextField) {
             ((TextField) node).setStyle("-fx-font-size: " + fontSize2 + "px;");
+        } else if (node instanceof TextArea) {
+            ((TextArea) node).setStyle("-fx-font-size: " + fontSize2 + "px;");
         } else if (node instanceof TextInputControl) {
             ((TextInputControl) node).setStyle("-fx-font-size: " + fontSize3 + "px;");
         } else if (node instanceof ComboBox) {
