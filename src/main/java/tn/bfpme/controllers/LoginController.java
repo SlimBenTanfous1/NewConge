@@ -182,7 +182,7 @@ public class LoginController implements Initializable {
     private Boolean runPythonFaceRecognitionScript(String capturedImagePath, List<String> storedImagePaths) {
         try {
             // Use the exact path to the Python executable
-            String pythonExecutablePath = "C:\\Users\\slimb\\AppData\\Local\\Programs\\Python\\Python312\\python.exe";
+            String pythonExecutablePath = "C:\\Python312\\python.exe";
 
             // Prepare the command to run the Python script with the image paths as arguments
             List<String> command = new ArrayList<>();

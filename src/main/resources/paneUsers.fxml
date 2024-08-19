@@ -308,9 +308,9 @@
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" styleClass="grad-bg2">
                      <children>
-                        <HBox layoutX="165.0" layoutY="63.0" spacing="150.0" AnchorPane.bottomAnchor="117.0" AnchorPane.leftAnchor="165.0" AnchorPane.rightAnchor="164.0" AnchorPane.topAnchor="63.0">
+                        <HBox alignment="CENTER" layoutX="165.0" layoutY="63.0" spacing="150.0" AnchorPane.bottomAnchor="117.0" AnchorPane.leftAnchor="165.0" AnchorPane.rightAnchor="164.0" AnchorPane.topAnchor="63.0">
                            <children>
-                              <VBox alignment="CENTER">
+                              <VBox alignment="CENTER" spacing="6.0">
                                  <children>
                                     <Label text="Employés">
                                        <font>
@@ -334,11 +334,14 @@
                                              </graphic>
                                           </Button>
                                        </children>
+                                       <padding>
+                                          <Insets bottom="8.0" />
+                                       </padding>
                                     </Pane>
-                                    <ListView fx:id="manager_listview" prefHeight="437.0" prefWidth="320.0" />
+                                    <ListView fx:id="manager_listview" editable="true" prefHeight="437.0" prefWidth="320.0" VBox.vgrow="ALWAYS" />
                                  </children>
                               </VBox>
-                              <VBox alignment="CENTER">
+                              <VBox alignment="CENTER" spacing="6.0">
                                  <children>
                                     <Label text="Intérims">
                                        <font>
@@ -362,8 +365,11 @@
                                              </graphic>
                                           </Button>
                                        </children>
+                                       <padding>
+                                          <Insets bottom="8.0" />
+                                       </padding>
                                     </Pane>
-                                    <ListView fx:id="interim_listview" prefHeight="437.0" prefWidth="320.0" />
+                                    <ListView fx:id="interim_listview" editable="true" prefHeight="437.0" prefWidth="320.0" VBox.vgrow="ALWAYS" />
                                  </children>
                               </VBox>
                            </children>

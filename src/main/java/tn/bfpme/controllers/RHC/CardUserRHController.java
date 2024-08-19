@@ -202,23 +202,18 @@ public class CardUserRHController implements Initializable {
         Platform.runLater(() -> {
             Stage stage = FontResizer.getStageFromNode(UserCard);
             if (stage != null) {
-                // Add listeners for width and height changes
                 stage.widthProperty().addListener((obs, oldVal, newVal) ->
                         FontResizer.resizeFonts(UserCard, stage.getWidth(), stage.getHeight())
                 );
                 stage.heightProperty().addListener((obs, oldVal, newVal) ->
                         FontResizer.resizeFonts(UserCard, stage.getWidth(), stage.getHeight())
                 );
-
-                // Use a Timeline to delay the initial resize
                 Timeline timeline = new Timeline(new KeyFrame(
                         Duration.millis(100),
                         event -> FontResizer.resizeFonts(UserCard, stage.getWidth(), stage.getHeight())
                 ));
-                timeline.setCycleCount(1); // Execute only once
+                timeline.setCycleCount(1);
                 timeline.play();
-
-                // Ensure resizing happens after the stage is fully shown
                 stage.showingProperty().addListener((obs, wasShowing, isNowShowing) -> {
                     if (isNowShowing) {
                         FontResizer.resizeFonts(UserCard, stage.getWidth(), stage.getHeight());
@@ -226,6 +221,5 @@ public class CardUserRHController implements Initializable {
                 });
             }
         });
-
     }
 }
