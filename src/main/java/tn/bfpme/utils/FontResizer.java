@@ -27,6 +27,8 @@ public class FontResizer {
             ((ComboBox<?>) node).setStyle("-fx-font-size: " + fontSize3 + "px;");
         } else if (node instanceof Button) {
             ((Button) node).setStyle("-fx-font-size: " + fontSize2 + "px;");
+        } else if (node instanceof DatePicker) {
+            ((DatePicker) node).setStyle("-fx-font: " + fontSize2 + "px \"Roboto Regular\";");
         } else if (node instanceof TabPane) {
             TabPane tabPane = (TabPane) node;
             for (Tab tab : tabPane.getTabs()) {

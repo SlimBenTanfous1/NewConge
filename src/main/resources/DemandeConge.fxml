@@ -34,7 +34,7 @@
                   </Label>
                   <HBox alignment="CENTER" layoutX="451.0" layoutY="120.0" prefHeight="40.0" prefWidth="355.0" AnchorPane.leftAnchor="450.0" AnchorPane.rightAnchor="270.0">
                      <children>
-                        <DatePicker fx:id="datedebut" maxWidth="521.0" prefHeight="40.0" prefWidth="521.0" />
+                        <DatePicker fx:id="datedebut" maxWidth="521.0" prefHeight="40.0" prefWidth="521.0" styleClass="RobotoBold" />
                      </children>
                   </HBox>
                   <HBox alignment="CENTER" layoutX="452.0" layoutY="256.0" prefHeight="81.0" prefWidth="353.0" AnchorPane.leftAnchor="451.0" AnchorPane.rightAnchor="271.0">
@@ -57,7 +57,7 @@
                   </HBox>
                   <HBox alignment="CENTER" layoutX="450.0" layoutY="183.0" prefHeight="40.0" prefWidth="355.0" AnchorPane.leftAnchor="449.0" AnchorPane.rightAnchor="271.0">
                      <children>
-                        <DatePicker fx:id="datefin" maxWidth="521.0" prefHeight="40.0" prefWidth="521.0" />
+                        <DatePicker fx:id="datefin" maxWidth="521.0" prefHeight="40.0" prefWidth="521.0" styleClass="RobotoBold" />
                      </children>
                   </HBox>
                   <Label layoutX="289.0" layoutY="120.0" minWidth="125.0" prefHeight="40.0" prefWidth="125.0" styleClass="RobotoBold" text="Date debut : " AnchorPane.leftAnchor="289.0" AnchorPane.rightAnchor="660.0">

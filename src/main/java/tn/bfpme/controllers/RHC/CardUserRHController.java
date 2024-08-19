@@ -50,6 +50,8 @@ public class CardUserRHController {
     private Label cardnameprename;
     @FXML
     private Label cardrole;
+    @FXML
+    private Label cardmarticule;
 
     private static Connection cnx = MyDataBase.getInstance().getCnx();
     private final ServiceUtilisateur UserS = new ServiceUtilisateur();
@@ -78,7 +80,7 @@ public class CardUserRHController {
         cardrole.setText(roleName);
         carddepart.setText(departmentName);
         UserCard.setStyle("-fx-border-radius: 5px;-fx-border-color:#808080");
-
+        cardmarticule.setText(String.valueOf(user.getIdUser()));
         uprenom = user.getPrenom();
         uid = user.getIdUser();
         unom = user.getNom();
