@@ -6,6 +6,7 @@ import javafx.scene.paint.Color;
 import tn.bfpme.models.User;
 
 public class ColoredTreeRow extends TreeTableRow<User> {
+
     @Override
     protected void updateItem(User item, boolean empty) {
         super.updateItem(item, empty);
@@ -19,26 +20,28 @@ public class ColoredTreeRow extends TreeTableRow<User> {
         }
     }
 
-
-
     private int getTreeItemLevel(TreeItem<User> treeItem) {
         int level = 0;
-        while ((treeItem = treeItem.getParent()) != null) {
+        while (treeItem != null && (treeItem = treeItem.getParent()) != null) {
             level++;
         }
         return level;
     }
 
     private Color getColorForLevel(int level) {
-        // Ensure the level is within a reasonable range to avoid extremely dark colors
-        level = Math.min(level, 10); // Cap the level at 10 for this example
-        // Generate a gradient color from light blue to darker blue
-        int baseBlue = 150; // Start with a light blue
-        int blue = baseBlue - (level * 30); // Decrease blue component by 20 for each level
-        blue = Math.max(blue, 250); // Ensure the color doesn't get too dark
-        return Color.rgb(150, 150, blue); // Use 150 for red and green components to create shades of blue
-    }
+        // Cap the level to avoid extremely dark colors
+        level = Math.min(level, 10);
 
+        // Create a color gradient from light blue to darker blue
+        int baseBlue = 240; // Starting point for blue
+        int blue = baseBlue - (level * 20); // Decrease blue component for each level
+        blue = Math.max(150, blue); // Ensure blue doesn't get too dark
+
+        // Use consistent values for red and green to maintain blue tones
+        int redGreen = 200; // Lightness of the color
+
+        return Color.rgb(redGreen, redGreen, blue);
+    }
 
     private String toHexString(Color color) {
         int r = (int) (255 * color.getRed());
