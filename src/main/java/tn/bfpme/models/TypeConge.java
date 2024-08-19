@@ -11,7 +11,7 @@ public class TypeConge {
     private int idTypeConge;
     private String Designation;
     private double Pas;
-    private static String Periode;
+    private String Periode;
     private double Limite;
     private boolean File;
 
@@ -87,10 +87,7 @@ public class TypeConge {
         Pas = pas;
     }
 
-
-    public static String getPeriode() {
-        return Periode;
-    }
+    public String getPeriode() {return Periode;}
 
     public void setPeriode(String periode) {
         Periode = periode;

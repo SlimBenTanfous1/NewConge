@@ -17,15 +17,13 @@ public class ServiceTypeConge {
 
     public List<TypeConge> getAllTypeConge() {
         List<TypeConge> typeconges = new ArrayList<>();
-        String query = "SELECT * FROM TypeConge";
+        String query = "SELECT `ID_TypeConge`, `Designation`, `Pas`, `File`, `Limite`, `Periode` FROM `typeconge`";
         try {
             if (cnx == null || cnx.isClosed()) {
                 cnx = MyDataBase.getInstance().getCnx();
             }
-            Statement stmt = cnx.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
-
-            int count = 0;
+            PreparedStatement stmt = cnx.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 TypeConge type = new TypeConge(
                         rs.getInt("ID_TypeConge"),
@@ -34,14 +32,9 @@ public class ServiceTypeConge {
                         rs.getBoolean("File"),
                         rs.getDouble("Limite"),
                         rs.getString("Periode")
-
                 );
-                System.out.println(rs.getString("Periode"));
                 typeconges.add(type);
-                count++;
             }
-            // Debug statement
-            System.out.println("Debug: Retrieved " + count + " TypeConge records.");
         } catch (SQLException e) {
             e.printStackTrace();
         }
