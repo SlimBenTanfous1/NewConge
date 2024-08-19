@@ -3,6 +3,7 @@ package tn.bfpme.controllers;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import java.sql.Blob;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -17,7 +18,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import org.mindrot.jbcrypt.BCrypt;
 import org.opencv.core.*;
 import org.opencv.face.FaceRecognizer;
 import org.opencv.face.LBPHFaceRecognizer;
@@ -29,11 +29,6 @@ import org.opencv.videoio.Videoio;
 import tn.bfpme.models.User;
 import tn.bfpme.utils.*;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -66,12 +61,13 @@ public class LoginController implements Initializable {
     private Image showPasswordImage;
     private Image hidePasswordImage;
     private VideoCapture capture;
-    private Timer timer;
-    private boolean cameraActive = false;
-    private volatile boolean stopCamera = false;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        // Initialize the database connection
+        cnx = MyDataBase.getInstance().getCnx();  // Ensure this line is called
+
+        // Rest of your initialization code
         String style = "-fx-background-color: transparent; -fx-border-color: transparent transparent #eab53f transparent; -fx-border-width: 0 0 1 0; -fx-padding: 0 0 3 0;";
         LoginEmail.setStyle(style);
         LoginMDP.setStyle(style);
@@ -106,6 +102,25 @@ public class LoginController implements Initializable {
         });
     }
 
+
+    private void togglePasswordVisibility() {
+        if (showPasswordField.isVisible()) {
+            LoginMDP.setText(showPasswordField.getText());
+            LoginMDP.setVisible(true);
+            LoginMDP.setManaged(true);
+            showPasswordField.setVisible(false);
+            showPasswordField.setManaged(false);
+            toggleIcon.setImage(showPasswordImage);
+        } else {
+            showPasswordField.setText(LoginMDP.getText());
+            showPasswordField.setVisible(true);
+            showPasswordField.setManaged(true);
+            LoginMDP.setVisible(false);
+            LoginMDP.setManaged(false);
+            toggleIcon.setImage(hidePasswordImage);
+        }
+    }
+
     @FXML
     void Login(ActionEvent event) {
         cnx = MyDataBase.getInstance().getCnx();
@@ -135,7 +150,10 @@ public class LoginController implements Initializable {
                     );
                     connectedUser.setIdRole(rs.getInt("ID_Role"));
                     populateUserSolde(connectedUser);
+
+                    // Initialize SessionManager
                     SessionManager.getInstance(connectedUser);
+
                     navigateToProfile(event);
                 } else {
                     System.out.println("Login failed: Invalid email or password.");
@@ -150,16 +168,23 @@ public class LoginController implements Initializable {
         }
     }
 
+
     @FXML
     void FacialRecognitionButton(ActionEvent event) {
-        String faceCascadePath = "src/main/resources/assets/FacialRegDATA/XML/haarcascades/haarcascade_frontalface_alt.xml";
+        String faceCascadePath = getClass().getResource("/assets/FacialRegDATA/XML/haarcascades/haarcascade_frontalface_alt.xml").getPath();
+
+        // Remove leading '/' on Windows
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {
+            faceCascadePath = faceCascadePath.substring(1);
+        }
+
         CascadeClassifier faceDetector = new CascadeClassifier(faceCascadePath);
         if (faceDetector.empty()) {
             System.err.println("Failed to load haarcascade_frontalface_alt.xml");
             return;
         }
 
-        VideoCapture capture = new VideoCapture(0, Videoio.CAP_DSHOW); // Try using DirectShow backend
+        VideoCapture capture = new VideoCapture(0, Videoio.CAP_DSHOW); // Open the default camera
         if (!capture.isOpened()) {
             System.out.println("Error: Cannot open the camera.");
             return;
@@ -175,24 +200,28 @@ public class LoginController implements Initializable {
                         faceDetector.detectMultiScale(frame, faceDetections);
 
                         for (Rect rect : faceDetections.toArray()) {
-                            Imgproc.rectangle(frame, new org.opencv.core.Point(rect.x, rect.y), new org.opencv.core.Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0));
+                            Imgproc.rectangle(frame, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0));
                         }
+
+                        // Convert Mat to Image and display in ImageView
                         Image imageToShow = FacialRec.mat2Image(frame);
                         Platform.runLater(() -> imageView.setImage(imageToShow));
 
-                        // Save the frame to a file
-                        String capturedImagePath = "src/main/resources/assets/FacialRegDATA/Captured/captured_frame.jpg";
-                        Imgcodecs.imwrite(capturedImagePath, frame);
-
-                        // Recognize the face from the saved frame in a separate thread
-                        new Thread(() -> {
-                            boolean recognized = recognizeFace(capturedImagePath);
+                        if (!faceDetections.empty()) {
+                            System.out.println("Attempting face recognition..."); // Debugging line
+                            boolean recognized = recognizeFaceFromFrame(frame);
+                            System.out.println("test1");
                             if (recognized) {
-                                Platform.runLater(() -> System.out.println("Face recognized successfully."));
+                                Platform.runLater(() -> {
+                                    System.out.println("Face recognized successfully.");
+                                    handleSuccessfulRecognition(event);
+                                    capture.release(); // Stop the camera after recognition
+                                });
+                                break; // Exit the loop if face is recognized
                             } else {
-                                Platform.runLater(() -> System.out.println("Face not recognized."));
+                                System.out.println("Face not recognized."); // Debugging line
                             }
-                        }).start();
+                        }
 
                         try {
                             Thread.sleep(33); // ~30 frames per second
@@ -202,7 +231,7 @@ public class LoginController implements Initializable {
                     }
                 }
 
-                capture.release();
+                capture.release(); // Release the camera after processing
                 return null;
             }
         };
@@ -212,110 +241,145 @@ public class LoginController implements Initializable {
         faceRecognitionThread.start();
     }
 
+    private boolean recognizeFaceFromFrame(Mat capturedFrame) {
+        System.out.println("Attempting face recognition...");
 
-    private boolean recognizeFace(String capturedImagePath) {
-        Mat capturedImage = Imgcodecs.imread(capturedImagePath);
-        File directory = new File("src/main/resources/assets/FacialRegDATA");
-        File[] storedFaceFiles = directory.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png"));
-
-        if (storedFaceFiles == null) {
-            System.err.println("No stored face images found.");
+        if (capturedFrame.empty()) {
+            System.err.println("Captured frame is empty. Exiting recognition.");
             return false;
         }
 
-        for (File storedFaceFile : storedFaceFiles) {
-            Mat storedFace = Imgcodecs.imread(storedFaceFile.getAbsolutePath());
+        System.out.println("Converting captured frame to grayscale...");
+        Mat grayCapturedImage = new Mat();
+        Imgproc.cvtColor(capturedFrame, grayCapturedImage, Imgproc.COLOR_BGR2GRAY);
+        System.out.println("Captured frame converted to grayscale.");
+
+        // Ensure the SessionManager is initialized and retrieve the current user
+        User currentUser = SessionManager.getInstance().getUser();
+
+        System.out.println("Fetching stored face data from the database for user ID: " + currentUser.getIdUser());
+        List<Mat> storedFaces = fetchStoredFacesFromDatabase(currentUser.getIdUser());
+
+        if (storedFaces.isEmpty()) {
+            System.out.println("No stored faces found for this user.");
+            return false;
+        }
+
+        for (Mat storedFace : storedFaces) {
             if (storedFace.empty()) {
-                System.err.println("Failed to load stored face image: " + storedFaceFile.getName());
+                System.err.println("One of the stored faces is empty.");
                 continue;
             }
 
-            System.out.println("Comparing with stored face: " + storedFaceFile.getName());
-            if (compareFaces(capturedImage, storedFace)) {
-                System.out.println("Face matched with: " + storedFaceFile.getName());
+            System.out.println("Comparing captured frame with stored face.");
+            if (compareFaces(grayCapturedImage, storedFace)) {
+                System.out.println("Face matched with stored data.");
                 return true;
             }
         }
+
+        System.out.println("Face not recognized.");
         return false;
     }
 
     private boolean compareFaces(Mat capturedImage, Mat storedFace) {
+        System.out.println("Creating face recognizer...");
+
+        // Convert both images to grayscale
         Mat grayCapturedImage = new Mat();
         Mat grayStoredFace = new Mat();
         Imgproc.cvtColor(capturedImage, grayCapturedImage, Imgproc.COLOR_BGR2GRAY);
         Imgproc.cvtColor(storedFace, grayStoredFace, Imgproc.COLOR_BGR2GRAY);
+
+        // Resize the captured image to match the size of the stored image
         Imgproc.resize(grayCapturedImage, grayCapturedImage, grayStoredFace.size());
+
+        // Create the LBPH (Local Binary Patterns Histograms) face recognizer
         FaceRecognizer faceRecognizer = LBPHFaceRecognizer.create();
+
+        // Train the recognizer with the stored face
         List<Mat> images = new ArrayList<>();
         List<Integer> labels = new ArrayList<>();
         images.add(grayStoredFace);
-        labels.add(1); // Label for the stored face
+        labels.add(1); // Assign a label to the stored face
+
         faceRecognizer.train(images, new MatOfInt(1));
+
+        // Predict using the recognizer
         int[] label = new int[1];
         double[] confidence = new double[1];
         faceRecognizer.predict(grayCapturedImage, label, confidence);
-        return label[0] == 1 && confidence[0] < 50.0; // Adjust confidence threshold as needed
+
+        System.out.println("Prediction confidence: " + confidence[0]);
+
+        // Adjust the confidence threshold as necessary
+        return label[0] == 1 && confidence[0] < 50.0;
     }
 
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
-        /*if (!this.cameraActive) {
-            this.capture = new VideoCapture(0, Videoio.CAP_DSHOW);
-            if (this.capture.isOpened()) {
-                this.cameraActive = true;
-                String faceCascadePath = "src/main/resources/assets/FacialRegDATA/XML/haarcascades/haarcascade_frontalface_alt.xml";
-                CascadeClassifier faceDetector = new CascadeClassifier(faceCascadePath);
-                if (faceDetector.empty()) {
-                    System.err.println("Failed to load haarcascade_frontalface_alt.xml");
-                    return;
+
+
+
+    /*private List<Mat> fetchStoredFacesFromDatabase() {
+        List<Mat> storedFaces = new ArrayList<>();
+
+        String query = "SELECT face_data1, face_data2, face_data3, face_data4 FROM user WHERE Email=?";
+        try (PreparedStatement stmt = cnx.prepareStatement(query)) {
+            stmt.setString(1, LoginEmail.getText());  // Assuming the email is used to find the user
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                for (int i = 1; i <= 4; i++) {
+                    byte[] faceData = rs.getBytes("face_data" + i);
+                    if (faceData != null && faceData.length > 0) {
+                        Mat storedFace = Imgcodecs.imdecode(new MatOfByte(faceData), Imgcodecs.IMREAD_COLOR);
+                        storedFaces.add(storedFace);
+                        
+                    }
                 }
-                TimerTask frameGrabber = new TimerTask() {
-                    @Override
-                    public void run() {
-                        Mat frame = new Mat();
-                        if (capture.read(frame)) {
-                            MatOfRect faceDetections = new MatOfRect();
-                            faceDetector.detectMultiScale(frame, faceDetections);
-                            for (Rect rect : faceDetections.toArray()) {
-                                Imgproc.rectangle(frame, new org.opencv.core.Point(rect.x, rect.y), new org.opencv.core.Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0));
-                            }
-                            Image imageToShow = FacialRec.mat2Image(frame);
-                            Platform.runLater(() -> {
-                                imageView.setImage(imageToShow);
-                                imageView.setFitWidth(380);
-                                imageView.setPreserveRatio(true);
-                            });
-                            String capturedImagePath = "src/main/resources/assets/FacialRegDATA/Captured/captured_frame.jpg";
-                            Imgcodecs.imwrite(capturedImagePath, frame);
-                            boolean recognized = recognizeFace(capturedImagePath);
-                            if (recognized) {
-                                System.out.println("Face recognized successfully.");
-                                cameraActive = false; // stop the camera
-                            } else {
-                                System.out.println("Face not recognized.");
-                            }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println("Error fetching stored faces from database: " + e.getMessage());
+        }
+
+        return storedFaces;
+    }*/
+
+    private List<Mat> fetchStoredFacesFromDatabase(int userId) {
+        List<Mat> faceImages = new ArrayList<>();
+        String query = "SELECT face_data1, face_data2, face_data3, face_data4 FROM user WHERE ID_User = ?";
+
+        try (Connection cnx = MyDataBase.getInstance().getCnx();
+             PreparedStatement stmt = cnx.prepareStatement(query)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                for (int i = 1; i <= 4; i++) {
+                    byte[] faceData = rs.getBytes("face_data" + i);
+                    if (faceData != null) {
+                        Mat faceMat = Imgcodecs.imdecode(new MatOfByte(faceData), Imgcodecs.IMREAD_GRAYSCALE);
+                        if (!faceMat.empty()) {
+                            faceImages.add(faceMat);
                         }
                     }
-                };
-                this.timer = new Timer();
-                this.timer.schedule(frameGrabber, 0, 33);
-            } else {
-                System.err.println("Impossible to open the camera connection...");
+                }
             }
-        } else {
-            this.cameraActive = false;
-            if (this.timer != null) {
-                this.timer.cancel();
-                this.timer = null;
-            }
-            this.capture.release();
-            imageView.setImage(null);
-        }*/
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return faceImages;
+    }
+
+
+    private void handleSuccessfulRecognition(ActionEvent event) {
+        try {
+            navigateToProfile(event);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     private void populateUserSolde(User user) {
         String soldeQuery = "SELECT us.*, tc.Designation FROM user_solde us JOIN typeconge tc ON us.ID_TypeConge = tc.ID_TypeConge WHERE us.ID_User = ?";
@@ -340,7 +404,6 @@ public class LoginController implements Initializable {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Profile");
-        //stage.setMaximized(true);
         stage.show();
         stage.toFront();
         StageManager.addStage("Profile", stage);

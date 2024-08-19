@@ -28,7 +28,13 @@ import tn.bfpme.utils.DatabaseConnector;
 import tn.bfpme.utils.MyDataBase;
 import tn.bfpme.utils.SessionManager;
 import tn.bfpme.utils.FontResizer;
+import javafx.scene.control.Label;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.videoio.VideoCapture;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -75,6 +81,14 @@ public class EmployeController implements Initializable {
     private AnchorPane chatPane;
     @FXML
     private Button buttonFermer, openchat;
+
+    @FXML
+    private ImageView cameraView;  // ImageView to display the camera feed
+    @FXML
+    private Label instructionLabel;  // Label to display face orientation instructions
+
+    private VideoCapture camera;
+    private boolean capturing;
     private final ServiceConge serviceConge = new ServiceConge();
     private final ServiceUserSolde serviceUserSolde = new ServiceUserSolde();
     public static Stage chatWindow;
@@ -290,5 +304,32 @@ public class EmployeController implements Initializable {
         openchat.setVisible(true);
         chatPane.setVisible(false);
         buttonFermer.setVisible(false);
+    }
+
+    @FXML
+    public void FacialRecognition() {
+        try {
+            // Load the CameraFeed window
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/CameraFeed.fxml"));
+            Parent root = loader.load();
+            CameraFeedController controller = loader.getController();
+
+            // Create a new stage (window)
+            Stage stage = new Stage();
+            stage.setTitle("Facial Recognition");
+            stage.setScene(new Scene(root));
+
+            // Pass the stage to the controller
+            controller.setStage(stage);
+
+            // Show the stage
+            stage.show();
+
+            // Start the facial recognition process
+            controller.startFacialRecognition();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -105,6 +105,7 @@
                   </ScrollPane>
                </children>
             </AnchorPane>
+            <Button layoutX="525.0" layoutY="6.0" mnemonicParsing="false" onAction="#FacialRecognition" text="Reconnaisance facial" />
          </children>
       </AnchorPane>
       <AnchorPane layoutX="824.0" layoutY="182.0" maxHeight="600.0" maxWidth="500.0" prefHeight="566.0" prefWidth="420.0" style="-fx-border-color: white;" styleClass="pane1" AnchorPane.bottomAnchor="82.0" AnchorPane.rightAnchor="96.0" AnchorPane.topAnchor="182.0">
@@ -144,5 +145,13 @@
             </Button>
          </children>
       </HBox>
+      <ImageView fx:id="cameraView" fitWidth="640.0" fitHeight="480.0" layoutX="117.0" layoutY="775.0" />
+
+      <!-- Add Label for instructions -->
+      <Label fx:id="instructionLabel" layoutX="117.0" layoutY="1265.0" prefHeight="30.0" prefWidth="640.0" styleClass="RobotoBold" text="Face directly to the camera">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>
