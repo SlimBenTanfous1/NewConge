@@ -19,6 +19,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import tn.bfpme.models.*;
 import tn.bfpme.services.ServiceConge;
 import tn.bfpme.services.ServiceNotification;
@@ -68,7 +69,7 @@ public class DemandeDepController implements Initializable {
 
     Connection cnx = MyDataBase.getInstance().getCnx();
     private Conge conge;
-    private User user;
+    User user;
     public User selectedInterim;
     private int CongeDays;
     int id_manager;
@@ -93,12 +94,37 @@ public class DemandeDepController implements Initializable {
         }
     };
 
+
+    private void handleInterimSelection(User selectedInterim) throws SQLException {
+        this.selectedInterim = selectedInterim;
+        Int_field.setText(selectedInterim.getPrenom() + " " + selectedInterim.getNom());
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        User manager = SessionManager.getInstance().getUser();
+        String role = SessionManager.getInstance().getUserRoleName();
+        String departement = SessionManager.getInstance().getUserDepartmentName();
+        if (manager != null) {
+            managerName = manager.getPrenom() + " " + manager.getNom();
+            managerRole = String.valueOf(role);
+        }
+        loadInterims();
+        ListeInterim.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                try {
+                    handleInterimSelection(newValue);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+    }
+
     public void setData(Conge conge, User user) {
         this.conge = conge;
         this.user = user;
         id_manager = user.getIdManager();
-        System.out.println(user.getIdManager());
-        System.out.println(user.getNom());
         CongePerson.setText(user.getNom() + " " + user.getPrenom());
         labelDD.setText(String.valueOf(conge.getDateDebut()));
         labelDF.setText(String.valueOf(conge.getDateFin()));
@@ -121,30 +147,7 @@ public class DemandeDepController implements Initializable {
         startDate = String.valueOf(conge.getDateDebut());
         endDate = String.valueOf(conge.getDateFin());
         to = user.getEmail();
-    }
-    private void handleInterimSelection(User selectedInterim) throws SQLException {
-        this.selectedInterim = selectedInterim;
-        Int_field.setText(selectedInterim.getPrenom() + " " + selectedInterim.getNom());
-    }
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        User manager = SessionManager.getInstance().getUser();
-        String role = SessionManager.getInstance().getUserRoleName();
-        String departement = SessionManager.getInstance().getUserDepartmentName();
-        if (manager != null) {
-            managerName = manager.getPrenom() + " " + manager.getNom();
-            managerRole = String.valueOf(role);
-        }
         loadInterims();
-        ListeInterim.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                try {
-                    handleInterimSelection(newValue);
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
     }
 
     @FXML
@@ -177,32 +180,52 @@ public class DemandeDepController implements Initializable {
             String NotifContent = "";
             String MessageText = Mails.generateApprobationDemande(employeeName, startDate, endDate, managerName, managerRole);
             // xMails.sendEmail(to, Subject, MessageText); // Mailing
+
             try {
-                FXMLLoader loader;
                 boolean isManager = serviceConge.hasSubordinates(this.user.getIdUser());
+                FXMLLoader loader;
                 if (isManager) {
                     System.out.println("User is a manager, redirecting to Interim.fxml");
-                    loader = new FXMLLoader(getClass().getResource("/Interim.fxml"));
+
+                    // Perform the interim assignment directly here
+                    if (selectedInterim != null) {
+                        try {
+                            serviceUser.assignInterimManager(this.user.getIdUser(), selectedInterim.getIdUser());
+                            System.out.println("Interim manager assigned successfully.");
+
+                            // Close the current stage and load DemandeDepListe.fxml
+                            Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                            currentStage.fireEvent(new WindowEvent(currentStage, WindowEvent.WINDOW_CLOSE_REQUEST));
+
+                            // Load DemandeDepListe.fxml
+                            loader = new FXMLLoader(getClass().getResource("/DemandeDepListe.fxml"));
+                            Parent root = loader.load();
+                            Scene scene = currentStage.getScene();
+                            scene.setRoot(root);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            showError("Une erreur s'est produite lors de l'affectation de l'intérim : " + e.getMessage());
+                        }
+                    } else {
+                        showError("Veuillez sélectionner un utilisateur pour l'intérim.");
+                        return; // Stop the process if no interim is selected
+                    }
+
                 } else {
                     System.out.println("User is not a manager, redirecting to DemandeDepListe.fxml");
-                    loader = new FXMLLoader(getClass().getResource("/DemandeDepListe.fxml"));
-                }
-                Parent root = loader.load();
-                if (isManager) {
-                    InterimController interimController = loader.getController();
-                    interimController.setData(this.user); // Set data for the interim controller if needed
-                } else {
-                    DemandeDepListeController demandeDepListeController = loader.getController();
-                    demandeDepListeController.setData(enAtt, app, reg); // Set data for the demande dep liste controller if needed
-                }
 
-                // Replace the current scene content with the new FXML content
-                Scene currentScene = ((Node) event.getSource()).getScene();
-                currentScene.setRoot(root);
+                    // Load DemandeDepListe.fxml
+                    loader = new FXMLLoader(getClass().getResource("/DemandeDepListe.fxml"));
+                    Parent root = loader.load();
+                    Scene currentScene = ((Node) event.getSource()).getScene();
+                    currentScene.setRoot(root);
+                }
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            // Continue with the leave approval process
             int congeDays = (int) ChronoUnit.DAYS.between(conge.getDateDebut(), conge.getDateFin());
             Alert cbon = new Alert(Alert.AlertType.INFORMATION);
             cbon.setTitle("Demande approuvée");
@@ -212,7 +235,7 @@ public class DemandeDepController implements Initializable {
             serviceConge.updateUserSolde(this.user.getIdUser(), conge.getTypeConge().getIdTypeConge(), congeDays);
             serviceConge.updateStatutConge(this.conge.getIdConge(), Statut.Approuvé);
             String NotifSubject = "Votre Demande de congé " + this.conge.getDesignation() + " a été approuvé.";
-            String messageText =  "Votre Demande de congé " + this.conge.getDesignation() + " du "+ this.conge.getDateDebut() +" jusqu'au "+ this.conge.getDateFin() +" a été approuvé.";
+            String messageText = "Votre Demande de congé " + this.conge.getDesignation() + " du " + this.conge.getDateDebut() + " jusqu'au " + this.conge.getDateFin() + " a été approuvé.";
             serviceNotif.NewNotification(user.getIdUser(), NotifSubject, 1, messageText);
         }
     }
@@ -298,6 +321,7 @@ public class DemandeDepController implements Initializable {
             }
         });
     }
+
     @FXML
     void clear(ActionEvent event) {
         Int_field.setText("");
@@ -305,9 +329,9 @@ public class DemandeDepController implements Initializable {
         filteredInterim.setPredicate(user -> true);
         ListeInterim.setItems(filteredInterim);
     }
-    private void loadInterims() {
+
+    void loadInterims() {
         List<User> interimList = serviceUser.getAppropriateUsers(id_manager);
-        System.out.println(interimList);
         ObservableList<User> users = FXCollections.observableArrayList(interimList);
         filteredInterim = new FilteredList<>(users, p -> true);
         ListeInterim.setItems(filteredInterim);
@@ -332,4 +356,13 @@ public class DemandeDepController implements Initializable {
             }
         });
     }
+
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Erreur");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
 }
