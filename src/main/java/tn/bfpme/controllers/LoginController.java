@@ -187,14 +187,13 @@ public class LoginController implements Initializable {
 
             ProcessBuilder pb = new ProcessBuilder(command);
 
-            // Set up the environment variables
             Map<String, String> env = pb.environment();
             /*env.put("PATH", "C:\\Users\\slimb\\AppData\\Local\\Programs\\Python\\Python312\\");
             env.put("PYTHONPATH", "C:\\Users\\slimb\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages");
 
             // Optional: Set the working directory if needed
             pb.directory(new File("C:\\Users\\slimb\\OneDrive\\Bureau\\NewProjectGestionconge\\src\\main\\resources\\assets"));
-*/
+            */
             pb.redirectErrorStream(true);
             Process process = pb.start();
 

@@ -10,6 +10,7 @@ public class User {
     private String email;
     private String mdp;
     private String image;
+    private String face_data1, face_data2, face_data3, face_data4;
     private LocalDate creationDate;
     private int idManager;
     private int idDepartement;
@@ -342,6 +343,7 @@ public class User {
         }
         this.typeConges.add(typeConge);
     }
+
 
     // Getter for typeConges
     public List<TypeConge> getTypeConges() {
