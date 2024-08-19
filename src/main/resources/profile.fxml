@@ -84,7 +84,7 @@
                         </Label>
                      </children>
                   </GridPane>
-                  <ImageView fx:id="CU_pdp" fitHeight="150.0" fitWidth="200.0" layoutX="21.0" layoutY="40.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="18.0">
+                  <ImageView fx:id="CU_pdp" fitHeight="150.0" fitWidth="150.0" layoutX="21.0" layoutY="40.0" pickOnBounds="true" AnchorPane.leftAnchor="18.0">
                      <image>
                         <Image url="@assets/imgs/User.jpg" />
                      </image>

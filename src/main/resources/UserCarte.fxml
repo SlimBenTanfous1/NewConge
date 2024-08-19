@@ -12,7 +12,7 @@
 <AnchorPane fx:id="UserCard" prefHeight="71.0" prefWidth="1235.0" style="-fx-border-radius: 5px; -fx-border-color: #808080; -fx-background-size: 1200 900; -fx-background-radius: 5 5 5 5; -fx-background: linear-gradient(to right, rgba(17, 35, 73, 0.2), rgba(233, 169, 31, 0.06));" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.UserCarteController">
    <children>
       <ImageView fx:id="pdp_card" fitHeight="50.0" fitWidth="50.0" layoutX="14.0" layoutY="12.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="9.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="12.0" />
-      <VBox layoutX="75.0" layoutY="15.0" maxHeight="53.0" prefHeight="48.0" prefWidth="255.0" AnchorPane.bottomAnchor="11.0" AnchorPane.leftAnchor="74.0" AnchorPane.topAnchor="14.0">
+      <VBox layoutX="76.0" layoutY="16.0" maxHeight="53.0" prefHeight="49.0" prefWidth="240.0" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="75.0" AnchorPane.topAnchor="15.0">
          <children>
             <Label fx:id="nomprenom_card" contentDisplay="CENTER" prefHeight="28.0" prefWidth="228.0" styleClass="RobotoBold" text="Ala Moussa">
                <font>
@@ -31,17 +31,17 @@
             <String fx:value="btn-primary" />
             <String fx:value="RobotoRegular" />
          </styleClass></Button>
-      <HBox alignment="CENTER" layoutX="330.0" layoutY="27.0" prefHeight="27.0" prefWidth="111.0" AnchorPane.bottomAnchor="23.0" AnchorPane.leftAnchor="330.0" AnchorPane.rightAnchor="801.0" AnchorPane.topAnchor="27.0">
+      <HBox alignment="CENTER" layoutX="274.0" layoutY="28.0" prefHeight="21.0" prefWidth="191.0" AnchorPane.bottomAnchor="28.0" AnchorPane.leftAnchor="274.0" AnchorPane.rightAnchor="774.0" AnchorPane.topAnchor="28.0">
          <children>
-            <Label fx:id="type_card" alignment="CENTER" maxWidth="159.0" minWidth="97.0" prefHeight="27.0" prefWidth="97.0" styleClass="RobotoRegular" text="Type" />
+            <Label fx:id="type_card" alignment="CENTER" maxWidth="201.0" minWidth="97.0" prefHeight="20.0" prefWidth="201.0" styleClass="RobotoRegular" text="Type" />
          </children>
       </HBox>
-      <HBox alignment="CENTER" layoutX="498.0" layoutY="27.0" prefHeight="25.0" prefWidth="160.0" AnchorPane.bottomAnchor="23.0" AnchorPane.leftAnchor="498.0" AnchorPane.rightAnchor="582.0" AnchorPane.topAnchor="27.0">
+      <HBox alignment="CENTER" layoutX="546.0" layoutY="30.0" prefHeight="21.0" prefWidth="214.0" AnchorPane.bottomAnchor="26.0" AnchorPane.leftAnchor="546.0" AnchorPane.rightAnchor="479.0" AnchorPane.topAnchor="30.0">
          <children>
-            <Label fx:id="statut_card" alignment="CENTER" maxWidth="186.0" minWidth="141.0" prefHeight="23.0" prefWidth="170.0" styleClass="RobotoRegular" text="Statut" />
+            <Label fx:id="statut_card" alignment="CENTER" maxWidth="218.0" minWidth="141.0" prefHeight="18.0" prefWidth="218.0" styleClass="RobotoRegular" text="Statut" />
          </children>
       </HBox>
-      <HBox alignment="CENTER" layoutX="688.0" layoutY="28.0" prefHeight="23.0" prefWidth="300.0" AnchorPane.bottomAnchor="24.0" AnchorPane.leftAnchor="688.0" AnchorPane.rightAnchor="251.0" AnchorPane.topAnchor="28.0">
+      <HBox alignment="CENTER" layoutX="755.0" layoutY="30.0" prefHeight="23.0" prefWidth="300.0" AnchorPane.bottomAnchor="26.0" AnchorPane.leftAnchor="755.0" AnchorPane.rightAnchor="188.0" AnchorPane.topAnchor="30.0">
          <children>
             <Label fx:id="periode_card" alignment="CENTER" contentDisplay="CENTER" maxWidth="327.0" minWidth="200.0" prefHeight="21.0" prefWidth="327.0" styleClass="RobotoRegular" text="Periode" />
          </children>
