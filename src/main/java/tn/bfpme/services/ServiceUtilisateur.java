@@ -26,7 +26,6 @@ public class ServiceUtilisateur implements IUtilisateur {
     public List<User> show() throws SQLException {
         List<User> users = new ArrayList<>();
         String qry = "SELECT * FROM user";
-
         try (PreparedStatement pstm = cnx.prepareStatement(qry); ResultSet rs = pstm.executeQuery()) {
             while (rs.next()) {
                 User user = new User();
@@ -54,14 +53,14 @@ public class ServiceUtilisateur implements IUtilisateur {
             }
 
             String query = "WITH RECURSIVE Subordinates AS ("
-                    + "SELECT ID_User, Nom, Prenom, Email, Image, ID_Departement "
+                    + "SELECT ID_User, Nom, Prenom, ID_Manager, Email, Image, ID_Departement "
                     + "FROM `user` "
                     + "WHERE ID_User = ? "
                     + "UNION ALL "
-                    + "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.Image, u.ID_Departement "
+                    + "SELECT u.ID_User, u.Nom, u.Prenom, u.ID_Manager, u.Email, u.Image, u.ID_Departement "
                     + "FROM `user` u "
                     + "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User ) "
-                    + "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, "
+                    + "SELECT user.ID_User, user.ID_Manager, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, "
                     + "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file, "
                     + "typeconge.Designation, typeconge.Pas, typeconge.Periode, typeconge.File AS tcF FROM `user` "
                     + "JOIN conge ON user.ID_User = conge.ID_User "
@@ -82,6 +81,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 user.setPrenom(rs.getString("Prenom"));
                 user.setEmail(rs.getString("Email"));
                 user.setImage(rs.getString("Image"));
+                user.setIdManager(rs.getInt("ID_Manager"));
                 user.setIdDepartement(rs.getInt("ID_Departement"));
                 if (!users.contains(user)) {
                     users.add(user);
@@ -114,7 +114,17 @@ public class ServiceUtilisateur implements IUtilisateur {
     public UserConge TriType() {
         List<User> users = new ArrayList<>();
         List<Conge> conges = new ArrayList<>();
-        String query = "WITH RECURSIVE Subordinates AS (" + "SELECT ID_User, Nom, Prenom, Email, Image, ID_Departement " + "FROM user " + "WHERE ID_User = ? " + "UNION ALL " + "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.Image, u.ID_Departement " + "FROM user u " + "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User " + ") " + "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, " + "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file " + "FROM user " + "JOIN conge ON user.ID_User = conge.ID_User " + "WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ? ORDER BY conge.TypeConge";
+        String query = "WITH RECURSIVE Subordinates AS ("
+                + "SELECT ID_User, Nom, Prenom, ID_Manager, Email, Image, ID_Departement "
+                + "FROM user "
+                + "WHERE ID_User = ? "
+                + "UNION ALL "
+                + "SELECT u.ID_User, u.Nom, u.Prenom, u.ID_Manager, u.Email, u.Image, u.ID_Departement "
+                + "FROM user u INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User ) "
+                + "SELECT user.ID_User, user.Nom, user.Prenom, user.ID_Manager, user.Email, user.Image, user.ID_Departement, "
+                + "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file "
+                + "FROM user JOIN conge ON user.ID_User = conge.ID_User "
+                + "WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ? ORDER BY conge.TypeConge";
         try {
             if (cnx == null || cnx.isClosed()) {
                 cnx = MyDataBase.getInstance().getCnx();
@@ -132,6 +142,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 user.setPrenom(rs.getString("Prenom"));
                 user.setEmail(rs.getString("Email"));
                 user.setImage(rs.getString("Image"));
+                user.setIdManager(rs.getInt("ID_Manager"));
                 user.setIdDepartement(rs.getInt("ID_Departement"));
                 if (!users.contains(user)) {
                     users.add(user);
@@ -157,7 +168,14 @@ public class ServiceUtilisateur implements IUtilisateur {
     public UserConge TriNom() {
         List<User> users = new ArrayList<>();
         List<Conge> conges = new ArrayList<>();
-        String query = "WITH RECURSIVE Subordinates AS (" + "SELECT ID_User, Nom, Prenom, Email, Image, ID_Departement " + "FROM user " + "WHERE ID_User = ? " + "UNION ALL " + "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.Image, u.ID_Departement " + "FROM user u " + "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User " + ") " + "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, " + "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file " + "FROM user " + "JOIN conge ON user.ID_User = conge.ID_User " + "WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ? ORDER BY user.Nom ";
+        String query = "WITH RECURSIVE Subordinates AS ("
+                + "SELECT ID_User, Nom, Prenom, ID_Manager, Email, Image, ID_Departement FROM user "
+                + "WHERE ID_User = ? UNION ALL SELECT u.ID_User, u.Nom, u.Prenom, u.ID_Manager, u.Email, u.Image, u.ID_Departement "
+                + "FROM user u INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User ) "
+                + "SELECT user.ID_User, user.Nom, user.Prenom, user.ID_Manager, user.Email, user.Image, user.ID_Departement, "
+                + "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file "
+                + "FROM user JOIN conge ON user.ID_User = conge.ID_User "
+                + "WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ? ORDER BY user.Nom ";
         try {
             if (cnx == null || cnx.isClosed()) {
                 cnx = MyDataBase.getInstance().getCnx();
@@ -175,6 +193,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 user.setPrenom(rs.getString("Prenom"));
                 user.setEmail(rs.getString("Email"));
                 user.setImage(rs.getString("Image"));
+                user.setIdManager(rs.getInt("ID_Manager"));
                 user.setIdDepartement(rs.getInt("ID_Departement"));
                 if (!users.contains(user)) {
                     users.add(user);
@@ -199,7 +218,14 @@ public class ServiceUtilisateur implements IUtilisateur {
     public UserConge RechercheUserCongeEnAtt(String searchCriteria) {
         List<User> users = new ArrayList<>();
         List<Conge> conges = new ArrayList<>();
-        String query = "WITH RECURSIVE Subordinates AS (" + "SELECT ID_User, Nom, Prenom, Email, Image, ID_Departement " + "FROM user " + "WHERE ID_User = ? " + "UNION ALL " + "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.Image, u.ID_Departement " + "FROM user u " + "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User " + ") " + "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, " + "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file " + "FROM user " + "JOIN conge ON user.ID_User = conge.ID_User " + "WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) " + "AND conge.Statut = ? ";
+        String query = "WITH RECURSIVE Subordinates AS ("
+                + "SELECT ID_User, Nom, Prenom, ID_Manager, Email, Image, ID_Departement "
+                + "FROM user WHERE ID_User = ? UNION ALL SELECT u.ID_User, u.Nom, u.Prenom, u.ID_Manager, u.Email, u.Image, u.ID_Departement "
+                + "FROM user u INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User ) "
+                + "SELECT user.ID_User, user.Nom, user.Prenom, user.ID_Manager, user.Email, user.Image, user.ID_Departement, "
+                + "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file "
+                + "FROM user JOIN conge ON user.ID_User = conge.ID_User WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) "
+                + "AND conge.Statut = ? ";
 
         // Append search criteria to the query
         if (searchCriteria != null && !searchCriteria.isEmpty()) {
@@ -235,6 +261,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 user.setEmail(rs.getString("Email"));
                 user.setImage(rs.getString("Image"));
                 user.setIdDepartement(rs.getInt("ID_Departement"));
+                user.setIdManager(rs.getInt("ID_Manager"));
                 if (!users.contains(user)) {
                     users.add(user);
                 }
@@ -259,7 +286,13 @@ public class ServiceUtilisateur implements IUtilisateur {
     public UserConge TriPrenom() {
         List<User> users = new ArrayList<>();
         List<Conge> conges = new ArrayList<>();
-        String query = "WITH RECURSIVE Subordinates AS (" + "SELECT ID_User, Nom, Prenom, Email, Image, ID_Departement " + "FROM user " + "WHERE ID_User = ? " + "UNION ALL " + "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.Image, u.ID_Departement " + "FROM user u " + "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User " + ") " + "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, " + "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file " + "FROM user " + "JOIN conge ON user.ID_User = conge.ID_User " + "WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ? ORDER BY user.Prenom";
+        String query = "WITH RECURSIVE Subordinates AS ("
+                + "SELECT ID_User, Nom, Prenom, ID_Manager, Email, Image, ID_Departement "
+                + "FROM user WHERE ID_User = ? UNION ALL SELECT u.ID_User, u.Nom, u.Prenom, u.ID_Manager, u.Email, u.Image, u.ID_Departement "
+                + "FROM user u INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User ) "
+                + "SELECT user.ID_User, user.Nom, user.Prenom, user.ID_Manager, user.Email, user.Image, user.ID_Departement, "
+                + "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file "
+                + "FROM user JOIN conge ON user.ID_User = conge.ID_User WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ? ORDER BY user.Prenom";
         try {
             if (cnx == null || cnx.isClosed()) {
                 cnx = MyDataBase.getInstance().getCnx();
@@ -277,6 +310,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 user.setPrenom(rs.getString("Prenom"));
                 user.setEmail(rs.getString("Email"));
                 user.setImage(rs.getString("Image"));
+                user.setIdManager(rs.getInt("ID_Manager"));
                 user.setIdDepartement(rs.getInt("ID_Departement"));
                 if (!users.contains(user)) {
                     users.add(user);
@@ -301,7 +335,14 @@ public class ServiceUtilisateur implements IUtilisateur {
     public UserConge TriDateDebut() {
         List<User> users = new ArrayList<>();
         List<Conge> conges = new ArrayList<>();
-        String query = "WITH RECURSIVE Subordinates AS (" + "SELECT ID_User, Nom, Prenom, Email, Image, ID_Departement " + "FROM user " + "WHERE ID_User = ? " + "UNION ALL " + "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.Image, u.ID_Departement " + "FROM user u " + "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User " + ") " + "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, " + "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file " + "FROM user " + "JOIN conge ON user.ID_User = conge.ID_User " + "WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ? ORDER BY conge.DateDebut";
+        String query = "WITH RECURSIVE Subordinates AS ("
+                + "SELECT ID_User, Nom, Prenom, ID_Manager, Email, Image, ID_Departement "
+                + "FROM user WHERE ID_User = ? UNION ALL SELECT u.ID_User, u.Nom, u.Prenom, u.ID_Manager, u.Email, u.Image, u.ID_Departement "
+                + "FROM user u INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User ) "
+                + "SELECT user.ID_User, user.Nom, user.Prenom, user.ID_Manager, user.Email, user.Image, user.ID_Departement, "
+                + "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file "
+                + "FROM user JOIN conge ON user.ID_User = conge.ID_User "
+                + "WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ? ORDER BY conge.DateDebut";
         try {
             if (cnx == null || cnx.isClosed()) {
                 cnx = MyDataBase.getInstance().getCnx();
@@ -319,6 +360,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 user.setPrenom(rs.getString("Prenom"));
                 user.setEmail(rs.getString("Email"));
                 user.setImage(rs.getString("Image"));
+                user.setIdManager(rs.getInt("ID_Manager"));
                 user.setIdDepartement(rs.getInt("ID_Departement"));
                 if (!users.contains(user)) {
                     users.add(user);
@@ -344,7 +386,13 @@ public class ServiceUtilisateur implements IUtilisateur {
     public UserConge TriDateFin() {
         List<User> users = new ArrayList<>();
         List<Conge> conges = new ArrayList<>();
-        String query = "WITH RECURSIVE Subordinates AS (" + "SELECT ID_User, Nom, Prenom, Email, Image, ID_Departement " + "FROM user " + "WHERE ID_User = ? " + "UNION ALL " + "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.Image, u.ID_Departement " + "FROM user u " + "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User " + ") " + "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, " + "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file " + "FROM user " + "JOIN conge ON user.ID_User = conge.ID_User " + "WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ? ORDER BY conge.DateFin";
+        String query = "WITH RECURSIVE Subordinates AS ("
+                + "SELECT ID_User, Nom, Prenom, ID_Manager, Email, Image, ID_Departement "
+                + "FROM user WHERE ID_User = ? UNION ALL SELECT u.ID_User, u.Nom, u.Prenom, u.ID_Manager, u.Email, u.Image, u.ID_Departement "
+                + "FROM user u INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User ) "
+                + "SELECT user.ID_User, user.Nom, user.Prenom, user.ID_Manager, user.Email, user.Image, user.ID_Departement, "
+                + "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file "
+                + "FROM user JOIN conge ON user.ID_User = conge.ID_User WHERE user.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ? ORDER BY conge.DateFin";
         try {
             if (cnx == null || cnx.isClosed()) {
                 cnx = MyDataBase.getInstance().getCnx();
@@ -363,6 +411,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 user.setEmail(rs.getString("Email"));
                 user.setImage(rs.getString("Image"));
                 user.setIdDepartement(rs.getInt("ID_Departement"));
+                user.setIdManager(rs.getInt("ID_Manager"));
                 if (!users.contains(user)) {
                     users.add(user);
                 }
@@ -387,7 +436,15 @@ public class ServiceUtilisateur implements IUtilisateur {
     public UserConge AfficherApprove() {
         List<User> users = new ArrayList<>();
         List<Conge> conges = new ArrayList<>();
-        String query = "WITH RECURSIVE Subordinates AS (" + "SELECT ID_User, Nom, Prenom, Email, Image, ID_Departement " + "FROM `user` " + "WHERE ID_User = ? " + "UNION ALL " + "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.Image, u.ID_Departement " + "FROM `user` u " + "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User " + ") " + "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, " + "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file, " + "typeconge.Designation, typeconge.Pas, typeconge.Periode, typeconge.File AS tcF " + "FROM `user` " + "JOIN conge ON `user`.ID_User = conge.ID_User " + "JOIN typeconge ON conge.TypeConge = typeconge.ID_TypeConge " + "WHERE `user`.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) " + "AND conge.Statut = ?";
+        String query = "WITH RECURSIVE Subordinates AS ("
+                + "SELECT ID_User, Nom, Prenom, ID_Manager, Email, Image, ID_Departement "
+                + "FROM `user` WHERE ID_User = ? UNION ALL SELECT u.ID_User, u.Nom,u.Prenom, u.ID_Manager, u.Email, u.Image, u.ID_Departement "
+                + "FROM `user` u INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User ) "
+                + "SELECT user.ID_User, user.Nom, user.Prenom, user.ID_Manager, user.Email, user.Image, user.ID_Departement, "
+                + "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file, "
+                + "typeconge.Designation, typeconge.Pas, typeconge.Periode, typeconge.File AS tcF "
+                + "FROM `user` JOIN conge ON `user`.ID_User = conge.ID_User JOIN typeconge ON conge.TypeConge = typeconge.ID_TypeConge "
+                + "WHERE `user`.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ?";
 
         try {
             if (cnx == null || cnx.isClosed()) {
@@ -408,6 +465,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 user.setEmail(rs.getString("Email"));
                 user.setImage(rs.getString("Image"));
                 user.setIdDepartement(rs.getInt("ID_Departement"));
+                user.setIdManager(rs.getInt("ID_Manager"));
                 // Add idSolde field handling if necessary
                 if (!users.contains(user)) {
                     users.add(user);
@@ -441,7 +499,14 @@ public class ServiceUtilisateur implements IUtilisateur {
     public UserConge AfficherReject() {
         List<User> users = new ArrayList<>();
         List<Conge> conges = new ArrayList<>();
-        String query = "WITH RECURSIVE Subordinates AS (" + "SELECT ID_User, Nom, Prenom, Email, Image, ID_Departement " + "FROM `user` " + "WHERE ID_User = ? " + "UNION ALL " + "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.Image, u.ID_Departement " + "FROM `user` u " + "INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User " + ") " + "SELECT user.ID_User, user.Nom, user.Prenom, user.Email, user.Image, user.ID_Departement, " + "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file, " + "typeconge.Designation, typeconge.Pas, typeconge.Periode, typeconge.File AS tcF " + "FROM `user` " + "JOIN conge ON `user`.ID_User = conge.ID_User " + "JOIN typeconge ON conge.TypeConge = typeconge.ID_TypeConge " + "WHERE `user`.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) " + "AND conge.Statut = ?";
+        String query = "WITH RECURSIVE Subordinates AS ("
+                + "SELECT ID_User, Nom, Prenom, ID_Manager, Email, Image, ID_Departement "
+                + "FROM `user` WHERE ID_User = ? UNION ALL SELECT u.ID_User, u.Nom, u.Prenom, u.ID_Manager, u.Email, u.Image, u.ID_Departement "
+                + "FROM `user` u INNER JOIN Subordinates s ON u.ID_Manager = s.ID_User ) "
+                + "SELECT user.ID_User, user.Nom, user.Prenom, user.ID_Manager, user.Email, user.Image, user.ID_Departement, "
+                + "conge.ID_Conge, conge.TypeConge, conge.Statut, conge.DateFin, conge.DateDebut, conge.description, conge.file, "
+                + "typeconge.Designation, typeconge.Pas, typeconge.Periode, typeconge.File AS tcF FROM `user` JOIN conge ON `user`.ID_User = conge.ID_User "
+                + "JOIN typeconge ON conge.TypeConge = typeconge.ID_TypeConge WHERE `user`.ID_User IN (SELECT ID_User FROM Subordinates WHERE ID_User != ?) AND conge.Statut = ?";
 
         try {
             if (cnx == null || cnx.isClosed()) {
@@ -462,6 +527,7 @@ public class ServiceUtilisateur implements IUtilisateur {
                 user.setEmail(rs.getString("Email"));
                 user.setImage(rs.getString("Image"));
                 user.setIdDepartement(rs.getInt("ID_Departement"));
+                user.setIdManager(rs.getInt("ID_Manager"));
                 // Add idSolde field handling if necessary
                 if (!users.contains(user)) {
                     users.add(user);

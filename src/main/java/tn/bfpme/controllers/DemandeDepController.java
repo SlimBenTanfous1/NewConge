@@ -1,5 +1,9 @@
 package tn.bfpme.controllers;
 
+import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -8,9 +12,10 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
+import javafx.scene.control.*;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -29,7 +34,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -52,15 +59,23 @@ public class DemandeDepController implements Initializable {
     private HBox DocFichHBOX;
     @FXML
     private HBox HBoxAppRef;
+    @FXML
+    private TextField Int_field;
+    @FXML
+    private Label InterimName;
+    @FXML
+    private ListView<User> ListeInterim;
 
     Connection cnx = MyDataBase.getInstance().getCnx();
     private Conge conge;
     private User user;
+    public User selectedInterim;
     private int CongeDays;
+    int id_manager;
     String employeeName, startDate, endDate, managerName, managerRole;
     String to, Subject, MessageText;
     private final ServiceConge serviceConge = new ServiceConge();
-
+    public FilteredList<User> filteredInterim;
     private final ServiceUserSolde serviceUserSolde = new ServiceUserSolde();
     private final ServiceUtilisateur serviceUser = new ServiceUtilisateur();
     private final ServiceNotification serviceNotif = new ServiceNotification();
@@ -68,9 +83,22 @@ public class DemandeDepController implements Initializable {
     UserConge app = serviceUser.AfficherApprove();
     UserConge reg = serviceUser.AfficherReject();
     DemandeDepListeController controller;
+    private ChangeListener<User> userSelectionListener = (observable, oldValue, newValue) -> {
+        if (newValue != null) {
+            try {
+                handleInterimSelection(newValue);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    };
+
     public void setData(Conge conge, User user) {
         this.conge = conge;
         this.user = user;
+        id_manager = user.getIdManager();
+        System.out.println(user.getIdManager());
+        System.out.println(user.getNom());
         CongePerson.setText(user.getNom() + " " + user.getPrenom());
         labelDD.setText(String.valueOf(conge.getDateDebut()));
         labelDF.setText(String.valueOf(conge.getDateFin()));
@@ -94,7 +122,10 @@ public class DemandeDepController implements Initializable {
         endDate = String.valueOf(conge.getDateFin());
         to = user.getEmail();
     }
-
+    private void handleInterimSelection(User selectedInterim) throws SQLException {
+        this.selectedInterim = selectedInterim;
+        Int_field.setText(selectedInterim.getPrenom() + " " + selectedInterim.getNom());
+    }
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         User manager = SessionManager.getInstance().getUser();
@@ -104,6 +135,16 @@ public class DemandeDepController implements Initializable {
             managerName = manager.getPrenom() + " " + manager.getNom();
             managerRole = String.valueOf(role);
         }
+        loadInterims();
+        ListeInterim.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                try {
+                    handleInterimSelection(newValue);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
     }
 
     @FXML
@@ -176,8 +217,6 @@ public class DemandeDepController implements Initializable {
         }
     }
 
-
-
     @FXML
     void RefuserConge(ActionEvent event) throws IOException {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -224,5 +263,73 @@ public class DemandeDepController implements Initializable {
         stage.close();
     }
 
+    @FXML
+    void RechercheInt(KeyEvent event) {
+        String searchText = Int_field.getText().trim().toLowerCase();
+        filteredInterim.setPredicate(user -> {
+            if (searchText == null || searchText.isEmpty()) {
+                return true;
+            }
+            boolean matchesFilter = user.getNom().toLowerCase().contains(searchText) ||
+                    user.getPrenom().toLowerCase().contains(searchText) ||
+                    user.getEmail().toLowerCase().contains(searchText);
 
+            return matchesFilter;
+        });
+
+        ListeInterim.setCellFactory(param -> new ListCell<User>() {
+            @Override
+            protected void updateItem(User user, boolean empty) {
+                super.updateItem(user, empty);
+                if (empty || user == null) {
+                    setText(null);
+                    setDisable(false);
+                } else {
+                    setText(user.getPrenom() + " " + user.getNom());
+                    boolean isInterim = serviceUser.isUserAnInterim(user.getIdUser());
+                    if (isInterim) {
+                        setDisable(true);
+                        setStyle("-fx-background-color: #d3d3d3;"); // Grey out disabled items
+                    } else {
+                        setDisable(false);
+                        setStyle("");
+                    }
+                }
+            }
+        });
+    }
+    @FXML
+    void clear(ActionEvent event) {
+        Int_field.setText("");
+        ListeInterim.getSelectionModel().clearSelection();
+        filteredInterim.setPredicate(user -> true);
+        ListeInterim.setItems(filteredInterim);
+    }
+    private void loadInterims() {
+        List<User> interimList = serviceUser.getAppropriateUsers(id_manager);
+        System.out.println(interimList);
+        ObservableList<User> users = FXCollections.observableArrayList(interimList);
+        filteredInterim = new FilteredList<>(users, p -> true);
+        ListeInterim.setItems(filteredInterim);
+        ListeInterim.setCellFactory(param -> new ListCell<User>() {
+            @Override
+            protected void updateItem(User user, boolean empty) {
+                super.updateItem(user, empty);
+                if (empty || user == null) {
+                    setText(null);
+                    setDisable(false);
+                } else {
+                    setText(user.getPrenom() + " " + user.getNom());
+                    boolean isInterim = serviceUser.isUserAnInterim(user.getIdUser());
+                    if (isInterim) {
+                        setDisable(true);
+                        setStyle("-fx-background-color: #d3d3d3;"); // Grey out disabled items
+                    } else {
+                        setDisable(false);
+                        setStyle("");
+                    }
+                }
+            }
+        });
+    }
 }

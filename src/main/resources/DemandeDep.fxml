@@ -4,7 +4,9 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -13,7 +15,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="524.0" prefWidth="767.0" styleClass="grad-bg" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.DemandeDepController">
+<AnchorPane prefHeight="606.0" prefWidth="767.0" styleClass="grad-bg" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.DemandeDepController">
     <children>
         <Pane prefHeight="93.0" prefWidth="767.0" styleClass="pane-clr">
             <children>
@@ -39,11 +41,11 @@
             </HBox>
             </children>
         </Pane>
-        <Pane layoutX="18.0" layoutY="167.0" prefHeight="309.0" prefWidth="731.0" styleClass="pane1">
+        <Pane layoutX="18.0" layoutY="167.0" prefHeight="376.0" prefWidth="731.0" styleClass="pane1">
          <children>
-            <VBox layoutX="34.0" layoutY="14.0" prefHeight="276.0" prefWidth="317.0">
+            <VBox layoutX="34.0" layoutY="14.0" prefHeight="363.0" prefWidth="317.0">
                <children>
-                  <HBox prefHeight="27.0" prefWidth="250.0">
+                  <HBox alignment="CENTER_LEFT" prefHeight="54.0" prefWidth="317.0">
                      <children>
                         <Label contentDisplay="CENTER" prefHeight="27.0" prefWidth="79.0" text="Type :">
                            <font>
@@ -61,7 +63,7 @@
                         <Insets bottom="5.0" top="6.0" />
                      </padding>
                   </Separator>
-                  <HBox alignment="CENTER" prefHeight="30.0" prefWidth="317.0">
+                  <HBox alignment="CENTER" prefHeight="54.0" prefWidth="317.0">
                      <children>
                         <Label contentDisplay="CENTER" prefHeight="27.0" prefWidth="88.0" text="Periode : ">
                            <font>
@@ -95,14 +97,14 @@
                         <Insets bottom="16.0" top="3.0" />
                      </padding>
                   </Separator>
-                  <HBox prefHeight="78.0" prefWidth="317.0">
+                  <HBox prefHeight="115.0" prefWidth="317.0">
                      <children>
                         <Label contentDisplay="CENTER" prefHeight="20.0" prefWidth="129.0" text="Description : ">
                            <font>
                               <Font name="Roboto Bold" size="17.0" />
                            </font>
                         </Label>
-                        <Label fx:id="labelDesc" alignment="TOP_LEFT" contentDisplay="CENTER" prefHeight="84.0" prefWidth="230.0" text="La description de cette congé" wrapText="true">
+                        <Label fx:id="labelDesc" alignment="TOP_LEFT" contentDisplay="CENTER" prefHeight="115.0" prefWidth="239.0" text="La description de cette congé" wrapText="true">
                            <font>
                               <Font name="Roboto Regular" size="15.0" />
                            </font></Label>
@@ -128,6 +130,26 @@
                   </HBox>
                </children>
             </VBox>
+            <Pane layoutX="371.0" prefHeight="376.0" prefWidth="360.0" styleClass="pane1">
+               <children>
+                  <ListView fx:id="ListeInterim" layoutX="30.0" layoutY="53.0" prefHeight="321.0" prefWidth="301.0" />
+                  <Label alignment="CENTER" contentDisplay="CENTER" layoutX="30.0" layoutY="14.0" prefHeight="27.0" prefWidth="147.0" text="Liste des Employés :" textAlignment="CENTER">
+                     <font>
+                        <Font name="Roboto Bold" size="15.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="Int_field" layoutX="177.0" layoutY="17.0" onKeyReleased="#RechercheInt" prefHeight="21.0" prefWidth="147.0" promptText="Recherche" styleClass="loginTextField" />
+                  <Button layoutX="292.0" layoutY="12.0" mnemonicParsing="false" onAction="#clear" styleClass="settingsButton">
+                     <graphic>
+                        <ImageView fitHeight="21.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@assets/imgs/icons8-close-24.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+               </children>
+            </Pane>
          </children></Pane>
       <Label alignment="CENTER" contentDisplay="CENTER" layoutX="318.0" layoutY="104.0" prefHeight="27.0" prefWidth="177.0" text="Demande de congé : " textAlignment="CENTER">
          <font>
@@ -139,7 +161,7 @@
             <Font name="Roboto Bold Italic" size="15.0" />
          </font>
       </Label>
-      <Button layoutX="361.0" layoutY="483.0" mnemonicParsing="false" onAction="#retour" prefHeight="6.0" prefWidth="91.0" text="Retour">
+      <Button layoutX="338.0" layoutY="562.0" mnemonicParsing="false" onAction="#retour" prefHeight="6.0" prefWidth="91.0" text="Retour">
          <styleClass>
             <String fx:value="btn-primary" />
             <String fx:value="RobotoBold" />
