@@ -180,24 +180,16 @@ public class DemandeDepController implements Initializable {
             String NotifContent = "";
             String MessageText = Mails.generateApprobationDemande(employeeName, startDate, endDate, managerName, managerRole);
             // xMails.sendEmail(to, Subject, MessageText); // Mailing
-
             try {
                 boolean isManager = serviceConge.hasSubordinates(this.user.getIdUser());
                 FXMLLoader loader;
                 if (isManager) {
                     System.out.println("User is a manager, redirecting to Interim.fxml");
-
-                    // Perform the interim assignment directly here
                     if (selectedInterim != null) {
                         try {
                             serviceUser.assignInterimManager(this.user.getIdUser(), selectedInterim.getIdUser());
-                            System.out.println("Interim manager assigned successfully.");
-
-                            // Close the current stage and load DemandeDepListe.fxml
                             Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                             currentStage.fireEvent(new WindowEvent(currentStage, WindowEvent.WINDOW_CLOSE_REQUEST));
-
-                            // Load DemandeDepListe.fxml
                             loader = new FXMLLoader(getClass().getResource("/DemandeDepListe.fxml"));
                             Parent root = loader.load();
                             Scene scene = currentStage.getScene();
@@ -213,7 +205,6 @@ public class DemandeDepController implements Initializable {
 
                 } else {
                     System.out.println("User is not a manager, redirecting to DemandeDepListe.fxml");
-
                     // Load DemandeDepListe.fxml
                     loader = new FXMLLoader(getClass().getResource("/DemandeDepListe.fxml"));
                     Parent root = loader.load();
@@ -224,8 +215,6 @@ public class DemandeDepController implements Initializable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            // Continue with the leave approval process
             int congeDays = (int) ChronoUnit.DAYS.between(conge.getDateDebut(), conge.getDateFin());
             Alert cbon = new Alert(Alert.AlertType.INFORMATION);
             cbon.setTitle("Demande approuvée");
@@ -347,7 +336,7 @@ public class DemandeDepController implements Initializable {
                     boolean isInterim = serviceUser.isUserAnInterim(user.getIdUser());
                     if (isInterim) {
                         setDisable(true);
-                        setStyle("-fx-background-color: #d3d3d3;"); // Grey out disabled items
+                        setStyle("-fx-background-color: #d3d3d3;");
                     } else {
                         setDisable(false);
                         setStyle("");

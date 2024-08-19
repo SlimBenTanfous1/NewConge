@@ -1299,29 +1299,39 @@ public class ServiceUtilisateur implements IUtilisateur {
             psManager.setInt(1, id_manager);
             ResultSet rsManager = psManager.executeQuery();
             if (rsManager.next()) {
-                User manager = new User(rsManager.getInt("ID_User"), rsManager.getString("Nom"), rsManager.getString("Prenom"), rsManager.getString("Email"), rsManager.getString("MDP"), rsManager.getString("Image"), rsManager.getDate("Creation_Date") != null ? rsManager.getDate("Creation_Date").toLocalDate() : null, rsManager.getInt("ID_Departement"), rsManager.getInt("ID_Manager"), rsManager.getInt("idSolde"), rsManager.getInt("ID_Interim"));
-                users.add(manager);
+                int managerId = rsManager.getInt("ID_User");
+                if (!isUser_OFFDUTY(managerId)) {
+                    User manager = new User(managerId, rsManager.getString("Nom"), rsManager.getString("Prenom"), rsManager.getString("Email"), rsManager.getString("MDP"), rsManager.getString("Image"), rsManager.getDate("Creation_Date") != null ? rsManager.getDate("Creation_Date").toLocalDate() : null, rsManager.getInt("ID_Departement"), rsManager.getInt("ID_Manager"), rsManager.getInt("idSolde"), rsManager.getInt("ID_Interim"));
+                    users.add(manager);
+                }
             }
             PreparedStatement psSubordinates = cnx.prepareStatement(subordinatesQuery);
             psSubordinates.setInt(1, id_manager);
             ResultSet rsSubordinates = psSubordinates.executeQuery();
             while (rsSubordinates.next()) {
-                User subordinate = new User(rsSubordinates.getInt("ID_User"), rsSubordinates.getString("Nom"), rsSubordinates.getString("Prenom"), rsSubordinates.getString("Email"), rsSubordinates.getString("MDP"), rsSubordinates.getString("Image"), rsSubordinates.getDate("Creation_Date") != null ? rsSubordinates.getDate("Creation_Date").toLocalDate() : null, rsSubordinates.getInt("ID_Departement"), rsSubordinates.getInt("ID_Manager"), rsSubordinates.getInt("idSolde"), rsSubordinates.getInt("ID_Interim"));
-                users.add(subordinate);
+                int subordinateId = rsSubordinates.getInt("ID_User");
+                if (!isUser_OFFDUTY(subordinateId)) {
+                    User subordinate = new User(subordinateId, rsSubordinates.getString("Nom"), rsSubordinates.getString("Prenom"), rsSubordinates.getString("Email"), rsSubordinates.getString("MDP"), rsSubordinates.getString("Image"), rsSubordinates.getDate("Creation_Date") != null ? rsSubordinates.getDate("Creation_Date").toLocalDate() : null, rsSubordinates.getInt("ID_Departement"), rsSubordinates.getInt("ID_Manager"), rsSubordinates.getInt("idSolde"), rsSubordinates.getInt("ID_Interim"));
+                    users.add(subordinate);
+                }
             }
             PreparedStatement psSameRole = cnx.prepareStatement(sameRoleQuery);
             psSameRole.setInt(1, id_manager);
             psSameRole.setInt(2, id_manager);
             ResultSet rsSameRole = psSameRole.executeQuery();
             while (rsSameRole.next()) {
-                User sameRoleUser = new User(rsSameRole.getInt("ID_User"), rsSameRole.getString("Nom"), rsSameRole.getString("Prenom"), rsSameRole.getString("Email"), rsSameRole.getString("MDP"), rsSameRole.getString("Image"), rsSameRole.getDate("Creation_Date") != null ? rsSameRole.getDate("Creation_Date").toLocalDate() : null, rsSameRole.getInt("ID_Departement"), rsSameRole.getInt("ID_Manager"), rsSameRole.getInt("idSolde"), rsSameRole.getInt("ID_Interim"));
-                users.add(sameRoleUser);
+                int sameRoleId = rsSameRole.getInt("ID_User");
+                if (!isUser_OFFDUTY(sameRoleId)) {
+                    User sameRoleUser = new User(sameRoleId, rsSameRole.getString("Nom"), rsSameRole.getString("Prenom"), rsSameRole.getString("Email"), rsSameRole.getString("MDP"), rsSameRole.getString("Image"), rsSameRole.getDate("Creation_Date") != null ? rsSameRole.getDate("Creation_Date").toLocalDate() : null, rsSameRole.getInt("ID_Departement"), rsSameRole.getInt("ID_Manager"), rsSameRole.getInt("idSolde"), rsSameRole.getInt("ID_Interim"));
+                    users.add(sameRoleUser);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return users;
     }
+
 
     public boolean isUserAnInterim(int userId) {
         String query = "SELECT COUNT(*) FROM user WHERE ID_Interim = ?";
@@ -1350,19 +1360,20 @@ public class ServiceUtilisateur implements IUtilisateur {
     }*/
 
     public boolean isUser_OFFDUTY(int ID_USER) {
-        String Query = "SELECT * FROM `conge` WHERE `ID_User`=? AND CURDATE() BETWEEN `DateDebut` AND `DateFin`";
-        try {
-            PreparedStatement ps = cnx.prepareStatement(Query);
+        String query = "SELECT * FROM `conge` WHERE `ID_User`=? AND `Statut`='Approuvé' AND CURDATE() BETWEEN `DateDebut` AND `DateFin`";
+        try (PreparedStatement ps = cnx.prepareStatement(query)) {
             ps.setInt(1, ID_USER);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return true;
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return true;
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
     }
+
 
     public int getHisInterim(int ID_USER) {
         String Query = "SELECT `ID_Interim` FROM `user` WHERE `ID_User`=?";
