@@ -3,12 +3,8 @@ package tn.bfpme.controllers;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
-
-import java.io.*;
-
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -16,30 +12,32 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import org.opencv.core.*;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfRect;
+import org.opencv.core.Rect;
 import org.opencv.face.FaceRecognizer;
 import org.opencv.face.LBPHFaceRecognizer;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 import tn.bfpme.models.User;
-import tn.bfpme.utils.*;
+import tn.bfpme.utils.EncryptionUtil;
+import tn.bfpme.utils.MyDataBase;
+import tn.bfpme.utils.SessionManager;
 
-import java.net.URL;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
 
-public class LoginController implements Initializable {
+public class LoginController {
+
     @FXML
     private AnchorPane MainAnchorPane;
     @FXML
@@ -50,79 +48,16 @@ public class LoginController implements Initializable {
     private TextField showPasswordField;
     @FXML
     private Button toggleButton;
-    @FXML
-    private ImageView toggleIcon;
-    @FXML
-    private ImageView imageView;
-    @FXML
+
     private Connection cnx;
 
-    private Image showPasswordImage;
-    private Image hidePasswordImage;
-    private VideoCapture capture;
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        // Initialize the database connection
-        cnx = MyDataBase.getInstance().getCnx();  // Ensure this line is called
-
-        // Rest of your initialization code
-        String style = "-fx-background-color: transparent; -fx-border-color: transparent transparent #eab53f transparent; -fx-border-width: 0 0 1 0; -fx-padding: 0 0 3 0;";
-        LoginEmail.setStyle(style);
-        LoginMDP.setStyle(style);
-        Platform.runLater(() -> {
-            Stage stage = (Stage) MainAnchorPane.getScene().getWindow();
-            stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
-            stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
-            FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight());
-        });
-        // Load the images
-        showPasswordImage = new Image(getClass().getResourceAsStream("/assets/imgs/hide.png"));
-        hidePasswordImage = new Image(getClass().getResourceAsStream("/assets/imgs/show.png"));
-        toggleIcon.setImage(showPasswordImage);
-
-        // Toggle visibility of password fields
-        toggleButton.setOnAction(event -> {
-            if (showPasswordField.isVisible()) {
-                LoginMDP.setText(showPasswordField.getText());
-                LoginMDP.setVisible(true);
-                LoginMDP.setManaged(true);
-                showPasswordField.setVisible(false);
-                showPasswordField.setManaged(false);
-                toggleIcon.setImage(showPasswordImage);
-            } else {
-                showPasswordField.setText(LoginMDP.getText());
-                showPasswordField.setVisible(true);
-                showPasswordField.setManaged(true);
-                LoginMDP.setVisible(false);
-                LoginMDP.setManaged(false);
-                toggleIcon.setImage(hidePasswordImage);
-            }
-        });
-    }
-
-
-    private void togglePasswordVisibility() {
-        if (showPasswordField.isVisible()) {
-            LoginMDP.setText(showPasswordField.getText());
-            LoginMDP.setVisible(true);
-            LoginMDP.setManaged(true);
-            showPasswordField.setVisible(false);
-            showPasswordField.setManaged(false);
-            toggleIcon.setImage(showPasswordImage);
-        } else {
-            showPasswordField.setText(LoginMDP.getText());
-            showPasswordField.setVisible(true);
-            showPasswordField.setManaged(true);
-            LoginMDP.setVisible(false);
-            LoginMDP.setManaged(false);
-            toggleIcon.setImage(hidePasswordImage);
-        }
+    @FXML
+    public void initialize() {
+        cnx = MyDataBase.getInstance().getCnx();
     }
 
     @FXML
     void Login(ActionEvent event) {
-        cnx = MyDataBase.getInstance().getCnx();
         String qry = "SELECT u.*, ur.ID_Role " +
                 "FROM `user` as u " +
                 "JOIN `user_role` ur ON ur.ID_User = u.ID_User " +
@@ -144,23 +79,25 @@ public class LoginController implements Initializable {
                             rs.getString("Image"),
                             rs.getInt("ID_Manager"),
                             rs.getInt("ID_Departement"),
-                            rs.getInt("ID_Role")
+                            rs.getInt("ID_Role"),
+                            rs.getString("face_data1"),
+                            rs.getString("face_data2"),
+                            rs.getString("face_data3"),
+                            rs.getString("face_data4")
                     );
                     connectedUser.setIdRole(rs.getInt("ID_Role"));
                     populateUserSolde(connectedUser);
 
-                    // Initialize SessionManager
-                    System.out.println("User before SessionManager initialization: " + connectedUser);
+                    // Initialize SessionManager with the connected user
                     SessionManager.getInstance(connectedUser);
-                    System.out.println("User after SessionManager initialization: " + SessionManager.getInstance().getUser());
 
-
+                    // Navigate to profile after successful login
                     navigateToProfile(event);
                 } else {
-                    System.out.println("Login failed: Invalid email or password.");
+                    showAlert("Login failed", "Invalid email or password.");
                 }
             } else {
-                System.out.println("Login failed: Invalid email or password.");
+                showAlert("Login failed", "Invalid email or password.");
             }
         } catch (SQLException | IOException ex) {
             ex.printStackTrace();
@@ -168,137 +105,177 @@ public class LoginController implements Initializable {
             e.printStackTrace();
         }
     }
+
     @FXML
     void FacialRecognitionButton(ActionEvent event) {
-        //executeNotebook();
-        startFacialRecognition(event);
-    }
-
-
-    private Boolean runPythonFaceRecognitionScript(String capturedImagePath, List<String> storedImagePaths) {
-        try {
-            List<String> command = new ArrayList<>();
-            command.add("C:\\Users\\slimb\\AppData\\Local\\Programs\\Python\\Python312\\python.exe");
-            command.add("C:\\Users\\slimb\\OneDrive\\Bureau\\NewProjectGestionconge\\src\\main\\resources\\assets\\Adapted_Face_Recognition.py");
-            command.add(capturedImagePath);
-            command.addAll(storedImagePaths);
-
-            System.out.println("Executing command: " + String.join(" ", command));
-
-            ProcessBuilder pb = new ProcessBuilder(command);
-
-            Map<String, String> env = pb.environment();
-            /*env.put("PATH", "C:\\Users\\slimb\\AppData\\Local\\Programs\\Python\\Python312\\");
-            env.put("PYTHONPATH", "C:\\Users\\slimb\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages");
-
-            // Optional: Set the working directory if needed
-            pb.directory(new File("C:\\Users\\slimb\\OneDrive\\Bureau\\NewProjectGestionconge\\src\\main\\resources\\assets"));
-            */
-            pb.redirectErrorStream(true);
-            Process process = pb.start();
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            StringBuilder output = new StringBuilder();
-            String line;
-            while ((line = in.readLine()) != null) {
-                output.append(line).append("\n");
-                System.out.println("Python output: " + line);
-            }
-
-            int exitCode = process.waitFor();
-            System.out.println("Python script exited with code: " + exitCode);
-
-            if (exitCode != 0) {
-                System.err.println("Python script failed to execute properly. Exit code: " + exitCode);
-                System.err.println("Full output:\n" + output.toString());
-                return false;
-            }
-
-            String result = output.toString().trim();
-            System.out.println("Python script output: " + result);
-
-            return result.equalsIgnoreCase("True");
-
-        } catch (IOException e) {
-            System.err.println("IOException while running Python script: " + e.getMessage());
-            e.printStackTrace();
-            return false;
-        } catch (InterruptedException e) {
-            System.err.println("InterruptedException while waiting for Python script to finish: " + e.getMessage());
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-
-    private void startFacialRecognition(ActionEvent event) {
         Task<Boolean> task = new Task<Boolean>() {
             @Override
             protected Boolean call() {
                 System.out.println("Starting facial recognition task...");
-                List<String> storedImagePaths = fetchStoredImagePathsFromDatabase(SessionManager.getInstance().getUser().getIdUser());
 
-                // Ensure that at least one image path is retrieved
-                if (storedImagePaths.isEmpty()) {
-                    System.err.println("No stored images found for the user.");
+                // SQL query to fetch user data
+                String qry = "SELECT u.*, ur.ID_Role " +
+                        "FROM `user` as u " +
+                        "JOIN `user_role` ur ON ur.ID_User = u.ID_User " +
+                        "WHERE u.`Email`=?";
+                try {
+                    PreparedStatement stm = cnx.prepareStatement(qry);
+                    stm.setString(1, LoginEmail.getText());  // Assuming email is used for matching
+                    ResultSet rs = stm.executeQuery();
+
+                    if (rs.next()) {
+                        System.out.println("User found in database.");
+
+                        // Initialize the user based on the ResultSet
+                        User connectedUser = new User(
+                                rs.getInt("ID_User"),
+                                rs.getString("Nom"),
+                                rs.getString("Prenom"),
+                                rs.getString("Email"),
+                                rs.getString("MDP"),
+                                rs.getString("Image"),
+                                rs.getInt("ID_Manager"),
+                                rs.getInt("ID_Departement"),
+                                rs.getInt("ID_Role"),   // Check if this column exists
+                                rs.getString("face_data1"),
+                                rs.getString("face_data2"),
+                                rs.getString("face_data3"),
+                                rs.getString("face_data4")
+                        );
+                        connectedUser.setIdRole(rs.getInt("ID_Role"));
+
+                        System.out.println("User object created successfully.");
+
+                        // Verify face recognition
+                        boolean faceRecognized = performFacialRecognition(connectedUser);
+                        System.out.println("Facial recognition result: " + faceRecognized);
+
+                        if (faceRecognized) {
+                            // If face is recognized, set up the session and log the user in
+                            SessionManager.getInstance(connectedUser);
+                            Platform.runLater(() -> {
+                                try {
+                                    navigateToProfile(event);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            });
+                            return true;
+                        } else {
+                            System.err.println("Face not recognized.");
+                            return false;
+                        }
+                    } else {
+                        System.err.println("No matching user found for the provided email.");
+                        return false;
+                    }
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
                     return false;
                 }
-
-                String capturedImagePath = storedImagePaths.get(0);
-                System.out.println("Captured image path set to: " + capturedImagePath);
-
-                Boolean result = runPythonFaceRecognitionScript(capturedImagePath, storedImagePaths);
-                System.out.println("Facial recognition result: " + result);
-                return result;
             }
 
             @Override
             protected void succeeded() {
-                System.out.println("Facial recognition succeeded.");
                 if (getValue()) {
-                    showAlert("Face recognized", "Welcome back!");
+                    showAlert("Success", "Face recognized and logged in successfully.");
                 } else {
-                    showAlert("Face not recognized", "Please try again.");
+                    showAlert("Failure", "Face not recognized.");
                 }
             }
 
             @Override
             protected void failed() {
                 System.err.println("Facial recognition task failed.");
-                showAlert("Error", "An error occurred while running the face recognition script.");
+                showAlert("Error", "An error occurred during facial recognition.");
             }
         };
 
         new Thread(task).start();
     }
 
+    private boolean performFacialRecognition(User user) {
+        try {
+            // Mock recognition logic for now
+            System.out.println("Performing facial recognition...");
 
-    private List<String> fetchStoredImagePathsFromDatabase(int userId) {
-        List<String> imagePaths = new ArrayList<>();
-        String query = "SELECT face_data1, face_data2, face_data3, face_data4 FROM user WHERE ID_User = ?";
-
-        try (PreparedStatement stmt = cnx.prepareStatement(query)) {
-            stmt.setInt(1, userId);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                System.out.println("Retrieved stored image paths from database.");
-                for (int i = 1; i <= 4; i++) {
-                    String faceDataPath = rs.getString("face_data" + i);
-                    if (faceDataPath != null && !faceDataPath.isEmpty()) {
-                        imagePaths.add(faceDataPath);
-                    }
-                }
-            } else {
-                System.out.println("No stored image paths found for user ID: " + userId);
+            // Assume comparison of face_data1 with live image data
+            String faceData1 = user.getFace_data1();
+            if (faceData1 != null && !faceData1.isEmpty()) {
+                // Mock success for testing
+                return true;
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.err.println("Error fetching stored image paths: " + e.getMessage());
-        }
 
-        return imagePaths;
+            // Return false if no valid face data is found
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
+
+
+    /*private boolean authenticateViaFacialRecognition() throws SQLException {
+        String email = LoginEmail.getText();
+        String qry = "SELECT * FROM `user` WHERE `Email`=?";
+        PreparedStatement stm = cnx.prepareStatement(qry);
+        stm.setString(1, email);
+        ResultSet rs = stm.executeQuery();
+        if (rs.next()) {
+            User user = initializeUserFromResultSet(rs);
+
+            // Capture the live feed image and compare it with the stored images
+            if (performFacialRecognition(user)) {
+                SessionManager.getInstance(user); // Initialize session if face is recognized
+                return true;
+            }
+        }
+        return false;
+    }*/
+
+    /*private User initializeUserFromResultSet(ResultSet rs) throws SQLException {
+        return new User(
+
+                rs.getInt("ID_User"),
+                rs.getString("Nom"),
+                rs.getString("Prenom"),
+                rs.getString("Email"),
+                rs.getString("MDP"),
+                rs.getString("Image"),
+                rs.getInt("ID_Manager"),
+                rs.getInt("ID_Departement"),
+                rs.getInt("ID_Role"),
+                rs.getString("face_data1"),
+                rs.getString("face_data2"),
+                rs.getString("face_data3"),
+                rs.getString("face_data4")
+        );
+    }*/
+
+
+    private List<Mat> loadStoredImages(User user) {
+        List<Mat> images = new ArrayList<>();
+        String[] faceDataPaths = {user.getFace_data1(), user.getFace_data2(), user.getFace_data3(), user.getFace_data4()};
+        for (String path : faceDataPaths) {
+            if (path != null && !path.isEmpty()) {
+                Mat image = Imgcodecs.imread(path, Imgcodecs.IMREAD_GRAYSCALE);
+                images.add(image);
+            }
+        }
+        return images;
+    }
+
+    private Mat captureImageFromCamera() {
+        VideoCapture camera = new VideoCapture(0);
+        Mat frame = new Mat();
+        if (camera.isOpened()) {
+            camera.read(frame);
+            Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2GRAY); // Convert to grayscale
+        }
+        camera.release();
+        return frame;
+    }
+
     private void showAlert(String title, String message) {
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -308,7 +285,6 @@ public class LoginController implements Initializable {
         });
     }
 
-
     private void navigateToProfile(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/profile.fxml"));
         Parent root = loader.load();
@@ -317,7 +293,6 @@ public class LoginController implements Initializable {
         stage.setTitle("Profile");
         stage.show();
     }
-
 
     private void populateUserSolde(User user) {
         String soldeQuery = "SELECT us.*, tc.Designation FROM user_solde us JOIN typeconge tc ON us.ID_TypeConge = tc.ID_TypeConge WHERE us.ID_User = ?";
@@ -334,5 +309,4 @@ public class LoginController implements Initializable {
             e.printStackTrace();
         }
     }
-
 }

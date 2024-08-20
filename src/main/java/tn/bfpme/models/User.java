@@ -176,6 +176,23 @@ public class User {
 
     }
 
+    public User(int idUser, String nom, String prenom, String email, String mdp, String image, int idManager, int idDepartement, int idRole, String faceData1, String faceData2, String faceData3, String faceData4) {
+        this.idUser = idUser;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.email = email;
+        this.mdp = mdp;
+        this.image = image;
+        this.idManager = idManager;
+        this.idDepartement = idDepartement;
+        this.idRole = idRole;
+        this.face_data1 = faceData1;
+        this.face_data2 = faceData2;
+        this.face_data3 = faceData3;
+        this.face_data4 = faceData4;
+
+    }
+
     public int getID_UserSolde() {
         return ID_UserSolde;
     }
@@ -273,7 +290,37 @@ public class User {
         this.roleNom = roleNom;
     }
 
+    public String getFace_data1() {
+        return face_data1;
+    }
 
+    public void setFace_data1(String face_data1) {
+        this.face_data1 = face_data1;
+    }
+
+    public String getFace_data2() {
+        return face_data2;
+    }
+
+    public void setFace_data2(String face_data2) {
+        this.face_data2 = face_data2;
+    }
+
+    public String getFace_data3() {
+        return face_data3;
+    }
+
+    public void setFace_data3(String face_data3) {
+        this.face_data3 = face_data3;
+    }
+
+    public String getFace_data4() {
+        return face_data4;
+    }
+
+    public void setFace_data4(String face_data4) {
+        this.face_data4 = face_data4;
+    }
 
     public String getManagerName() {
         return managerName == null || managerName.isEmpty() ? "Il n'y a pas de manager" : managerName;
