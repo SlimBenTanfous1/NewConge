@@ -22,6 +22,7 @@ import org.opencv.face.FaceRecognizer;
 import org.opencv.face.LBPHFaceRecognizer;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.videoio.VideoCapture;
 import tn.bfpme.models.User;
 import tn.bfpme.utils.EncryptionUtil;
@@ -48,12 +49,29 @@ public class LoginController {
     private TextField showPasswordField;
     @FXML
     private Button toggleButton;
+    private VideoCapture camera;
 
     private Connection cnx;
 
     @FXML
     public void initialize() {
         cnx = MyDataBase.getInstance().getCnx();
+        initializeCamera(); // Initialize camera once
+    }
+
+    private void initializeCamera() {
+        try {
+            camera = new VideoCapture(0);
+            if (!camera.isOpened()) {
+                showAlert("Error", "Unable to access camera.");
+                System.err.println("Error: Camera could not be opened.");
+            } else {
+                System.out.println("Camera initialized successfully.");
+            }
+        } catch (Exception e) {
+            showAlert("Error", "Camera initialization failed.");
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -107,135 +125,213 @@ public class LoginController {
     }
 
     @FXML
-    void FacialRecognitionButton(ActionEvent event) {
-        Task<Boolean> task = new Task<Boolean>() {
-            @Override
-            protected Boolean call() {
-                System.out.println("Starting facial recognition task...");
+    private void FacialRecognitionButton(ActionEvent event) {
+        try {
+            if (camera == null || !camera.isOpened()) {
+                showAlert("Error", "Camera is not accessible.");
+                return;
+            }
 
-                // SQL query to fetch user data
-                String qry = "SELECT u.*, ur.ID_Role " +
-                        "FROM `user` as u " +
-                        "JOIN `user_role` ur ON ur.ID_User = u.ID_User " +
-                        "WHERE u.`Email`=?";
-                try {
-                    PreparedStatement stm = cnx.prepareStatement(qry);
-                    stm.setString(1, LoginEmail.getText());  // Assuming email is used for matching
-                    ResultSet rs = stm.executeQuery();
+            Mat capturedFrame = captureImageFromCamera();
+            if (capturedFrame == null || capturedFrame.empty()) {
+                showAlert("Error", "Failed to capture image from camera.");
+                return;
+            }
 
-                    if (rs.next()) {
-                        System.out.println("User found in database.");
+            // Perform facial recognition
+            Task<Boolean> task = new Task<Boolean>() {
+                @Override
+                protected Boolean call() {
+                    System.out.println("Starting basic face detection...");
+                    return basicFaceDetectionTest(capturedFrame);
+                }
 
-                        // Initialize the user based on the ResultSet
-                        User connectedUser = new User(
-                                rs.getInt("ID_User"),
-                                rs.getString("Nom"),
-                                rs.getString("Prenom"),
-                                rs.getString("Email"),
-                                rs.getString("MDP"),
-                                rs.getString("Image"),
-                                rs.getInt("ID_Manager"),
-                                rs.getInt("ID_Departement"),
-                                rs.getInt("ID_Role"),   // Check if this column exists
-                                rs.getString("face_data1"),
-                                rs.getString("face_data2"),
-                                rs.getString("face_data3"),
-                                rs.getString("face_data4")
-                        );
-                        connectedUser.setIdRole(rs.getInt("ID_Role"));
+                protected void succeeded() {
+                    System.out.println("Facial recognition task succeeded.");
+                    if (getValue()) {
+                        try {
+                            // Pass the captured frame to getRecognizedUser
+                            User recognizedUser = getRecognizedUser(capturedFrame); // Pass the captured frame here
 
-                        System.out.println("User object created successfully.");
+                            if (recognizedUser != null) {
+                                // Initialize the SessionManager with the recognized user
+                                SessionManager.getInstance(recognizedUser);
 
-                        // Verify face recognition
-                        boolean faceRecognized = performFacialRecognition(connectedUser);
-                        System.out.println("Facial recognition result: " + faceRecognized);
-
-                        if (faceRecognized) {
-                            // If face is recognized, set up the session and log the user in
-                            SessionManager.getInstance(connectedUser);
-                            Platform.runLater(() -> {
-                                try {
-                                    navigateToProfile(event);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            });
-                            return true;
-                        } else {
-                            System.err.println("Face not recognized.");
-                            return false;
+                                // Navigate to profile after successful login
+                                navigateToProfile(event);
+                            } else {
+                                showAlert("Face not recognized", "Please try again.");
+                            }
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                            showAlert("Error", "Database error during facial recognition.");
                         }
                     } else {
-                        System.err.println("No matching user found for the provided email.");
-                        return false;
+                        showAlert("Face not recognized", "Please try again.");
                     }
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                    return false;
                 }
-            }
 
-            @Override
-            protected void succeeded() {
-                if (getValue()) {
-                    showAlert("Success", "Face recognized and logged in successfully.");
-                } else {
-                    showAlert("Failure", "Face not recognized.");
+
+                @Override
+                protected void failed() {
+                    System.err.println("Facial recognition task failed.");
+                    showAlert("Error", "An error occurred during facial recognition.");
                 }
-            }
-
-            @Override
-            protected void failed() {
-                System.err.println("Facial recognition task failed.");
-                showAlert("Error", "An error occurred during facial recognition.");
-            }
-        };
-
-        new Thread(task).start();
-    }
-
-    private boolean performFacialRecognition(User user) {
-        try {
-            // Mock recognition logic for now
-            System.out.println("Performing facial recognition...");
-
-            // Assume comparison of face_data1 with live image data
-            String faceData1 = user.getFace_data1();
-            if (faceData1 != null && !faceData1.isEmpty()) {
-                // Mock success for testing
-                return true;
-            }
-
-            // Return false if no valid face data is found
-            return false;
+            };
+            new Thread(task).start();
         } catch (Exception e) {
             e.printStackTrace();
+            showAlert("Error", "An unexpected error occurred during facial recognition.");
+        }
+    }
+
+    private Mat captureImageFromCamera() {
+        try {
+            Mat frame = new Mat();
+            if (camera.isOpened()) {
+                camera.read(frame);
+                if (frame.empty()) {
+                    System.err.println("Error: Captured frame is empty.");
+                    return null;
+                }
+                Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2GRAY); // Convert to grayscale
+                System.out.println("Image captured successfully.");
+                return frame;
+            }
+            return null;
+        } catch (Exception e) {
+            System.err.println("Error during image capture: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private boolean basicFaceDetectionTest(Mat capturedFrame) {
+        try {
+            System.out.println("Starting basic face detection...");
+
+            // Load the Haar cascade for face detection
+            String haarCascadePath = "src/main/resources/assets/FacialRegDATA/XML/haarcascades/haarcascade_frontalface_default.xml"; // Replace with the correct path to the Haar cascade
+            CascadeClassifier faceDetector = new CascadeClassifier(haarCascadePath);
+
+            if (faceDetector.empty()) {
+                System.err.println("Failed to load Haar cascade file.");
+                return false;
+            }
+
+            // Detect faces in the captured frame
+            MatOfRect faceDetections = new MatOfRect();
+            faceDetector.detectMultiScale(capturedFrame, faceDetections);
+
+            if (faceDetections.toArray().length > 0) {
+                System.out.println("Face detected in the captured frame.");
+                return true;
+            } else {
+                System.out.println("No faces detected in the captured frame.");
+                return false;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Exception during basic face detection: " + e.getMessage());
             return false;
         }
     }
 
-
-    /*private boolean authenticateViaFacialRecognition() throws SQLException {
-        String email = LoginEmail.getText();
-        String qry = "SELECT * FROM `user` WHERE `Email`=?";
+    private User getRecognizedUser(Mat capturedFrame) throws SQLException {
+        String qry = "SELECT u.*, ur.ID_Role " +
+                "FROM `user` as u " +
+                "JOIN `user_role` ur ON ur.ID_User = u.ID_User";
         PreparedStatement stm = cnx.prepareStatement(qry);
-        stm.setString(1, email);
         ResultSet rs = stm.executeQuery();
-        if (rs.next()) {
-            User user = initializeUserFromResultSet(rs);
 
-            // Capture the live feed image and compare it with the stored images
-            if (performFacialRecognition(user)) {
-                SessionManager.getInstance(user); // Initialize session if face is recognized
-                return true;
+        while (rs.next()) {
+            User user = initializeUserFromResultSet(rs);
+            List<Mat> storedImages = loadStoredImages(user);
+
+            // Compare the captured frame against all stored images of the user
+            if (compareFaces(capturedFrame, storedImages)) {
+                return user; // Return the recognized user
             }
         }
-        return false;
-    }*/
+        return null; // No user recognized
+    }
 
-    /*private User initializeUserFromResultSet(ResultSet rs) throws SQLException {
+    private boolean compareFaces(Mat capturedFrame, List<Mat> storedImages) {
+        try {
+            // Convert the captured frame to grayscale if it's not already
+            Mat grayscaleCapturedFrame = new Mat();
+            if (capturedFrame.channels() > 1) {
+                Imgproc.cvtColor(capturedFrame, grayscaleCapturedFrame, Imgproc.COLOR_BGR2GRAY);
+            } else {
+                grayscaleCapturedFrame = capturedFrame;
+            }
+
+            // Initialize the face recognizer (using LBPH in this case)
+            FaceRecognizer faceRecognizer = LBPHFaceRecognizer.create();
+
+            // Train the recognizer with the stored images
+            List<Mat> images = new ArrayList<>();
+            Mat labels = new Mat(storedImages.size(), 1, CvType.CV_32SC1);
+
+            for (int i = 0; i < storedImages.size(); i++) {
+                images.add(storedImages.get(i));
+                labels.put(i, 0, i);  // Assuming each image has a unique label
+            }
+
+            faceRecognizer.train(images, labels);
+
+            // Predict the label of the captured frame
+            int[] label = new int[1];
+            double[] confidence = new double[1];
+            faceRecognizer.predict(grayscaleCapturedFrame, label, confidence);
+
+            // Set a threshold for confidence to consider the prediction as successful
+            double confidenceThreshold = 50.0; // You can adjust this value as needed
+
+            if (confidence[0] < confidenceThreshold) {
+                System.out.println("Face recognized with confidence: " + confidence[0]);
+                return true; // Face recognized successfully
+            } else {
+                System.out.println("Face not recognized. Confidence: " + confidence[0]);
+                return false; // Face not recognized
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false; // Return false if any exception occurs
+        }
+    }
+
+
+    private List<Mat> loadStoredImages(User user) {
+        List<Mat> images = new ArrayList<>();
+        String[] faceDataPaths = {user.getFace_data1(), user.getFace_data2(), user.getFace_data3(), user.getFace_data4()};
+
+        for (String path : faceDataPaths) {
+            if (path != null && !path.isEmpty()) {
+                Mat image = Imgcodecs.imread(path, Imgcodecs.IMREAD_GRAYSCALE);
+                if (image != null && !image.empty()) {
+                    images.add(image);
+                } else {
+                    System.err.println("Failed to load image from path: " + path);
+                }
+            }
+        }
+
+        return images;
+    }
+
+
+    private ResultSet getAllUsers() throws SQLException {
+        String qry = "SELECT * FROM `user`";
+        PreparedStatement stm = cnx.prepareStatement(qry);
+        return stm.executeQuery();
+    }
+
+    private User initializeUserFromResultSet(ResultSet rs) throws SQLException {
         return new User(
-
                 rs.getInt("ID_User"),
                 rs.getString("Nom"),
                 rs.getString("Prenom"),
@@ -250,30 +346,6 @@ public class LoginController {
                 rs.getString("face_data3"),
                 rs.getString("face_data4")
         );
-    }*/
-
-
-    private List<Mat> loadStoredImages(User user) {
-        List<Mat> images = new ArrayList<>();
-        String[] faceDataPaths = {user.getFace_data1(), user.getFace_data2(), user.getFace_data3(), user.getFace_data4()};
-        for (String path : faceDataPaths) {
-            if (path != null && !path.isEmpty()) {
-                Mat image = Imgcodecs.imread(path, Imgcodecs.IMREAD_GRAYSCALE);
-                images.add(image);
-            }
-        }
-        return images;
-    }
-
-    private Mat captureImageFromCamera() {
-        VideoCapture camera = new VideoCapture(0);
-        Mat frame = new Mat();
-        if (camera.isOpened()) {
-            camera.read(frame);
-            Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2GRAY); // Convert to grayscale
-        }
-        camera.release();
-        return frame;
     }
 
     private void showAlert(String title, String message) {
