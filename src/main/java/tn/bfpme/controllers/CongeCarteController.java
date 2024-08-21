@@ -35,6 +35,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -66,7 +67,7 @@ public class CongeCarteController implements Initializable {
 
         Connection cnx = MyDataBase.getInstance().getCnx();
         btnViewMsg.setDisable(true);
-        String qry = "SELECT TypeConge, Statut FROM conge WHERE ID_User = ? AND ID_Conge = ?";
+        String qry = "SELECT TypeConge, Statut, file FROM conge WHERE ID_User = ? AND ID_Conge = ?";
         try {
             PreparedStatement stm = cnx.prepareStatement(qry);
             stm.setInt(1, SessionManager.getInstance().getUser().getIdUser());
@@ -80,26 +81,22 @@ public class CongeCarteController implements Initializable {
                 if (Statut.Rejeté.toString().equals(rs.getString("Statut"))) {
                     btnViewMsg.setDisable(false);
                 }
-                /*if ("Annuel".equals(rs.getString("TypeConge")) || "Sous_solde".equals(rs.getString("TypeConge"))) {
+            String qry2 = "SELECT tc.File FROM typeconge tc JOIN conge c ON tc.ID_TypeConge = c.TypeConge WHERE c.ID_Conge = ?;";
+            PreparedStatement stm2 = cnx.prepareStatement(qry2);
+            stm2.setInt(1, this.conge.getIdConge());
+            ResultSet rs2 = stm2.executeQuery();
+            while (rs2.next()) {
+                if (rs2.getBoolean("File") == false ) {
                     btnViewFile.setDisable(true);
                     TTViewFile = new Tooltip();
                     TTViewFile.setText("Fichier non disponible");
                     Tooltip.install(btnViewFile, TTViewFile);
-                }*/
-            }
-            String qry2 = "SELECT tc.file FROM conge c JOIN typeconge tc ON c.TypeConge = tc.ID_TypeConge WHERE c.ID_Conge = ?";
-            PreparedStatement stm2 = cnx.prepareStatement(qry2);
-            stm2.setInt(1, this.conge.getIdConge());
-            ResultSet rs2 = stm.executeQuery();
-            while (rs2.next()) {
-                if (rs2.getInt("file") == 0) {
-                    btnViewFile.setDisable(true);
                 }
-                if (rs2.getInt("file") == 1) {
+                if (rs2.getBoolean("File") == true) {
                     btnViewFile.setDisable(false);
                 }
             }
-
+            }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -150,8 +147,17 @@ public class CongeCarteController implements Initializable {
 
     @FXML
     void suppConge(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Êtes vous sûrs?");
+        alert.setHeaderText("Êtes-vous certain de vouloir supprimer votre demande de congé ?");
+        ButtonType Oui = new ButtonType("Oui");
+        ButtonType Non = new ButtonType("Non");
+        alert.getButtonTypes().setAll(Oui, Non);
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == Oui) {
         CongeS.deleteCongeByID(cid);
         ((GridPane) Card.getParent()).getChildren().remove(Card);
+        }
     }
 
     @FXML

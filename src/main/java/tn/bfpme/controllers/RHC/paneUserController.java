@@ -1870,7 +1870,6 @@ public class paneUserController extends AttributionSoldeController implements In
 
     private void handleUserSelection(User selectedUser) {
         this.selectedUser = selectedUser;
-        System.out.println("Selected user: " + selectedUser);
         if (selectedUser != null) {
             if (stateAff == 3) {
                 roleListView.setDisable(true);
