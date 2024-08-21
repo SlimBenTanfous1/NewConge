@@ -152,12 +152,12 @@ public class LoginController {
                 return;
             }
 
-            // Perform facial recognition using AWS Rekognition
+            // Perform facial recognition locally
             Task<Boolean> task = new Task<Boolean>() {
                 @Override
                 protected Boolean call() {
-                    System.out.println("Starting facial recognition with AWS Rekognition...");
-                    return searchFaceInRekognition(capturedFrame);
+                    System.out.println("Starting local facial recognition...");
+                    return performLocalFacialRecognition(capturedFrame);
                 }
 
                 @Override
@@ -166,7 +166,7 @@ public class LoginController {
 
                     if (getValue()) {
                         try {
-                            User recognizedUser = getRecognizedUser(capturedFrame); // Use capturedFrame instead of tempImagePath
+                            User recognizedUser = getRecognizedUser(capturedFrame);
 
                             if (recognizedUser != null) {
                                 // Initialize the SessionManager with the recognized user
@@ -200,6 +200,22 @@ public class LoginController {
             showAlert("Error", "An unexpected error occurred during facial recognition.");
         }
     }
+    private boolean performLocalFacialRecognition(Mat capturedFrame) {
+        try {
+            User loggedInUser = SessionManager.getInstance().getUser(); // Assuming the user is already logged in
+
+            // Load images from the database
+            List<Mat> storedImages = loadStoredImagesFromDatabase(loggedInUser);
+
+            // Compare the captured frame against stored images
+            return compareFaces(capturedFrame, storedImages);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
     private Mat captureImageFromCamera() {
         try {
@@ -387,6 +403,25 @@ public class LoginController {
             return null;
         }
     }
+    private List<Mat> loadStoredImagesFromDatabase(User user) throws IOException {
+        List<Mat> images = new ArrayList<>();
+        String[] faceDataPaths = {user.getFace_data1(), user.getFace_data2(), user.getFace_data3(), user.getFace_data4()};
+
+        for (String faceDataPath : faceDataPaths) {
+            if (faceDataPath != null && !faceDataPath.isEmpty()) {
+                byte[] imageBytes = faceDataPath.getBytes();
+                Mat image = Imgcodecs.imdecode(new MatOfByte(imageBytes), Imgcodecs.IMREAD_GRAYSCALE);
+                if (image != null && !image.empty()) {
+                    images.add(image);
+                } else {
+                    System.err.println("Failed to load image from the database.");
+                }
+            }
+        }
+
+        return images;
+    }
+
 
     private boolean compareFaces(Mat capturedFrame, List<Mat> storedImages) {
         try {
@@ -432,6 +467,7 @@ public class LoginController {
             return false; // Return false if any exception occurs
         }
     }
+
 
     private List<Mat> loadStoredImages(User user) {
         List<Mat> images = new ArrayList<>();
