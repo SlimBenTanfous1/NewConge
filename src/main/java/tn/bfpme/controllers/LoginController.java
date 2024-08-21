@@ -16,19 +16,33 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
 import org.opencv.core.MatOfRect;
-import org.opencv.core.Rect;
 import org.opencv.face.FaceRecognizer;
 import org.opencv.face.LBPHFaceRecognizer;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.videoio.VideoCapture;
+import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.rekognition.RekognitionClient;
+import software.amazon.awssdk.services.rekognition.model.FaceMatch;
+import software.amazon.awssdk.services.rekognition.model.S3Object;
+import software.amazon.awssdk.services.rekognition.model.SearchFacesByImageRequest;
+import software.amazon.awssdk.services.rekognition.model.SearchFacesByImageResponse;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import tn.bfpme.models.User;
 import tn.bfpme.utils.EncryptionUtil;
 import tn.bfpme.utils.MyDataBase;
 import tn.bfpme.utils.SessionManager;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -138,20 +152,21 @@ public class LoginController {
                 return;
             }
 
-            // Perform facial recognition
+            // Perform facial recognition using AWS Rekognition
             Task<Boolean> task = new Task<Boolean>() {
                 @Override
                 protected Boolean call() {
-                    System.out.println("Starting basic face detection...");
-                    return basicFaceDetectionTest(capturedFrame);
+                    System.out.println("Starting facial recognition with AWS Rekognition...");
+                    return searchFaceInRekognition(capturedFrame);
                 }
 
+                @Override
                 protected void succeeded() {
                     System.out.println("Facial recognition task succeeded.");
+
                     if (getValue()) {
                         try {
-                            // Pass the captured frame to getRecognizedUser
-                            User recognizedUser = getRecognizedUser(capturedFrame); // Pass the captured frame here
+                            User recognizedUser = getRecognizedUser(capturedFrame); // Use capturedFrame instead of tempImagePath
 
                             if (recognizedUser != null) {
                                 // Initialize the SessionManager with the recognized user
@@ -172,7 +187,6 @@ public class LoginController {
                         showAlert("Face not recognized", "Please try again.");
                     }
                 }
-
 
                 @Override
                 protected void failed() {
@@ -208,6 +222,79 @@ public class LoginController {
         }
     }
 
+    private boolean searchFaceInRekognition(Mat capturedFrame) {
+        try {
+            // Convert the Mat object to a temporary image file
+            String tempImagePath = saveCapturedImage(capturedFrame);
+
+            RekognitionClient rekognitionClient = RekognitionClient.builder()
+                    .region(Region.EU_CENTRAL_1)
+                    .credentialsProvider(ProfileCredentialsProvider.create())
+                    .build();
+
+            String bucketName = "facialrecjava";
+            String collectionId = "MyCollection"; // Your Rekognition collection ID
+            String s3ObjectName = "captured_face.jpg"; // Image name uploaded to S3
+
+            S3Object s3Object = S3Object.builder()
+                    .bucket(bucketName)
+                    .name(s3ObjectName)
+                    .build();
+
+            software.amazon.awssdk.services.rekognition.model.Image image = software.amazon.awssdk.services.rekognition.model.Image.builder()
+                    .s3Object(s3Object)
+                    .build();
+
+            SearchFacesByImageRequest searchFacesByImageRequest = SearchFacesByImageRequest.builder()
+                    .collectionId(collectionId)
+                    .image(image)
+                    .build();
+
+            SearchFacesByImageResponse searchFacesByImageResponse = rekognitionClient.searchFacesByImage(searchFacesByImageRequest);
+            List<FaceMatch> faceMatches = searchFacesByImageResponse.faceMatches();
+
+            return !faceMatches.isEmpty();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private String saveCapturedImage(Mat frame) {
+        // Save the captured frame to a temporary file
+        String tempImagePath = System.getProperty("java.io.tmpdir") + "captured_face.jpg";
+        Imgcodecs.imwrite(tempImagePath, frame);
+        System.out.println("Saved captured image to: " + tempImagePath);
+
+        // Upload the image to S3
+        uploadImageToS3(tempImagePath);
+
+        return tempImagePath;
+    }
+    private void uploadImageToS3(String imagePath) {
+        try {
+            S3Client s3 = S3Client.builder()
+                    .region(Region.EU_CENTRAL_1)
+                    .credentialsProvider(ProfileCredentialsProvider.create())
+                    .build();
+
+            String bucketName = "facialrecjava";
+            String key = "captured_face.jpg"; // You might want to use a unique name for each upload
+
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(key)
+                    .build();
+
+            s3.putObject(putObjectRequest, RequestBody.fromFile(new File(imagePath)));
+
+            System.out.println("Uploaded image to S3: " + key);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     private boolean basicFaceDetectionTest(Mat capturedFrame) {
         try {
             System.out.println("Starting basic face detection...");
@@ -249,14 +336,56 @@ public class LoginController {
 
         while (rs.next()) {
             User user = initializeUserFromResultSet(rs);
-            List<Mat> storedImages = loadStoredImages(user);
+
+            // Load images directly from S3 instead of local paths
+            List<Mat> storedImages = loadStoredImagesFromS3(user);
 
             // Compare the captured frame against all stored images of the user
             if (compareFaces(capturedFrame, storedImages)) {
                 return user; // Return the recognized user
             }
         }
-        return null; // No user recognized
+        return null;
+    }
+
+    private List<Mat> loadStoredImagesFromS3(User user) {
+        List<Mat> images = new ArrayList<>();
+        String[] faceDataPaths = {user.getFace_data1(), user.getFace_data2(), user.getFace_data3(), user.getFace_data4()};
+
+        for (String s3Key : faceDataPaths) {
+            if (s3Key != null && !s3Key.isEmpty()) {
+                // Download image from S3 and convert it to Mat
+                Mat image = downloadImageFromS3(s3Key);
+                if (image != null && !image.empty()) {
+                    images.add(image);
+                } else {
+                    System.err.println("Failed to download image from S3 with key: " + s3Key);
+                }
+            }
+        }
+
+        return images;
+    }
+
+    private Mat downloadImageFromS3(String key) {
+        try {
+            S3Client s3 = S3Client.builder()
+                    .region(Region.EU_CENTRAL_1)
+                    .credentialsProvider(ProfileCredentialsProvider.create())
+                    .build();
+
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket("facialrecjava")
+                    .key(key)
+                    .build();
+
+            ResponseInputStream<GetObjectResponse> s3Object = s3.getObject(getObjectRequest);
+            return Imgcodecs.imdecode(new MatOfByte(s3Object.readAllBytes()), Imgcodecs.IMREAD_GRAYSCALE);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private boolean compareFaces(Mat capturedFrame, List<Mat> storedImages) {
@@ -304,7 +433,6 @@ public class LoginController {
         }
     }
 
-
     private List<Mat> loadStoredImages(User user) {
         List<Mat> images = new ArrayList<>();
         String[] faceDataPaths = {user.getFace_data1(), user.getFace_data2(), user.getFace_data3(), user.getFace_data4()};
@@ -322,7 +450,6 @@ public class LoginController {
 
         return images;
     }
-
 
     private ResultSet getAllUsers() throws SQLException {
         String qry = "SELECT * FROM `user`";
