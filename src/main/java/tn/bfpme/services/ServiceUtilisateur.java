@@ -890,6 +890,43 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
         return userList;
     }
+    public List<User> getAllUsers1() {
+        List<User> userList = new ArrayList<>();
+        String sql = "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.MDP, u.Image, u.Creation_Date, " +
+                "u.ID_Departement, u.ID_Manager, u.idSolde, " +
+                "COALESCE(ur.ID_Role, 0) AS ID_Role, COALESCE(rd.ID_Departement, u.ID_Departement) AS ID_Departement " +
+                "FROM user u " +
+                "LEFT JOIN user_role ur ON u.ID_User = ur.ID_User " +
+                "LEFT JOIN role_departement rd ON ur.ID_Role = rd.ID_Role";
+        try {
+            if (cnx == null || cnx.isClosed()) {
+                cnx = MyDataBase.getInstance().getCnx();
+            }
+            PreparedStatement ps = cnx.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                User user = new User(
+                        rs.getInt("ID_User"),
+                        rs.getString("Nom"),
+                        rs.getString("Prenom"),
+                        rs.getString("Email"),
+                        rs.getString("MDP"),
+                        rs.getString("Image"),
+                        rs.getDate("Creation_Date") != null ? rs.getDate("Creation_Date").toLocalDate() : null,
+                        rs.getInt("ID_Departement"),
+                        rs.getInt("ID_Manager"),
+                        rs.getInt("idSolde"),
+                        rs.getInt("ID_Role")
+                );
+                userList.add(user);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return userList;
+    }
+
+
 
     public List<User> TriUsersASC() {
         List<User> userList = new ArrayList<>();
