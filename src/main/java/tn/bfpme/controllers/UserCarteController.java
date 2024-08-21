@@ -85,6 +85,7 @@ public class UserCarteController implements Initializable {
             Stage demandeDepStage = new Stage();
             StageManager.addStage("DemandeDep", demandeDepStage);
             newStage.initModality(Modality.WINDOW_MODAL);
+            newStage.initStyle(StageStyle.TRANSPARENT);
             newStage.initOwner(((Node) event.getSource()).getScene().getWindow());
             newStage.showAndWait();
         } catch (IOException e) {

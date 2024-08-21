@@ -1140,6 +1140,9 @@ public class paneUserController extends AttributionSoldeController implements In
         userListView.setItems(filteredData);
         departListView.setItems(filteredDepartments);
         roleListView.setItems(filteredRoles);
+        reset();
+        reset2();
+        resetInt();
     }
 
     @FXML
