@@ -277,15 +277,22 @@
                               </VBox>
                            </children>
                         </HBox>
-                        <HBox fx:id="hsecond2" alignment="CENTER" layoutX="420.0" layoutY="591.0" prefHeight="57.0" prefWidth="280.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="420.0" AnchorPane.rightAnchor="419.0">
+                        <HBox fx:id="hsecond2" alignment="CENTER" layoutX="328.0" layoutY="579.0" prefHeight="57.0" prefWidth="490.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="328.0" AnchorPane.rightAnchor="301.0">
                            <children>
-                              <Button fx:id="handleedit2" mnemonicParsing="false" onAction="#handleEditUser" prefHeight="73.0" prefWidth="130.0" text="Affecter">
+                              <Button fx:id="handleAdd2" mnemonicParsing="false" onAction="#handleAddUser" prefHeight="73.0" prefWidth="150.0" text="Nouvelle Affectation">
+                                 <styleClass>
+                                    <String fx:value="btn-primary" />
+                                    <String fx:value="RobotoBold" />
+                                 </styleClass>
+                              </Button>
+                              <Separator orientation="VERTICAL" prefHeight="57.0" prefWidth="19.0" styleClass="seperator" />
+                              <Button fx:id="handleedit2" mnemonicParsing="false" onAction="#handleEditUser" prefHeight="73.0" prefWidth="150.0" text="Modifier">
                                  <styleClass>
                                     <String fx:value="btn-primary" />
                                     <String fx:value="RobotoBold" />
                                  </styleClass></Button>
                               <Separator orientation="VERTICAL" prefHeight="57.0" prefWidth="19.0" styleClass="seperator" />
-                              <Button fx:id="handleremove2" mnemonicParsing="false" onAction="#handleRemoveUserAssignment" prefHeight="73.0" prefWidth="130.0" text="Supprimer">
+                              <Button fx:id="handleremove2" mnemonicParsing="false" onAction="#handleRemoveUserAssignment" prefHeight="73.0" prefWidth="150.0" text="Supprimer">
                                  <styleClass>
                                     <String fx:value="btn-primary" />
                                     <String fx:value="RobotoBold" />
@@ -298,9 +305,9 @@
                               <String fx:value="RobotoMediumItalic" />
                            </styleClass>
                         </Label>
-                        <HBox fx:id="Hfirst2" alignment="CENTER" layoutX="441.0" layoutY="592.0" prefHeight="57.0" prefWidth="238.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="441.0" AnchorPane.rightAnchor="440.0">
+                        <HBox fx:id="Hfirst2" alignment="CENTER" layoutX="414.0" layoutY="579.0" prefHeight="57.0" prefWidth="318.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="414.0" AnchorPane.rightAnchor="387.0">
                            <children>
-                              <Button fx:id="Enregistrer2" mnemonicParsing="false" onAction="#Enregistrer_user2" prefHeight="57.0" prefWidth="100.0" text="Enregistrer">
+                              <Button fx:id="Enregistrer2" mnemonicParsing="false" onAction="#Enregistrer_user2" prefHeight="57.0" prefWidth="150.0" text="Enregistrer">
                                  <styleClass>
                                     <String fx:value="btn-secondary" />
                                     <String fx:value="btn-approver" />
@@ -308,7 +315,7 @@
                                  </styleClass>
                               </Button>
                               <Separator orientation="VERTICAL" prefHeight="56.0" prefWidth="38.0" styleClass="seperator" />
-                              <Button fx:id="Annuler2" mnemonicParsing="false" onAction="#Annuler_user2" prefHeight="57.0" prefWidth="100.0" text="Annuler">
+                              <Button fx:id="Annuler2" mnemonicParsing="false" onAction="#Annuler_user2" prefHeight="57.0" prefWidth="150.0" text="Annuler">
                                  <styleClass>
                                     <String fx:value="btn-secondary" />
                                     <String fx:value="btn-refuser" />

@@ -109,6 +109,8 @@ public class paneUserController extends AttributionSoldeController implements In
 
     @FXML
     private ComboBox<String> RoleComboFilter;
+    @FXML
+    private Button handleAdd2;
 
     @FXML
     private TextField Role_field;
@@ -444,42 +446,6 @@ int stateInt =0 ;
         }
     }
 
-    private void handleUserSelection(User selectedUser) {
-        this.selectedUser = selectedUser;
-        if (selectedUser != null) {
-            ID_A.setText(String.valueOf(selectedUser.getIdUser()));
-            Prenom_A.setText(selectedUser.getPrenom());
-            nom_A.setText(selectedUser.getNom());
-            email_A.setText(selectedUser.getEmail());
-            MDP_A.setText(selectedUser.getMdp());
-            image_A.setText(selectedUser.getImage());
-            if (selectedUser.getImage() != null && !selectedUser.getImage().isEmpty()) {
-                try {
-                    File file = new File(selectedUser.getImage());
-                    FileInputStream inputStream = new FileInputStream(file);
-                    Image image = new Image(inputStream);
-                    PDPimageHolder.setImage(image);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-            Departement department = depService.getDepartmentById(selectedUser.getIdDepartement());
-            if (department != null) {
-                Depart_field.setText(department.getNom());
-            } else {
-                Depart_field.setText("No department");
-            }
-            Role role = roleService.getRoleByUserId(selectedUser.getIdUser());
-            if (role != null) {
-                Role_field.setText(role.getNom());
-            } else {
-                Role_field.setText("No role");
-            }
-            populateCongeSolde(selectedUser.getIdUser());
-        } else {
-        }
-    }
-
     public void populateSoldeFields(User user) {
         List<UserSolde> soldeList = getSoldeCongeByUserId(user.getIdUser());
         CongeVbox.getChildren().clear(); // Clear existing entries
@@ -704,105 +670,6 @@ int stateInt =0 ;
     }
 
 
-    private void handleRoleSelection(Role selectedRole) {
-        try {
-            List<Departement> departments;
-            if ("Employe".equals(selectedRole.getNom())) {
-                departments = depService.getAllDepartments();
-            } else {
-                departments = getRelatedDepartments(selectedRole.getIdRole());
-            }
-            ObservableList<Departement> observableList = FXCollections.observableArrayList(departments);
-            departListView.setItems(observableList);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            showError("Une erreur s'est produite lors de la récupération des départements : " + e.getMessage());
-        }
-    }
-
-    private void loadUsers1() {
-        List<User> userList = userService.getAllUsers();
-        ObservableList<User> users = FXCollections.observableArrayList(userList);
-        filteredData = new FilteredList<>(users, p -> true);
-        userListView.setItems(filteredData);
-        userListView.setCellFactory(param -> new ListCell<User>() {
-            @Override
-            protected void updateItem(User user, boolean empty) {
-                super.updateItem(user, empty);
-                if (empty || user == null) {
-                    setText(null);
-                } else {
-                    setText(user.getPrenom() + " " + user.getNom());
-                }
-            }
-        });
-        userListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                handleUserSelection(newValue);
-                filteredData.setPredicate(user -> user.equals(newValue));
-            } else {
-                filteredData.setPredicate(user -> true);
-            }
-        });
-    }
-
-    private void loadDepartments1() {
-        List<Departement> departmentList = depService.getAllDepartments();
-        ObservableList<Departement> departments = FXCollections.observableArrayList(departmentList);
-        filteredDepartments = new FilteredList<>(departments, p -> true);
-        departListView.setItems(filteredDepartments);
-        departListView.setCellFactory(param -> new ListCell<Departement>() {
-            @Override
-            protected void updateItem(Departement item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(item.getNom());
-                }
-            }
-        });
-
-        departListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            Platform.runLater(() -> {
-                if (newValue != null) {
-                    Depart_field.setText(newValue.getNom());
-                } else {
-                    // Clear selection if newValue is null
-                    Depart_field.clear();
-                    departListView.getSelectionModel().clearSelection();
-                }
-            });
-        });
-    }
-
-    private void loadRole1s() {
-        List<Role> roleList = roleService.getAllRoles();
-        ObservableList<Role> roles = FXCollections.observableArrayList(roleList);
-        filteredRoles = new FilteredList<>(roles, p -> true);
-        roleListView.setItems(filteredRoles);
-        roleListView.setCellFactory(param -> new ListCell<Role>() {
-            @Override
-            protected void updateItem(Role item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(item.getNom());
-                }
-            }
-        });
-
-        roleListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            Platform.runLater(() -> {
-                if (newValue != null) {
-                    Role_field.setText(newValue.getNom());
-                } else {
-                    Role_field.setText("");
-                }
-            });
-        });
-    }
 
     public void loadUsers3() {
         try {
@@ -1003,117 +870,6 @@ int stateInt =0 ;
                     role.getDescription().toLowerCase().contains(lowerCaseFilter);
         });
     }
-
-    @FXML
-    private void handleEditUser() {
-        userListView.setDisable(false);
-        roleListView.setDisable(false);
-        departListView.setDisable(false);
-        User_field.setDisable(false);
-        Role_field.setDisable(false);
-        Depart_field.setDisable(false);
-        hsecond2.setVisible(false);
-        hsecond2.setDisable(true);
-        handleedit2.setDisable(true);
-        handleremove2.setDisable(true);
-        Hfirst2.setVisible(true);
-        Hfirst2.setDisable(false);
-
-    }
-
-
-    @FXML
-    private void handleRemoveUserAssignment() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Êtes vous sûrs?");
-        alert.setHeaderText("Êtes-vous certain de vouloir supprimer ce role/département ?");
-        ButtonType Oui = new ButtonType("Oui");
-        ButtonType Non = new ButtonType("Non");
-        alert.getButtonTypes().setAll(Oui, Non);
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == Oui) {
-            Integer userId = selectedUser.getIdUser();
-            if (userId != null) {
-                try {
-                    usersubordinateService.removeRoleAndDepartment(userId);
-                    affectationlabel.setText("Rôle et département supprimés.");
-                    loadUsers3();
-                    selectedUser.setIdDepartement(0);
-                    resetAffectationTab(); // Reset the tab after deletion
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    showError("Une erreur s'est produite : " + e.getMessage());
-                }
-            } else {
-                showError("Veuillez sélectionner un utilisateur pour supprimer l'affectation.");
-            }
-        }
-        reset2();
-    }
-
-    @FXML
-    void Enregistrer_user2(ActionEvent event) {
-        if (selectedUser != null) {
-            Departement selectedDepartement = departListView.getSelectionModel().getSelectedItem();
-            Role selectedRole = roleListView.getSelectionModel().getSelectedItem();
-            boolean isUpdated = false;
-            try {
-                if (selectedRole != null && selectedDepartement != null) {
-                    usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedDepartement.getIdDepartement());
-                    isUpdated = true;
-                } else if (selectedRole != null) {
-                    usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedUser.getIdDepartement());
-                    isUpdated = true;
-                } else if (selectedDepartement != null) {
-                    usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedUser.getIdRole(), selectedDepartement.getIdDepartement());
-                    isUpdated = true;
-                }
-                if (isUpdated) {
-                    loadUsers3();
-                    affectationlabel.setText("Modification effectuée");
-                    resetAffectationTab();
-                } else {
-                    showError("Veuillez sélectionner un rôle et/ou un département à attribuer.");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                showError("Une erreur s'est produite : " + e.getMessage());
-            }
-        } else {
-            showError("Veuillez sélectionner un utilisateur à modifier.");
-        }
-        reset2();
-        LOADERS();
-    }
-
-
-    @FXML
-    void Annuler_user2(ActionEvent event) {
-        reset2();
-
-    }
-
-    void reset2() {
-        userListView.setDisable(false);
-        roleListView.setDisable(false);
-        departListView.setDisable(false);
-        userListView.getSelectionModel().clearSelection();
-        roleListView.getSelectionModel().clearSelection();
-        departListView.getSelectionModel().clearSelection();
-        User_field.setDisable(false);
-        User_field.setText("");
-        Role_field.setDisable(false);
-        Role_field.setText("");
-        Depart_field.setDisable(false);
-        Depart_field.setText("");
-        hsecond2.setVisible(true);
-        hsecond2.setDisable(false);
-        handleedit2.setDisable(false);
-        handleremove2.setDisable(false);
-        Hfirst2.setVisible(false);
-        Hfirst2.setDisable(true);
-    }
-
 
     public Integer getSelectedUserId() {
         return selectedUser != null ? selectedUser.getIdUser() : null;
@@ -1373,44 +1129,6 @@ int stateInt =0 ;
     public void TabGestion(Event event) {
         reset();
     }
-
-    public void clearuserselection(ActionEvent actionEvent) {
-        Depart_field.setText("");
-        User_field.setText("");
-        Role_field.setText("");
-        User_field.clear();
-        userListView.getSelectionModel().clearSelection();
-        Role_field.clear();
-        roleListView.getSelectionModel().clearSelection();
-        Depart_field.clear();
-        departListView.getSelectionModel().clearSelection();
-        filteredData.setPredicate(user -> true);
-        filteredDepartments.setPredicate(departement -> true);
-        filteredRoles.setPredicate(role -> true);
-
-        // Refresh the list views
-        userListView.setItems(filteredData);
-        departListView.setItems(filteredDepartments);
-        roleListView.setItems(filteredRoles);
-    }
-
-    public void clearroleselection(ActionEvent actionEvent) {
-        Role_field.setText("");
-        Role_field.clear();
-        roleListView.getSelectionModel().clearSelection();
-        filteredRoles.setPredicate(role -> true);
-        roleListView.setItems(filteredRoles);
-    }
-
-    public void cleardepartselection(ActionEvent actionEvent) {
-        Depart_field.setText("");
-        Depart_field.clear();
-        departListView.getSelectionModel().clearSelection();
-        filteredDepartments.setPredicate(departement -> true);
-        departListView.setItems(filteredDepartments);
-
-    }
-
     @FXML
     private void TabAffectation(Event event) {
         if (TabAffectationid.isSelected()) {
@@ -1942,5 +1660,404 @@ int stateInt =0 ;
         });
     }
 
+
+    /*************************************************************  AFFECTATION  ***********************************************************************
+     *************************************************************************************************************************************************/
+
+    int stateAff = 0;
+    private void loadUsers1() {
+        List<User> userList = userService.getAllUsers1();
+        ObservableList<User> users = FXCollections.observableArrayList(userList);
+        filteredData = new FilteredList<>(users, p -> true);
+        userListView.setItems(filteredData);
+
+        userListView.setCellFactory(param -> new ListCell<User>() {
+            @Override
+            protected void updateItem(User user, boolean empty) {
+                super.updateItem(user, empty);
+                if (empty || user == null) {
+                    setText(null);
+                } else {
+                    setText(user.getPrenom() + " " + user.getNom());
+                }
+            }
+        });
+
+        userListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                handleUserSelection(newValue);
+                filteredData.setPredicate(user -> user.equals(newValue));
+            } else {
+                filteredData.setPredicate(user -> true);
+            }
+        });
+
+        switch (stateAff) {
+            case 0:
+            case 3:
+                // Default behavior: Show all users
+                filteredData.setPredicate(user -> true);
+                break;
+
+            case 1:
+                // Show only users with no department and no role at the same time
+                filteredData.setPredicate(user -> {
+                    int idDepartement = user.getIdDepartement();
+                    int idRole = user.getIdRole();
+                    boolean noDepartment = (idDepartement == 0 || idDepartement == -1);
+                    boolean noRole = (idRole == 0 || idRole == -1);
+
+                    // Enhanced debugging output
+                    System.out.println("User: " + user.getNom() + " " + user.getPrenom() +
+                            " | ID_Departement: " + idDepartement +
+                            " | ID_Role: " + idRole +
+                            " | No Department: " + noDepartment +
+                            " | No Role: " + noRole);
+
+                    return noDepartment && noRole;
+                });
+                break;
+
+            case 2:
+                // Show all users except those with no department and no role at the same time
+                filteredData.setPredicate(user -> {
+                    int idDepartement = user.getIdDepartement();
+                    int idRole = user.getIdRole();
+                    boolean noDepartment = (idDepartement == 0 || idDepartement == -1);
+                    boolean noRole = (idRole == 0 || idRole == -1);
+
+                    // Enhanced debugging output
+                    System.out.println("User: " + user.getNom() + " " + user.getPrenom() +
+                            " | ID_Departement: " + idDepartement +
+                            " | ID_Role: " + idRole +
+                            " | No Department: " + noDepartment +
+                            " | No Role: " + noRole);
+
+                    return !(noDepartment && noRole);
+                });
+                break;
+        }
+    }
+
+
+
+    private void loadDepartments1() {
+        List<Departement> departmentList = depService.getAllDepartments();
+        ObservableList<Departement> departments = FXCollections.observableArrayList(departmentList);
+        filteredDepartments = new FilteredList<>(departments, p -> true);
+        departListView.setItems(filteredDepartments);
+        departListView.setCellFactory(param -> new ListCell<Departement>() {
+            @Override
+            protected void updateItem(Departement item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item.getNom());
+                }
+            }
+        });
+
+        departListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            Platform.runLater(() -> {
+                if (newValue != null) {
+                    Depart_field.setText(newValue.getNom());
+                } else {
+                    // Clear selection if newValue is null
+                    Depart_field.clear();
+                    departListView.getSelectionModel().clearSelection();
+                }
+            });
+        });
+    }
+
+    private void loadRole1s() {
+        List<Role> roleList = roleService.getAllRoles();
+        ObservableList<Role> roles = FXCollections.observableArrayList(roleList);
+        filteredRoles = new FilteredList<>(roles, p -> true);
+        roleListView.setItems(filteredRoles);
+        roleListView.setCellFactory(param -> new ListCell<Role>() {
+            @Override
+            protected void updateItem(Role item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item.getNom());
+                }
+            }
+        });
+
+        roleListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            Platform.runLater(() -> {
+                if (newValue != null) {
+                    Role_field.setText(newValue.getNom());
+                } else {
+                    Role_field.setText("");
+                }
+            });
+        });
+    }
+
+    public void clearuserselection(ActionEvent actionEvent) {
+        userListView.setDisable(false);
+        roleListView.setDisable(true);
+        departListView.setDisable(true);
+        User_field.setDisable(false);
+        Role_field.setDisable(true);
+        Depart_field.setDisable(true);
+        Depart_field.setText("");
+        User_field.setText("");
+        Role_field.setText("");
+        User_field.clear();
+        userListView.getSelectionModel().clearSelection();
+        Role_field.clear();
+        roleListView.getSelectionModel().clearSelection();
+        Depart_field.clear();
+        departListView.getSelectionModel().clearSelection();
+        filteredData.setPredicate(user -> true);
+        filteredDepartments.setPredicate(departement -> true);
+        filteredRoles.setPredicate(role -> true);
+
+        // Refresh the list views
+        userListView.setItems(filteredData);
+        departListView.setItems(filteredDepartments);
+        roleListView.setItems(filteredRoles);
+    }
+
+    public void clearroleselection(ActionEvent actionEvent) {
+        Role_field.setText("");
+        Role_field.clear();
+        roleListView.getSelectionModel().clearSelection();
+        filteredRoles.setPredicate(role -> true);
+        roleListView.setItems(filteredRoles);
+    }
+
+    public void cleardepartselection(ActionEvent actionEvent) {
+        Depart_field.setText("");
+        Depart_field.clear();
+        departListView.getSelectionModel().clearSelection();
+        filteredDepartments.setPredicate(departement -> true);
+        departListView.setItems(filteredDepartments);
+
+    }
+
+
+    @FXML
+    private void handleEditUser() {
+        stateAff=2;
+        userListView.setDisable(false);
+        roleListView.setDisable(true);
+        departListView.setDisable(true);
+        User_field.setDisable(false);
+        Role_field.setDisable(true);
+        Depart_field.setDisable(true);
+        hsecond2.setVisible(false);
+        hsecond2.setDisable(true);
+        handleAdd2.setDisable(true);
+        handleedit2.setDisable(true);
+        handleremove2.setDisable(true);
+        Hfirst2.setVisible(true);
+        Hfirst2.setDisable(false);
+        loadUsers1();
+    }
+
+
+    @FXML
+    private void handleRemoveUserAssignment() {
+        stateAff=3;
+        userListView.setDisable(false);
+        User_field.setDisable(false);
+        hsecond2.setVisible(false);
+        hsecond2.setDisable(true);
+        handleAdd2.setDisable(true);
+        handleedit2.setDisable(true);
+        handleremove2.setDisable(true);
+        Hfirst2.setVisible(true);
+        Hfirst2.setDisable(false);
+        loadUsers1();
+
+    }
+    @FXML
+    void handleAddUser(ActionEvent event) {
+        stateAff=1;
+        userListView.setDisable(false);
+        roleListView.setDisable(true);
+        departListView.setDisable(true);
+        User_field.setDisable(false);
+        Role_field.setDisable(true);
+        Depart_field.setDisable(true);
+        hsecond2.setVisible(false);
+        hsecond2.setDisable(true);
+        handleAdd2.setDisable(true);
+        handleedit2.setDisable(true);
+        handleremove2.setDisable(true);
+        Hfirst2.setVisible(true);
+        Hfirst2.setDisable(false);
+        loadUsers1();
+
+    }
+    private void handleUserSelection(User selectedUser) {
+        this.selectedUser = selectedUser;
+        if (selectedUser != null) {
+            if (stateAff==3){
+                roleListView.setDisable(true);
+                Role_field.setDisable(true);
+            }
+            else{
+                roleListView.setDisable(false);
+                Role_field.setDisable(false);
+            }
+            ID_A.setText(String.valueOf(selectedUser.getIdUser()));
+            Prenom_A.setText(selectedUser.getPrenom());
+            nom_A.setText(selectedUser.getNom());
+            email_A.setText(selectedUser.getEmail());
+            MDP_A.setText(selectedUser.getMdp());
+            image_A.setText(selectedUser.getImage());
+            if (selectedUser.getImage() != null && !selectedUser.getImage().isEmpty()) {
+                try {
+                    File file = new File(selectedUser.getImage());
+                    FileInputStream inputStream = new FileInputStream(file);
+                    Image image = new Image(inputStream);
+                    PDPimageHolder.setImage(image);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+            Departement department = depService.getDepartmentById(selectedUser.getIdDepartement());
+            if (department != null) {
+                Depart_field.setText(department.getNom());
+            } else {
+                Depart_field.setText("No department");
+            }
+            Role role = roleService.getRoleByUserId(selectedUser.getIdUser());
+            if (role != null) {
+                Role_field.setText(role.getNom());
+            } else {
+                Role_field.setText("No role");
+            }
+            populateCongeSolde(selectedUser.getIdUser());
+        } else {
+        }
+    }
+    private void handleRoleSelection(Role selectedRole) {
+        try {
+            departListView.setDisable(false);
+            Depart_field.setDisable(false);
+
+            List<Departement> departments;
+            if ("Employe".equals(selectedRole.getNom())) {
+                departments = depService.getAllDepartments();
+            } else {
+                departments = getRelatedDepartments(selectedRole.getIdRole());
+            }
+            ObservableList<Departement> observableList = FXCollections.observableArrayList(departments);
+            departListView.setItems(observableList);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showError("Une erreur s'est produite lors de la récupération des départements : " + e.getMessage());
+        }
+    }
+
+    @FXML
+    void Enregistrer_user2(ActionEvent event) {
+        if (stateAff==1) {
+
+        }
+        else if (stateAff==2) {
+            if (selectedUser != null) {
+                Departement selectedDepartement = departListView.getSelectionModel().getSelectedItem();
+                Role selectedRole = roleListView.getSelectionModel().getSelectedItem();
+                boolean isUpdated = false;
+                try {
+                    if (selectedRole != null && selectedDepartement != null) {
+                        usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedDepartement.getIdDepartement());
+                        isUpdated = true;
+                    } else if (selectedRole != null) {
+                        usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedUser.getIdDepartement());
+                        isUpdated = true;
+                    } else if (selectedDepartement != null) {
+                        usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedUser.getIdRole(), selectedDepartement.getIdDepartement());
+                        isUpdated = true;
+                    }
+                    if (isUpdated) {
+                        loadUsers3();
+                        affectationlabel.setText("Modification effectuée");
+                        resetAffectationTab();
+                    } else {
+                        showError("Veuillez sélectionner un rôle et/ou un département à attribuer.");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    showError("Une erreur s'est produite : " + e.getMessage());
+                }
+            } else {
+                showError("Veuillez sélectionner un utilisateur à modifier.");
+            }
+            reset2();
+            LOADERS();
+
+        }
+
+        else if (stateAff==3) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Êtes vous sûrs?");
+            alert.setHeaderText("Êtes-vous certain de vouloir supprimer ce role/département ?");
+            ButtonType Oui = new ButtonType("Oui");
+            ButtonType Non = new ButtonType("Non");
+            alert.getButtonTypes().setAll(Oui, Non);
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == Oui) {
+                Integer userId = selectedUser.getIdUser();
+                if (userId != null) {
+                    try {
+                        usersubordinateService.removeRoleAndDepartment(userId);
+                        affectationlabel.setText("Rôle et département supprimés.");
+                        loadUsers3();
+                        selectedUser.setIdDepartement(0);
+                        resetAffectationTab(); // Reset the tab after deletion
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        showError("Une erreur s'est produite : " + e.getMessage());
+                    }
+                } else {
+                    showError("Veuillez sélectionner un utilisateur pour supprimer l'affectation.");
+                }
+            }
+            reset2();
+
+        }
+
+    }
+
+
+    @FXML
+    void Annuler_user2(ActionEvent event) {
+        reset2();
+
+    }
+
+    void reset2() {
+        stateAff=0;
+        userListView.setDisable(true);
+        roleListView.setDisable(true);
+        departListView.setDisable(true);
+        userListView.getSelectionModel().clearSelection();
+        roleListView.getSelectionModel().clearSelection();
+        departListView.getSelectionModel().clearSelection();
+        User_field.setDisable(true);
+        User_field.setText("");
+        Role_field.setDisable(true);
+        Role_field.setText("");
+        Depart_field.setDisable(true);
+        Depart_field.setText("");
+        hsecond2.setVisible(true);
+        hsecond2.setDisable(false);
+        handleedit2.setDisable(false);
+        handleremove2.setDisable(false);
+        handleAdd2.setDisable(false);
+        Hfirst2.setVisible(false);
+        Hfirst2.setDisable(true);
+    }
 
 }
