@@ -50,7 +50,7 @@
             <TextArea fx:id="MessageTF" layoutX="382.0" layoutY="124.0" prefHeight="383.0" prefWidth="561.0" wrapText="true" AnchorPane.bottomAnchor="91.0" AnchorPane.leftAnchor="381.0" AnchorPane.rightAnchor="38.0" AnchorPane.topAnchor="123.0" />
             <HBox fx:id="Hsecond" alignment="CENTER" layoutX="378.0" layoutY="534.0" prefHeight="37.0" prefWidth="224.0" AnchorPane.bottomAnchor="26.0" AnchorPane.leftAnchor="377.0" AnchorPane.rightAnchor="378.0">
                <children>
-                  <Button fx:id="Enregistrer" mnemonicParsing="false" onAction="#EnregistrerEmail" prefHeight="38.0" prefWidth="95.0" text="Enregistrer">
+                  <Button fx:id="Enregistrer" mnemonicParsing="false" onAction="#EnregistrerEmail" prefHeight="37.0" prefWidth="134.0" text="Enregistrer">
                      <styleClass>
                         <String fx:value="btn-secondary" />
                         <String fx:value="btn-approver" />

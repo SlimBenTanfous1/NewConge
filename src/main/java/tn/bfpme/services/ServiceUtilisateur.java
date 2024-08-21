@@ -894,10 +894,11 @@ public class ServiceUtilisateur implements IUtilisateur {
         List<User> userList = new ArrayList<>();
         String sql = "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.MDP, u.Image, u.Creation_Date, " +
                 "u.ID_Departement, u.ID_Manager, u.idSolde, " +
-                "COALESCE(ur.ID_Role, 0) AS ID_Role, COALESCE(rd.ID_Departement, u.ID_Departement) AS ID_Departement " +
+                "COALESCE(MAX(ur.ID_Role), 0) AS ID_Role, COALESCE(MAX(rd.ID_Departement), u.ID_Departement) AS ID_Departement " +
                 "FROM user u " +
                 "LEFT JOIN user_role ur ON u.ID_User = ur.ID_User " +
-                "LEFT JOIN role_departement rd ON ur.ID_Role = rd.ID_Role";
+                "LEFT JOIN role_departement rd ON ur.ID_Role = rd.ID_Role " +
+                "GROUP BY u.ID_User, u.Nom, u.Prenom, u.Email, u.MDP, u.Image, u.Creation_Date, u.ID_Departement, u.ID_Manager, u.idSolde";
         try {
             if (cnx == null || cnx.isClosed()) {
                 cnx = MyDataBase.getInstance().getCnx();
@@ -918,13 +919,16 @@ public class ServiceUtilisateur implements IUtilisateur {
                         rs.getInt("idSolde"),
                         rs.getInt("ID_Role")
                 );
+                System.out.println("Fetched user: " + user);
                 userList.add(user);
             }
+
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
         return userList;
     }
+
 
 
 

@@ -45,7 +45,7 @@ public class FontResizer {
                 resizeFonts(tab.getContent(), width, height);
             }
         } else if (node instanceof ListView) {
-            ((ListView<?>) node).setStyle("-fx-font-size: " + fontSize3 + "px;");
+            ((ListView<?>) node).setStyle("-fx-font-size: " + fontSize2 + "px;");
         } else if (node instanceof TreeView) {
             TreeView<?> treeView = (TreeView<?>) node;
             treeView.setStyle("-fx-font-size: " + fontSize3 + "px;");

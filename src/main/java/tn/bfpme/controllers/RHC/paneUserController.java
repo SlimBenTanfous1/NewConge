@@ -152,7 +152,6 @@ public class paneUserController extends AttributionSoldeController implements In
     private TreeItem<User> originalRoot;
     private TreeItem<Departement> originalDeptRoot;
 
-
     @FXML
     public GridPane UserContainers;
     @FXML
@@ -181,7 +180,7 @@ public class paneUserController extends AttributionSoldeController implements In
 
     @FXML
     private ListView<User> manager_listview;
-int stateInt =0 ;
+    int stateInt = 0;
 
     @FXML
     private HBox Hint1;
@@ -211,7 +210,6 @@ int stateInt =0 ;
     @FXML
     private Tab TabAffectationid;
 
-
     public User selectedUser;
     public User selectedManager;
     public User selectedInterim;
@@ -232,11 +230,7 @@ int stateInt =0 ;
     private AttributionSoldeController attributionSoldeController;
     private ObservableList<User> users;
 
-    private ChangeListener<User> userSelectionListener = (observable, oldValue, newValue) -> {
-        if (newValue != null) {
-            handleUserSelection(newValue);
-        }
-    };
+
     private ChangeListener<User> userSelection1Listener = (observable, oldValue, newValue) -> {
         if (newValue != null) {
             try {
@@ -268,6 +262,7 @@ int stateInt =0 ;
     private boolean isAscending1 = true;
     private boolean isAscending2 = true;
     private boolean isAscending3 = true;
+    List<User> userList = userService.getAllUsers1();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -327,15 +322,12 @@ int stateInt =0 ;
             }
             isAscending1 = !isAscending1;
         });
-
         loadRolesIntoComboBox();
         setupRemoveFilterButton();
         setupRoleSearchBar();
-
         if (SessionManager.getInstance().getUserRoleName().equals("AdminIT")) {
             adduserbtn.setDisable(true);
         }
-
         setupRoleComboBoxListener();
         loadDeparts3();
         loadRole1s();
@@ -343,7 +335,6 @@ int stateInt =0 ;
         hierarCombo.setValue("Selectioner type");
         hierarCombo.setItems(HierarchieList);
 
-        userListView.getSelectionModel().selectedItemProperty().addListener(userSelectionListener);
         roleListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 handleRoleSelection(newValue);
@@ -356,19 +347,19 @@ int stateInt =0 ;
         });
         manager_listview.getSelectionModel().selectedItemProperty().addListener(userSelection1Listener);
         manager_listview.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-                   if (newValue != null) {
-                       try {
-                           handleManagerSelection(newValue);
-                       } catch (SQLException e) {
-                           throw new RuntimeException(e);
-                       }
-                   }
-       });
-       interim_listview.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-                  if (newValue != null) {
-        handleInterimSelection(newValue);
-    }
-       });
+            if (newValue != null) {
+                try {
+                    handleManagerSelection(newValue);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        interim_listview.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                handleInterimSelection(newValue);
+            }
+        });
 
         idUserColumn.setCellFactory(column -> new ColoredTreeCell());
         prenomUserColumn.setCellFactory(column -> new ColoredTreeCell());
@@ -390,6 +381,7 @@ int stateInt =0 ;
         LeaveBalanceService leaveBalanceService = new LeaveBalanceService(this);
         leaveBalanceService.start();
     }
+
     private void LOADERS() {
         loadUsers();
         loadUsers1();
@@ -518,12 +510,12 @@ int stateInt =0 ;
 
     private Map<Integer, Double> getTypeCongeLimit() {
         Map<Integer, Double> limitMap = new HashMap<>();
-        String query = "SELECT ID_TypeConge, Limit FROM typeconge";
+        String query = "SELECT `ID_TypeConge`, `Limite` FROM `typeconge`";
         try (Connection cnx = MyDataBase.getInstance().getCnx();
              PreparedStatement stm = cnx.prepareStatement(query);
              ResultSet rs = stm.executeQuery()) {
             while (rs.next()) {
-                limitMap.put(rs.getInt("ID_TypeConge"), rs.getDouble("Limit"));
+                limitMap.put(rs.getInt("ID_TypeConge"), rs.getDouble("Limite"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -668,8 +660,6 @@ int stateInt =0 ;
             e.printStackTrace();
         }
     }
-
-
 
     public void loadUsers3() {
         try {
@@ -874,7 +864,6 @@ int stateInt =0 ;
     public Integer getSelectedUserId() {
         return selectedUser != null ? selectedUser.getIdUser() : null;
     }
-
 
     protected void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -1129,6 +1118,7 @@ int stateInt =0 ;
     public void TabGestion(Event event) {
         reset();
     }
+
     @FXML
     private void TabAffectation(Event event) {
         if (TabAffectationid.isSelected()) {
@@ -1138,20 +1128,15 @@ int stateInt =0 ;
 
     private void resetAffectationTab() {
         affectationlabel.setText("");
-        // Clear selection and fields
         User_field.clear();
         Depart_field.clear();
         Role_field.clear();
         userListView.getSelectionModel().clearSelection();
         departListView.getSelectionModel().clearSelection();
         roleListView.getSelectionModel().clearSelection();
-
-        // Reset the filters to show all items
         filteredData.setPredicate(user -> true);
         filteredDepartments.setPredicate(departement -> true);
         filteredRoles.setPredicate(role -> true);
-
-        // Refresh the list views
         userListView.setItems(filteredData);
         departListView.setItems(filteredDepartments);
         roleListView.setItems(filteredRoles);
@@ -1351,7 +1336,6 @@ int stateInt =0 ;
     }
 
 
-
     @FXML
     void Annuler_user(ActionEvent event) {
         clearSoldeFields();
@@ -1413,9 +1397,10 @@ int stateInt =0 ;
     void annulerInterim(ActionEvent event) {
         resetInt();
     }
+
     @FXML
     void affecterInterim(ActionEvent event) {
-        stateInt=1;
+        stateInt = 1;
         Hint1.setDisable(true);
         Hint1.setVisible(false);
         Hint2.setVisible(true);
@@ -1427,9 +1412,10 @@ int stateInt =0 ;
         Hint2E.setText("Enregistrer");
 
     }
+
     @FXML
     void supprimerInterim(ActionEvent event) {
-        stateInt=3;
+        stateInt = 3;
         Hint1.setDisable(true);
         Hint1.setVisible(false);
         Hint2.setVisible(true);
@@ -1441,9 +1427,10 @@ int stateInt =0 ;
         Hint2E.setText("Supprimer");
 
     }
+
     @FXML
     void modifierInterim(ActionEvent event) {
-        stateInt=2;
+        stateInt = 2;
         Hint1.setDisable(true);
         Hint1.setVisible(false);
         Hint2.setVisible(true);
@@ -1454,30 +1441,31 @@ int stateInt =0 ;
         interim_listview.setDisable(true);
         Hint2E.setText("Enregistrer");
     }
+
     @FXML
     void enregistrerInterim(ActionEvent event) {
-        if (stateInt==1){
+        if (stateInt == 1) {
             if (selectedManager != null) {
                 boolean isAffected = false;
                 try {
                     if (selectedInterim != null) {
                         userService.assignInterimManager(selectedManager.getIdUser(), selectedInterim.getIdUser());
                         isAffected = true;
-                    if (isAffected) {
-                        InterimLabel.setText("Affectation effectuée");
-                        resetInt();
-                    } else {
-                        showError("Veuillez sélectionner un Intérim à affecter.");
+                        if (isAffected) {
+                            InterimLabel.setText("Affectation effectuée");
+                            resetInt();
+                        } else {
+                            showError("Veuillez sélectionner un Intérim à affecter.");
+                        }
                     }
-                }
                 } catch (Exception e) {
                     e.printStackTrace();
                     showError("Une erreur s'est produite : " + e.getMessage());
                 }
-            }else {
+            } else {
                 showError("Veuillez sélectionner un Intérim à affecter.");
             }
-        } else if (stateInt==2) {
+        } else if (stateInt == 2) {
             if (selectedManager != null) {
                 User selectedInterim = interim_listview.getSelectionModel().getSelectedItem();
                 boolean isUpdated = false;
@@ -1496,10 +1484,10 @@ int stateInt =0 ;
                     e.printStackTrace();
                     showError("Une erreur s'est produite : " + e.getMessage());
                 }
-            }else {
+            } else {
                 showError("Veuillez sélectionner un Intérim à modifier.");
             }
-        }else if (stateInt == 3) {
+        } else if (stateInt == 3) {
             if (selectedManager != null) {
                 boolean isDeleted = false;
                 try {
@@ -1531,7 +1519,8 @@ int stateInt =0 ;
         }
 
     }
-    void resetInt(){
+
+    void resetInt() {
         Manager_field.setText("");
         Manager_field.setDisable(true);
         Interim_field.setDisable(true);
@@ -1549,11 +1538,12 @@ int stateInt =0 ;
         Hint2.setDisable(true);
         Hint2.setVisible(false);
     }
+
     private void handleInterimSelection(User selectedInterim) {
         this.selectedInterim = selectedInterim;
-        if(selectedInterim!= null){
+        if (selectedInterim != null) {
 
-        }else{
+        } else {
 
         }
 
@@ -1562,24 +1552,24 @@ int stateInt =0 ;
 
     private void handleManagerSelection(User selectedManager) throws SQLException {
         this.selectedManager = selectedManager;
-        if(selectedManager!= null && stateInt!=3) {
+        if (selectedManager != null && stateInt != 3) {
             manager_listview.setDisable(false);
             interim_listview.setDisable(false);
             manager_listview.getSelectionModel().clearSelection();
             interim_listview.getSelectionModel().clearSelection();
             Interim_field.setDisable(false);
             Manager_field.setDisable(false);
-            User user =userService.getInterimByUserId(selectedManager.getIdUser());
-            User user1=userService.getUserById(selectedManager.getIdUser());
-            Manager_field.setText(user1.getNom()+" "+user1.getPrenom());
+            User user = userService.getInterimByUserId(selectedManager.getIdUser());
+            User user1 = userService.getUserById(selectedManager.getIdUser());
+            Manager_field.setText(user1.getNom() + " " + user1.getPrenom());
             if (user != null) {
-                Interim_field.setText(user.getNom()+" "+user.getPrenom());
+                Interim_field.setText(user.getNom() + " " + user.getPrenom());
             } else {
                 Interim_field.setText("No Intérim");
             }
 
 
-        }else{
+        } else {
 
         }
     }
@@ -1599,12 +1589,14 @@ int stateInt =0 ;
         manager_listview.setItems(filteredManager);
         interim_listview.setItems(filteredInterim);
     }
+
     @FXML
     void clearinterimselection(ActionEvent event) {
         Interim_field.setText("");
         Interim_field.clear();
         interim_listview.getSelectionModel().clearSelection();
     }
+
     private void loadManagers() {
         List<User> managerList = userService.getAllManagers();
         ObservableList<User> users = FXCollections.observableArrayList(managerList);
@@ -1634,6 +1626,7 @@ int stateInt =0 ;
             }
         });
     }
+
     private void loadInterims() {
         List<User> interimList = userService.getAllManagers();
         ObservableList<User> users = FXCollections.observableArrayList(interimList);
@@ -1665,8 +1658,8 @@ int stateInt =0 ;
      *************************************************************************************************************************************************/
 
     int stateAff = 0;
+
     private void loadUsers1() {
-        List<User> userList = userService.getAllUsers1();
         ObservableList<User> users = FXCollections.observableArrayList(userList);
         filteredData = new FilteredList<>(users, p -> true);
         userListView.setItems(filteredData);
@@ -1683,15 +1676,6 @@ int stateInt =0 ;
             }
         });
 
-        userListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                handleUserSelection(newValue);
-                filteredData.setPredicate(user -> user.equals(newValue));
-            } else {
-                filteredData.setPredicate(user -> true);
-            }
-        });
-
         switch (stateAff) {
             case 0:
             case 3:
@@ -1700,14 +1684,11 @@ int stateInt =0 ;
                 break;
 
             case 1:
-                // Show only users with no department and no role at the same time
                 filteredData.setPredicate(user -> {
                     int idDepartement = user.getIdDepartement();
                     int idRole = user.getIdRole();
                     boolean noDepartment = (idDepartement == 0 || idDepartement == -1);
                     boolean noRole = (idRole == 0 || idRole == -1);
-
-                    // Enhanced debugging output
                     System.out.println("User: " + user.getNom() + " " + user.getPrenom() +
                             " | ID_Departement: " + idDepartement +
                             " | ID_Role: " + idRole +
@@ -1725,21 +1706,11 @@ int stateInt =0 ;
                     int idRole = user.getIdRole();
                     boolean noDepartment = (idDepartement == 0 || idDepartement == -1);
                     boolean noRole = (idRole == 0 || idRole == -1);
-
-                    // Enhanced debugging output
-                    System.out.println("User: " + user.getNom() + " " + user.getPrenom() +
-                            " | ID_Departement: " + idDepartement +
-                            " | ID_Role: " + idRole +
-                            " | No Department: " + noDepartment +
-                            " | No Role: " + noRole);
-
                     return !(noDepartment && noRole);
                 });
                 break;
         }
     }
-
-
 
     private void loadDepartments1() {
         List<Departement> departmentList = depService.getAllDepartments();
@@ -1842,10 +1813,9 @@ int stateInt =0 ;
 
     }
 
-
     @FXML
     private void handleEditUser() {
-        stateAff=2;
+        stateAff = 2;
         userListView.setDisable(false);
         roleListView.setDisable(true);
         departListView.setDisable(true);
@@ -1861,11 +1831,10 @@ int stateInt =0 ;
         Hfirst2.setDisable(false);
         loadUsers1();
     }
-
 
     @FXML
     private void handleRemoveUserAssignment() {
-        stateAff=3;
+        stateAff = 3;
         userListView.setDisable(false);
         User_field.setDisable(false);
         hsecond2.setVisible(false);
@@ -1878,9 +1847,10 @@ int stateInt =0 ;
         loadUsers1();
 
     }
+
     @FXML
     void handleAddUser(ActionEvent event) {
-        stateAff=1;
+        stateAff = 1;
         userListView.setDisable(false);
         roleListView.setDisable(true);
         departListView.setDisable(true);
@@ -1897,14 +1867,15 @@ int stateInt =0 ;
         loadUsers1();
 
     }
+
     private void handleUserSelection(User selectedUser) {
         this.selectedUser = selectedUser;
+        System.out.println("Selected user: " + selectedUser);
         if (selectedUser != null) {
-            if (stateAff==3){
+            if (stateAff == 3) {
                 roleListView.setDisable(true);
                 Role_field.setDisable(true);
-            }
-            else{
+            } else {
                 roleListView.setDisable(false);
                 Role_field.setDisable(false);
             }
@@ -1937,9 +1908,9 @@ int stateInt =0 ;
                 Role_field.setText("No role");
             }
             populateCongeSolde(selectedUser.getIdUser());
-        } else {
         }
     }
+
     private void handleRoleSelection(Role selectedRole) {
         try {
             departListView.setDisable(false);
@@ -1961,10 +1932,37 @@ int stateInt =0 ;
 
     @FXML
     void Enregistrer_user2(ActionEvent event) {
-        if (stateAff==1) {
-
-        }
-        else if (stateAff==2) {
+        if (stateAff == 1) {
+            if (selectedUser != null) {
+                Departement selectedDepartement = departListView.getSelectionModel().getSelectedItem();
+                Role selectedRole = roleListView.getSelectionModel().getSelectedItem();
+                boolean isUpdated = false;
+                try {
+                    if (selectedRole != null && selectedDepartement != null) {
+                        usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedDepartement.getIdDepartement());
+                        isUpdated = true;
+                    } else if (selectedRole != null) {
+                        usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedRole.getIdRole(), selectedUser.getIdDepartement());
+                        isUpdated = true;
+                    } else if (selectedDepartement != null) {
+                        usersubordinateService.assignRoleAndDepartment(selectedUser.getIdUser(), selectedUser.getIdRole(), selectedDepartement.getIdDepartement());
+                        isUpdated = true;
+                    }
+                    if (isUpdated) {
+                        loadUsers3();
+                        affectationlabel.setText("Affectation effectuée");
+                        resetAffectationTab();
+                    } else {
+                        showError("Veuillez sélectionner un rôle et/ou un département à attribuer.");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    showError("Une erreur s'est produite : " + e.getMessage());
+                }
+            } else {
+                showError("Veuillez sélectionner un utilisateur à affecter.");
+            }
+        } else if (stateAff == 2) {
             if (selectedUser != null) {
                 Departement selectedDepartement = departListView.getSelectionModel().getSelectedItem();
                 Role selectedRole = roleListView.getSelectionModel().getSelectedItem();
@@ -1997,9 +1995,7 @@ int stateInt =0 ;
             reset2();
             LOADERS();
 
-        }
-
-        else if (stateAff==3) {
+        } else if (stateAff == 3) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Êtes vous sûrs?");
             alert.setHeaderText("Êtes-vous certain de vouloir supprimer ce role/département ?");
@@ -2025,11 +2021,8 @@ int stateInt =0 ;
                 }
             }
             reset2();
-
         }
-
     }
-
 
     @FXML
     void Annuler_user2(ActionEvent event) {
@@ -2038,7 +2031,7 @@ int stateInt =0 ;
     }
 
     void reset2() {
-        stateAff=0;
+        stateAff = 0;
         userListView.setDisable(true);
         roleListView.setDisable(true);
         departListView.setDisable(true);

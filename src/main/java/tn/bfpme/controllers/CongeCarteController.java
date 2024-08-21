@@ -38,6 +38,7 @@ import java.time.LocalDate;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 public class CongeCarteController implements Initializable {
     @FXML
     private Pane Card;
@@ -79,13 +80,26 @@ public class CongeCarteController implements Initializable {
                 if (Statut.Rejeté.toString().equals(rs.getString("Statut"))) {
                     btnViewMsg.setDisable(false);
                 }
-                if ("Annuel".equals(rs.getString("TypeConge")) || "Sous_solde".equals(rs.getString("TypeConge"))) {
+                /*if ("Annuel".equals(rs.getString("TypeConge")) || "Sous_solde".equals(rs.getString("TypeConge"))) {
                     btnViewFile.setDisable(true);
                     TTViewFile = new Tooltip();
                     TTViewFile.setText("Fichier non disponible");
                     Tooltip.install(btnViewFile, TTViewFile);
+                }*/
+            }
+            String qry2 = "SELECT tc.file FROM conge c JOIN typeconge tc ON c.TypeConge = tc.ID_TypeConge WHERE c.ID_Conge = ?";
+            PreparedStatement stm2 = cnx.prepareStatement(qry2);
+            stm2.setInt(1, this.conge.getIdConge());
+            ResultSet rs2 = stm.executeQuery();
+            while (rs2.next()) {
+                if (rs2.getInt("file") == 0) {
+                    btnViewFile.setDisable(true);
+                }
+                if (rs2.getInt("file") == 1) {
+                    btnViewFile.setDisable(false);
                 }
             }
+
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
