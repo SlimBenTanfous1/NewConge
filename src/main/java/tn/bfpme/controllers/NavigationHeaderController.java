@@ -20,6 +20,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import tn.bfpme.controllers.RHC.RHController;
 import tn.bfpme.utils.FontResizer;
 import tn.bfpme.utils.SessionManager;
 import tn.bfpme.utils.StageManager;
@@ -42,7 +43,7 @@ public class NavigationHeaderController implements Initializable {
     @FXML
     private Button admin_interface;
     @FXML
-    private Button settingsButton,btnMonEquipe;
+    private Button settingsButton, btnMonEquipe;
 
     private Popup settingsPopup;
     private Popup notifPopup;
@@ -53,7 +54,7 @@ public class NavigationHeaderController implements Initializable {
         String userDepartmentName = SessionManager.getInstance().getUserDepartmentName();
         btnMonEquipe.setVisible(!"Employe".equals(userRoleName));
         btnListe.setVisible(!"Employe".equals(userRoleName) || "AdminIT".equals(userRoleName));
-        btnListe.setVisible(!userRoleName.equals("Employe")||userRoleName.equals("AdminIT"));
+        btnListe.setVisible(!userRoleName.equals("Employe") || userRoleName.equals("AdminIT"));
 
         if ((userDepartmentName != null && userDepartmentName.equals("RH") && "Directeur".equals(userRoleName)) || "AdminIT".equals(userRoleName)) {
             btnRH.setVisible(true);
