@@ -137,7 +137,7 @@ public class CameraFeedController {
         if (camera.read(frame)) {
             // Resize the frame to reduce the size of the stored image
             Mat resizedFrame = new Mat();
-            Imgproc.resize(frame, resizedFrame, new org.opencv.core.Size(300 , 300)); // Resize to 100x100 pixels
+            Imgproc.resize(frame, resizedFrame, new org.opencv.core.Size(800 ,600 )); // Resize to 100x100 pixels
 
             storeFaceImageAsJPG(resizedFrame);  // Store the image as JPG
         }

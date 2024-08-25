@@ -137,7 +137,7 @@ public class LoginController {
             e.printStackTrace();
         }
     }
-
+String MSG ="";
     @FXML
     private void FacialRecognitionButton(ActionEvent event) {
         try {
@@ -147,6 +147,7 @@ public class LoginController {
             }
 
             Mat capturedFrame = captureImageFromCamera();
+            System.out.println(MSG);
             if (capturedFrame == null || capturedFrame.empty()) {
                 showAlert("Error", "Failed to capture image from camera.");
                 return;
@@ -166,12 +167,9 @@ public class LoginController {
 
                     if (getValue()) {
                         try {
-                            User recognizedUser = getRecognizedUser(capturedFrame);
+                            User recognizedUser = SessionManager.getInstance().getUser();
 
                             if (recognizedUser != null) {
-                                // Initialize the SessionManager with the recognized user
-                                SessionManager.getInstance(recognizedUser);
-
                                 // Navigate to profile after successful login
                                 navigateToProfile(event);
                             } else {
@@ -179,9 +177,6 @@ public class LoginController {
                             }
                         } catch (IOException e) {
                             throw new RuntimeException(e);
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                            showAlert("Error", "Database error during facial recognition.");
                         }
                     } else {
                         showAlert("Face not recognized", "Please try again.");
@@ -202,21 +197,27 @@ public class LoginController {
     }
     private boolean performLocalFacialRecognition(Mat capturedFrame) {
         try {
-            User loggedInUser = SessionManager.getInstance().getUser(); // Assuming the user is already logged in
+            System.out.println("Attempting to recognize user based on the captured frame...");
 
-            // Load images from the database
-            List<Mat> storedImages = loadStoredImagesFromDatabase(loggedInUser);
+            // Attempt to recognize the user based on the captured frame
+            User recognizedUser = getRecognizedUser(capturedFrame);
 
-            // Compare the captured frame against stored images
-            return compareFaces(capturedFrame, storedImages);
+            if (recognizedUser != null) {
+                // Initialize the SessionManager with the recognized user
+                System.out.println("User recognized: " + recognizedUser.getEmail());
+                SessionManager.getInstance(recognizedUser);
+                return true;
+            } else {
+                System.out.println("No matching user found.");
+                return false;
+            }
 
         } catch (Exception e) {
+            System.err.println("Error during facial recognition: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
     }
-
-
     private Mat captureImageFromCamera() {
         try {
             Mat frame = new Mat();
@@ -238,44 +239,6 @@ public class LoginController {
         }
     }
 
-    private boolean searchFaceInRekognition(Mat capturedFrame) {
-        try {
-            // Convert the Mat object to a temporary image file
-            String tempImagePath = saveCapturedImage(capturedFrame);
-
-            RekognitionClient rekognitionClient = RekognitionClient.builder()
-                    .region(Region.EU_CENTRAL_1)
-                    .credentialsProvider(ProfileCredentialsProvider.create())
-                    .build();
-
-            String bucketName = "facialrecjava";
-            String collectionId = "MyCollection"; // Your Rekognition collection ID
-            String s3ObjectName = "captured_face.jpg"; // Image name uploaded to S3
-
-            S3Object s3Object = S3Object.builder()
-                    .bucket(bucketName)
-                    .name(s3ObjectName)
-                    .build();
-
-            software.amazon.awssdk.services.rekognition.model.Image image = software.amazon.awssdk.services.rekognition.model.Image.builder()
-                    .s3Object(s3Object)
-                    .build();
-
-            SearchFacesByImageRequest searchFacesByImageRequest = SearchFacesByImageRequest.builder()
-                    .collectionId(collectionId)
-                    .image(image)
-                    .build();
-
-            SearchFacesByImageResponse searchFacesByImageResponse = rekognitionClient.searchFacesByImage(searchFacesByImageRequest);
-            List<FaceMatch> faceMatches = searchFacesByImageResponse.faceMatches();
-
-            return !faceMatches.isEmpty();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
 
     private String saveCapturedImage(Mat frame) {
         // Save the captured frame to a temporary file
@@ -344,27 +307,49 @@ public class LoginController {
     }
 
     private User getRecognizedUser(Mat capturedFrame) throws SQLException {
+        System.out.println("Loading users from the database...");
+
         String qry = "SELECT u.*, ur.ID_Role " +
                 "FROM `user` as u " +
                 "JOIN `user_role` ur ON ur.ID_User = u.ID_User";
         PreparedStatement stm = cnx.prepareStatement(qry);
         ResultSet rs = stm.executeQuery();
 
+        User recognizedUser = null;
+        int userCount = 0;
+
         while (rs.next()) {
+            System.out.println("Processing user ID: " + rs.getInt("ID_User"));
             User user = initializeUserFromResultSet(rs);
+            System.out.println("Comparing with user: " + user.getEmail());
 
-            // Load images directly from S3 instead of local paths
-            List<Mat> storedImages = loadStoredImagesFromS3(user);
+            List<Mat> storedImages = loadStoredImages(user);
 
-            // Compare the captured frame against all stored images of the user
+            // Check if the stored images list is populated
+            if (storedImages.isEmpty()) {
+                System.out.println("No stored images found for user: " + user.getEmail());
+                continue; // Skip this user and continue to the next
+            }
+
             if (compareFaces(capturedFrame, storedImages)) {
-                return user; // Return the recognized user
+                System.out.println("Face matched with user: " + user.getEmail());
+                recognizedUser = user;  // Save the recognized user
+                break;  // Exit the loop as we've found a match
+            } else {
+                System.out.println("No match found for user: " + user.getEmail());
             }
         }
-        return null;
+
+
+        if (recognizedUser == null) {
+            System.out.println("No matching user found after checking " + userCount + " users.");
+        }
+
+        return recognizedUser;
     }
 
-    private List<Mat> loadStoredImagesFromS3(User user) {
+
+    /*private List<Mat> loadStoredImagesFromS3(User user) {
         List<Mat> images = new ArrayList<>();
         String[] faceDataPaths = {user.getFace_data1(), user.getFace_data2(), user.getFace_data3(), user.getFace_data4()};
 
@@ -381,46 +366,8 @@ public class LoginController {
         }
 
         return images;
-    }
+    }*/
 
-    private Mat downloadImageFromS3(String key) {
-        try {
-            S3Client s3 = S3Client.builder()
-                    .region(Region.EU_CENTRAL_1)
-                    .credentialsProvider(ProfileCredentialsProvider.create())
-                    .build();
-
-            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                    .bucket("facialrecjava")
-                    .key(key)
-                    .build();
-
-            ResponseInputStream<GetObjectResponse> s3Object = s3.getObject(getObjectRequest);
-            return Imgcodecs.imdecode(new MatOfByte(s3Object.readAllBytes()), Imgcodecs.IMREAD_GRAYSCALE);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-    private List<Mat> loadStoredImagesFromDatabase(User user) throws IOException {
-        List<Mat> images = new ArrayList<>();
-        String[] faceDataPaths = {user.getFace_data1(), user.getFace_data2(), user.getFace_data3(), user.getFace_data4()};
-
-        for (String faceDataPath : faceDataPaths) {
-            if (faceDataPath != null && !faceDataPath.isEmpty()) {
-                byte[] imageBytes = faceDataPath.getBytes();
-                Mat image = Imgcodecs.imdecode(new MatOfByte(imageBytes), Imgcodecs.IMREAD_GRAYSCALE);
-                if (image != null && !image.empty()) {
-                    images.add(image);
-                } else {
-                    System.err.println("Failed to load image from the database.");
-                }
-            }
-        }
-
-        return images;
-    }
 
 
     private boolean compareFaces(Mat capturedFrame, List<Mat> storedImages) {
@@ -433,24 +380,58 @@ public class LoginController {
                 grayscaleCapturedFrame = capturedFrame;
             }
 
-            // Initialize the face recognizer (using LBPH in this case)
-            FaceRecognizer faceRecognizer = LBPHFaceRecognizer.create();
+            // Debugging output: Check if images are correctly loaded
+            System.out.println("Number of stored images: " + storedImages.size());
 
-            // Train the recognizer with the stored images
+            // Attempt to create the recognizer
+            FaceRecognizer faceRecognizer;
+            try {
+                System.out.println("Attempting to create LBPHFaceRecognizer...");
+                faceRecognizer = LBPHFaceRecognizer.create();
+                System.out.println("LBPHFaceRecognizer created successfully.");
+            } catch (Exception e) {
+                System.err.println("Error creating LBPHFaceRecognizer:");
+                e.printStackTrace();
+                return false;  // Early return if recognizer creation fails
+            }
+
+            // Prepare labels for training
             List<Mat> images = new ArrayList<>();
             Mat labels = new Mat(storedImages.size(), 1, CvType.CV_32SC1);
 
             for (int i = 0; i < storedImages.size(); i++) {
                 images.add(storedImages.get(i));
                 labels.put(i, 0, i);  // Assuming each image has a unique label
+                // Debugging output: Check each image label
+                System.out.println("Image " + i + " associated with label " + i);
             }
 
-            faceRecognizer.train(images, labels);
+            // Debugging output: Check if training starts
+            System.out.println("Starting training phase...");
+
+            try {
+                faceRecognizer.train(images, labels);
+                System.out.println("Training completed. Starting prediction...");
+            } catch (Exception e) {
+                System.err.println("Error during training phase:");
+                e.printStackTrace();
+                return false;  // Early return if training fails
+            }
 
             // Predict the label of the captured frame
             int[] label = new int[1];
             double[] confidence = new double[1];
-            faceRecognizer.predict(grayscaleCapturedFrame, label, confidence);
+            try {
+                faceRecognizer.predict(grayscaleCapturedFrame, label, confidence);
+            } catch (Exception e) {
+                System.err.println("Error during prediction phase:");
+                e.printStackTrace();
+                return false;  // Early return if prediction fails
+            }
+
+            // Debugging output: Show prediction result
+            System.out.println("Predicted label: " + label[0]);
+            System.out.println("Confidence: " + confidence[0]);
 
             // Set a threshold for confidence to consider the prediction as successful
             double confidenceThreshold = 50.0; // You can adjust this value as needed
@@ -463,7 +444,9 @@ public class LoginController {
                 return false; // Face not recognized
             }
         } catch (Exception e) {
+            // Catch and log any exceptions
             e.printStackTrace();
+            System.err.println("Exception during face comparison: " + e.getMessage());
             return false; // Return false if any exception occurs
         }
     }
@@ -478,20 +461,20 @@ public class LoginController {
                 Mat image = Imgcodecs.imread(path, Imgcodecs.IMREAD_GRAYSCALE);
                 if (image != null && !image.empty()) {
                     images.add(image);
+                    System.out.println("Loaded image size: " + image.size());
                 } else {
                     System.err.println("Failed to load image from path: " + path);
                 }
+            } else {
+                System.out.println("No valid path for this image slot.");
             }
         }
 
+        System.out.println("Total images loaded for user: " + images.size());
         return images;
     }
 
-    private ResultSet getAllUsers() throws SQLException {
-        String qry = "SELECT * FROM `user`";
-        PreparedStatement stm = cnx.prepareStatement(qry);
-        return stm.executeQuery();
-    }
+
 
     private User initializeUserFromResultSet(ResultSet rs) throws SQLException {
         return new User(

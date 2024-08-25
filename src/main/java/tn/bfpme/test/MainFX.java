@@ -19,7 +19,9 @@ import java.io.IOException;
 
 public class MainFX extends Application {
     static {
-        System.loadLibrary("opencv_java490"); // Ensure this matches your DLL
+        System.setProperty("java.library.path", "C:\\opencv\\build\\java\\x64");
+        System.out.println(System.getProperty("java.library.path"));
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
 
     public static void main(String[] args) {
