@@ -1692,12 +1692,6 @@ public class paneUserController extends AttributionSoldeController implements In
                     int idRole = user.getIdRole();
                     boolean noDepartment = (idDepartement == 0 || idDepartement == -1);
                     boolean noRole = (idRole == 0 || idRole == -1);
-                    System.out.println("User: " + user.getNom() + " " + user.getPrenom() +
-                            " | ID_Departement: " + idDepartement +
-                            " | ID_Role: " + idRole +
-                            " | No Department: " + noDepartment +
-                            " | No Role: " + noRole);
-
                     return noDepartment && noRole;
                 });
                 break;
@@ -1852,7 +1846,7 @@ public class paneUserController extends AttributionSoldeController implements In
     }
 
     @FXML
-    void handleAddUser(ActionEvent event) {
+    private void handleAddUser() {
         stateAff = 1;
         userListView.setDisable(false);
         roleListView.setDisable(true);
@@ -1964,6 +1958,7 @@ public class paneUserController extends AttributionSoldeController implements In
             } else {
                 showError("Veuillez sélectionner un utilisateur à affecter.");
             }
+        reset2();
         } else if (stateAff == 2) {
             if (selectedUser != null) {
                 Departement selectedDepartement = departListView.getSelectionModel().getSelectedItem();
@@ -1996,7 +1991,6 @@ public class paneUserController extends AttributionSoldeController implements In
             }
             reset2();
             LOADERS();
-
         } else if (stateAff == 3) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Êtes vous sûrs?");
@@ -2053,6 +2047,9 @@ public class paneUserController extends AttributionSoldeController implements In
         handleAdd2.setDisable(false);
         Hfirst2.setVisible(false);
         Hfirst2.setDisable(true);
+        loadUsers1();
+        loadRole1s();
+        loadDepartments1();
     }
 
 }
