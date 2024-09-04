@@ -60,7 +60,9 @@ public class NavigationHeaderController implements Initializable {
 
         if ((userDepartmentName != null && userDepartmentName.equals("RH") && "Directeur".equals(userRoleName)) || "AdminIT".equals(userRoleName)) {
             btnRH.setVisible(true);
+            btnStat.setVisible(true);
         } else {
+            btnStat.setVisible(false);
             btnRH.setVisible(false);
         }
         admin_interface.setVisible("AdminIT".equals(userRoleName));
