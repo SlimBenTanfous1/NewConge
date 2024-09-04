@@ -37,6 +37,8 @@ public class NavigationHeaderController implements Initializable {
     @FXML
     private Button btnRH;
     @FXML
+    private Button btnStat;
+    @FXML
     private Button test_interfaceID;
     @FXML
     private ImageView pdp2;
@@ -138,6 +140,11 @@ public class NavigationHeaderController implements Initializable {
     }
 
     @FXML
+    void Stat_Interface(ActionEvent event) {
+        navigateToScene(event, "/Stat.fxml", "Statistique");
+
+    }
+    @FXML
     void settings_button(ActionEvent event) {
         if (settingsPopup.isShowing()) {
             settingsPopup.hide();
@@ -164,4 +171,5 @@ public class NavigationHeaderController implements Initializable {
             e.printStackTrace();
         }
     }
+
 }

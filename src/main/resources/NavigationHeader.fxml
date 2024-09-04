@@ -19,7 +19,7 @@
             </ImageView>
          </graphic>
       </Button>
-      <HBox alignment="CENTER_RIGHT" layoutX="207.0" layoutY="22.0" prefHeight="63.0" prefWidth="1225.0" spacing="22.0" AnchorPane.bottomAnchor="19.0" AnchorPane.leftAnchor="108.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="22.0">
+      <HBox alignment="CENTER_RIGHT" layoutX="84.0" layoutY="22.0" prefHeight="63.0" prefWidth="1249.0" spacing="22.0" AnchorPane.bottomAnchor="19.0" AnchorPane.leftAnchor="84.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="22.0">
          <children>
             <Button fx:id="test_interfaceID" mnemonicParsing="false" onAction="#test_interface" prefHeight="38.0" prefWidth="66.0" text="test" visible="false">
                <font>
@@ -31,7 +31,17 @@
                   <String fx:value="RobotoBold" />
                </styleClass>
             </Button>
-            <Button fx:id="admin_interface" mnemonicParsing="false" onAction="#admin_interfacebtn" prefHeight="38.0" prefWidth="89.0" text="Admin">
+            <Button fx:id="admin_interface" disable="true" mnemonicParsing="false" onAction="#admin_interfacebtn" prefHeight="38.0" prefWidth="0.0" text="Admin" visible="false">
+               <font>
+                  <Font size="14.0" />
+               </font>
+               <styleClass>
+                  <String fx:value="btn-secondary" />
+                  <String fx:value="FontSize-15" />
+                  <String fx:value="RobotoBold" />
+               </styleClass>
+            </Button>
+            <Button fx:id="btnStat" mnemonicParsing="false" onAction="#Stat_Interface" prefHeight="38.0" prefWidth="137.0" text="Statistique">
                <font>
                   <Font size="14.0" />
                </font>
