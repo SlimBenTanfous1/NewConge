@@ -20,7 +20,6 @@ import java.io.IOException;
 public class MainFX extends Application {
     static {
         System.setProperty("java.library.path", "C:\\opencv\\build\\java\\x64");
-        System.out.println(System.getProperty("java.library.path"));
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
 
@@ -29,12 +28,7 @@ public class MainFX extends Application {
                 .region(Region.EU_CENTRAL_1) // Choose the region you are using
                 .credentialsProvider(ProfileCredentialsProvider.create())
                 .build();
-
-        // Your Rekognition code goes here
-
-        // Close the client
         rekClient.close();
-
         launch(args);
     }
 
