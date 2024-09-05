@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -7,51 +8,23 @@
 
 <AnchorPane fx:id="MainAnchorPane" prefHeight="830.0" prefWidth="1340.0" styleClass="grad-bg" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.StatController">
    <children>
-      <AnchorPane layoutX="28.0" layoutY="131.0" styleClass="pane1" AnchorPane.bottomAnchor="22.0" AnchorPane.leftAnchor="28.0" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="131.0">
+      <AnchorPane layoutX="32.0" layoutY="128.0" styleClass="pane1" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="32.0" AnchorPane.rightAnchor="31.0" AnchorPane.topAnchor="128.0">
          <children>
-            <Label alignment="CENTER" layoutX="524.0" layoutY="14.0" prefHeight="27.0" prefWidth="230.0" styleClass="RobotoBold" text="Tableau de Bord des Congés" textAlignment="CENTER">
+            <Label alignment="CENTER" layoutX="452.0" layoutY="14.0" prefHeight="27.0" prefWidth="374.0" styleClass="RobotoBold" text="Tableau de Bord des Congés" textAlignment="CENTER" AnchorPane.leftAnchor="452.0" AnchorPane.rightAnchor="451.0" AnchorPane.topAnchor="14.0">
                <font>
                   <Font size="18.0" />
                </font>
             </Label>
-            <VBox alignment="CENTER" layoutX="866.0" layoutY="67.0" prefHeight="581.0" prefWidth="365.0">
-               <children>
-                  <Label styleClass="RobotoRegular" text="Répartition des Congés par Type">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Label>
-                  <Separator prefHeight="20.0" prefWidth="365.0" />
-                  <Pane prefHeight="250.0" prefWidth="365.0" styleClass="paneRoundedCornders">
-                     <children>
-                        <PieChart fx:id="PieType" layoutX="18.0" layoutY="15.0" prefHeight="220.0" prefWidth="330.0" />
-                     </children>
-                  </Pane>
-                  <Separator prefHeight="36.0" prefWidth="365.0" styleClass="seperator" />
-                  <Label alignment="CENTER" contentDisplay="CENTER" styleClass="RobotoRegular" text="Répartition des Congés par Département" textAlignment="CENTER">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Label>
-                  <Separator prefHeight="20.0" prefWidth="365.0" />
-                  <Pane prefHeight="250.0" prefWidth="365.0" styleClass="paneRoundedCornders">
-                     <children>
-                        <PieChart fx:id="PieDepart" layoutX="18.0" layoutY="15.0" prefHeight="220.0" prefWidth="330.0" />
-                     </children>
-                  </Pane>
-               </children>
-            </VBox>
-            <VBox alignment="CENTER" layoutX="31.0" layoutY="67.0" prefHeight="581.0" prefWidth="777.0">
+            <VBox alignment="TOP_CENTER" layoutX="39.0" layoutY="67.0" prefHeight="263.0" prefWidth="679.0" spacing="7.0" AnchorPane.bottomAnchor="347.0" AnchorPane.leftAnchor="39.0" AnchorPane.rightAnchor="559.0" AnchorPane.topAnchor="67.0">
                <children>
                   <Label styleClass="RobotoRegular" text="Solde Restant des Congés par Département">
                      <font>
                         <Font size="16.0" />
                      </font>
                   </Label>
-                  <Separator prefHeight="20.0" prefWidth="200.0" />
-                  <Pane prefHeight="250.0" prefWidth="719.0" styleClass="paneRoundedCornders">
+                  <AnchorPane prefHeight="238.0" prefWidth="678.0" styleClass="paneRoundedCornders">
                      <children>
-                        <BarChart fx:id="BarDepart" layoutX="19.0" layoutY="6.0" prefHeight="230.0" prefWidth="740.0">
+                        <BarChart fx:id="BarDepart" layoutX="12.0" layoutY="7.0" prefHeight="226.0" prefWidth="669.0" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="6.0">
                           <xAxis>
                             <CategoryAxis side="BOTTOM" />
                           </xAxis>
@@ -60,17 +33,19 @@
                           </yAxis>
                         </BarChart>
                      </children>
-                  </Pane>
-                  <Separator prefHeight="36.0" prefWidth="777.0" styleClass="seperator" />
+                  </AnchorPane>
+               </children>
+            </VBox>
+            <VBox alignment="TOP_CENTER" layoutX="39.0" layoutY="381.0" prefHeight="275.0" prefWidth="679.0" spacing="7.0" AnchorPane.bottomAnchor="21.0" AnchorPane.leftAnchor="39.0" AnchorPane.rightAnchor="559.0" AnchorPane.topAnchor="381.0">
+               <children>
                   <Label styleClass="RobotoRegular" text="Congés Prises par Mois">
                      <font>
                         <Font size="16.0" />
                      </font>
                   </Label>
-                  <Separator prefHeight="20.0" prefWidth="777.0" />
-                  <Pane prefHeight="250.0" prefWidth="777.0" styleClass="paneRoundedCornders">
+                  <AnchorPane styleClass="paneRoundedCornders">
                      <children>
-                        <LineChart fx:id="LineDepart" layoutX="19.0" layoutY="7.0" prefHeight="230.0" prefWidth="740.0">
+                        <LineChart fx:id="LineDepart" layoutX="19.0" layoutY="7.0" prefHeight="230.0" prefWidth="740.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
                           <xAxis>
                             <CategoryAxis side="BOTTOM" />
                           </xAxis>
@@ -79,7 +54,38 @@
                           </yAxis>
                         </LineChart>
                      </children>
-                  </Pane>
+                  </AnchorPane>
+               </children>
+            </VBox>
+            <VBox alignment="TOP_CENTER" layoutX="874.0" layoutY="60.0" prefHeight="290.0" prefWidth="441.0" spacing="7.0" AnchorPane.rightAnchor="53.0" AnchorPane.topAnchor="60.0">
+               <children>
+                  <Label alignment="CENTER" prefHeight="18.0" prefWidth="348.0" styleClass="RobotoRegular" text="Répartition des Congés par Type">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Label>
+                  <AnchorPane prefHeight="262.0" prefWidth="441.0" styleClass="paneRoundedCornders">
+                     <children>
+                        <PieChart fx:id="PieType" layoutX="10.0" layoutY="3.0" prefHeight="252.0" prefWidth="422.0" />
+                     </children>
+                  </AnchorPane>
+               </children>
+            </VBox>
+            <VBox alignment="TOP_CENTER" layoutX="783.0" layoutY="355.0" prefHeight="301.0" prefWidth="441.0" spacing="7.0" AnchorPane.rightAnchor="53.0">
+               <children>
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="437.0" styleClass="RobotoRegular" text="Répartition des Congés par Département" textAlignment="CENTER">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets bottom="9.0" />
+                     </VBox.margin>
+                  </Label>
+                  <AnchorPane styleClass="paneRoundedCornders">
+                     <children>
+                        <PieChart fx:id="PieDepart" layoutX="10.0" layoutY="9.0" prefHeight="252.0" prefWidth="422.0" />
+                     </children>
+                  </AnchorPane>
                </children>
             </VBox>
          </children>

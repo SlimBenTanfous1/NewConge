@@ -25,7 +25,7 @@ public class MainFX extends Application {
 
     public static void main(String[] args) {
         RekognitionClient rekClient = RekognitionClient.builder()
-                .region(Region.EU_CENTRAL_1) // Choose the region you are using
+                .region(Region.EU_CENTRAL_1)
                 .credentialsProvider(ProfileCredentialsProvider.create())
                 .build();
         rekClient.close();
@@ -34,8 +34,8 @@ public class MainFX extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
         try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
             Parent root = loader.load();
             Scene scene = new Scene(root);
             primaryStage.setTitle("Gestion de Congés - Connection");
