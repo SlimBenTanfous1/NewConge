@@ -1396,6 +1396,8 @@ public class paneUserController extends AttributionSoldeController implements In
         isAscending1 = !isAscending1;
     }
 
+    /*******************************************************  INTERIM  ****************************************************************************************/
+
     @FXML
     void annulerInterim(ActionEvent event) {
         resetInt();
@@ -1601,7 +1603,7 @@ public class paneUserController extends AttributionSoldeController implements In
     }
 
     private void loadManagers() {
-        List<User> managerList = userService.getAllManagers();
+        List<User> managerList = userService.getAllUsers();
         ObservableList<User> users = FXCollections.observableArrayList(managerList);
         filteredManager = new FilteredList<>(users, p -> true);
         manager_listview.setItems(filteredManager);
@@ -1631,7 +1633,7 @@ public class paneUserController extends AttributionSoldeController implements In
     }
 
     private void loadInterims() {
-        List<User> interimList = userService.getAllManagers();
+        List<User> interimList = userService.getAllUsers();
         ObservableList<User> users = FXCollections.observableArrayList(interimList);
         filteredInterim = new FilteredList<>(users, p -> true);
         interim_listview.setItems(filteredInterim);
