@@ -1,29 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.chart.BarChart?>
-<?import javafx.scene.chart.CategoryAxis?>
-<?import javafx.scene.chart.LineChart?>
-<?import javafx.scene.chart.NumberAxis?>
-<?import javafx.scene.chart.PieChart?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
 <AnchorPane fx:id="MainAnchorPane" prefHeight="830.0" prefWidth="1340.0" styleClass="grad-bg" stylesheets="@assets/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.bfpme.controllers.StatController">
    <children>
       <AnchorPane layoutX="28.0" layoutY="131.0" styleClass="pane1" AnchorPane.bottomAnchor="22.0" AnchorPane.leftAnchor="28.0" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="131.0">
          <children>
-            <Label layoutX="524.0" layoutY="14.0" prefHeight="27.0" prefWidth="230.0" text="Tableau de Bord des Congés">
+            <Label alignment="CENTER" layoutX="524.0" layoutY="14.0" prefHeight="27.0" prefWidth="230.0" styleClass="RobotoBold" text="Tableau de Bord des Congés" textAlignment="CENTER">
                <font>
                   <Font size="18.0" />
                </font>
             </Label>
             <VBox alignment="CENTER" layoutX="866.0" layoutY="67.0" prefHeight="581.0" prefWidth="365.0">
                <children>
-                  <Label text="Répartition des Congés par Type">
+                  <Label styleClass="RobotoRegular" text="Répartition des Congés par Type">
                      <font>
                         <Font size="16.0" />
                      </font>
@@ -35,7 +28,7 @@
                      </children>
                   </Pane>
                   <Separator prefHeight="36.0" prefWidth="365.0" styleClass="seperator" />
-                  <Label alignment="CENTER" contentDisplay="CENTER" text="Répartition des Congés par Département" textAlignment="CENTER">
+                  <Label alignment="CENTER" contentDisplay="CENTER" styleClass="RobotoRegular" text="Répartition des Congés par Département" textAlignment="CENTER">
                      <font>
                         <Font size="16.0" />
                      </font>
@@ -50,7 +43,7 @@
             </VBox>
             <VBox alignment="CENTER" layoutX="31.0" layoutY="67.0" prefHeight="581.0" prefWidth="777.0">
                <children>
-                  <Label text="Solde Restant des Congés par Département">
+                  <Label styleClass="RobotoRegular" text="Solde Restant des Congés par Département">
                      <font>
                         <Font size="16.0" />
                      </font>
@@ -69,7 +62,7 @@
                      </children>
                   </Pane>
                   <Separator prefHeight="36.0" prefWidth="777.0" styleClass="seperator" />
-                  <Label text="Congés Prises par Mois">
+                  <Label styleClass="RobotoRegular" text="Congés Prises par Mois">
                      <font>
                         <Font size="16.0" />
                      </font>
