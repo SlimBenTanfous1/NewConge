@@ -142,11 +142,6 @@ public class NavigationHeaderController implements Initializable {
     }
 
     @FXML
-    void Stat_Interface(ActionEvent event) {
-        navigateToScene(event, "/Stat.fxml", "Statistique");
-
-    }
-    @FXML
     void settings_button(ActionEvent event) {
         if (settingsPopup.isShowing()) {
             settingsPopup.hide();

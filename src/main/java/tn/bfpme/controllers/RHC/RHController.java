@@ -80,6 +80,14 @@ public class RHController {
         sideMenuPane.setVisible(true);
     }
 
+    @FXML
+    private void showStatsPane() {
+        loadPane("/Stat.fxml");
+        BtnsLayAP.setVisible(false);
+        PaneCont.setVisible(true);
+        sideMenuPane.setVisible(true);
+    }
+
     private void loadPane(String fxmlPath) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
