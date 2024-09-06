@@ -189,27 +189,48 @@ public class ServiceDepartement {
             // Begin transaction
             cnx.setAutoCommit(false);
 
-            // Delete users associated with the department
+            // Step 1: Delete all related `conge` records for users in this department
+            String deleteCongeQuery = "DELETE c FROM conge c JOIN user u ON c.ID_User = u.ID_User WHERE u.ID_Departement = ?";
+            try (PreparedStatement deleteCongeStmt = cnx.prepareStatement(deleteCongeQuery)) {
+                deleteCongeStmt.setInt(1, id);
+                deleteCongeStmt.executeUpdate();
+            }
+
+            // Step 2: Delete all related records in `user_solde` table for users in this department
+            String deleteUserSoldeQuery = "DELETE us FROM user_solde us JOIN user u ON us.ID_User = u.ID_User WHERE u.ID_Departement = ?";
+            try (PreparedStatement deleteUserSoldeStmt = cnx.prepareStatement(deleteUserSoldeQuery)) {
+                deleteUserSoldeStmt.setInt(1, id);
+                deleteUserSoldeStmt.executeUpdate();
+            }
+
+            // Step 3: Delete all related `user_role` entries for users in this department
+            String deleteUserRoleQuery = "DELETE ur FROM user_role ur JOIN user u ON ur.ID_User = u.ID_User WHERE u.ID_Departement = ?";
+            try (PreparedStatement deleteUserRoleStmt = cnx.prepareStatement(deleteUserRoleQuery)) {
+                deleteUserRoleStmt.setInt(1, id);
+                deleteUserRoleStmt.executeUpdate();
+            }
+
+            // Step 4: Delete all users associated with the department
             String deleteUserDeptQuery = "DELETE FROM user WHERE ID_Departement = ?";
             try (PreparedStatement deleteUserDeptStmt = cnx.prepareStatement(deleteUserDeptQuery)) {
                 deleteUserDeptStmt.setInt(1, id);
                 deleteUserDeptStmt.executeUpdate();
             }
 
-            // Delete the department
+            // Step 5: Delete the department itself
             String deleteDepartmentQuery = "DELETE FROM departement WHERE ID_Departement = ?";
             try (PreparedStatement deleteStmt = cnx.prepareStatement(deleteDepartmentQuery)) {
                 deleteStmt.setInt(1, id);
                 deleteStmt.executeUpdate();
             }
 
-            // Commit transaction
+            // Commit the transaction
             cnx.commit();
         } catch (SQLException e) {
             e.printStackTrace();
             try {
                 if (cnx != null) {
-                    cnx.rollback();
+                    cnx.rollback();  // Roll back the transaction if something fails
                 }
             } catch (SQLException rollbackEx) {
                 rollbackEx.printStackTrace();

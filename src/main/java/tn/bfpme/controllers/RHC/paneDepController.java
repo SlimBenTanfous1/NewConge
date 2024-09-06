@@ -153,7 +153,7 @@ public class paneDepController implements Initializable {
             try {
                 Departement selectedDept = departementListView.getSelectionModel().getSelectedItem();
                 if (selectedDept != null) {
-                    depService.deleteDepartment(selectedDept.getIdDepartement());
+                    depService.xdeleteDepartment(selectedDept.getIdDepartement());
                     loadDepartments();
                 }
             } catch (Exception e) {

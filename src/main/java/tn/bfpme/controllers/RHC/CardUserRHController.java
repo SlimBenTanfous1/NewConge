@@ -168,32 +168,55 @@ public class CardUserRHController implements Initializable {
     @FXML
     void SupprimerUser(ActionEvent event) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Êtes vous sûrs?");
-        alert.setHeaderText("Êtes-vous certain de vouloir supprimer cette utilisateur ?");
+        alert.setTitle("Êtes-vous sûrs?");
+        alert.setHeaderText("Êtes-vous certain de vouloir supprimer cet utilisateur ?");
         ButtonType Oui = new ButtonType("Oui");
         ButtonType Non = new ButtonType("Non");
         alert.getButtonTypes().setAll(Oui, Non);
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == Oui) {
-            String query = "SELECT ID_User FROM user WHERE ID_Manager = ?";
 
+        if (result.isPresent() && result.get() == Oui) {
             try {
                 if (cnx == null || cnx.isClosed()) {
                     cnx = MyDataBase.getInstance().getCnx();
                 }
-                PreparedStatement statement = cnx.prepareStatement(query);
-                statement.setInt(1, uid);
-                ResultSet resultSet = statement.executeQuery();
-                while (resultSet.next()) {
-                    int subordinateId = resultSet.getInt("ID_User");
-                    SSM.updateUserManager(subordinateId, null);
-                    System.out.println("Set manager to null for subordinate ID: " + subordinateId);
-                }
+
+                // Step 1: Nullify subordinates' manager IDs or reassign to a default manager
+                String updateSubordinatesQuery = "UPDATE user SET ID_Manager = NULL WHERE ID_Manager = ?";
+                PreparedStatement updateSubordinatesStmt = cnx.prepareStatement(updateSubordinatesQuery);
+                updateSubordinatesStmt.setInt(1, uid);  // `uid` is the ID of the user being deleted
+                updateSubordinatesStmt.executeUpdate();
+
+                // Step 2: Delete related records from `user_solde` for the user
+                String deleteSoldeQuery = "DELETE FROM user_solde WHERE ID_User = ?";
+                PreparedStatement deleteSoldeStmt = cnx.prepareStatement(deleteSoldeQuery);
+                deleteSoldeStmt.setInt(1, uid);
+                deleteSoldeStmt.executeUpdate();
+
+                // Step 3: Delete related records from `conge` for the user
+                String deleteCongeQuery = "DELETE FROM conge WHERE ID_User = ?";
+                PreparedStatement deleteCongeStmt = cnx.prepareStatement(deleteCongeQuery);
+                deleteCongeStmt.setInt(1, uid);
+                deleteCongeStmt.executeUpdate();
+
+                // Step 4: Delete related records from `notification` for the user
+                String deleteNotifQuery = "DELETE FROM notification WHERE ID_User = ?";
+                PreparedStatement deleteNotifStmt = cnx.prepareStatement(deleteNotifQuery);
+                deleteNotifStmt.setInt(1, uid);
+                deleteNotifStmt.executeUpdate();
+
+                // Step 5: Delete the user from the `user` table
+                String deleteUserQuery = "DELETE FROM user WHERE ID_User = ?";
+                PreparedStatement deleteUserStmt = cnx.prepareStatement(deleteUserQuery);
+                deleteUserStmt.setInt(1, uid);
+                deleteUserStmt.executeUpdate();
+
+                // Step 6: Remove the user card from the UI
+                ((GridPane) UserCard.getParent()).getChildren().remove(UserCard);
+
             } catch (SQLException e) {
-                throw new RuntimeException("Error removing role and department: " + e.getMessage(), e);
+                throw new RuntimeException("Error while deleting user: " + e.getMessage(), e);
             }
-            UserS.DeleteByID(uid);
-            ((GridPane) UserCard.getParent()).getChildren().remove(UserCard);
         }
     }
 

@@ -34,75 +34,72 @@ public class ServiceSubordinateManager {
         Role userRole = getRoleByUserId2(userId);
         Departement userDept = getDepartmentByUserId2(userId);
         if (userRole == null || userDept == null) {
-            return null;
+            throw new RuntimeException("User role or department is null.");
         }
-        if ("Employe".equals(userRole.getNom())) {
-            String query = "SELECT u.ID_User FROM user_role ur JOIN user u ON ur.ID_User = u.ID_User " +
-                    "JOIN role r ON ur.ID_Role = r.ID_Role " +
-                    "WHERE u.ID_Departement = ? AND r.nom != 'Employe' " +
-                    "ORDER BY r.Level DESC LIMIT 1";
-            try (PreparedStatement statement = cnx.prepareStatement(query)) {
-                statement.setInt(1, departmentId);
-                ResultSet resultSet = statement.executeQuery();
-                if (resultSet.next()) {
-                    int managerId = resultSet.getInt("ID_User");
-                    return managerId;
+
+        String query;
+        try {
+            if ("Employe".equals(userRole.getNom())) {
+                query = "SELECT u.ID_User FROM user_role ur JOIN user u ON ur.ID_User = u.ID_User " +
+                        "JOIN role r ON ur.ID_Role = r.ID_Role " +
+                        "WHERE u.ID_Departement = ? AND r.nom != 'Employe' " +
+                        "ORDER BY r.Level DESC LIMIT 1";
+                try (PreparedStatement statement = cnx.prepareStatement(query)) {
+                    statement.setInt(1, departmentId);
+                    ResultSet resultSet = statement.executeQuery();
+                    if (resultSet.next()) {
+                        return resultSet.getInt("ID_User");
+                    }
                 }
-            } catch (SQLException e) {
-                throw new RuntimeException("Error finding manager: " + e.getMessage(), e);
-            }
-        } else {
-            String query = "SELECT u.ID_User FROM user_role ur JOIN user u ON ur.ID_User = u.ID_User " +
-                    "JOIN role r ON ur.ID_Role = r.ID_Role " +
-                    "WHERE u.ID_Departement = ? AND r.Level < (SELECT Level FROM role WHERE ID_Role = ?) " +
-                    "ORDER BY r.Level DESC LIMIT 1";
-            try (PreparedStatement statement = cnx.prepareStatement(query)) {
-                statement.setInt(1, departmentId);
-                statement.setInt(2, roleId);
-                ResultSet resultSet = statement.executeQuery();
-                if (resultSet.next()) {
-                    int managerId = resultSet.getInt("ID_User");
-                    return managerId;
+            } else {
+                query = "SELECT u.ID_User FROM user_role ur JOIN user u ON ur.ID_User = u.ID_User " +
+                        "JOIN role r ON ur.ID_Role = r.ID_Role " +
+                        "WHERE u.ID_Departement = ? AND r.Level < (SELECT Level FROM role WHERE ID_Role = ?) " +
+                        "ORDER BY r.Level DESC LIMIT 1";
+                try (PreparedStatement statement = cnx.prepareStatement(query)) {
+                    statement.setInt(1, departmentId);
+                    statement.setInt(2, roleId);
+                    ResultSet resultSet = statement.executeQuery();
+                    if (resultSet.next()) {
+                        return resultSet.getInt("ID_User");
+                    }
                 }
-            } catch (SQLException e) {
-                throw new RuntimeException("Error finding manager: " + e.getMessage(), e);
+
+                query = "WITH RECURSIVE dept_hierarchy AS (" +
+                        "SELECT ID_Departement, Parent_Dept FROM departement WHERE ID_Departement = ? " +
+                        "UNION ALL " +
+                        "SELECT d.ID_Departement, d.Parent_Dept FROM departement d " +
+                        "JOIN dept_hierarchy dh ON dh.Parent_Dept = d.ID_Departement " +
+                        ") " +
+                        "SELECT u.ID_User FROM user_role ur " +
+                        "JOIN user u ON ur.ID_User = u.ID_User " +
+                        "JOIN role r ON ur.ID_Role = r.ID_Role " +
+                        "JOIN dept_hierarchy dh ON u.ID_Departement = dh.ID_Departement " +
+                        "WHERE r.Level < (SELECT Level FROM role WHERE ID_Role = ?) " +
+                        "ORDER BY r.Level DESC, dh.ID_Departement ASC LIMIT 1";
+                try (PreparedStatement statement = cnx.prepareStatement(query)) {
+                    statement.setInt(1, departmentId);
+                    statement.setInt(2, roleId);
+                    ResultSet resultSet = statement.executeQuery();
+                    if (resultSet.next()) {
+                        return resultSet.getInt("ID_User");
+                    }
+                }
             }
-            query = "WITH RECURSIVE dept_hierarchy AS (" +
-                    "SELECT ID_Departement, Parent_Dept FROM departement WHERE ID_Departement = ? " +
-                    "UNION ALL " +
-                    "SELECT d.ID_Departement, d.Parent_Dept FROM departement d " +
-                    "JOIN dept_hierarchy dh ON dh.Parent_Dept = d.ID_Departement " +
-                    ") " +
-                    "SELECT u.ID_User FROM user_role ur " +
+
+            query = "SELECT u.ID_User FROM user_role ur " +
                     "JOIN user u ON ur.ID_User = u.ID_User " +
-                    "JOIN role r ON ur.ID_Role = r.ID_Role " +
-                    "JOIN dept_hierarchy dh ON u.ID_Departement = dh.ID_Departement " +
-                    "WHERE r.Level < (SELECT Level FROM role WHERE ID_Role = ?) " +
-                    "ORDER BY r.Level DESC, dh.ID_Departement ASC LIMIT 1";
+                    "WHERE ur.ID_Role = (SELECT ID_Role FROM role WHERE nom = 'DG')";
             try (PreparedStatement statement = cnx.prepareStatement(query)) {
-                statement.setInt(1, departmentId);
-                statement.setInt(2, roleId);
                 ResultSet resultSet = statement.executeQuery();
                 if (resultSet.next()) {
-                    int managerId = resultSet.getInt("ID_User");
-                    return managerId;
+                    return resultSet.getInt("ID_User");
                 }
-            } catch (SQLException e) {
-                throw new RuntimeException("Error finding manager: " + e.getMessage(), e);
-            }
-        }
-        String query = "SELECT u.ID_User FROM user_role ur " +
-                "JOIN user u ON ur.ID_User = u.ID_User " +
-                "WHERE ur.ID_Role = (SELECT ID_Role FROM role WHERE nom = 'DG')";
-        try (PreparedStatement statement = cnx.prepareStatement(query)) {
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                int managerId = resultSet.getInt("ID_User");
-                return managerId;
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error finding manager: " + e.getMessage(), e);
         }
+
         return null;
     }
 
