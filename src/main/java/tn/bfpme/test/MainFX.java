@@ -20,28 +20,22 @@ import java.io.IOException;
 public class MainFX extends Application {
     static {
         System.setProperty("java.library.path", "C:\\opencv\\build\\java\\x64");
-        System.out.println(System.getProperty("java.library.path"));
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
 
     public static void main(String[] args) {
         RekognitionClient rekClient = RekognitionClient.builder()
-                .region(Region.EU_CENTRAL_1) // Choose the region you are using
+                .region(Region.EU_CENTRAL_1)
                 .credentialsProvider(ProfileCredentialsProvider.create())
                 .build();
-
-        // Your Rekognition code goes here
-
-        // Close the client
         rekClient.close();
-
         launch(args);
     }
 
     @Override
     public void start(Stage primaryStage) {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
         try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
             Parent root = loader.load();
             Scene scene = new Scene(root);
             primaryStage.setTitle("Gestion de Congés - Connection");

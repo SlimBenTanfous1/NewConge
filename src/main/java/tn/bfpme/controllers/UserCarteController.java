@@ -66,9 +66,9 @@ public class UserCarteController implements Initializable {
         }
         nomprenom_card.setText(user.getPrenom() + " " + user.getNom());
         email_card.setText("Email: " + user.getEmail());
-        periode_card.setText("De    " + conge.getDateDebut() + "   →   " + conge.getDateFin());
-        statut_card.setText("Statut: " + conge.getStatut());
-        type_card.setText("Type: " + conge.getDesignation());
+        periode_card.setText(conge.getDateDebut() + "   →   " + conge.getDateFin());
+        statut_card.setText(String.valueOf(conge.getStatut()));
+        type_card.setText(conge.getDesignation());
         UserCard.setStyle("-fx-border-radius: 5px; -fx-border-color: #808080;");
     }
 
@@ -85,6 +85,7 @@ public class UserCarteController implements Initializable {
             Stage demandeDepStage = new Stage();
             StageManager.addStage("DemandeDep", demandeDepStage);
             newStage.initModality(Modality.WINDOW_MODAL);
+            newStage.initStyle(StageStyle.TRANSPARENT);
             newStage.initOwner(((Node) event.getSource()).getScene().getWindow());
             newStage.showAndWait();
         } catch (IOException e) {

@@ -1,5 +1,8 @@
 package tn.bfpme.controllers;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,19 +19,18 @@ import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Duration;
 import tn.bfpme.models.*;
 import tn.bfpme.services.ServiceConge;
 import tn.bfpme.services.ServiceNotification;
 import tn.bfpme.services.ServiceUserSolde;
 import tn.bfpme.services.ServiceUtilisateur;
-import tn.bfpme.utils.Mails;
-import tn.bfpme.utils.MyDataBase;
-import tn.bfpme.utils.SessionManager;
-import tn.bfpme.utils.StageManager;
+import tn.bfpme.utils.*;
 
 import java.awt.*;
 import java.io.File;
@@ -46,6 +48,8 @@ import java.util.logging.Logger;
 public class DemandeDepController implements Initializable {
     @FXML
     private Label CongePerson;
+    @FXML
+    private AnchorPane MainAnchorPane;
     @FXML
     private Label labelDD;
     @FXML
@@ -110,6 +114,7 @@ public class DemandeDepController implements Initializable {
             managerRole = String.valueOf(role);
         }
         loadInterims();
+        ListeInterim.setStyle("-fx-font-size: 17 px;");
         ListeInterim.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 try {
@@ -119,6 +124,28 @@ public class DemandeDepController implements Initializable {
                 }
             }
         });
+        /*Platform.runLater(() -> {
+            Stage stage = FontResizer.getStageFromNode(MainAnchorPane);
+            if (stage != null) {
+                stage.widthProperty().addListener((obs, oldVal, newVal) ->
+                        FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight())
+                );
+                stage.heightProperty().addListener((obs, oldVal, newVal) ->
+                        FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight())
+                );
+                Timeline timeline = new Timeline(new KeyFrame(
+                        Duration.millis(100),
+                        event -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight())
+                ));
+                timeline.setCycleCount(1);
+                timeline.play();
+                stage.showingProperty().addListener((obs, wasShowing, isNowShowing) -> {
+                    if (isNowShowing) {
+                        FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight());
+                    }
+                });
+            }
+        });*/
     }
 
     public void setData(Conge conge, User user) {

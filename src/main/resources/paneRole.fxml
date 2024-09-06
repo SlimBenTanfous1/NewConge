@@ -11,33 +11,41 @@
          <children>
             <HBox layoutX="54.0" layoutY="73.0" maxHeight="477.0" maxWidth="315.0" minHeight="477.0" minWidth="315.0" prefHeight="477.0" prefWidth="315.0" AnchorPane.bottomAnchor="46.0" AnchorPane.leftAnchor="54.0" AnchorPane.rightAnchor="611.0" AnchorPane.topAnchor="73.0">
                <children>
-                  <ListView fx:id="roleListView" prefHeight="477.0" prefWidth="395.0" />
+                  <ListView fx:id="roleListView" maxWidth="1000.0" prefHeight="477.0" prefWidth="395.0" />
                </children>
             </HBox>
-            <Label layoutX="514.0" layoutY="61.0" styleClass="RobotoItalic" text="Désignation de fonction:" AnchorPane.leftAnchor="514.0" AnchorPane.topAnchor="61.0" />
-            <HBox layoutX="514.0" layoutY="88.0" prefHeight="29.0" prefWidth="281.0" AnchorPane.leftAnchor="514.0" AnchorPane.rightAnchor="186.0">
+            <VBox layoutX="515.0" layoutY="62.0" spacing="10.0" AnchorPane.leftAnchor="514.0" AnchorPane.rightAnchor="185.0" AnchorPane.topAnchor="62.0">
                <children>
-                  <TextField fx:id="roleNameField" prefHeight="29.0" prefWidth="333.0" promptText="Désignation de rôle..." />
+                  <Label styleClass="RobotoItalic" text="Désignation de fonction:" />
+                  <HBox prefHeight="29.0" prefWidth="281.0" VBox.vgrow="ALWAYS">
+                     <children>
+                        <TextField fx:id="roleNameField" maxWidth="500.0" prefHeight="29.0" prefWidth="333.0" promptText="Désignation de rôle..." HBox.hgrow="ALWAYS" />
+                     </children>
+                  </HBox>
                </children>
-            </HBox>
-            <Label layoutX="516.0" layoutY="135.0" styleClass="RobotoItalic" text="Déscription :" AnchorPane.leftAnchor="515.0" AnchorPane.topAnchor="135.0" />
-            <HBox layoutX="515.0" layoutY="164.0" minWidth="281.0" prefWidth="281.0" AnchorPane.leftAnchor="514.0" AnchorPane.rightAnchor="186.0" AnchorPane.topAnchor="163.0">
+            </VBox>
+            <VBox layoutX="515.0" layoutY="136.0" prefHeight="143.0" prefWidth="281.0" spacing="10.0" AnchorPane.leftAnchor="515.0" AnchorPane.rightAnchor="184.0" AnchorPane.topAnchor="136.0">
                <children>
-                  <TextArea fx:id="roleDescriptionField" prefHeight="104.0" prefWidth="333.0" promptText="Déscription..." wrapText="true" />
+                  <Label styleClass="RobotoItalic" text="Déscription :" />
+                  <HBox minWidth="281.0" prefWidth="281.0">
+                     <children>
+                        <TextArea fx:id="roleDescriptionField" maxWidth="500.0" prefHeight="104.0" prefWidth="333.0" promptText="Déscription..." wrapText="true" HBox.hgrow="ALWAYS" />
+                     </children>
+                  </HBox>
                </children>
-            </HBox>
+            </VBox>
             <Label layoutX="516.0" layoutY="296.0" styleClass="RobotoItalic" text="Fonction parent :" />
-            <Button fx:id="AddNewRoleCombo" layoutX="852.0" layoutY="328.0" onAction="#addRole" prefHeight="40.0" prefWidth="40.0" styleClass="btn-primary" text="+" />
-            <HBox fx:id="ParentRoleHBbox" layoutX="515.0" layoutY="328.0" minWidth="281.0" prefHeight="179.0" prefWidth="330.0" AnchorPane.leftAnchor="514.0" AnchorPane.topAnchor="327.0">
+            <HBox fx:id="ParentRoleHBbox" layoutX="516.0" layoutY="329.0" minWidth="281.0" prefHeight="179.0" prefWidth="381.0" spacing="5.0" AnchorPane.leftAnchor="515.0" AnchorPane.rightAnchor="84.0" AnchorPane.topAnchor="328.0">
                <children>
-                  <ScrollPane prefHeight="179.0" prefWidth="333.0" styleClass="paneRoundedCornders">
+                  <ScrollPane maxWidth="500.0" prefHeight="179.0" prefWidth="333.0" snapToPixel="false" styleClass="paneRoundedCornders" HBox.hgrow="ALWAYS">
                      <content>
                         <VBox fx:id="roleParentVBox" prefHeight="0.0" prefWidth="315.0" spacing="4.0" />
                      </content>
                   </ScrollPane>
+                  <Button fx:id="AddNewRoleCombo" onAction="#addRole" prefHeight="40.0" prefWidth="40.0" styleClass="btn-primary" text="+" />
                </children>
             </HBox>
-            <HBox fx:id="btnCRUDHbox" layoutX="529.0" layoutY="519.0" prefHeight="48.0" prefWidth="302.0" spacing="8.0">
+            <HBox fx:id="btnCRUDHbox" alignment="CENTER" layoutX="529.0" layoutY="519.0" maxWidth="400.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="48.0" prefWidth="302.0" spacing="8.0" AnchorPane.leftAnchor="529.0">
                <children>
                   <Separator orientation="VERTICAL" prefHeight="200.0" styleClass="seperator" />
                   <Button fx:id="btnAjouter" maxHeight="50.0" maxWidth="87.0" onAction="#handleAddRole" prefHeight="41.0" prefWidth="87.0" text="Ajouter">
@@ -63,8 +71,8 @@
                   <String fx:value="RobotoMediumItalic" />
                </styleClass>
             </Label>
-            <Label layoutX="54.0" layoutY="42.0" prefHeight="18.0" prefWidth="174.0" styleClass="RobotoBold" text="Liste des fonctions" AnchorPane.leftAnchor="54.0" AnchorPane.topAnchor="42.0" />
-            <HBox fx:id="btnEAHbox" layoutX="529.0" layoutY="519.0" prefHeight="48.0" prefWidth="302.0" spacing="8.0">
+            <Label layoutX="56.0" layoutY="44.0" prefHeight="18.0" prefWidth="281.0" styleClass="RobotoBold" text="Liste des fonctions" AnchorPane.leftAnchor="55.0" AnchorPane.topAnchor="43.0" />
+            <HBox fx:id="btnEAHbox" alignment="CENTER" layoutX="529.0" layoutY="519.0" maxWidth="400.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="48.0" prefWidth="302.0" spacing="8.0" AnchorPane.leftAnchor="529.0">
                <children>
                   <Separator orientation="VERTICAL" prefHeight="200.0" styleClass="seperator" />
                   <Button fx:id="btnEnregistrer" onAction="#Enregistrer" prefHeight="48.0" prefWidth="149.0" text="Enregistrer">

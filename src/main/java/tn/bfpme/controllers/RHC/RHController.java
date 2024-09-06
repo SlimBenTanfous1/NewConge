@@ -12,9 +12,11 @@ import java.io.IOException;
 
 public class RHController {
     @FXML
-    private AnchorPane MainAnchorPane;
+    private AnchorPane MainAnchorPane,BtnsLayAP;
     @FXML
     public Pane PaneCont;
+    @FXML
+    public Pane sideMenuPane;
 
     public void initialize() {
         try {
@@ -33,31 +35,57 @@ public class RHController {
             stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
             FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight());
         });
+        sideMenuPane.setVisible(false);
+        PaneCont.setVisible(false);
+        BtnsLayAP.setVisible(true);
     }
 
     @FXML
     private void showDepartementPane() {
         loadPane("/paneDepartement.fxml");
+        BtnsLayAP.setVisible(false);
+        PaneCont.setVisible(true);
+        sideMenuPane.setVisible(true);
     }
 
     @FXML
     private void showRolesPane() {
         loadPane("/paneRole.fxml");
+        BtnsLayAP.setVisible(false);
+        PaneCont.setVisible(true);
+        sideMenuPane.setVisible(true);
     }
 
     @FXML
     private void showUtilisateursPane() {
         loadPane("/paneUsers.fxml");
+        BtnsLayAP.setVisible(false);
+        PaneCont.setVisible(true);
+        sideMenuPane.setVisible(true);
     }
 
     @FXML
     private void showEmailTempPane() {
         loadPane("/paneEmailTemp.fxml");
+        BtnsLayAP.setVisible(false);
+        PaneCont.setVisible(true);
+        sideMenuPane.setVisible(true);
     }
 
     @FXML
     private void showCongePane() {
         loadPane("/paneConges.fxml");
+        BtnsLayAP.setVisible(false);
+        PaneCont.setVisible(true);
+        sideMenuPane.setVisible(true);
+    }
+
+    @FXML
+    private void showStatsPane() {
+        loadPane("/Stat.fxml");
+        BtnsLayAP.setVisible(false);
+        PaneCont.setVisible(true);
+        sideMenuPane.setVisible(true);
     }
 
     private void loadPane(String fxmlPath) {
