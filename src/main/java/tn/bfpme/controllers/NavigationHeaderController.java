@@ -37,8 +37,6 @@ public class NavigationHeaderController implements Initializable {
     @FXML
     private Button btnRH;
     @FXML
-    private Button btnStat;
-    @FXML
     private Button test_interfaceID;
     @FXML
     private ImageView pdp2;
@@ -60,9 +58,7 @@ public class NavigationHeaderController implements Initializable {
 
         if ((userDepartmentName != null && userDepartmentName.equals("RH") && "Directeur".equals(userRoleName)) || "AdminIT".equals(userRoleName)) {
             btnRH.setVisible(true);
-            btnStat.setVisible(true);
         } else {
-            btnStat.setVisible(false);
             btnRH.setVisible(false);
         }
         admin_interface.setVisible("AdminIT".equals(userRoleName));
@@ -141,11 +137,6 @@ public class NavigationHeaderController implements Initializable {
         navigateToScene(event, "/AdminIT.fxml", "AdminIT");
     }
 
-    @FXML
-    void Stat_Interface(ActionEvent event) {
-        navigateToScene(event, "/Stat.fxml", "Statistique");
-
-    }
     @FXML
     void settings_button(ActionEvent event) {
         if (settingsPopup.isShowing()) {

@@ -40,7 +40,7 @@ public class StatController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        try {
+        /*try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/NavigationHeader.fxml"));
             AnchorPane departementPane = loader.load();
             AnchorPane.setTopAnchor(departementPane, 0.0);
@@ -49,13 +49,13 @@ public class StatController implements Initializable {
             MainAnchorPane.getChildren().add(departementPane);
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        Platform.runLater(() -> {
+        }*/
+        /*Platform.runLater(() -> {
             Stage stage = (Stage) MainAnchorPane.getScene().getWindow();
             stage.widthProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
             stage.heightProperty().addListener((obs, oldVal, newVal) -> FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight()));
             FontResizer.resizeFonts(MainAnchorPane, stage.getWidth(), stage.getHeight());
-        });
+        });*/
         loadPieChartData();
         loadPieDepartChartData();
         loadBarDepartData();
