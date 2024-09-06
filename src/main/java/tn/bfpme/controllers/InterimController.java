@@ -124,7 +124,7 @@ public class InterimController implements Initializable {
     }
 
     private void loadInterims() {
-        List<User> interimList = userService.getAppropriateUsers(id_manager);
+        List<User> interimList = userService.getUsersWithSameRoleAndSubordinates(id_manager);
         ObservableList<User> users = FXCollections.observableArrayList(interimList);
         filteredInterim = new FilteredList<>(users, p -> true);
         ListeInterim.setItems(filteredInterim);

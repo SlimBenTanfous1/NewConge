@@ -347,7 +347,7 @@ public class DemandeDepController implements Initializable {
     }
 
     void loadInterims() {
-        List<User> interimList = serviceUser.getAppropriateUsers(id_manager);
+        List<User> interimList = serviceUser.getUsersWithSameRoleAndSubordinates(id_manager);
         ObservableList<User> users = FXCollections.observableArrayList(interimList);
         filteredInterim = new FilteredList<>(users, p -> true);
         ListeInterim.setItems(filteredInterim);

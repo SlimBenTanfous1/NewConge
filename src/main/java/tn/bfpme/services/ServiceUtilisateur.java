@@ -1431,4 +1431,59 @@ public class ServiceUtilisateur implements IUtilisateur {
         }
         return INTERIM;
     }
+
+    public List<User> getUsersWithSameRoleAndSubordinates(int userId) {
+        List<User> resultList = new ArrayList<>();
+        Connection cnx = null;
+
+        try {
+            // Get a connection to the database
+            cnx = MyDataBase.getInstance().getCnx();
+
+            // Step 1: Query to get users with the same role as the given user
+            String querySameRole = "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.MDP, u.Image, u.Creation_Date, u.ID_Departement, u.ID_Manager, u.idSolde, u.ID_Interim " +
+                    "FROM user u " +
+                    "JOIN user_role ur ON u.ID_User = ur.ID_User " +
+                    "WHERE ur.ID_Role = (SELECT ur2.ID_Role FROM user_role ur2 WHERE ur2.ID_User = ?)";
+
+            PreparedStatement stmtSameRole = cnx.prepareStatement(querySameRole);
+            stmtSameRole.setInt(1, userId);
+            ResultSet rsSameRole = stmtSameRole.executeQuery();
+
+            // Add users with the same role to the list
+            while (rsSameRole.next()) {
+                User manager = new User(userId, rsSameRole.getString("Nom"), rsSameRole.getString("Prenom"), rsSameRole.getString("Email"), rsSameRole.getString("MDP"), rsSameRole.getString("Image"), rsSameRole.getDate("Creation_Date") != null ? rsSameRole.getDate("Creation_Date").toLocalDate() : null, rsSameRole.getInt("ID_Departement"), rsSameRole.getInt("ID_Manager"), rsSameRole.getInt("idSolde"), rsSameRole.getInt("ID_Interim"));
+                resultList.add(manager);
+            }
+
+            // Step 2: Query to get subordinates (users managed by the given user)
+            String querySubordinates = "SELECT u.ID_User, u.Nom, u.Prenom, u.Email, u.MDP, u.Image, u.Creation_Date, u.ID_Departement, u.ID_Manager, u.idSolde, u.ID_Interim " +
+                    "FROM user u " +
+                    "WHERE u.ID_Manager = ?";
+
+            PreparedStatement stmtSubordinates = cnx.prepareStatement(querySubordinates);
+            stmtSubordinates.setInt(1, userId);
+            ResultSet rsSubordinates = stmtSubordinates.executeQuery();
+
+            // Add subordinates to the list
+            while (rsSubordinates.next()) {
+                User manager1 = new User(userId, rsSubordinates.getString("Nom"), rsSubordinates.getString("Prenom"), rsSubordinates.getString("Email"), rsSubordinates.getString("MDP"), rsSubordinates.getString("Image"), rsSubordinates.getDate("Creation_Date") != null ? rsSubordinates.getDate("Creation_Date").toLocalDate() : null, rsSubordinates.getInt("ID_Departement"), rsSubordinates.getInt("ID_Manager"), rsSubordinates.getInt("idSolde"), rsSubordinates.getInt("ID_Interim"));
+                resultList.add(manager1);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (cnx != null) {
+                    cnx.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return resultList;
+    }
+
 }
