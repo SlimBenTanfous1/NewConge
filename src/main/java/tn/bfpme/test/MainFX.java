@@ -18,11 +18,10 @@ import tn.bfpme.utils.StageManager;
 import java.io.IOException;
 
 public class MainFX extends Application {
-    static {
+    /*static {
         System.setProperty("java.library.path", "C:\\opencv\\build\\java\\x64");
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-    }
-
+    }*/
     public static void main(String[] args) {
         RekognitionClient rekClient = RekognitionClient.builder()
                 .region(Region.EU_CENTRAL_1)

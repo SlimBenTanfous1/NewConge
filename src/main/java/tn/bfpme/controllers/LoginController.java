@@ -56,38 +56,19 @@ public class LoginController {
     @FXML
     private AnchorPane MainAnchorPane;
     @FXML
-    private TextField LoginEmail;
+    private TextField LoginEmail, showPasswordField;
     @FXML
     private PasswordField LoginMDP;
     @FXML
-    private TextField showPasswordField;
-    @FXML
     private Button toggleButton;
+
     private VideoCapture camera;
 
     private Connection cnx;
-
     @FXML
     public void initialize() {
         cnx = MyDataBase.getInstance().getCnx();
-        initializeCamera(); // Initialize camera once
     }
-
-    private void initializeCamera() {
-        try {
-            camera = new VideoCapture(0);
-            if (!camera.isOpened()) {
-                showAlert("Error", "Unable to access camera.");
-                System.err.println("Error: Camera could not be opened.");
-            } else {
-                System.out.println("Camera initialized successfully.");
-            }
-        } catch (Exception e) {
-            showAlert("Error", "Camera initialization failed.");
-            e.printStackTrace();
-        }
-    }
-
     @FXML
     void Login(ActionEvent event) {
         String qry = "SELECT u.*, ur.ID_Role " +
@@ -137,7 +118,58 @@ public class LoginController {
             e.printStackTrace();
         }
     }
-String MSG ="";
+
+    private void showAlert(String title, String message) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle(title);
+            alert.setContentText(message);
+            alert.showAndWait();
+        });
+    }
+
+    private void navigateToProfile(ActionEvent event) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/profile.fxml"));
+        Parent root = loader.load();
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.setTitle("Profile");
+        stage.show();
+    }
+
+    private void populateUserSolde(User user) {
+        String soldeQuery = "SELECT us.*, tc.Designation FROM user_solde us JOIN typeconge tc ON us.ID_TypeConge = tc.ID_TypeConge WHERE us.ID_User = ?";
+        try (PreparedStatement soldeStm = cnx.prepareStatement(soldeQuery)) {
+            soldeStm.setInt(1, user.getIdUser());
+            ResultSet soldeRs = soldeStm.executeQuery();
+            while (soldeRs.next()) {
+                int typeCongeId = soldeRs.getInt("ID_TypeConge");
+                double totalSolde = soldeRs.getDouble("TotalSolde");
+                String typeConge = soldeRs.getString("Designation");
+                user.setSoldeByType(typeCongeId, totalSolde, typeConge);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /*
+
+
+    private void initializeCamera() {
+        try {
+            camera = new VideoCapture(0);
+            if (!camera.isOpened()) {
+                showAlert("Error", "Unable to access camera.");
+                System.err.println("Error: Camera could not be opened.");
+            } else {
+                System.out.println("Camera initialized successfully.");
+            }
+        } catch (Exception e) {
+            showAlert("Error", "Camera initialization failed.");
+            e.printStackTrace();
+        }
+    }
     @FXML
     private void FacialRecognitionButton(ActionEvent event) {
         try {
@@ -145,22 +177,17 @@ String MSG ="";
                 showAlert("Error", "Camera is not accessible.");
                 return;
             }
-
             Mat capturedFrame = captureImageFromCamera();
-            System.out.println(MSG);
             if (capturedFrame == null || capturedFrame.empty()) {
                 showAlert("Error", "Failed to capture image from camera.");
                 return;
             }
-
-            // Perform facial recognition locally
             Task<Boolean> task = new Task<Boolean>() {
                 @Override
                 protected Boolean call() {
                     System.out.println("Starting local facial recognition...");
                     return performLocalFacialRecognition(capturedFrame);
                 }
-
                 @Override
                 protected void succeeded() {
                     System.out.println("Facial recognition task succeeded.");
@@ -238,8 +265,6 @@ String MSG ="";
             return null;
         }
     }
-
-
     private String saveCapturedImage(Mat frame) {
         // Save the captured frame to a temporary file
         String tempImagePath = System.getProperty("java.io.tmpdir") + "captured_face.jpg";
@@ -305,7 +330,6 @@ String MSG ="";
             return false;
         }
     }
-
     private User getRecognizedUser(Mat capturedFrame) throws SQLException {
         System.out.println("Loading users from the database...");
 
@@ -347,29 +371,6 @@ String MSG ="";
 
         return recognizedUser;
     }
-
-
-    /*private List<Mat> loadStoredImagesFromS3(User user) {
-        List<Mat> images = new ArrayList<>();
-        String[] faceDataPaths = {user.getFace_data1(), user.getFace_data2(), user.getFace_data3(), user.getFace_data4()};
-
-        for (String s3Key : faceDataPaths) {
-            if (s3Key != null && !s3Key.isEmpty()) {
-                // Download image from S3 and convert it to Mat
-                Mat image = downloadImageFromS3(s3Key);
-                if (image != null && !image.empty()) {
-                    images.add(image);
-                } else {
-                    System.err.println("Failed to download image from S3 with key: " + s3Key);
-                }
-            }
-        }
-
-        return images;
-    }*/
-
-
-
     private boolean compareFaces(Mat capturedFrame, List<Mat> storedImages) {
         try {
             // Convert the captured frame to grayscale if it's not already
@@ -450,8 +451,6 @@ String MSG ="";
             return false; // Return false if any exception occurs
         }
     }
-
-
     private List<Mat> loadStoredImages(User user) {
         List<Mat> images = new ArrayList<>();
         String[] faceDataPaths = {user.getFace_data1(), user.getFace_data2(), user.getFace_data3(), user.getFace_data4()};
@@ -473,9 +472,6 @@ String MSG ="";
         System.out.println("Total images loaded for user: " + images.size());
         return images;
     }
-
-
-
     private User initializeUserFromResultSet(ResultSet rs) throws SQLException {
         return new User(
                 rs.getInt("ID_User"),
@@ -492,39 +488,5 @@ String MSG ="";
                 rs.getString("face_data3"),
                 rs.getString("face_data4")
         );
-    }
-
-    private void showAlert(String title, String message) {
-        Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle(title);
-            alert.setContentText(message);
-            alert.showAndWait();
-        });
-    }
-
-    private void navigateToProfile(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/profile.fxml"));
-        Parent root = loader.load();
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.setScene(new Scene(root));
-        stage.setTitle("Profile");
-        stage.show();
-    }
-
-    private void populateUserSolde(User user) {
-        String soldeQuery = "SELECT us.*, tc.Designation FROM user_solde us JOIN typeconge tc ON us.ID_TypeConge = tc.ID_TypeConge WHERE us.ID_User = ?";
-        try (PreparedStatement soldeStm = cnx.prepareStatement(soldeQuery)) {
-            soldeStm.setInt(1, user.getIdUser());
-            ResultSet soldeRs = soldeStm.executeQuery();
-            while (soldeRs.next()) {
-                int typeCongeId = soldeRs.getInt("ID_TypeConge");
-                double totalSolde = soldeRs.getDouble("TotalSolde");
-                String typeConge = soldeRs.getString("Designation");
-                user.setSoldeByType(typeCongeId, totalSolde, typeConge);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+    }*/
 }
